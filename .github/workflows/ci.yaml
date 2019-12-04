@@ -11,12 +11,22 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 12
-            - name: install dependencies, lint, test
+            - name: build
+              run: |
+                  yarn install
+                  yarn build
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+            - name: test
               run: |
                   yarn install
                   yarn lint
                   yarn test
               env:
                   CI: true
-            - name: build
-              run: yarn build
