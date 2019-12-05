@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         steps:
             - uses: actions/checkout@v1
             - name: Use Node.js 12
@@ -13,10 +13,11 @@ jobs:
                   node-version: 12
             - name: build
               run: |
+                  npm i -g yarn
                   yarn install
                   yarn build
     test:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         steps:
             - uses: actions/checkout@v1
             - name: Use Node.js 12
@@ -25,6 +26,7 @@ jobs:
                   node-version: 12
             - name: test
               run: |
+                  npm i -g yarn
                   yarn install
                   yarn lint
                   yarn test
