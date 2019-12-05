@@ -29,6 +29,6 @@ jobs:
                   npm i -g yarn
                   yarn install
                   yarn lint
-                  yarn test
+                  yarn test --verbose
               env:
                   CI: true

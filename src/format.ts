@@ -1,5 +1,5 @@
-import { RawBlockResponse, RawTransactionResponse, RawTransactionReceipt } from './responses';
-import { FormattedBlock, FormattedTransaction } from '../msgs';
+import { RawBlockResponse, RawTransactionResponse, RawTransactionReceipt, RawLogResponse } from './eth/responses';
+import { FormattedBlock, FormattedTransaction, FormattedLogEvent, FunctionCall, AddressInfo } from './msgs';
 import { hexToNumber, toChecksumAddress } from 'web3-utils';
 
 export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
@@ -40,7 +40,13 @@ function formatStatus(receiptStatus?: string): 'success' | 'failure' | null {
     return null;
 }
 
-export function formatTransaction(rawTx: RawTransactionResponse, receipt: RawTransactionReceipt): FormattedTransaction {
+export function formatTransaction(
+    rawTx: RawTransactionResponse,
+    receipt: RawTransactionReceipt,
+    fromInfo?: AddressInfo,
+    toInfo?: AddressInfo,
+    call?: FunctionCall
+): FormattedTransaction {
     return {
         hash: rawTx.hash,
         blockNumber: rawTx.blockNumber != null ? hexToNumber(rawTx.blockNumber) : null,
@@ -60,5 +66,23 @@ export function formatTransaction(rawTx: RawTransactionResponse, receipt: RawTra
         contractAddress: receipt.contractAddress != null ? toChecksumAddress(receipt.contractAddress) : null,
         cumulativeGasUsed: hexToNumber(receipt.cumulativeGasUsed),
         gasUsed: hexToNumber(receipt.gasUsed),
+        fromInfo,
+        toInfo,
+        call,
+    };
+}
+
+export function formatLogEvent(evt: RawLogResponse): FormattedLogEvent {
+    return {
+        id: evt.id,
+        removed: evt.removed,
+        logIndex: evt.logIndex != null ? hexToNumber(evt.logIndex) : null,
+        blockNumber: evt.blockNumber != null ? hexToNumber(evt.blockNumber) : null,
+        blockHash: evt.blockHash,
+        transactionHash: evt.transactionHash,
+        transactionIndex: evt.transactionIndex != null ? hexToNumber(evt.transactionIndex) : null,
+        address: toChecksumAddress(evt.address),
+        data: evt.data,
+        topics: evt.topics,
     };
 }

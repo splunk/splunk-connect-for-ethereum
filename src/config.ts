@@ -33,7 +33,7 @@ export interface SplunkHecConfig extends HecConfig {
         block: string;
         transaction: string;
         event: string;
-        receipt: string;
+        pendingtx: string;
     };
 }
 
@@ -45,7 +45,7 @@ export const defaultSourcetypes: SplunkHecConfig['sourcetypes'] = {
     block: 'block',
     transaction: 'transaction',
     event: 'transaction:event',
-    receipt: 'transaction:receipt',
+    pendingtx: 'transaction:pending',
 };
 
 export const CONFIG_DEFAULTS: DeepPartial<EthloggerConfig> = {

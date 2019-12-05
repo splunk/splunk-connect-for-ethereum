@@ -1,19 +1,19 @@
-import { HecClient } from './hec';
 import { SplunkHecConfig } from './config';
-import { ManagedResource } from './utils/resource';
+import { HecClient } from './hec';
+import { BlockMessage, LogEventMessage, PendingTransactionMessage, TransactionMessage } from './msgs';
 import { createDebug } from './utils/debug';
-import { BlockMessage, TransactionMessage, PendingTransactionMessage } from './msgs';
+import { ManagedResource } from './utils/resource';
 
 const consoleOutput = createDebug('output');
 consoleOutput.enabled = true;
 
-export type OutputMessage = BlockMessage | TransactionMessage | PendingTransactionMessage;
+export type OutputMessage = BlockMessage | TransactionMessage | PendingTransactionMessage | LogEventMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
 }
 
-export class HecOutput implements Output {
+export class HecOutput implements Output, ManagedResource {
     constructor(private hec: HecClient, private config: SplunkHecConfig) {}
 
     public write(msg: OutputMessage) {
@@ -35,6 +35,16 @@ export class HecOutput implements Output {
                     metadata: {
                         index: this.config.eventIndex,
                         sourcetype: this.config.sourcetypes.transaction,
+                    },
+                });
+                break;
+            case 'event':
+                this.hec.pushEvent({
+                    time: msg.time,
+                    body: msg.event,
+                    metadata: {
+                        index: this.config.eventIndex,
+                        sourcetype: this.config.sourcetypes.event,
                     },
                 });
                 break;

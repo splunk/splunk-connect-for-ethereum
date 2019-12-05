@@ -44,20 +44,23 @@ describe('retry', () => {
         let tried = 0;
         const startTime = Date.now();
         const abort = new AbortController();
+        const onAbort = () => {
+            abort.abort();
+        };
         const p = retry(
             async () => {
                 tried++;
+                if (tried >= 5) {
+                    setTimeout(onAbort, 0);
+                }
                 throw new Error('nope');
             },
-            { waitBetween: 1, abortSignal: abort.signal }
+            { waitBetween: 3, abortSignal: abort.signal }
         );
-
-        setTimeout(() => {
-            abort.abort();
-        }, 15);
 
         await expect(p).rejects.toMatchInlineSnapshot(`[Error: Retry loop aborted [anonymous task]]`);
         expect(Date.now() - startTime).toBeGreaterThanOrEqual(15);
         expect(tried).toBeGreaterThanOrEqual(5);
+        expect(tried).toBeLessThan(15);
     });
 });

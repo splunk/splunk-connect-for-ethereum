@@ -1,5 +1,6 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
+import { AbiDecoder } from './abi';
 import { BlockWatcher } from './block';
 import { BlockRangeCheckpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
@@ -9,9 +10,8 @@ import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
 import { HecOutput } from './output';
 import { createModuleDebug, enableTraceLogging } from './utils/debug';
-import { shutdownAll } from './utils/resource';
+import { shutdownAll, ManagedResource } from './utils/resource';
 import { waitForSignal } from './utils/signal';
-import { AbiDecoder } from './abi';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -30,6 +30,13 @@ class Ethlogger extends Command {
             enableTraceLogging();
         }
 
+        const resources: ManagedResource[] = [];
+
+        const addResource = <R extends ManagedResource>(r: R): R => {
+            resources.unshift(r);
+            return r;
+        };
+
         try {
             const hecConfig: SplunkHecConfig = {
                 url: flags['hec-url'],
@@ -45,21 +52,27 @@ class Ethlogger extends Command {
 
             const hec = new HecClient(hecConfig);
             const output = new HecOutput(hec, hecConfig);
+            addResource(output);
 
-            const checkpoints = new BlockRangeCheckpoint({
-                path: 'checkpoints.json',
-            });
-
+            const checkpoints = addResource(
+                new BlockRangeCheckpoint({
+                    path: 'checkpoints.json',
+                })
+            );
             await checkpoints.initialize();
 
             const transport = new HttpTransport({
-                url: 'http://localhost:22000',
+                url: flags['eth-rpc-url'],
             });
 
             const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
 
-            const abiDecoder = new AbiDecoder();
-            await abiDecoder.loadAbiDir('./test/abi');
+            let abiDecoder;
+            if (flags['eth-abi-dir']) {
+                abiDecoder = new AbiDecoder();
+                resources.unshift(abiDecoder);
+                await abiDecoder.loadAbiDir(flags['eth-abi-dir']);
+            }
 
             const blockWatcher = new BlockWatcher({
                 checkpoints,
@@ -68,17 +81,16 @@ class Ethlogger extends Command {
                 abiDecoder,
                 startAt: 'genesis',
             });
+            resources.unshift(blockWatcher);
 
             await Promise.race([blockWatcher.start(), waitForSignal('SIGINT')]);
             info('Recieved signal, proceeding with shutdown sequence');
-            const cleanShutdown = await shutdownAll([abiDecoder, blockWatcher, checkpoints, hec], 10_000);
+            const cleanShutdown = await shutdownAll(resources, 10_000);
             info('Shutdown complete.');
             process.exit(cleanShutdown ? 0 : 2);
-            return;
         } catch (e) {
             error('FATAL: ', e);
             process.exit(1);
-            return;
         }
     }
 }

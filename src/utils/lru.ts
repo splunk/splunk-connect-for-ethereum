@@ -4,7 +4,7 @@ import { Cache } from './cache';
 export default class LRUCache<K, V> implements Cache<K, V> {
     private cache: Map<K, V>;
     private old: Map<K, V>;
-    private maxSize: number;
+    private readonly maxSize: number;
     private size: number;
 
     constructor({

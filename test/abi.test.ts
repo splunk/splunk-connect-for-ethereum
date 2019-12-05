@@ -1,4 +1,4 @@
-import { AbiDecoder, intBits, decodeParameterValue, computeSignature, computeSignatureName } from '../src/abi';
+import { AbiDecoder, intBits, decodeParameterValue, computeSignatureHash, computeSignature } from '../src/abi';
 import { join } from 'path';
 
 test('AbiDecoder#decodeMethod', async () => {
@@ -36,6 +36,7 @@ test('AbiDecoder#decodeMethod', async () => {
               "value": 23861,
             },
           ],
+          "signature": "23b872dd",
         }
     `);
 
@@ -62,6 +63,7 @@ test('AbiDecoder#decodeMethod', async () => {
               "value": true,
             },
           ],
+          "signature": "a22cb465",
         }
     `);
 });
@@ -81,8 +83,8 @@ test('decodeParameterValue', () => {
 
 test('computeSignature', () => {
     expect(
-        computeSignature(
-            computeSignatureName({
+        computeSignatureHash(
+            computeSignature({
                 inputs: [
                     {
                         indexed: true,
@@ -107,8 +109,8 @@ test('computeSignature', () => {
         )
     ).toMatchInlineSnapshot(`"17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31"`);
     expect(
-        computeSignature(
-            computeSignatureName({
+        computeSignatureHash(
+            computeSignature({
                 inputs: [
                     {
                         name: 'operator',

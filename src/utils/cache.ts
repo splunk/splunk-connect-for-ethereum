@@ -5,12 +5,12 @@ export interface Cache<K, V> {
     unset(key: K): void;
 }
 
-export function cached<K, V>(key: K, cache: Cache<K, V>, producer: () => V): V {
+export function cached<K, V>(key: K, cache: Cache<K, V>, producer: (k: K) => V): V {
     const v = cache.get(key);
     if (v != null) {
         return v;
     }
-    const newValue = producer();
+    const newValue = producer(key);
     cache.set(key, newValue);
     return newValue;
 }

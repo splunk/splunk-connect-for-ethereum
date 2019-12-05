@@ -1,7 +1,7 @@
-import { ManagedResource } from './utils/resource';
 import { readFile, writeFile } from 'fs-extra';
+import { BlockRange, compactRanges, getInverseBlockRanges, parseBlockRange, serializeBlockRange } from './blockrange';
 import { createModuleDebug } from './utils/debug';
-import { BlockRange, compactRanges, parseBlockRange, getInverseBlockRanges, serializeBlockRange } from './blockrange';
+import { ManagedResource } from './utils/resource';
 
 const { debug } = createModuleDebug('checkpoint');
 

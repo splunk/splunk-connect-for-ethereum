@@ -1,5 +1,5 @@
-import { JsonRpcResponse } from './jsonrpc';
 import { hexToNumber, numberToHex } from 'web3-utils';
+import { JsonRpcResponse } from './jsonrpc';
 import { RawBlockResponse, RawTransactionReceipt } from './responses';
 
 export interface EthRequest<P extends any[], R> {

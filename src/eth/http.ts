@@ -1,9 +1,9 @@
+import { default as HttpAgent, HttpOptions, HttpsAgent } from 'agentkeepalive';
 import fetch from 'node-fetch';
-import { default as HttpAgent, HttpsAgent, HttpOptions } from 'agentkeepalive';
-import { EthereumTransport } from './transport';
-import { JsonRpcRequest, JsonRpcResponse, isValidJsonRpcResponse } from './jsonrpc';
-import { isHttps } from '../utils/http';
 import { createModuleDebug } from '../utils/debug';
+import { isHttps } from '../utils/http';
+import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
+import { EthereumTransport } from './transport';
 
 const { debug, trace } = createModuleDebug('eth:http');
 

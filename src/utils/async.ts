@@ -2,7 +2,10 @@ import { AbortSignal } from 'abort-controller';
 
 export const sleep = (timeoutMS: number): Promise<void> => new Promise(resolve => setTimeout(resolve, timeoutMS));
 
-export const neverResolve = <T>(): Promise<T> => new Promise(() => {});
+export const neverResolve = <T>(): Promise<T> =>
+    new Promise(() => {
+        // noop
+    });
 
 export type ParallelTask<R> = () => Promise<R>;
 

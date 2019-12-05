@@ -6,7 +6,7 @@
         "outDir": "lib",
         "rootDir": "src",
         "strict": true,
-        "target": "esnext",
+        "target": "es2019",
         "esModuleInterop": true
     },
     "include": ["src/**/*"]

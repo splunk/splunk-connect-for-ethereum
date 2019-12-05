@@ -1,8 +1,8 @@
-import { EthereumTransport } from './transport';
-import { createJsonRpcPayload, checkError, JsonRpcError, JsonRpcRequest } from './jsonrpc';
-import { EthRequest } from './requests';
-import { createModuleDebug } from '../utils/debug';
 import { sleep } from '../utils/async';
+import { createModuleDebug } from '../utils/debug';
+import { checkError, createJsonRpcPayload, JsonRpcError, JsonRpcRequest } from './jsonrpc';
+import { EthRequest } from './requests';
+import { EthereumTransport } from './transport';
 
 const { debug, error } = createModuleDebug('eth:client');
 

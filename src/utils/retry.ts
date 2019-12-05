@@ -1,6 +1,6 @@
-import { createModuleDebug } from './debug';
-import { sleep, neverResolve } from './async';
 import { AbortSignal } from 'abort-controller';
+import { neverResolve, sleep } from './async';
+import { createModuleDebug } from './debug';
 
 const { debug } = createModuleDebug('utils:retry');
 

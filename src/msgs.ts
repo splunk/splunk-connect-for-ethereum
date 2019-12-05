@@ -1,4 +1,5 @@
 export type Address = string;
+export type Value = string | number | boolean | Array<string | number | boolean>;
 
 /** Block information formatted for output */
 export interface FormattedBlock {
@@ -105,21 +106,68 @@ export interface FormattedTransaction extends FormattedPendingTransaction {
     /** The contract address created, if the transaction was a contract creation, otherwise null  */
     contractAddress?: Address | null;
 
-    // ... wip
+    // additional computed information
 
-    // toInfo: {
-    //     isContract: boolean;
-    //     // other stuff? ENS?
-    // };
+    /** Information about the recipient address of the transaction */
+    toInfo?: AddressInfo;
+    /** Information about the sender address of the transaction */
+    fromInfo?: AddressInfo;
 
-    // call: {
-    //     params: any[];
-    //     args: { [k: string]: any };
-    // };
+    /** Information about the function extracted from `input` if ABI information is available */
+    call?: FunctionCall;
+}
+
+export interface AddressInfo {
+    /** true if the address is a contract, otherwise false. This is determined by attempting to retrive the addresses code */
+    isContract: boolean;
+    /** Name of the smart contract by matching it against configured ABI information */
+    contractName?: string;
+}
+
+export interface FunctionCall {
+    /** Function name */
+    name: string;
+    /** Function signature (name and parameter types) */
+    signature: string;
+    /** List of decoded parameters */
+    params: Array<{ name: string; type: string; value: Value }>;
+    /** A map of parameter names and their decoded value */
+    args: { [name: string]: Value };
 }
 
 export interface TransactionMessage {
     type: 'transaction';
     time: number;
     tx: FormattedTransaction;
+}
+
+export interface FormattedLogEvent {
+    id?: string;
+    /** true when the log was removed, due to a chain reorganization. false if its a valid log */
+    removed?: boolean;
+    /** integer of the log index position in the block  */
+    logIndex: number | null;
+    /** the block number where this log was in */
+    blockNumber: number | null;
+    /** hash of the block where this log was in */
+    blockHash: string | null;
+    /** hash of the transactions this log was created from */
+    transactionHash: string | null;
+    /** integer of the transactions index position log was created from */
+    transactionIndex: number | null;
+    /** address from which this log originated */
+    address: Address;
+    /** contains the non-indexed arguments of the log */
+    data: string;
+    /** Array of 0 to 4 32 Bytes DATA of indexed log arguments.
+     * (In solidity: The first topic is the hash of the signature of the event
+     * (e.g. Deposit(address,bytes32,uint256)),
+     * except you declared the event with the anonymous specifier.) */
+    topics: string[];
+}
+
+export interface LogEventMessage {
+    type: 'event';
+    time: number;
+    event: FormattedLogEvent;
 }

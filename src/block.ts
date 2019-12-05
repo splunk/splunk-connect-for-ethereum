@@ -1,18 +1,18 @@
 import AbortController from 'abort-controller';
+import { AbiDecoder } from './abi';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges } from './blockrange';
 import { BlockRangeCheckpoint } from './checkpoint';
+import { ContractInfo, getContractInfo } from './contract';
 import { EthereumClient } from './eth/client';
-import { formatBlock, formatTransaction } from './eth/format';
 import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
 import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
+import { formatBlock, formatTransaction } from './format';
+import { Address, FormattedBlock } from './msgs';
 import { Output, OutputMessage } from './output';
 import { parallel, sleep } from './utils/async';
+import { Cache, cached, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
-import { FormattedBlock } from './msgs';
-import { AbiDecoder } from './abi';
-import { ContractInfo } from './contract';
-import { Cache, NoopCache } from './utils/cache';
 
 const { debug, info, warn, error } = createModuleDebug('block');
 
@@ -29,7 +29,7 @@ export class BlockWatcher implements ManagedResource {
     private pollInterval: number = 500;
     private abortController: AbortController;
     private endCallbacks: Array<() => void> = [];
-    private contractInfoCache: Cache<string, ContractInfo> = new NoopCache();
+    private contractInfoCache: Cache<string, Promise<ContractInfo>> = new NoopCache();
 
     constructor({
         ethClient,
@@ -147,14 +147,41 @@ export class BlockWatcher implements ManagedResource {
             warn('Received raw transaction as string from block %d', formattedBlock.number);
             return [];
         }
-        const receipt = await this.ethClient.request(getTransactionReceipt(rawTx.hash));
+
+        const [receipt, toInfo, fromInfo] = await Promise.all([
+            this.ethClient.request(getTransactionReceipt(rawTx.hash)),
+            rawTx.to != null ? this.lookupContractInfo(rawTx.to) : undefined,
+            rawTx.from != null ? this.lookupContractInfo(rawTx.from) : undefined,
+        ]);
+
+        let callInfo;
+        if (this.abiDecoder && toInfo && toInfo.isContract) {
+            callInfo = this.abiDecoder.decodeMethod(rawTx.input, toInfo.fingerprint);
+        }
+
         return [
             {
                 type: 'transaction',
                 time: blockTime,
-                tx: formatTransaction(rawTx, receipt),
+                tx: formatTransaction(rawTx, receipt!, fromInfo, toInfo, callInfo),
             },
         ];
+    }
+
+    private async lookupContractInfo(address: Address): Promise<ContractInfo | undefined> {
+        const abiDecoder = this.abiDecoder;
+        if (abiDecoder == null) {
+            return;
+        }
+        const result = await cached(address, this.contractInfoCache, (addr: Address) =>
+            getContractInfo(
+                addr,
+                this.ethClient,
+                (sig: string) => abiDecoder.getMatchingSignatureName(sig),
+                (fingerprint: string) => abiDecoder.getContractByFingerprint(fingerprint)?.contractName
+            )
+        );
+        return result;
     }
 
     public async shutdown() {

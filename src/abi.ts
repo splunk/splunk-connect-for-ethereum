@@ -1,5 +1,5 @@
 import { readdir, readFile, stat } from 'fs-extra';
-import { join, basename } from 'path';
+import { basename, join } from 'path';
 import { AbiCoder } from 'web3-eth-abi';
 import { AbiInput, AbiItem, sha3, toChecksumAddress } from 'web3-utils';
 import { computeContractFingerprint } from './contract';
@@ -19,6 +19,7 @@ export interface DecodedParameter {
 
 export interface DecodedMethod {
     name: string;
+    signature: string;
     params: DecodedParameter[];
     args: { [name: string]: Value };
 }
@@ -42,14 +43,14 @@ interface Abi {
     contractFingerprint?: string;
 }
 
-export function computeSignatureName(abi: Abi) {
+export function computeSignature(abi: Abi) {
     if (abi.name == null) {
         throw new Error('Cannot add ABI item without name');
     }
     return `${abi.name}(${(abi.inputs || []).map(i => i.type).join(',')})`;
 }
 
-export function computeSignature(sigName: string, type: 'event' | 'function'): string {
+export function computeSignatureHash(sigName: string, type: 'event' | 'function'): string {
     const hash = sha3(sigName);
     return type === 'event' ? hash.slice(2) : hash.slice(2, 10);
 }
@@ -128,8 +129,14 @@ interface AbiMatch {
     candidates: Abi[];
 }
 
+export interface ContractAbi {
+    contractName: string;
+    fileName: string;
+}
+
 export class AbiDecoder implements ManagedResource {
     private signatures: Map<string, AbiMatch> = new Map();
+    private contracts: Map<string, ContractAbi> = new Map();
     private abiCoder: AbiCoder = require('web3-eth-abi');
 
     public async loadAbiDir(
@@ -175,7 +182,7 @@ export class AbiDecoder implements ManagedResource {
             .filter(abi => (abi.type === 'function' || abi.type === 'event') && abi.name != null)
             .map(item => ({
                 item,
-                sigName: computeSignatureName({ name: item.name!, inputs: item.inputs || [], type: 'function' }),
+                sigName: computeSignature({ name: item.name!, inputs: item.inputs || [], type: 'function' }),
             }));
 
         const functions = items
@@ -191,14 +198,14 @@ export class AbiDecoder implements ManagedResource {
 
         for (const i of items) {
             const { sigName, item } = i;
-            const sig = computeSignature(sigName, item.type as 'function' | 'event');
-            let match: AbiMatch | undefined = this.signatures.get(sig);
+            const sigHash = computeSignatureHash(sigName, item.type as 'function' | 'event');
+            let match: AbiMatch | undefined = this.signatures.get(sigHash);
             if (match == null) {
                 match = {
                     name: sigName,
                     candidates: [],
                 };
-                this.signatures.set(sig, match);
+                this.signatures.set(sigHash, match);
             } else {
                 if (match.name !== sigName) {
                     throw new Error(
@@ -215,21 +222,29 @@ export class AbiDecoder implements ManagedResource {
                 fileName,
             });
         }
+
+        if (contractFingerprint != null) {
+            this.contracts.set(contractFingerprint, {
+                contractName,
+                fileName,
+            });
+        }
     }
 
     public get signatureCount(): number {
         return this.signatures.size;
     }
 
-    public getMatchingAbi(signature: string): AbiMatch | undefined {
-        return this.signatures.get(signature);
+    public getMatchingAbi(signatureHash: string): AbiMatch | undefined {
+        return this.signatures.get(signatureHash);
     }
 
-    public getMatchingSignatureName(signature: string): string | undefined {
-        const m = this.signatures.get(signature);
-        if (m) {
-            return m.name;
-        }
+    public getMatchingSignatureName(signatureHash: string): string | undefined {
+        return this.signatures.get(signatureHash)?.name;
+    }
+
+    public getContractByFingerprint(fingerprint: string): ContractAbi | undefined {
+        return this.contracts.get(fingerprint);
     }
 
     public decodeMethod(data: string, contractFingerprint?: string): DecodedMethod | undefined {
@@ -273,6 +288,7 @@ export class AbiDecoder implements ManagedResource {
 
             return {
                 name: abi.name!,
+                signature: sig,
                 params,
                 args,
             };
