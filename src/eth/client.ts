@@ -71,6 +71,7 @@ export class EthereumClient {
                                 checkError(result);
                                 resolve(request.response(result));
                             } catch (e) {
+                                debug(`JSON RPC request method: %s failed`, request.method, e);
                                 reject(e);
                             }
                         },
@@ -117,6 +118,7 @@ export class BatchedEthereumClient extends EthereumClient {
                         checkError(result);
                         resolve(req.response(result));
                     } catch (e) {
+                        debug(`JSON RPC request method: %s(%o) failed`, req.method, req.params, e);
                         reject(e);
                     }
                 },

@@ -27,8 +27,8 @@ export const getTransactionReceipt = (txHash: string): EthRequest<[string], RawT
     response: r => r.result,
 });
 
-export const getCode = (address: string): EthRequest<[string], string> => ({
+export const getCode = (address: string): EthRequest<[string, string], string> => ({
     method: 'eth_getCode',
-    params: [address],
+    params: [address, 'latest'],
     response: r => r.result,
 });

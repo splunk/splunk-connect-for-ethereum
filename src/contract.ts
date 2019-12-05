@@ -2,6 +2,9 @@ import { Address } from './msgs';
 import { EthereumClient } from './eth/client';
 import { getCode } from './eth/requests';
 import { sha3 } from 'web3-utils';
+import { createModuleDebug } from './utils/debug';
+
+const { debug } = createModuleDebug('contract');
 
 export interface ContractInfo {
     isContract: boolean;
@@ -55,6 +58,7 @@ export async function getContractInfo(
     signatureMatcher?: SignatureMatcher,
     contractNameLookup?: ContractNameLookup
 ): Promise<ContractInfo> {
+    debug('Retrieving contract information for address %s', address);
     const code = await ethClient.request(getCode(address));
     if (code === '0x') {
         return { isContract: false };
@@ -65,10 +69,11 @@ export async function getContractInfo(
     const fingerprint = computeContractFingerprint(
         extractFunctionsAndEvents(code, (fingerprint: string) => signatureMatcher(fingerprint, address))
     );
+    const contractName =
+        fingerprint != null && contractNameLookup != null ? contractNameLookup(address, fingerprint) : undefined;
     return {
         isContract: true,
         fingerprint,
-        contractName:
-            fingerprint != null && contractNameLookup != null ? contractNameLookup(address, fingerprint) : undefined,
+        contractName,
     };
 }

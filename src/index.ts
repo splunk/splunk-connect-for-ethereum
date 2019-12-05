@@ -12,6 +12,8 @@ import { HecOutput } from './output';
 import { createModuleDebug, enableTraceLogging } from './utils/debug';
 import { shutdownAll, ManagedResource } from './utils/resource';
 import { waitForSignal } from './utils/signal';
+import LRUCache from './utils/lru';
+import { ContractInfo } from './contract';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -65,7 +67,7 @@ class Ethlogger extends Command {
                 url: flags['eth-rpc-url'],
             });
 
-            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
+            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 5 });
 
             let abiDecoder;
             if (flags['eth-abi-dir']) {
@@ -74,12 +76,15 @@ class Ethlogger extends Command {
                 await abiDecoder.loadAbiDir(flags['eth-abi-dir']);
             }
 
+            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 25_000 });
+
             const blockWatcher = new BlockWatcher({
                 checkpoints,
                 ethClient: client,
                 output,
                 abiDecoder,
                 startAt: 'genesis',
+                contractInfoCache,
             });
             resources.unshift(blockWatcher);
 

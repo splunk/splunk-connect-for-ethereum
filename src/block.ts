@@ -14,7 +14,7 @@ import { Cache, cached, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 
-const { debug, info, warn, error } = createModuleDebug('block');
+const { debug, info, warn, error, trace } = createModuleDebug('block');
 
 export type StartBlock = 'latest' | 'genesis' | number;
 
@@ -45,12 +45,14 @@ export class BlockWatcher implements ManagedResource {
         output,
         abiDecoder,
         startAt = 'latest',
+        contractInfoCache,
     }: {
         ethClient: EthereumClient;
         checkpoints: BlockRangeCheckpoint;
         output: Output;
         abiDecoder?: AbiDecoder;
         startAt?: StartBlock;
+        contractInfoCache?: Cache<string, Promise<ContractInfo>>;
     }) {
         this.ethClient = ethClient;
         this.checkpoints = checkpoints;
@@ -58,6 +60,9 @@ export class BlockWatcher implements ManagedResource {
         this.abiDecoder = abiDecoder;
         this.startAt = startAt;
         this.abortController = new AbortController();
+        if (contractInfoCache) {
+            this.contractInfoCache = contractInfoCache;
+        }
     }
 
     async start(): Promise<void> {
@@ -79,7 +84,7 @@ export class BlockWatcher implements ManagedResource {
         while (this.active) {
             try {
                 const latestBlockNumber = await ethClient.request(blockNumber());
-                debug('Received latest block number: %d', latestBlockNumber);
+                info('Received latest block number: %d', latestBlockNumber);
                 const todo = checkpoints.getIncompleteRanges(latestBlockNumber);
                 debug(
                     'Found %d block ranges (total of %d blocks) to process',
@@ -88,12 +93,15 @@ export class BlockWatcher implements ManagedResource {
                 );
 
                 for (const range of todo) {
-                    for (const chunk of chunkedBlockRanges(range, this.chunkSize)) {
-                        if (!this.active) {
-                            break;
-                        }
-                        await this.processChunk(chunk);
-                    }
+                    await parallel(
+                        chunkedBlockRanges(range, this.chunkSize).map(chunk => async () => {
+                            if (!this.active) {
+                                return;
+                            }
+                            await this.processChunk(chunk);
+                        }),
+                        { maxConcurrent: 5, abortSignal: this.abortController.signal }
+                    );
                 }
             } catch (e) {
                 error('Error in block watcher polling loop', e);
@@ -103,7 +111,7 @@ export class BlockWatcher implements ManagedResource {
         if (this.endCallbacks != null) {
             this.endCallbacks.forEach(cb => cb());
         }
-        debug('Block watcher stopped');
+        info('Block watcher stopped');
     }
 
     private async processChunk(chunk: BlockRange) {
@@ -138,9 +146,11 @@ export class BlockWatcher implements ManagedResource {
 
         const txMsgs = await parallel(
             block.transactions.map(tx => () => this.processTransaction(tx, blockTime, formattedBlock)),
-            { maxConcurrent: 25, abortSignal: this.abortController.signal }
+            { maxConcurrent: 50, abortSignal: this.abortController.signal }
         );
-
+        if (!this.active) {
+            return;
+        }
         outputMessages.forEach(msg => this.output.write(msg));
         txMsgs.forEach(msgs => msgs.forEach(msg => this.output.write(msg)));
         this.checkpoints.markBlockComplete(formattedBlock.number);
@@ -151,10 +161,15 @@ export class BlockWatcher implements ManagedResource {
         blockTime: number,
         formattedBlock: FormattedBlock
     ): Promise<OutputMessage[]> {
+        if (!this.active) {
+            return [];
+        }
         if (typeof rawTx === 'string') {
             warn('Received raw transaction as string from block %d', formattedBlock.number);
             return [];
         }
+        const startTime = Date.now();
+        trace('Processing transaction %s from block %d', rawTx.hash, formattedBlock.number);
 
         const [receipt, toInfo, fromInfo] = await Promise.all([
             this.ethClient.request(getTransactionReceipt(rawTx.hash)),
@@ -167,6 +182,7 @@ export class BlockWatcher implements ManagedResource {
             callInfo = this.abiDecoder.decodeMethod(rawTx.input, toInfo.fingerprint);
         }
 
+        trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
         return [
             {
                 type: 'transaction',
@@ -205,7 +221,7 @@ export class BlockWatcher implements ManagedResource {
     }
 
     public async shutdown() {
-        debug('Shutting down block watcher');
+        info('Shutting down block watcher');
         this.active = false;
         this.abortController.abort();
         await new Promise<void>(resolve => {
