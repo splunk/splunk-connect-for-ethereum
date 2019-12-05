@@ -5,6 +5,11 @@ export type BlockRange = {
     to: number;
 };
 
+/**
+ * Attempts to combine overlapping and adjacent block ranges to create
+ * fewer ranges covering the same blocks. Also sorts block ranges in
+ * ascending order.
+ */
 export function compactRanges(ranges: BlockRange[]): BlockRange[] {
     const sorted = [...ranges].sort((a, b) => a.from - b.from);
     const newRanges: BlockRange[] = [];
@@ -34,6 +39,7 @@ export function parseBlockRange(s: string): BlockRange {
     return { from, to };
 }
 
+/** Number of blocks in the given `range` */
 export function blockRangeSize(range: BlockRange): number {
     return range.to - range.from + 1;
 }
@@ -42,16 +48,18 @@ export function serializeBlockRange(range: BlockRange): string {
     return `${range.from}-${range.to}`;
 }
 
-export function chunkedBlockRanges(range: BlockRange, maxRangeSize: number): BlockRange[] {
+/** Creates chunks of up to `maxChunkSize` covering the same blocks as the original range */
+export function chunkedBlockRanges(range: BlockRange, maxChunkSize: number): BlockRange[] {
     const result = [];
     let start = range.from;
-    for (; start < range.to - 2 - maxRangeSize; start += maxRangeSize) {
-        result.push({ from: start, to: start + maxRangeSize - 1 });
+    for (; start < range.to - 2 - maxChunkSize; start += maxChunkSize) {
+        result.push({ from: start, to: start + maxChunkSize - 1 });
     }
     result.push({ from: start, to: range.to });
     return result;
 }
 
+/** Returns an array of individual block numbers in the block range */
 export function blockRangeToArray(range: BlockRange): number[] {
     const result = [];
     for (let b = range.from; b <= range.to; b++) {
@@ -60,6 +68,10 @@ export function blockRangeToArray(range: BlockRange): number[] {
     return result;
 }
 
+/**
+ * Returns the block ranges not covered by the given `compatedRanges`
+ * (ie. the gaps) between `start` and `end` blocks.
+ */
 export function getInverseBlockRanges(
     compactedRanges: BlockRange[],
     start: number | null,
