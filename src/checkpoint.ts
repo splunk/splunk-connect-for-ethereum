@@ -22,7 +22,7 @@ export class BlockRangeCheckpoint implements ManagedResource {
     private savePromise: Promise<void> | null = null;
     private readonly saveInterval: number;
 
-    constructor({ initialBlockNumber, path, saveInterval = 10 }: BlockRangeCheckpointConfig) {
+    constructor({ initialBlockNumber, path, saveInterval = 250 }: BlockRangeCheckpointConfig) {
         this.initialBlockNumber = initialBlockNumber;
         this.path = path;
         this.saveInterval = saveInterval;
@@ -87,6 +87,9 @@ export class BlockRangeCheckpoint implements ManagedResource {
     }
 
     private scheduleSave() {
+        if (!this.active) {
+            return;
+        }
         if (this.savePromise == null) {
             const p = sleep(this.saveInterval).then(this.saveInternal);
             p.catch(e => {

@@ -18,7 +18,7 @@ import { ContractInfo } from './contract';
 const { debug, error, info } = createModuleDebug('cli');
 
 class Ethlogger extends Command {
-    static description = 'Etherum Logger for Splunk';
+    static description = 'Splunk Connect for Ethereum and Quorum';
     static flags = CLI_FLAGS;
 
     async run() {
@@ -67,7 +67,7 @@ class Ethlogger extends Command {
                 url: flags['eth-rpc-url'],
             });
 
-            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 5 });
+            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
 
             let abiDecoder;
             if (flags['eth-abi-dir']) {
