@@ -127,6 +127,12 @@ export interface AddressInfo {
 export interface FunctionCall {
     /** Function name */
     name: string;
+    
+    // Unclear about whether this should be here or in the parent transaction object but perhaps
+    // having the system pull out the 4byte signature even if you haven't abi decoded? That way
+    // if someone wants to do search and decode after it's been indexed it's available? 
+    // Or if Splunk is good at indexing this then we don't need to do it in the code here. 
+
     /** Function signature (name and parameter types) */
     signature: string;
     /** List of decoded parameters */
@@ -142,6 +148,7 @@ export interface TransactionMessage {
 }
 
 export interface FormattedLogEvent {
+    // What does the id refer to here?
     id?: string;
     /** true when the log was removed, due to a chain reorganization. false if its a valid log */
     removed?: boolean;

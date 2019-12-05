@@ -101,7 +101,7 @@ const CONFIG_DEFAULTS = {
     requestKeepAlive: true,
     validateCertificate: true,
     maxSockets: 256,
-    userAgent: 'ethlogger-hec-client/1.0',
+    userAgent: 'ethlogger-hec-client/1.0', // should this be parameterized a bit more generally? 'splunk-hec-client/1.0' might be sufficient?
     retryWaitTime: exponentialBackoff({ min: 10, max: 180_000 }),
 };
 

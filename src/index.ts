@@ -18,13 +18,14 @@ import { ContractInfo } from './contract';
 const { debug, error, info } = createModuleDebug('cli');
 
 class Ethlogger extends Command {
-    static description = 'Etherum Logger for Splunk';
+    static description = 'Etherum Logger for Splunk'; // The name we want to go with is Splunk Connect for Ethereum...
     static flags = CLI_FLAGS;
 
     async run() {
-        const { flags } = this.parse(Ethlogger);
+        const { flags } = this.parse(Ethlogger); // If we rename it I don't know how much work it will be to rename the code...
 
         if (flags.debug || flags.trace) {
+            // We should think about what we name it here as well, maybe sc-eth or something...
             debugModule.enable('ethlogger:*');
             debug('Enabled debug logging for ethlogger');
         }
@@ -45,6 +46,10 @@ class Ethlogger extends Command {
                 token: flags['hec-token'], // 'e3822da6-6024-484b-979d-26664c2e7515',
                 validateCertificate: false,
                 sourcetypes: defaultSourcetypes,
+                // consider configuring this using something like:
+                // host: eth node host dns/ip
+                // source: ethlogger://<networkid>/<ethlogger hostname>
+                // enode: optional field if the eth node has the correct json rpc endpoint available
                 defaultMetadata: {
                     host: 'lando',
                     source: 'ethlogger',

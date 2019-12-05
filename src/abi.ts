@@ -116,6 +116,10 @@ export function decodeParameterValue(value: string | number | boolean, type: str
         }
     }
 
+    // need to support bytes, string and function types?
+    // also fixed, ufixed exist but are unimplemented, i think...
+    // https://solidity.readthedocs.io/en/v0.5.3/abi-spec.html
+
     if (type === 'address') {
         return toChecksumAddress(value as string);
     }

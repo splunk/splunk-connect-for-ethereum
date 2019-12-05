@@ -40,6 +40,7 @@ export const CLI_FLAGS = {
         description: 'Directory containing ABI ',
     }),
 
+    // NOTE: quorum has two modes, istanbul or raft so maybe this field should be an option between the two
     // 'quorum-support': flags.boolean({
     //     env: 'QUORUM',
     //     description: 'Enable quorum compatibility',

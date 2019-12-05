@@ -24,6 +24,7 @@ export function extractFunctionsAndEvents(
     const code = Buffer.from(contractCode.slice(2), 'hex');
     for (let i = 0, len = code.length; i < len; i++) {
         const opcode = code[i];
+        // Can you add some commentary here to describe what's happening?
         if (opcode >= 0x60 && opcode <= 0x7f) {
             const dataLength = opcode - 0x5f;
             if (dataLength === 32 || dataLength === 4) {
@@ -48,6 +49,7 @@ export function computeContractFingerprint(
     if (functions.length === 0 && events.length === 0) {
         return;
     }
+    // Why is the slice(2) here? to chop off the '0x'?
     const fingerprint = sha3(`${functions.join(',')}|${events.join(',')}`).slice(2); // TODO hash
     return fingerprint;
 }

@@ -5,6 +5,10 @@ export type BlockRange = {
     to: number;
 };
 
+// I think these could use a little documentation or sample for
+// what they are for, I looked at the tests and I still didn't totally
+// get it but i am also a bad programmer :)
+
 export function compactRanges(ranges: BlockRange[]): BlockRange[] {
     const sorted = [...ranges].sort((a, b) => a.from - b.from);
     const newRanges: BlockRange[] = [];

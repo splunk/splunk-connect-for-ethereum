@@ -32,3 +32,5 @@ export const getCode = (address: string): EthRequest<[string, string], string> =
     params: [address, 'latest'],
     response: r => r.result,
 });
+
+// Can I add a few here for the other rpc calls? 
