@@ -5,6 +5,7 @@ import { AbiInput, AbiItem, sha3, toChecksumAddress } from 'web3-utils';
 import { computeContractFingerprint } from './contract';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
+import { RawLogResponse } from './eth/responses';
 
 const { debug, warn } = createModuleDebug('abi');
 
@@ -18,6 +19,13 @@ export interface DecodedParameter {
 }
 
 export interface DecodedMethod {
+    name: string;
+    signature: string;
+    params: DecodedParameter[];
+    args: { [name: string]: Value };
+}
+
+export interface DecodedLogEvent {
     name: string;
     signature: string;
     params: DecodedParameter[];
@@ -248,8 +256,8 @@ export class AbiDecoder implements ManagedResource {
     }
 
     public decodeMethod(data: string, contractFingerprint?: string): DecodedMethod | undefined {
-        const sig = data.slice(2, 10);
-        const match = this.signatures.get(sig);
+        const sigHash = data.slice(2, 10);
+        const match = this.signatures.get(sigHash);
         if (match == null) {
             return;
         }
@@ -288,10 +296,61 @@ export class AbiDecoder implements ManagedResource {
 
             return {
                 name: abi.name!,
-                signature: sig,
+                signature: match.name,
                 params,
                 args,
             };
+        }
+        return;
+    }
+
+    public decodeLogEvent(logEvent: RawLogResponse, contractFingerprint?: string): DecodedLogEvent | undefined {
+        const sigHash = logEvent.topics[0].slice(2);
+        const match = this.signatures.get(sigHash);
+        if (match != null) {
+            const abi = match.candidates.find(c => c.contractFingerprint === contractFingerprint);
+            if (abi != null) {
+                const { data, topics } = logEvent;
+                const nonIndexedTypes = abi.inputs.filter(i => !i.indexed).map(i => i.type);
+                const decodedData = this.abiCoder.decodeParameters(nonIndexedTypes, data.slice(2));
+                let topicIndex = 1;
+                let dataIndex = 0;
+                const args: { [k: string]: Value } = {};
+                const params = abi.inputs.map(input => {
+                    let value;
+                    if (input.indexed) {
+                        if (isArrayType(input.type)) {
+                            topicIndex++;
+                            // we can't decode arrays since there is only a hash the log
+                            value = [] as string[];
+                        } else {
+                            let rawValue = topics[topicIndex++];
+                            if (input.type === 'address') {
+                                rawValue = '0x' + rawValue.slice(-40);
+                            }
+                            value = decodeParameterValue(rawValue, input.type);
+                        }
+                    } else {
+                        const rawValue = decodedData[dataIndex++];
+                        value = isArrayType(input.type)
+                            ? (rawValue as string[]).map(v => decodeParameterValue(v, elementType(input.type)))
+                            : decodeParameterValue(rawValue, input.type);
+                    }
+
+                    args[input.name] = value;
+                    return {
+                        name: input.name,
+                        type: input.type,
+                        value,
+                    };
+                });
+                return {
+                    name: abi.name,
+                    signature: match.name,
+                    params,
+                    args,
+                };
+            }
         }
         return;
     }

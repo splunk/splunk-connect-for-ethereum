@@ -54,3 +54,14 @@ export function parallel<R>(
         next();
     });
 }
+
+export function alwaysResolve<T>(promise: Promise<T>): Promise<void> {
+    return promise.then(
+        () => {
+            // noop
+        },
+        () => {
+            // noop
+        }
+    );
+}

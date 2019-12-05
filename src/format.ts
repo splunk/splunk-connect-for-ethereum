@@ -1,5 +1,5 @@
 import { RawBlockResponse, RawTransactionResponse, RawTransactionReceipt, RawLogResponse } from './eth/responses';
-import { FormattedBlock, FormattedTransaction, FormattedLogEvent, FunctionCall, AddressInfo } from './msgs';
+import { FormattedBlock, FormattedTransaction, FormattedLogEvent, FunctionCall, AddressInfo, EventData } from './msgs';
 import { hexToNumber, toChecksumAddress } from 'web3-utils';
 
 export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
@@ -72,7 +72,7 @@ export function formatTransaction(
     };
 }
 
-export function formatLogEvent(evt: RawLogResponse): FormattedLogEvent {
+export function formatLogEvent(evt: RawLogResponse, addressInfo?: AddressInfo, event?: EventData): FormattedLogEvent {
     return {
         id: evt.id,
         removed: evt.removed,
@@ -84,5 +84,7 @@ export function formatLogEvent(evt: RawLogResponse): FormattedLogEvent {
         address: toChecksumAddress(evt.address),
         data: evt.data,
         topics: evt.topics,
+        addressInfo,
+        event,
     };
 }

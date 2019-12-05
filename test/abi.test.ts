@@ -36,7 +36,7 @@ test('AbiDecoder#decodeMethod', async () => {
               "value": 23861,
             },
           ],
-          "signature": "23b872dd",
+          "signature": "transferFrom(address,address,uint256)",
         }
     `);
 
@@ -63,7 +63,59 @@ test('AbiDecoder#decodeMethod', async () => {
               "value": true,
             },
           ],
-          "signature": "a22cb465",
+          "signature": "setApprovalForAll(address,bool)",
+        }
+    `);
+});
+
+test('AbiDecoder#decodeLogEvent', async () => {
+    const abiDecoder = new AbiDecoder();
+    await expect(abiDecoder.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
+
+    expect(
+        abiDecoder.decodeLogEvent(
+            {
+                logIndex: '0x1',
+                blockNumber: '0x1bf',
+                blockHash: '0x16545b7f5052ebde2812b8ac8ad5d64da83e60bfe32c22f4e15a76f45b3acd47',
+                transactionHash: '0xb0d235d01b32b0f39e547117b5ec4f553dba0976e0b41ef58da1832c86de73f6',
+                transactionIndex: '0x0',
+                address: '0xa0EB7CA45F646EA73F3d4F41eC197900A00CcdBf',
+                data: '0x0000000000000000000000000000000000000000000000000429d069189e0000',
+                topics: [
+                    '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+                    '0x00000000000000000000000067a97472c05e50d38f64b41967fbad326cddf2e0',
+                    '0x00000000000000000000000046e88bd2d06b8d405730e7c4af96e91c0e7fa5de',
+                ],
+            },
+            '30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9'
+        )
+    ).toMatchInlineSnapshot(`
+        Object {
+          "args": Object {
+            "from": "0x67a97472C05E50d38F64b41967fbaD326cdDF2E0",
+            "to": "0x46E88bD2d06B8D405730E7C4af96e91c0E7FA5dE",
+            "value": "300000000000000000",
+          },
+          "name": "Transfer",
+          "params": Array [
+            Object {
+              "name": "from",
+              "type": "address",
+              "value": "0x67a97472C05E50d38F64b41967fbaD326cdDF2E0",
+            },
+            Object {
+              "name": "to",
+              "type": "address",
+              "value": "0x46E88bD2d06B8D405730E7C4af96e91c0E7FA5dE",
+            },
+            Object {
+              "name": "value",
+              "type": "uint256",
+              "value": "300000000000000000",
+            },
+          ],
+          "signature": "Transfer(address,address,uint256)",
         }
     `);
 });

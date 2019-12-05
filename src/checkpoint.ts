@@ -2,12 +2,14 @@ import { readFile, writeFile } from 'fs-extra';
 import { BlockRange, compactRanges, getInverseBlockRanges, parseBlockRange, serializeBlockRange } from './blockrange';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
+import { alwaysResolve, sleep } from './utils/async';
 
-const { debug } = createModuleDebug('checkpoint');
+const { debug, error } = createModuleDebug('checkpoint');
 
 export interface BlockRangeCheckpointConfig {
     path: string;
     initialBlockNumber?: number;
+    saveInterval?: number;
 }
 
 export class BlockRangeCheckpoint implements ManagedResource {
@@ -15,10 +17,15 @@ export class BlockRangeCheckpoint implements ManagedResource {
     private completed: BlockRange[] = [];
     public initialBlockNumber: number | undefined;
     private readonly path: string;
+    private committedVersion: number = 0;
+    private pendingVersion: number = 0;
+    private savePromise: Promise<void> | null = null;
+    private readonly saveInterval: number;
 
-    constructor(config: BlockRangeCheckpointConfig) {
-        this.initialBlockNumber = config.initialBlockNumber;
-        this.path = config.path;
+    constructor({ initialBlockNumber, path, saveInterval = 10 }: BlockRangeCheckpointConfig) {
+        this.initialBlockNumber = initialBlockNumber;
+        this.path = path;
+        this.saveInterval = saveInterval;
     }
 
     public async initialize() {
@@ -56,6 +63,8 @@ export class BlockRangeCheckpoint implements ManagedResource {
             throw new Error('Checkpoint has already been shut down');
         }
         this.completed = compactRanges([...this.completed, range]);
+        this.pendingVersion++;
+        this.scheduleSave();
     }
 
     public getIncompleteRanges(latestBlock?: number): BlockRange[] {
@@ -77,8 +86,32 @@ export class BlockRangeCheckpoint implements ManagedResource {
         );
     }
 
-    public async save() {
+    private scheduleSave() {
+        if (this.savePromise == null) {
+            const p = sleep(this.saveInterval).then(this.saveInternal);
+            p.catch(e => {
+                error('Scheduled save failed', e);
+            });
+            this.savePromise = alwaysResolve(p);
+        }
+    }
+
+    private saveInternal = async () => {
+        this.savePromise = null;
+        const committing = this.pendingVersion;
         await writeFile(this.path, this.serialize(), { encoding: 'utf-8' });
+        debug('Wrote checkpoints file to disk (committed version %d from %d)', committing, this.committedVersion);
+        this.committedVersion = committing;
+        if (this.pendingVersion > committing) {
+            this.scheduleSave();
+        }
+    };
+
+    public async save() {
+        await this.savePromise;
+        if (this.pendingVersion > this.committedVersion) {
+            await this.saveInternal();
+        }
     }
 
     public async shutdown() {

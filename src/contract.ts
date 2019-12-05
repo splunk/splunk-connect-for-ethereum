@@ -69,6 +69,6 @@ export async function getContractInfo(
         isContract: true,
         fingerprint,
         contractName:
-            fingerprint != null && contractNameLookup != null ? contractNameLookup(address, address) : undefined,
+            fingerprint != null && contractNameLookup != null ? contractNameLookup(address, fingerprint) : undefined,
     };
 }

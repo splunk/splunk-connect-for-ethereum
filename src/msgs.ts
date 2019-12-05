@@ -164,6 +164,22 @@ export interface FormattedLogEvent {
      * (e.g. Deposit(address,bytes32,uint256)),
      * except you declared the event with the anonymous specifier.) */
     topics: string[];
+
+    // additional/computed
+
+    addressInfo?: AddressInfo;
+    event?: EventData;
+}
+
+export interface EventData {
+    /** Function name */
+    name: string;
+    /** Function signature (name and parameter types) */
+    signature: string;
+    /** List of decoded parameters */
+    params: Array<{ name: string; type: string; value: Value }>;
+    /** A map of parameter names and their decoded value */
+    args: { [name: string]: Value };
 }
 
 export interface LogEventMessage {

@@ -5,9 +5,9 @@ import { BlockRangeCheckpoint } from './checkpoint';
 import { ContractInfo, getContractInfo } from './contract';
 import { EthereumClient } from './eth/client';
 import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
-import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
-import { formatBlock, formatTransaction } from './format';
-import { Address, FormattedBlock } from './msgs';
+import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/responses';
+import { formatBlock, formatLogEvent, formatTransaction } from './format';
+import { Address, AddressInfo, FormattedBlock, LogEventMessage } from './msgs';
 import { Output, OutputMessage } from './output';
 import { parallel, sleep } from './utils/async';
 import { Cache, cached, NoopCache } from './utils/cache';
@@ -17,6 +17,14 @@ import { ManagedResource } from './utils/resource';
 const { debug, info, warn, error } = createModuleDebug('block');
 
 export type StartBlock = 'latest' | 'genesis' | number;
+
+const toAddressInfo = (contractInfo?: ContractInfo): AddressInfo | undefined =>
+    contractInfo
+        ? {
+              contractName: contractInfo.contractName,
+              isContract: contractInfo.isContract,
+          }
+        : undefined;
 
 export class BlockWatcher implements ManagedResource {
     private active: boolean = true;
@@ -163,9 +171,20 @@ export class BlockWatcher implements ManagedResource {
             {
                 type: 'transaction',
                 time: blockTime,
-                tx: formatTransaction(rawTx, receipt!, fromInfo, toInfo, callInfo),
+                tx: formatTransaction(rawTx, receipt!, toAddressInfo(fromInfo), toAddressInfo(toInfo), callInfo),
             },
+            ...(await Promise.all(receipt?.logs?.map(l => this.processTransactionLog(l, blockTime)) || [])),
         ];
+    }
+
+    private async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
+        const contractInfo = await this.lookupContractInfo(evt.address);
+        const decodedEventData = this.abiDecoder?.decodeLogEvent(evt, contractInfo?.fingerprint);
+        return {
+            type: 'event',
+            time: blockTime,
+            event: formatLogEvent(evt, toAddressInfo(contractInfo), decodedEventData),
+        };
     }
 
     private async lookupContractInfo(address: Address): Promise<ContractInfo | undefined> {
@@ -178,7 +197,8 @@ export class BlockWatcher implements ManagedResource {
                 addr,
                 this.ethClient,
                 (sig: string) => abiDecoder.getMatchingSignatureName(sig),
-                (fingerprint: string) => abiDecoder.getContractByFingerprint(fingerprint)?.contractName
+                (_address: string, fingerprint: string) =>
+                    abiDecoder.getContractByFingerprint(fingerprint)?.contractName
             )
         );
         return result;
