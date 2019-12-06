@@ -74,7 +74,6 @@ export function formatTransaction(
 
 export function formatLogEvent(evt: RawLogResponse, addressInfo?: AddressInfo, event?: EventData): FormattedLogEvent {
     return {
-        id: evt.id,
         removed: evt.removed,
         logIndex: evt.logIndex != null ? hexToNumber(evt.logIndex) : null,
         blockNumber: evt.blockNumber != null ? hexToNumber(evt.blockNumber) : null,

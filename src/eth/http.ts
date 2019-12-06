@@ -4,6 +4,7 @@ import { createModuleDebug } from '../utils/debug';
 import { isHttps } from '../utils/http';
 import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { EthereumTransport } from './transport';
+import { httpClientStats } from '../utils/stats';
 
 const { debug, trace } = createModuleDebug('eth:http');
 
@@ -22,12 +23,15 @@ const CONFIG_DEFAULTS = {
     maxSockets: 256,
 };
 
+const initialCounters = {
+    requests: 0,
+    errors: 0,
+};
+
 export class HttpTransport implements EthereumTransport {
     private config: HttpTransportConfig & typeof CONFIG_DEFAULTS;
     private httpAgent: HttpAgent | HttpsAgent;
-    private counters = {
-        requests: 0,
-    };
+    private counters = { ...initialCounters };
 
     constructor(config: HttpTransportConfig) {
         this.config = { ...CONFIG_DEFAULTS, ...config };
@@ -98,7 +102,13 @@ export class HttpTransport implements EthereumTransport {
     public get stats() {
         return {
             ...this.counters,
-            httpClient: this.httpAgent.getCurrentStatus(),
+            httpClient: httpClientStats(this.httpAgent.getCurrentStatus()),
         };
+    }
+
+    public flushStats() {
+        const stats = this.stats;
+        this.counters = { ...initialCounters };
+        return stats;
     }
 }

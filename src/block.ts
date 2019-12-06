@@ -1,4 +1,3 @@
-import AbortController from 'abort-controller';
 import { AbiDecoder } from './abi';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges } from './blockrange';
 import { BlockRangeCheckpoint } from './checkpoint';
@@ -9,6 +8,7 @@ import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/
 import { formatBlock, formatLogEvent, formatTransaction } from './format';
 import { Address, AddressInfo, FormattedBlock, LogEventMessage } from './msgs';
 import { Output, OutputMessage } from './output';
+import { ABORT, AbortManager } from './utils/abort';
 import { parallel, sleep } from './utils/async';
 import { Cache, cached, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
@@ -26,6 +26,12 @@ const toAddressInfo = (contractInfo?: ContractInfo): AddressInfo | undefined =>
           }
         : undefined;
 
+const initialCounters = {
+    blocksProcessed: 0,
+    transactionsProcessed: 0,
+    transactionLogEventsProcessed: 0,
+};
+
 export class BlockWatcher implements ManagedResource {
     private active: boolean = true;
     private ethClient: EthereumClient;
@@ -33,11 +39,12 @@ export class BlockWatcher implements ManagedResource {
     private output: Output;
     private abiDecoder?: AbiDecoder;
     private startAt: StartBlock;
-    private chunkSize: number = 250;
+    private chunkSize: number = 25;
     private pollInterval: number = 500;
-    private abortController: AbortController;
+    private abortManager = new AbortManager();
     private endCallbacks: Array<() => void> = [];
     private contractInfoCache: Cache<string, Promise<ContractInfo>> = new NoopCache();
+    private counters = { ...initialCounters };
 
     constructor({
         ethClient,
@@ -59,7 +66,6 @@ export class BlockWatcher implements ManagedResource {
         this.output = output;
         this.abiDecoder = abiDecoder;
         this.startAt = startAt;
-        this.abortController = new AbortController();
         if (contractInfoCache) {
             this.contractInfoCache = contractInfoCache;
         }
@@ -93,6 +99,9 @@ export class BlockWatcher implements ManagedResource {
                 );
 
                 for (const range of todo) {
+                    if (!this.active) {
+                        throw ABORT;
+                    }
                     await parallel(
                         chunkedBlockRanges(range, this.chunkSize).map(chunk => async () => {
                             if (!this.active) {
@@ -100,13 +109,15 @@ export class BlockWatcher implements ManagedResource {
                             }
                             await this.processChunk(chunk);
                         }),
-                        { maxConcurrent: 5, abortSignal: this.abortController.signal }
+                        { maxConcurrent: 3, abortManager: this.abortManager }
                     );
                 }
             } catch (e) {
                 error('Error in block watcher polling loop', e);
             }
-            await sleep(this.pollInterval);
+            if (this.active) {
+                await sleep(this.pollInterval);
+            }
         }
         if (this.endCallbacks != null) {
             this.endCallbacks.forEach(cb => cb());
@@ -123,7 +134,7 @@ export class BlockWatcher implements ManagedResource {
         const blocks = await this.ethClient.requestBatch(
             blockRangeToArray(chunk).map(blockNumber => getBlock(blockNumber))
         );
-        debug('Received %d blocks in %d ms', blocks.length, Date.now() - blockRequestStart);
+        info('Received %d blocks in %d ms', blocks.length, Date.now() - blockRequestStart);
         for (const block of blocks) {
             await this.processBlock(block);
         }
@@ -143,10 +154,8 @@ export class BlockWatcher implements ManagedResource {
             time: blockTime,
             block: formattedBlock,
         });
-
-        const txMsgs = await parallel(
-            block.transactions.map(tx => () => this.processTransaction(tx, blockTime, formattedBlock)),
-            { maxConcurrent: 50, abortSignal: this.abortController.signal }
+        const txMsgs = await this.abortManager.race(
+            Promise.all(block.transactions.map(tx => this.processTransaction(tx, blockTime, formattedBlock)))
         );
         if (!this.active) {
             return;
@@ -154,6 +163,7 @@ export class BlockWatcher implements ManagedResource {
         outputMessages.forEach(msg => this.output.write(msg));
         txMsgs.forEach(msgs => msgs.forEach(msg => this.output.write(msg)));
         this.checkpoints.markBlockComplete(formattedBlock.number);
+        this.counters.blocksProcessed++;
     }
 
     private async processTransaction(
@@ -183,6 +193,7 @@ export class BlockWatcher implements ManagedResource {
         }
 
         trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
+        this.counters.transactionsProcessed++;
         return [
             {
                 type: 'transaction',
@@ -196,6 +207,7 @@ export class BlockWatcher implements ManagedResource {
     private async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
         const contractInfo = await this.lookupContractInfo(evt.address);
         const decodedEventData = this.abiDecoder?.decodeLogEvent(evt, contractInfo?.fingerprint);
+        this.counters.transactionLogEventsProcessed++;
         return {
             type: 'event',
             time: blockTime,
@@ -223,9 +235,15 @@ export class BlockWatcher implements ManagedResource {
     public async shutdown() {
         info('Shutting down block watcher');
         this.active = false;
-        this.abortController.abort();
+        this.abortManager.abort();
         await new Promise<void>(resolve => {
             this.endCallbacks.push(resolve);
         });
+    }
+
+    public flushStats() {
+        const counters = this.counters;
+        this.counters = { ...initialCounters };
+        return { ...counters, abortHandles: this.abortManager.size };
     }
 }

@@ -3,6 +3,7 @@ export interface Cache<K, V> {
     get(key: K): V | null;
     set(key: K, value: V): void;
     unset(key: K): void;
+    size: number;
 }
 
 export function cached<K, V>(key: K, cache: Cache<K, V>, producer: (k: K) => V): V {
@@ -28,4 +29,5 @@ export class NoopCache<K, V> implements Cache<K, V> {
     unset() {
         //ignore
     }
+    size = 0;
 }

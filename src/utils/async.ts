@@ -1,62 +1,14 @@
-import { AbortSignal } from 'abort-controller';
+import { AbortManager } from './abort';
+import { createModuleDebug } from './debug';
+
+const { error, trace } = createModuleDebug('utils:async');
 
 export const sleep = (timeoutMS: number): Promise<void> => new Promise(resolve => setTimeout(resolve, timeoutMS));
 
-export const neverResolve = <T>(): Promise<T> =>
-    new Promise(() => {
-        // noop
-    });
+export const delayed = <T>(task: () => Promise<T>, timeoutMS: number): Promise<T> => sleep(timeoutMS).then(task);
 
-export type ParallelTask<R> = () => Promise<R>;
-
-export function parallel<R>(
-    tasks: ParallelTask<R>[],
-    { maxConcurrent, abortSignal }: { maxConcurrent: number; abortSignal?: AbortSignal }
-): Promise<R[]> {
-    return new Promise<R[]>((resolve, reject) => {
-        let aborted = false;
-        if (abortSignal != null)
-            abortSignal.addEventListener('abort', () => {
-                aborted = true;
-                resolve();
-            });
-        let running = 0;
-        let pending = tasks.length;
-        const results: R[] = [];
-        const run = (idx: number, next: () => void) => {
-            running++;
-            const p = tasks[idx]();
-            p.then(
-                res => {
-                    running--;
-                    pending--;
-                    results[idx] = res;
-                    next();
-                },
-                e => {
-                    reject(e);
-                }
-            );
-        };
-        let cur = 0;
-        const next = () => {
-            if (aborted) {
-                reject(new Error('Aborted'));
-                return;
-            }
-            if (pending === 0) {
-                resolve(results);
-            }
-            while (cur < tasks.length && running < maxConcurrent) {
-                run(cur++, next);
-            }
-        };
-        next();
-    });
-}
-
-export function alwaysResolve<T>(promise: Promise<T>): Promise<void> {
-    return promise.then(
+export const alwaysResolve = <T>(promise: Promise<T>): Promise<void> =>
+    promise.then(
         () => {
             // noop
         },
@@ -64,4 +16,73 @@ export function alwaysResolve<T>(promise: Promise<T>): Promise<void> {
             // noop
         }
     );
+
+export const neverResolve = <T = never>(): Promise<T> =>
+    new Promise(() => {
+        // noop
+    });
+
+export type ParallelTask<R> = () => Promise<R>;
+
+type CallbackFn = (cb: () => void) => void;
+
+class TaskWrapper<R> {
+    private readonly result: Promise<R>;
+    private latch: CallbackFn | null = null;
+    constructor(task: ParallelTask<R>, public readonly index: number) {
+        this.result = new Promise((resolve, reject) => {
+            this.latch = cb => {
+                const p = task();
+                this.latch = null;
+                alwaysResolve(p).then(cb);
+                p.then(resolve, reject);
+            };
+        });
+    }
+
+    run(cb: () => void) {
+        if (this.latch == null) {
+            throw new Error('Invalid task wrapper state');
+        }
+        this.latch(cb);
+    }
+
+    public promise(): Promise<R> {
+        return this.result;
+    }
+}
+
+export function parallel<R>(
+    tasks: ParallelTask<R>[],
+    { maxConcurrent, abortManager = new AbortManager() }: { maxConcurrent: number; abortManager?: AbortManager }
+): Promise<R[]> {
+    const taskQueue = tasks.map((t, i) => new TaskWrapper<R>(t, i));
+    let pending = taskQueue.length;
+    let running = 0;
+    const next = () => {
+        while (!abortManager.aborted && running < maxConcurrent && pending > 0) {
+            const task = taskQueue.shift();
+            trace(
+                'Starting parallel task %d (running: %d, pending: %d, aborted: %o)',
+                task?.index,
+                running,
+                pending,
+                abortManager.aborted
+            );
+            running++;
+            pending--;
+            if (task == null) {
+                error('Illegal state: found null item in task queue');
+                return;
+            }
+            task.run(() => {
+                trace('Parallel task completed %d', task.index);
+                running--;
+                next();
+            });
+        }
+    };
+    const allCompletePromise = abortManager.race(Promise.all(taskQueue.map(t => t.promise())));
+    next();
+    return allCompletePromise;
 }

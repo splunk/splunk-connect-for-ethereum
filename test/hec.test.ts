@@ -1,4 +1,4 @@
-import { serializeTime, serializeEvent, serializeMetric, parseHecConfig } from '../src/hec';
+import { serializeTime, serializeEvent, serializeMetric, parseHecConfig, serializeMetrics } from '../src/hec';
 
 test('serializeTime', () => {
     expect(serializeTime(new Date('2019-11-29T12:15:27.123Z'))).toMatchInlineSnapshot(`1575029727.123`);
@@ -7,37 +7,98 @@ test('serializeTime', () => {
 
 test('serializeEvent', () => {
     expect(
-        serializeEvent({
-            body: 'hello world',
-            time: new Date('2019-11-29T12:15:27.123Z'),
-            metadata: {
-                host: 'myhost',
-                source: 'somesource',
-                sourcetype: 'somesourcetype',
-                index: 'myindex',
-            },
-        }).toString('utf8')
-    ).toMatchInlineSnapshot(
-        `"{\\"time\\":1575029727.123,\\"event\\":\\"hello world\\",\\"host\\":\\"myhost\\",\\"source\\":\\"somesource\\",\\"sourcetype\\":\\"somesourcetype\\",\\"index\\":\\"myindex\\"}"`
-    );
+        JSON.parse(
+            serializeEvent({
+                body: 'hello world',
+                time: new Date('2019-11-29T12:15:27.123Z'),
+                metadata: {
+                    host: 'myhost',
+                    source: 'somesource',
+                    sourcetype: 'somesourcetype',
+                    index: 'myindex',
+                },
+            }).toString('utf8')
+        )
+    ).toMatchInlineSnapshot(`
+        Object {
+          "event": "hello world",
+          "host": "myhost",
+          "index": "myindex",
+          "source": "somesource",
+          "sourcetype": "somesourcetype",
+          "time": 1575029727.123,
+        }
+    `);
 });
 
 test('serializeMetric', () => {
     expect(
-        serializeMetric({
-            time: new Date('2019-11-29T12:15:27.123Z'),
-            name: 'mymetric',
-            value: 47.11,
-            metadata: {
-                host: 'myhost',
-                source: 'somesource',
-                sourcetype: 'somesourcetype',
-                index: 'myindex',
-            },
-        }).toString('utf8')
-    ).toMatchInlineSnapshot(
-        `"{\\"time\\":1575029727.123,\\"fields\\":{\\"metric_name\\":\\"mymetric\\",\\"_value\\":47.11},\\"host\\":\\"myhost\\",\\"source\\":\\"somesource\\",\\"sourcetype\\":\\"somesourcetype\\",\\"index\\":\\"myindex\\"}"`
-    );
+        JSON.parse(
+            serializeMetric({
+                time: new Date('2019-11-29T12:15:27.123Z'),
+                name: 'mymetric',
+                value: 47.11,
+                metadata: {
+                    host: 'myhost',
+                    source: 'somesource',
+                    sourcetype: 'somesourcetype',
+                    index: 'myindex',
+                },
+            }).toString('utf8')
+        )
+    ).toMatchInlineSnapshot(`
+        Object {
+          "fields": Object {
+            "_value": 47.11,
+            "metric_name": "mymetric",
+          },
+          "host": "myhost",
+          "index": "myindex",
+          "source": "somesource",
+          "sourcetype": "somesourcetype",
+          "time": 1575029727.123,
+        }
+    `);
+});
+
+test('serializeMetrics', () => {
+    expect(
+        JSON.parse(
+            serializeMetrics({
+                time: new Date('2019-11-29T12:15:27.123Z'),
+                measurements: {
+                    'ethlogger.system.cpu.user': 47.11,
+                    'ethlogger.system.cpu.system': 8.15,
+                },
+                fields: {
+                    pid: 3158,
+                    version: '1.0.0',
+                    nodeVersoin: '12.3.1',
+                },
+                metadata: {
+                    host: 'myhost',
+                    source: 'somesource',
+                    sourcetype: 'somesourcetype',
+                    index: 'myindex',
+                },
+            }).toString('utf-8')
+        )
+    ).toMatchInlineSnapshot(`
+        Object {
+          "fields": Object {
+            "metric_name:ethlogger.system.cpu.system": 8.15,
+            "metric_name:ethlogger.system.cpu.user": 47.11,
+            "nodeVersoin": "12.3.1",
+            "pid": 3158,
+            "version": "1.0.0",
+          },
+          "host": "myhost",
+          "index": "myindex",
+          "source": "somesource",
+          "sourcetype": "somesourcetype",
+          "time": 1575029727.123,
+        }
+    `);
 });
 
 test('parseHecConfig', () => {
@@ -56,6 +117,7 @@ test('parseHecConfig', () => {
           "maxQueueSize": 512000,
           "maxRetries": Infinity,
           "maxSockets": 256,
+          "multipleMetricFormatEnabled": false,
           "requestKeepAlive": true,
           "retryWaitTime": [Function],
           "timeout": 30000,

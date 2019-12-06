@@ -1,11 +1,18 @@
 // Simplified/Typescript-ified version of https://github.com/sindresorhus/quick-lru
 import { Cache } from './cache';
+import { Stats } from './stats';
+
+const initialCounters = {
+    hits: 0,
+    misses: 0,
+};
 
 export default class LRUCache<K, V> implements Cache<K, V> {
     private cache: Map<K, V>;
     private old: Map<K, V>;
     private readonly maxSize: number;
-    private size: number;
+    public size: number;
+    private counters = { ...initialCounters };
 
     constructor({
         maxSize,
@@ -20,20 +27,28 @@ export default class LRUCache<K, V> implements Cache<K, V> {
     }
 
     public has(key: K): boolean {
-        return this.cache.has(key) || this.old.has(key);
+        const b = this.cache.has(key) || this.old.has(key);
+        if (b) {
+            this.counters.hits++;
+        } else {
+            this.counters.misses++;
+        }
+        return b;
     }
 
     public get(key: K): V | null {
-        if (this.cache.has(key)) {
-            return this.cache.get(key)!;
+        const v = this.cache.get(key);
+        if (v != null) {
+            this.counters.hits++;
+            return v;
         }
-
-        if (this.old.has(key)) {
-            const value = this.old.get(key);
-            this._set(key, value!);
-            return value!;
+        const ov = this.old.get(key);
+        if (ov != null) {
+            this.counters.hits++;
+            this._set(key, ov);
+            return ov;
         }
-
+        this.counters.misses++;
         return null;
     }
 
@@ -61,5 +76,15 @@ export default class LRUCache<K, V> implements Cache<K, V> {
             this.old = this.cache;
             this.cache = new Map();
         }
+    }
+
+    public flushStats(): Stats {
+        const counters = this.counters;
+        this.counters = { ...initialCounters };
+        return {
+            size: this.size,
+            oldSize: this.old.size,
+            ...counters,
+        };
     }
 }

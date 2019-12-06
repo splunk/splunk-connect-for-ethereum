@@ -14,6 +14,7 @@ import { shutdownAll, ManagedResource } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import LRUCache from './utils/lru';
 import { ContractInfo } from './contract';
+import { StatsCollector } from './utils/stats';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -42,9 +43,10 @@ class Ethlogger extends Command {
         try {
             const hecConfig: SplunkHecConfig = {
                 url: flags['hec-url'],
-                token: flags['hec-token'], // 'e3822da6-6024-484b-979d-26664c2e7515',
+                token: flags['hec-token'],
                 validateCertificate: false,
                 sourcetypes: defaultSourcetypes,
+                multipleMetricFormatEnabled: true,
                 defaultMetadata: {
                     host: 'lando',
                     source: 'ethlogger',
@@ -56,6 +58,27 @@ class Ethlogger extends Command {
             const output = new HecOutput(hec, hecConfig);
             addResource(output);
 
+            const statsCollector = new StatsCollector({
+                collectInterval: 1000,
+                dest: hec.clone({
+                    defaultMetadata: {
+                        host: process.env.HOST || process.env.HOSTNAME,
+                        source: 'ethlogger://internals',
+                        sourcetype: 'ethlogger:stats',
+                        index: 'somemetrics',
+                    },
+                    flushTime: 10000,
+                    multipleMetricFormatEnabled: true,
+                }),
+                basePrefix: 'ethlogger',
+                fields: {
+                    version: this.config.version,
+                    nodeVersion: process.version,
+                },
+            });
+            addResource(statsCollector);
+            statsCollector.addSource(hec, 'hec');
+
             const checkpoints = addResource(
                 new BlockRangeCheckpoint({
                     path: 'checkpoints.json',
@@ -66,6 +89,7 @@ class Ethlogger extends Command {
             const transport = new HttpTransport({
                 url: flags['eth-rpc-url'],
             });
+            statsCollector.addSource(transport, 'ethTransport');
 
             const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
 
@@ -77,6 +101,7 @@ class Ethlogger extends Command {
             }
 
             const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 25_000 });
+            statsCollector.addSource(contractInfoCache, 'contractInfoCache');
 
             const blockWatcher = new BlockWatcher({
                 checkpoints,
@@ -87,6 +112,9 @@ class Ethlogger extends Command {
                 contractInfoCache,
             });
             resources.unshift(blockWatcher);
+            statsCollector.addSource(blockWatcher, 'blockWatcher');
+
+            statsCollector.start();
 
             await Promise.race([blockWatcher.start(), waitForSignal('SIGINT')]);
             info('Recieved signal, proceeding with shutdown sequence');

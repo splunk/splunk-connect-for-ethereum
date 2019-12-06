@@ -4,7 +4,7 @@ import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { alwaysResolve, sleep } from './utils/async';
 
-const { debug, error } = createModuleDebug('checkpoint');
+const { debug, info, error } = createModuleDebug('checkpoint');
 
 export interface BlockRangeCheckpointConfig {
     path: string;
@@ -120,6 +120,6 @@ export class BlockRangeCheckpoint implements ManagedResource {
     public async shutdown() {
         this.active = false;
         await this.save();
-        debug('Checkpoints saved to filesystem');
+        info('Checkpoints saved to filesystem');
     }
 }

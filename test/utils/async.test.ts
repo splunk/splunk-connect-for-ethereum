@@ -1,59 +1,186 @@
-jest.useFakeTimers();
-
-const createMockPromise = <T>(n: () => T, timeout: number) => ({
-    then(cb: (n: T) => void) {
-        setTimeout(() => cb(n()), timeout);
-    },
-});
-
-// const createFailingMockPromise = <E extends Error>(n: () => E, timeout: number) => ({
-//     then(_, cb) {
-//         setTimeout(() => cb(n()), timeout);
-//     },
-// });
+import { AbortManager } from '../../src/utils/abort';
+import { parallel, sleep } from '../../src/utils/async';
 
 test('parallel', async () => {
-    // eslint-disable-next-line
-    const { parallel } = require('../../src/utils/async');
-    let started = 0;
-    let completed = 0;
-    const tasks = [...Array(10)].map((_, i) => () => {
-        started++;
-        return createMockPromise(() => {
-            completed++;
-            return i;
-        }, 10) as Promise<number>;
-    });
-    const allComplete = parallel(tasks, { maxConcurrent: 2 });
+    const start = Date.now();
+    const started: { [k: string]: boolean } = {};
+    const completed: { [k: string]: boolean } = {};
 
-    jest.runTimersToTime(1);
+    const makeTask = (i: number, t: number, onstart: () => void) => async () => {
+        onstart();
+        started[i] = true;
+        await sleep(t);
+        completed[i] = true;
+        return i;
+    };
 
-    expect(started).toBe(2);
-    expect(completed).toBe(0);
+    const tasks = [
+        makeTask(1, 10, () => {
+            expect({ started, completed }).toMatchInlineSnapshot(`
+                Object {
+                  "completed": Object {},
+                  "started": Object {},
+                }
+            `);
+        }),
+        makeTask(2, 15, () => {
+            expect({ started, completed }).toMatchInlineSnapshot(`
+                Object {
+                  "completed": Object {},
+                  "started": Object {
+                    "1": true,
+                  },
+                }
+            `);
+        }),
+        makeTask(3, 100, () => {
+            expect(Date.now() - start).toBeGreaterThanOrEqual(10);
+            expect({ started, completed }).toMatchInlineSnapshot(`
+                Object {
+                  "completed": Object {
+                    "1": true,
+                  },
+                  "started": Object {
+                    "1": true,
+                    "2": true,
+                  },
+                }
+            `);
+        }),
+        makeTask(4, 10, () => {
+            expect(Date.now() - start).toBeGreaterThanOrEqual(15);
+            expect({ started, completed }).toMatchInlineSnapshot(`
+                Object {
+                  "completed": Object {
+                    "1": true,
+                    "2": true,
+                  },
+                  "started": Object {
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                  },
+                }
+            `);
+        }),
+        makeTask(5, 10, () => {
+            expect(Date.now() - start).toBeGreaterThanOrEqual(25);
+            expect({ started, completed }).toMatchInlineSnapshot(`
+                Object {
+                  "completed": Object {
+                    "1": true,
+                    "2": true,
+                    "4": true,
+                  },
+                  "started": Object {
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                  },
+                }
+            `);
+        }),
+        makeTask(6, 10, () => {
+            expect(Date.now() - start).toBeGreaterThanOrEqual(35);
+            expect({ started, completed }).toMatchInlineSnapshot(`
+                Object {
+                  "completed": Object {
+                    "1": true,
+                    "2": true,
+                    "4": true,
+                    "5": true,
+                  },
+                  "started": Object {
+                    "1": true,
+                    "2": true,
+                    "3": true,
+                    "4": true,
+                    "5": true,
+                  },
+                }
+            `);
+        }),
+    ];
 
-    jest.runTimersToTime(11);
+    const result = await parallel(tasks, { maxConcurrent: 2 });
+    expect(result.length).toBe(tasks.length);
 
-    expect(started).toBe(4);
-    expect(completed).toBe(2);
-
-    jest.runTimersToTime(101);
-
-    expect(started).toBe(10);
-    expect(completed).toBe(10);
-
-    const r = await allComplete;
-    expect(r).toMatchInlineSnapshot(`
+    expect(result).toMatchInlineSnapshot(`
         Array [
-          0,
           1,
           2,
           3,
           4,
           5,
           6,
-          7,
-          8,
-          9,
+        ]
+    `);
+    expect({ started, completed }).toMatchInlineSnapshot(`
+        Object {
+          "completed": Object {
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": true,
+          },
+          "started": Object {
+            "1": true,
+            "2": true,
+            "3": true,
+            "4": true,
+            "5": true,
+            "6": true,
+          },
+        }
+    `);
+});
+
+test('parallel abort', async () => {
+    const abortManager = new AbortManager();
+    const spy = jest.fn();
+    const tasks = [
+        () =>
+            sleep(10)
+                .then(() => 1)
+                .then(spy),
+        () =>
+            sleep(15)
+                .then(() => 2)
+                .then(spy),
+        () =>
+            sleep(20)
+                .then(() => 3)
+                .then(spy),
+        () => {
+            abortManager.abort();
+            return Promise.resolve(4).then(spy);
+        },
+        () =>
+            sleep(10)
+                .then(() => 5)
+                .then(spy),
+        () =>
+            sleep(10)
+                .then(() => 6)
+                .then(spy),
+    ];
+
+    await expect(parallel(tasks, { maxConcurrent: 2, abortManager })).rejects.toMatchInlineSnapshot(`"[[ABORT]]"`);
+
+    expect(spy.mock.calls).toMatchInlineSnapshot(`
+        Array [
+          Array [
+            1,
+          ],
+          Array [
+            2,
+          ],
+          Array [
+            4,
+          ],
         ]
     `);
 });
