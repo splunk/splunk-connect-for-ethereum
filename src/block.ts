@@ -32,6 +32,14 @@ const initialCounters = {
     transactionLogEventsProcessed: 0,
 };
 
+export function parseBlockTime(timestamp: number | string): number {
+    if (typeof timestamp === 'number') {
+        return timestamp * 1000;
+    }
+    // TODO: handle quorum/raft timestamps
+    throw new Error(`Unable to parse block timestamp "${timestamp}"`);
+}
+
 export class BlockWatcher implements ManagedResource {
     private active: boolean = true;
     private ethClient: EthereumClient;
@@ -148,7 +156,7 @@ export class BlockWatcher implements ManagedResource {
             debug('Ignoring block %s without number', block.hash);
             return;
         }
-        const blockTime = formattedBlock.timestamp * 1000;
+        const blockTime = parseBlockTime(formattedBlock.timestamp);
         outputMessages.push({
             type: 'block',
             time: blockTime,
@@ -187,6 +195,11 @@ export class BlockWatcher implements ManagedResource {
             rawTx.from != null ? this.lookupContractInfo(rawTx.from) : undefined,
         ]);
 
+        let contractAddresInfo: ContractInfo | undefined;
+        if (receipt?.contractAddress != null) {
+            contractAddresInfo = await this.lookupContractInfo(receipt.contractAddress);
+        }
+
         let callInfo;
         if (this.abiDecoder && toInfo && toInfo.isContract) {
             callInfo = this.abiDecoder.decodeMethod(rawTx.input, toInfo.fingerprint);
@@ -198,7 +211,14 @@ export class BlockWatcher implements ManagedResource {
             {
                 type: 'transaction',
                 time: blockTime,
-                tx: formatTransaction(rawTx, receipt!, toAddressInfo(fromInfo), toAddressInfo(toInfo), callInfo),
+                tx: formatTransaction(
+                    rawTx,
+                    receipt!,
+                    toAddressInfo(fromInfo),
+                    toAddressInfo(toInfo),
+                    toAddressInfo(contractAddresInfo),
+                    callInfo
+                ),
             },
             ...(await Promise.all(receipt?.logs?.map(l => this.processTransactionLog(l, blockTime)) || [])),
         ];

@@ -30,7 +30,7 @@ export interface FormattedBlock {
     /** the total used gas by all transactions in this block */
     gasUsed: number;
     /** the unix timestamp (seconds since epoch) for when the block was collated */
-    timestamp: number;
+    timestamp: number | string;
     /** the "extra data" field of this block */
     extraData: string;
     /** hash of the generated proof-of-work */
