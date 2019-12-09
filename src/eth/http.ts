@@ -25,6 +25,8 @@ const CONFIG_DEFAULTS = {
 
 const initialCounters = {
     requests: 0,
+    batches: 0,
+    sumBatchSize: 0,
     errors: 0,
 };
 
@@ -71,32 +73,42 @@ export class HttpTransport implements EthereumTransport {
         const startTime = Date.now();
         const body = JSON.stringify(request);
         trace(`Sending JSON RPC request over HTTP\n%s`, body);
-        const response = await fetch(this.config.url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': String(body.length),
-            },
-            body,
-            agent: this.httpAgent,
-            timeout: this.config.timeout,
-        });
-
-        if (response.status < 200 || response.status > 299) {
-            throw new Error(
-                `JSON RPC service ${this.config.url} responded with HTTP status ${response.status} (${response.statusText})`
-            );
+        this.counters.requests++;
+        if (Array.isArray(request)) {
+            this.counters.batches++;
+            this.counters.sumBatchSize += request.length;
         }
+        try {
+            const response = await fetch(this.config.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': String(body.length),
+                },
+                body,
+                agent: this.httpAgent,
+                timeout: this.config.timeout,
+            });
 
-        const data = await response.json();
+            if (response.status < 200 || response.status > 299) {
+                throw new Error(
+                    `JSON RPC service ${this.config.url} responded with HTTP status ${response.status} (${response.statusText})`
+                );
+            }
 
-        trace('Received JSON RPC response:\n%O', data);
-        if (!isValidJsonRpcResponse(data)) {
-            throw new Error('Invalid JSON RPC response');
+            const data = await response.json();
+
+            trace('Received JSON RPC response:\n%O', data);
+            if (!isValidJsonRpcResponse(data)) {
+                throw new Error('Invalid JSON RPC response');
+            }
+
+            debug('Completed JSON RPC request in %d ms', Date.now() - startTime);
+            return data as JsonRpcResponse | JsonRpcResponse[];
+        } catch (e) {
+            this.counters.errors++;
+            throw e;
         }
-
-        debug('Completed JSON RPC request in %d ms', Date.now() - startTime);
-        return data as JsonRpcResponse | JsonRpcResponse[];
     }
 
     public get stats() {
