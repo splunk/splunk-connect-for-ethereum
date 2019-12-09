@@ -15,6 +15,7 @@ import { waitForSignal } from './utils/signal';
 import LRUCache from './utils/lru';
 import { ContractInfo } from './contract';
 import { StatsCollector } from './utils/stats';
+import { introspectTargetNode } from './introspect';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -41,6 +42,15 @@ class Ethlogger extends Command {
         };
 
         try {
+            const transport = new HttpTransport({
+                url: flags['eth-rpc-url'],
+            });
+            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
+            const vendorAdapter = await introspectTargetNode(client);
+
+            info('Detected node of type %o', vendorAdapter.name);
+            return;
+
             const hecConfig: SplunkHecConfig = {
                 url: flags['hec-url'],
                 token: flags['hec-token'],
@@ -77,6 +87,7 @@ class Ethlogger extends Command {
                 },
             });
             addResource(statsCollector);
+            statsCollector.addSource(transport, 'ethTransport');
             statsCollector.addSource(hec, 'hec');
 
             const checkpoints = addResource(
@@ -85,13 +96,6 @@ class Ethlogger extends Command {
                 })
             );
             await checkpoints.initialize();
-
-            const transport = new HttpTransport({
-                url: flags['eth-rpc-url'],
-            });
-            statsCollector.addSource(transport, 'ethTransport');
-
-            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
 
             let abiDecoder;
             if (flags['eth-abi-dir']) {

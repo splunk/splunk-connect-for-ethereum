@@ -66,3 +66,68 @@ export interface RawLogResponse {
     data: string;
     topics: string[];
 }
+
+export interface GethNodeInfo {
+    enode: string;
+    id: string;
+    ip: string;
+    listenAddr: string;
+    name: string;
+    ports: {
+        discovery: number;
+        listener: number;
+    };
+    protocols: {
+        eth: {
+            difficulty: number | string;
+            genesis: string;
+            head: string;
+            network: number;
+        };
+        [k: string]: any;
+    };
+}
+
+export type GethMetrics = any; // TODO
+
+export type GethMemStats = any; // TODO
+
+export type GethTxpool = any; // TODO
+
+export interface ParityNodeKind {
+    availability: 'personal' | 'public';
+    capability: 'full' | 'light';
+}
+
+export interface ParityPeers {
+    active: number;
+    connected: number;
+    max: number;
+    peers: any[];
+}
+
+export type ParityMode = 'active' | 'passive' | 'dark' | 'offline';
+
+export interface ParityPendingTransaction {
+    hash: string;
+    nonce: string;
+    blockHash: null;
+    blockNumber: null;
+    transactionIndex: null;
+    from: string;
+    to: string;
+    value: string;
+    gasPrice: string;
+    gas: string;
+    input: string;
+    creates: string;
+    raw: string;
+    publicKey: string;
+    chainId: string;
+    standardV: string;
+    v: string;
+    r: string;
+    s: string;
+    condition: { time: string } | { block: string } | null;
+    // Object - (optional) Conditional submission, Block number in block or timestamp in time or null.
+}

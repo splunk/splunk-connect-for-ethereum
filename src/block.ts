@@ -85,14 +85,23 @@ export class BlockWatcher implements ManagedResource {
 
         if (checkpoints.isEmpty()) {
             if (typeof this.startAt === 'number') {
-                checkpoints.initialBlockNumber = this.startAt;
+                if (this.startAt < 0) {
+                    const latestBlockNumber = await ethClient.request(blockNumber());
+                    checkpoints.initialBlockNumber = Math.max(0, latestBlockNumber - this.startAt);
+                } else {
+                    checkpoints.initialBlockNumber = this.startAt;
+                }
             } else if (this.startAt === 'genesis') {
                 checkpoints.initialBlockNumber = 0;
             } else if (this.startAt === 'latest') {
                 const latestBlockNumber = await ethClient.request(blockNumber());
                 checkpoints.initialBlockNumber = latestBlockNumber;
             }
-            debug('Determined initial block number: %d', checkpoints.initialBlockNumber);
+            debug(
+                'Determined initial block number: %d from configured value %o',
+                checkpoints.initialBlockNumber,
+                this.startAt
+            );
         }
 
         while (this.active) {

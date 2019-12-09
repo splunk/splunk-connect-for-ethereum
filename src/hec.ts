@@ -120,7 +120,7 @@ export interface HecConfig {
     requestKeepAlive?: boolean;
     /** If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs) */
     validateCertificate?: boolean;
-    /** Maximum number of sockets HEC will use */
+    /** Maximum number of sockets HEC will use (per host) */
     maxSockets?: number;
     /** User-agent header sent to HEC */
     userAgent?: string;

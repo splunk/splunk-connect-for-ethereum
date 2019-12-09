@@ -71,8 +71,8 @@ export class HttpTransport implements EthereumTransport {
         request: JsonRpcRequest | JsonRpcRequest[]
     ): Promise<JsonRpcResponse | JsonRpcResponse[]> {
         const startTime = Date.now();
+        trace(`Sending JSON RPC request over HTTP: %O`, request);
         const body = JSON.stringify(request);
-        trace(`Sending JSON RPC request over HTTP\n%s`, body);
         this.counters.requests++;
         if (Array.isArray(request)) {
             this.counters.batches++;
