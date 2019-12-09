@@ -1,12 +1,12 @@
-import { VendorNodeAdapter } from '.';
+import { NodePlatformAdapter } from '.';
 import { EthereumClient } from '../eth/client';
 import { createModuleDebug } from '../utils/debug';
 import { gethNodeInfo } from '../eth/requests';
 import { GethNodeInfo } from '../eth/responses';
 
-const { debug } = createModuleDebug('vendors:geth');
+const { debug } = createModuleDebug('platforms:geth');
 
-export class GethAdapter implements VendorNodeAdapter {
+export class GethAdapter implements NodePlatformAdapter {
     public readonly fullVersion: string;
     protected nodeInfo?: GethNodeInfo;
 

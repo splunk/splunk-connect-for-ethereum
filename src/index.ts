@@ -15,7 +15,7 @@ import { waitForSignal } from './utils/signal';
 import LRUCache from './utils/lru';
 import { ContractInfo } from './contract';
 import { StatsCollector } from './utils/stats';
-import { introspectTargetNode } from './introspect';
+import { introspectTargetNodePlatform } from './introspect';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -46,9 +46,9 @@ class Ethlogger extends Command {
                 url: flags['eth-rpc-url'],
             });
             const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
-            const vendorAdapter = await introspectTargetNode(client);
+            const platformAdapter = await introspectTargetNodePlatform(client);
 
-            info('Detected node of type %o', vendorAdapter.name);
+            info('Detected node platform %o', platformAdapter.name);
             return;
 
             const hecConfig: SplunkHecConfig = {

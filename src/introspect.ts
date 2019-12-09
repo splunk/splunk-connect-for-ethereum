@@ -1,15 +1,15 @@
 import { EthereumClient } from './eth/client';
 import { clientVersion } from './eth/requests';
 import { createModuleDebug } from './utils/debug';
-import { VendorNodeAdapter } from './vendors';
-import { GenericNodeAdapter } from './vendors/generic';
-import { GethAdapter } from './vendors/geth';
-import { ParityAdapter } from './vendors/parity';
-import { QuorumAdapter } from './vendors/quorum';
+import { NodePlatformAdapter } from './platforms';
+import { GenericNodeAdapter } from './platforms/generic';
+import { GethAdapter } from './platforms/geth';
+import { ParityAdapter } from './platforms/parity';
+import { QuorumAdapter } from './platforms/quorum';
 
 const { debug, info, error } = createModuleDebug('introspect');
 
-export function createNodeAdapter(eth: EthereumClient, version: string): VendorNodeAdapter {
+export function createNodeAdapter(eth: EthereumClient, version: string): NodePlatformAdapter {
     if (version.startsWith('Geth/')) {
         debug('Detected geth node');
         if (version.includes('quorum')) {
@@ -29,19 +29,19 @@ export function createNodeAdapter(eth: EthereumClient, version: string): VendorN
     return new GenericNodeAdapter(version);
 }
 
-export async function introspectTargetNode(eth: EthereumClient): Promise<VendorNodeAdapter> {
+export async function introspectTargetNodePlatform(eth: EthereumClient): Promise<NodePlatformAdapter> {
     debug(`Introspecting target ethereum node`);
     const version = await eth.request(clientVersion());
     info('Retrieved ethereum node version: %s', version);
 
     const adapter = createNodeAdapter(eth, version);
     if (typeof adapter.initialize === 'function') {
-        debug('Initializing node vendor adatper: %s', adapter.name);
+        debug('Initializing node platform adatper: %s', adapter.name);
         try {
             await adapter.initialize(eth);
         } catch (e) {
-            error('Failed to initialize node vendor adapter:', e);
-            throw new Error(`Failed initialize node vendor adapter ${adapter.name}`);
+            error('Failed to initialize node platform adapter:', e);
+            throw new Error(`Failed initialize node platform adapter ${adapter.name}`);
         }
     }
     return adapter;

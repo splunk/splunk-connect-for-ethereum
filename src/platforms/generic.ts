@@ -1,9 +1,9 @@
-import { VendorNodeAdapter } from '.';
+import { NodePlatformAdapter } from '.';
 import { createModuleDebug } from '../utils/debug';
 
-const { debug } = createModuleDebug('vendors:generic');
+const { debug } = createModuleDebug('platforms:generic');
 
-export class GenericNodeAdapter implements VendorNodeAdapter {
+export class GenericNodeAdapter implements NodePlatformAdapter {
     public readonly fullVersion: string;
     private extractedName: string | null = 'Generic:unknown';
     public enode = null;

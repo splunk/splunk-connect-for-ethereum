@@ -2,7 +2,7 @@ import { createModuleDebug } from '../utils/debug';
 import { GethAdapter } from './geth';
 import { EthereumClient } from '../eth/client';
 
-const { debug, warn } = createModuleDebug('vendors:quorum');
+const { debug, warn } = createModuleDebug('platforms:quorum');
 
 export type QUORUM_CONSENSUS = 'istanbul' | 'raft';
 

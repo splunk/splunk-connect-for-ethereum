@@ -1,11 +1,11 @@
-import { VendorNodeAdapter } from '.';
+import { NodePlatformAdapter } from '.';
 import { EthereumClient } from '../eth/client';
 import { parityEnode } from '../eth/requests';
 import { createModuleDebug } from '../utils/debug';
 
-const { debug } = createModuleDebug('vendors:parity');
+const { debug } = createModuleDebug('platforms:parity');
 
-export class ParityAdapter implements VendorNodeAdapter {
+export class ParityAdapter implements NodePlatformAdapter {
     public readonly fullVersion: string;
     public enode: string | null = null;
 
