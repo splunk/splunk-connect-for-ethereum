@@ -1,11 +1,12 @@
-import { RawBlockResponse, RawTransactionResponse, RawTransactionReceipt, RawLogResponse } from './eth/responses';
-import { FormattedBlock, FormattedTransaction, FormattedLogEvent, FunctionCall, AddressInfo, EventData } from './msgs';
-import { hexToNumber, toChecksumAddress } from 'web3-utils';
+import { toChecksumAddress } from 'web3-utils';
+import { RawBlockResponse, RawLogResponse, RawTransactionReceipt, RawTransactionResponse } from './eth/responses';
+import { AddressInfo, EventData, FormattedBlock, FormattedLogEvent, FormattedTransaction, FunctionCall } from './msgs';
+import { bigIntToNumber, parseBigInt } from './utils/bn';
 
 export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
     return {
-        timestamp: hexToNumber(rawBlock.timestamp),
-        number: rawBlock.number != null ? hexToNumber(rawBlock.number) : null,
+        timestamp: parseBigInt(rawBlock.timestamp),
+        number: rawBlock.number != null ? bigIntToNumber(rawBlock.number) : null,
         hash: rawBlock.hash,
         parentHash: rawBlock.parentHash,
         sha3Uncles: rawBlock.sha3Uncles,
@@ -14,13 +15,13 @@ export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
         transactionsRoot: rawBlock.transactionsRoot,
         receiptsRoot: rawBlock.receiptsRoot,
         logsBloom: rawBlock.logsBloom,
-        difficulty: hexToNumber(rawBlock.difficulty),
-        gasLimit: hexToNumber(rawBlock.gasLimit),
-        gasUsed: hexToNumber(rawBlock.gasUsed),
+        difficulty: bigIntToNumber(rawBlock.difficulty),
+        gasLimit: bigIntToNumber(rawBlock.gasLimit),
+        gasUsed: bigIntToNumber(rawBlock.gasUsed),
         extraData: rawBlock.extraData,
         nonce: rawBlock.nonce,
-        totalDifficulty: hexToNumber(rawBlock.totalDifficulty),
-        size: hexToNumber(rawBlock.size),
+        totalDifficulty: bigIntToNumber(rawBlock.totalDifficulty),
+        size: bigIntToNumber(rawBlock.size),
         uncles: rawBlock.uncles,
         transactionCount: rawBlock.transactions == null ? 0 : rawBlock.transactions.length,
     };
@@ -28,7 +29,7 @@ export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
 
 function formatStatus(receiptStatus?: string): 'success' | 'failure' | null {
     if (receiptStatus != null) {
-        const n = hexToNumber(receiptStatus);
+        const n = bigIntToNumber(receiptStatus);
         if (n === 0) {
             return 'failure';
         } else if (n === 1) {
@@ -45,42 +46,43 @@ export function formatTransaction(
     receipt: RawTransactionReceipt,
     fromInfo?: AddressInfo,
     toInfo?: AddressInfo,
+    contractAddressInfo?: AddressInfo,
     call?: FunctionCall
 ): FormattedTransaction {
     return {
         hash: rawTx.hash,
-        blockNumber: rawTx.blockNumber != null ? hexToNumber(rawTx.blockNumber) : null,
+        blockNumber: rawTx.blockNumber != null ? bigIntToNumber(rawTx.blockNumber) : null,
         blockHash: rawTx.blockHash,
         from: toChecksumAddress(rawTx.from),
         to: rawTx.to != null ? toChecksumAddress(rawTx.to) : null,
-        gas: hexToNumber(rawTx.gas),
-        gasPrice: hexToNumber(rawTx.gasPrice),
+        gas: bigIntToNumber(rawTx.gas),
+        gasPrice: bigIntToNumber(rawTx.gasPrice),
         input: rawTx.input,
         nonce: rawTx.nonce,
-        transactionIndex: rawTx.transactionIndex != null ? hexToNumber(rawTx.transactionIndex) : null,
+        transactionIndex: rawTx.transactionIndex != null ? bigIntToNumber(rawTx.transactionIndex) : null,
         value: rawTx.value,
         v: rawTx.v,
         r: rawTx.r,
         s: rawTx.s,
         status: formatStatus(receipt.status),
         contractAddress: receipt.contractAddress != null ? toChecksumAddress(receipt.contractAddress) : null,
-        cumulativeGasUsed: hexToNumber(receipt.cumulativeGasUsed),
-        gasUsed: hexToNumber(receipt.gasUsed),
+        cumulativeGasUsed: bigIntToNumber(receipt.cumulativeGasUsed),
+        gasUsed: bigIntToNumber(receipt.gasUsed),
         fromInfo,
         toInfo,
+        contractAddressInfo,
         call,
     };
 }
 
 export function formatLogEvent(evt: RawLogResponse, addressInfo?: AddressInfo, event?: EventData): FormattedLogEvent {
     return {
-        id: evt.id,
         removed: evt.removed,
-        logIndex: evt.logIndex != null ? hexToNumber(evt.logIndex) : null,
-        blockNumber: evt.blockNumber != null ? hexToNumber(evt.blockNumber) : null,
+        logIndex: evt.logIndex != null ? bigIntToNumber(evt.logIndex) : null,
+        blockNumber: evt.blockNumber != null ? bigIntToNumber(evt.blockNumber) : null,
         blockHash: evt.blockHash,
         transactionHash: evt.transactionHash,
-        transactionIndex: evt.transactionIndex != null ? hexToNumber(evt.transactionIndex) : null,
+        transactionIndex: evt.transactionIndex != null ? bigIntToNumber(evt.transactionIndex) : null,
         address: toChecksumAddress(evt.address),
         data: evt.data,
         topics: evt.topics,

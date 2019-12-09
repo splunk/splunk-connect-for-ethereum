@@ -1,4 +1,5 @@
-import { hexToNumber, numberToHex } from 'web3-utils';
+import { numberToHex } from 'web3-utils';
+import { bigIntToNumber } from '../utils/bn';
 import { JsonRpcResponse } from './jsonrpc';
 import { RawBlockResponse, RawTransactionReceipt } from './responses';
 
@@ -10,7 +11,7 @@ export interface EthRequest<P extends any[], R> {
 
 export const blockNumber = (): EthRequest<[], number> => ({
     method: 'eth_blockNumber',
-    response: (r: JsonRpcResponse) => hexToNumber(r.result),
+    response: (r: JsonRpcResponse) => bigIntToNumber(r.result),
 });
 
 export const getBlock = (

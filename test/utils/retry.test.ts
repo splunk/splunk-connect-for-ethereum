@@ -1,5 +1,5 @@
+import { AbortManager } from '../../src/utils/abort';
 import { retry } from '../../src/utils/retry';
-import AbortController from 'abort-controller';
 
 describe('retry', () => {
     it('retries 5 times, then rejects', async () => {
@@ -43,9 +43,9 @@ describe('retry', () => {
     it('aborts', async () => {
         let tried = 0;
         const startTime = Date.now();
-        const abort = new AbortController();
+        const abortManager = new AbortManager();
         const onAbort = () => {
-            abort.abort();
+            abortManager.abort();
         };
         const p = retry(
             async () => {
@@ -55,11 +55,11 @@ describe('retry', () => {
                 }
                 throw new Error('nope');
             },
-            { waitBetween: 3, abortSignal: abort.signal }
+            { waitBetween: 3, abortManager }
         );
 
-        await expect(p).rejects.toMatchInlineSnapshot(`[Error: Retry loop aborted [anonymous task]]`);
-        expect(Date.now() - startTime).toBeGreaterThanOrEqual(15);
+        await expect(p).rejects.toMatchInlineSnapshot(`"[[ABORT]]"`);
+        expect(Date.now() - startTime).toBeGreaterThanOrEqual(12);
         expect(tried).toBeGreaterThanOrEqual(5);
         expect(tried).toBeLessThan(15);
     });

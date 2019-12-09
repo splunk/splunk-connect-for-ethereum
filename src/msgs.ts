@@ -30,7 +30,7 @@ export interface FormattedBlock {
     /** the total used gas by all transactions in this block */
     gasUsed: number;
     /** the unix timestamp (seconds since epoch) for when the block was collated */
-    timestamp: number;
+    timestamp: number | string;
     /** the "extra data" field of this block */
     extraData: string;
     /** hash of the generated proof-of-work */
@@ -40,7 +40,7 @@ export interface FormattedBlock {
     /** Array of uncle hashes */
     uncles: string[];
 
-    // addative
+    // additional/computed information
 
     /** number of transactions in this block */
     transactionCount: number;
@@ -104,14 +104,16 @@ export interface FormattedTransaction extends FormattedPendingTransaction {
     /** The total amount of gas used when this transaction was executed in the block */
     cumulativeGasUsed: number;
     /** The contract address created, if the transaction was a contract creation, otherwise null  */
-    contractAddress?: Address | null;
+    contractAddress: Address | null;
 
-    // additional computed information
+    // additional/computed information
 
     /** Information about the recipient address of the transaction */
     toInfo?: AddressInfo;
     /** Information about the sender address of the transaction */
     fromInfo?: AddressInfo;
+    /** Information about the created contract address */
+    contractAddressInfo?: AddressInfo;
 
     /** Information about the function extracted from `input` if ABI information is available */
     call?: FunctionCall;
@@ -142,7 +144,6 @@ export interface TransactionMessage {
 }
 
 export interface FormattedLogEvent {
-    id?: string;
     /** true when the log was removed, due to a chain reorganization. false if its a valid log */
     removed?: boolean;
     /** integer of the log index position in the block  */
@@ -165,9 +166,11 @@ export interface FormattedLogEvent {
      * except you declared the event with the anonymous specifier.) */
     topics: string[];
 
-    // additional/computed
+    // additional/computed information
 
+    /** Information about the address emitting this event */
     addressInfo?: AddressInfo;
+    /** Decoded event name, signature and parameters */
     event?: EventData;
 }
 

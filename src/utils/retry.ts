@@ -1,5 +1,5 @@
-import { AbortSignal } from 'abort-controller';
-import { neverResolve, sleep } from './async';
+import { ABORT, AbortManager } from './abort';
+import { sleep } from './async';
 import { createModuleDebug } from './debug';
 
 const { debug } = createModuleDebug('utils:retry');
@@ -12,7 +12,7 @@ export function resolveWaitTime(waitTime: WaitTime, attempt: number): number {
     return typeof waitTime === 'function' ? waitTime(attempt) : waitTime;
 }
 
-export const RETRY_ABORT = new Error('Retry abort');
+export const RETRY_ABORT = '[[RETRY ABORT]]';
 
 export async function retry<R>(
     task: () => Promise<R>,
@@ -21,32 +21,21 @@ export async function retry<R>(
         waitBetween = 1000,
         taskName = 'anonymous task',
         onRetry,
-        abortSignal,
+        abortManager = new AbortManager(),
     }: {
         attempts?: number;
         waitBetween?: WaitTime;
         taskName?: string;
         onRetry?: (attempt: number) => void;
-        abortSignal?: AbortSignal;
+        abortManager?: AbortManager;
     } = {}
 ): Promise<R> {
     const startTime = Date.now();
     let attempt = 0;
-    let aborted = false;
-    const abortPromise: Promise<void> =
-        abortSignal != null
-            ? new Promise(resolve => {
-                  abortSignal.addEventListener('abort', () => {
-                      aborted = true;
-                      resolve();
-                  });
-              })
-            : neverResolve();
-
     while (attempt < attempts) {
-        if (aborted) {
+        if (abortManager.aborted) {
             debug('[%s] Received abort signal', taskName);
-            throw new Error(`Retry loop aborted [${taskName}]`);
+            throw RETRY_ABORT;
         }
         attempt++;
         if (attempt > 1) {
@@ -56,19 +45,22 @@ export async function retry<R>(
             if (attempt > 1 && onRetry != null) {
                 onRetry(attempt);
             }
-            const res = await task();
+            const res = await abortManager.race(task());
             debug('Task %s succeeded after %d ms at attempt# %d', taskName, Date.now() - startTime, attempt);
             return res;
         } catch (e) {
-            if (e === RETRY_ABORT) {
+            if (e === RETRY_ABORT || e === ABORT) {
                 debug('[%s] Retry loop aborted', taskName);
-                break;
+                throw RETRY_ABORT;
             }
             debug('[%s] Task failed: ', taskName, e.message);
-            if (attempt < attempts && !aborted) {
+            if (abortManager.aborted) {
+                throw RETRY_ABORT;
+            }
+            if (attempt < attempts) {
                 const waitTime = resolveWaitTime(waitBetween, attempt);
                 debug('[%s] Waiting for %d ms before retrying', taskName, waitTime);
-                await Promise.race([sleep(waitTime), abortPromise]);
+                await abortManager.race(sleep(waitTime));
             } else {
                 throw e;
             }

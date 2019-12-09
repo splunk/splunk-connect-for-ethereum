@@ -7,14 +7,21 @@ import { createModuleDebug } from './utils/debug';
 const { debug } = createModuleDebug('contract');
 
 export interface ContractInfo {
+    /** True if the corresponding account is a smart contract, otherwise false */
     isContract: boolean;
+    /** A unqiue representation of all function and event signatures of a contract */
     fingerprint?: string;
+    /** Name of the contract from configured ABIs */
     contractName?: string;
 }
 
 export type SignatureMatcher = (sig: string, address?: Address) => string | undefined;
 export type ContractNameLookup = (address: Address, fingerprint: string) => string | undefined;
 
+/**
+ * Find function and event signature hashes in the EVM bytecode and attempt to match them against
+ * known hashes from configured ABIs
+ */
 export function extractFunctionsAndEvents(
     contractCode: string,
     signatureMatcher: SignatureMatcher
@@ -43,6 +50,7 @@ export function extractFunctionsAndEvents(
     return { functions, events };
 }
 
+/** Creates a hash of all function and event signatures of a contract used to match ABIs against EVM bytecode */
 export function computeContractFingerprint(
     { functions, events }: { functions: string[]; events: string[] } = { functions: [], events: [] }
 ): string | undefined {
@@ -53,6 +61,10 @@ export function computeContractFingerprint(
     return fingerprint;
 }
 
+/**
+ * Attempts to determine if the given account address is a smart contract and
+ * determines some additional information if that's the case
+ */
 export async function getContractInfo(
     address: Address,
     ethClient: EthereumClient,

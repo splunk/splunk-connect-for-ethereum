@@ -8,8 +8,9 @@ import { AbortSignal } from 'node-fetch/externals';
 import { sleep } from './utils/async';
 import { isHttps, isSuccessfulStatus } from './utils/http';
 import { WaitTime, exponentialBackoff, resolveWaitTime } from './utils/retry';
+import { httpClientStats as httpAgentStats } from './utils/stats';
 
-const { debug, error } = createModuleDebug('hec');
+const { debug, info, error, trace } = createModuleDebug('hec');
 
 /** Number of milliseconds since epoch */
 export type EpochMillis = number;
@@ -34,6 +35,13 @@ export interface Metric {
     time: Date | EpochMillis;
     name: string;
     value: number;
+    fields?: { [k: string]: any };
+    metadata?: Metadata;
+}
+
+export interface MultiMetrics {
+    time: Date | EpochMillis;
+    measurements: { [name: string]: number };
     fields?: { [k: string]: any };
     metadata?: Metadata;
 }
@@ -72,21 +80,58 @@ export function serializeMetric(metric: Metric, defaultMetadata?: Metadata): Ser
     );
 }
 
+export function serializeMetrics(metrics: MultiMetrics, defaultMetadata?: Metadata): SerializedHecMsg {
+    const measurements = Object.fromEntries(
+        Object.entries(metrics.measurements).map(([key, value]) => [`metric_name:${key}`, value])
+    );
+    return Buffer.from(
+        JSON.stringify({
+            time: serializeTime(metrics.time),
+            fields: {
+                ...metrics.fields,
+                ...measurements,
+            },
+            ...{ ...defaultMetadata, ...metrics.metadata },
+        }),
+        'utf-8'
+    );
+}
+
 export interface HecConfig {
+    /** The URL of HEC. If only the base URL is specified (path is omitted) then the default path will be used */
     url: string;
+    /** The HEC token used to authenticate HTTP requests */
     token: string | null;
+    /** Defaults for host, source, sourcetype and index. Can be overriden for each message */
     defaultMetadata?: Metadata;
+    /** Maximum number of entries in the HEC message queue before flushing it */
     maxQueueEntries?: number;
+    /** Maximum number of bytes in the HEC message queue before flushing it */
     maxQueueSize?: number;
+    /** Maximum number of milliseconds to wait before flushing the HEC message queue */
     flushTime?: number;
+    /** Gzip compress the request body sent to HEC (Content-Encoding: gzip) */
     gzip?: boolean;
+    /** Maximum number of attempts to send a batch to HEC. By default this there is no limit */
     maxRetries?: number;
+    /** Number of milliseconds to wait before considereing an HTTP request as failed */
     timeout?: number;
+    /** Keep sockets to HEC open */
     requestKeepAlive?: boolean;
+    /** If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs) */
     validateCertificate?: boolean;
+    /** Maximum number of sockets HEC will use */
     maxSockets?: number;
+    /** User-agent header sent to HEC */
     userAgent?: string;
+    /** Wait time before retrying to send a (batch of) HEC messages */
     retryWaitTime?: WaitTime;
+    /**
+     * Enable sending multipe metrics in a single message to HEC.
+     * Supported as of Splunk 8.0.0
+     * https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format
+     */
+    multipleMetricFormatEnabled?: boolean;
 }
 
 const CONFIG_DEFAULTS = {
@@ -103,6 +148,7 @@ const CONFIG_DEFAULTS = {
     maxSockets: 256,
     userAgent: 'ethlogger-hec-client/1.0',
     retryWaitTime: exponentialBackoff({ min: 10, max: 180_000 }),
+    multipleMetricFormatEnabled: false,
 };
 
 type CookedHecConfig = Required<HecConfig>;
@@ -126,7 +172,7 @@ export function compressBody(source: BufferList): Promise<BufferList> {
         const sourceSize = source.length;
         stream.pipe(result);
         stream.once('end', () => {
-            debug(`Compressed batch of HEC messages from ${sourceSize} bytes -> ${result.length} bytes`);
+            trace(`Compressed batch of HEC messages from ${sourceSize} bytes -> ${result.length} bytes`);
             resolve(result);
         });
         stream.once('error', e => reject(e));
@@ -148,6 +194,15 @@ export function isMetric(msg: Event | Metric): msg is Metric {
     return 'name' in msg && typeof msg.name !== 'undefined';
 }
 
+const initialCounters = {
+    retryCount: 0,
+    queuedMessages: 0,
+    sentMessages: 0,
+    queuedBytes: 0,
+    sentBytes: 0,
+    transferredBytes: 0,
+};
+
 export class HecClient {
     private readonly config: CookedHecConfig;
     private active: boolean = true;
@@ -157,12 +212,7 @@ export class HecClient {
     private activeFlushing: Set<FlushHandle> = new Set();
     private httpAgent: HttpAgent | HttpsAgent;
     private counters = {
-        retryCount: 0,
-        queuedMessages: 0,
-        sentMessages: 0,
-        queuedBytes: 0,
-        sentBytes: 0,
-        transferredBytes: 0,
+        ...initialCounters,
     };
 
     public constructor(config: HecConfig) {
@@ -200,6 +250,22 @@ export class HecClient {
         this.pushSerializedMsg(serialized);
     }
 
+    public pushMetrics(metrics: MultiMetrics) {
+        if (this.config.multipleMetricFormatEnabled) {
+            const serialized = serializeMetrics(metrics, this.config.defaultMetadata);
+            this.pushSerializedMsg(serialized);
+        } else {
+            const { measurements, ...rest } = metrics;
+            for (const [name, value] of Object.entries(measurements)) {
+                this.pushMetric({
+                    ...rest,
+                    name,
+                    value,
+                });
+            }
+        }
+    }
+
     private pushSerializedMsg(serialized: SerializedHecMsg) {
         if (!this.active) {
             throw new Error('HEC client has been shut down');
@@ -227,12 +293,18 @@ export class HecClient {
             queueSize: this.queue.length,
             queueSizeBytes: this.queueSizeBytes,
             ...this.counters,
-            httpClient: this.httpAgent.getCurrentStatus(),
+            httpClient: httpAgentStats(this.httpAgent.getCurrentStatus()),
         };
     }
 
+    public flushStats() {
+        const stats = this.stats;
+        this.counters = { ...initialCounters };
+        return stats;
+    }
+
     public async shutdown(maxTime?: number) {
-        debug('Shutting down HEC client');
+        info('Shutting down HEC client');
         this.active = false;
         if (maxTime != null && (this.activeFlushing.size > 0 || this.queue.length > 0)) {
             debug(`Waiting for ${this.activeFlushing.size} flush tasks to complete`);
