@@ -52,7 +52,7 @@ export class EthereumClient {
             throw new JsonRpcError(`JSON RPC Response ID mismatch. Expected ${payload.id} but got ${res.id}`);
         }
         checkError(res);
-        return req.response(res);
+        return typeof req.response === 'function' ? req.response(res) : res.result;
     }
 
     async requestBatch<P extends any[], R>(reqs: EthRequest<P, R>[]): Promise<R[]> {
@@ -69,7 +69,9 @@ export class EthereumClient {
                             }
                             try {
                                 checkError(result);
-                                resolve(request.response(result));
+                                resolve(
+                                    typeof request.response === 'function' ? request.response(result) : result.result
+                                );
                             } catch (e) {
                                 debug(`JSON RPC request method: %s failed`, request.method, e);
                                 reject(e);
@@ -116,7 +118,7 @@ export class BatchedEthereumClient extends EthereumClient {
                     }
                     try {
                         checkError(result);
-                        resolve(req.response(result));
+                        resolve(typeof req.response === 'function' ? req.response(result) : result.result);
                     } catch (e) {
                         debug(`JSON RPC request method: %s(%o) failed`, req.method, req.params, e);
                         reject(e);
