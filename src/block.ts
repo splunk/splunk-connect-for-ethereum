@@ -1,6 +1,6 @@
 import { AbiDecoder } from './abi';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges } from './blockrange';
-import { BlockRangeCheckpoint } from './checkpoint';
+import { Checkpoint } from './checkpoint';
 import { ContractInfo, getContractInfo } from './contract';
 import { EthereumClient } from './eth/client';
 import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
@@ -43,7 +43,7 @@ export function parseBlockTime(timestamp: number | string): number {
 export class BlockWatcher implements ManagedResource {
     private active: boolean = true;
     private ethClient: EthereumClient;
-    private checkpoints: BlockRangeCheckpoint;
+    private checkpoints: Checkpoint;
     private output: Output;
     private abiDecoder?: AbiDecoder;
     private startAt: StartBlock;
@@ -63,7 +63,7 @@ export class BlockWatcher implements ManagedResource {
         contractInfoCache,
     }: {
         ethClient: EthereumClient;
-        checkpoints: BlockRangeCheckpoint;
+        checkpoints: Checkpoint;
         output: Output;
         abiDecoder?: AbiDecoder;
         startAt?: StartBlock;

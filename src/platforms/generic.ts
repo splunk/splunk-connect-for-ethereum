@@ -1,12 +1,14 @@
 import { NodePlatformAdapter } from '.';
 import { createModuleDebug } from '../utils/debug';
+import { EthereumClient } from '../eth/client';
+import { OutputMessage } from '../output';
 
 const { debug } = createModuleDebug('platforms:generic');
 
 export class GenericNodeAdapter implements NodePlatformAdapter {
     public readonly fullVersion: string;
     private extractedName: string | null = 'Generic:unknown';
-    public enode = null;
+
     constructor(clientVersion: string) {
         this.fullVersion = clientVersion;
         if (clientVersion.includes('/')) {
@@ -20,7 +22,11 @@ export class GenericNodeAdapter implements NodePlatformAdapter {
         return this.extractedName != null ? `Generic:${this.extractedName}` : `Generic:unknown`;
     }
 
-    public async captureNodeStats() {
+    public get enode(): string | null {
+        return null;
+    }
+
+    public async captureNodeStats(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
         return [];
     }
 }

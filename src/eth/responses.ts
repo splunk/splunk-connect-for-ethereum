@@ -88,11 +88,18 @@ export interface GethNodeInfo {
     };
 }
 
-export type GethMetrics = any; // TODO
+export type GethMetrics = {
+    [k: string]: number | string | GethMetrics | any;
+};
 
-export type GethMemStats = any; // TODO
+export type GethMemStats = {
+    BySize?: Array<{ Size: number; Mallocs: number; Frees: number }>;
+    [name: string]: number | any;
+};
 
 export type GethTxpool = any; // TODO
+
+export type GethPeers = any; // TODO
 
 export interface ParityNodeKind {
     availability: 'personal' | 'public';

@@ -190,3 +190,9 @@ export interface LogEventMessage {
     time: number;
     event: FormattedLogEvent;
 }
+
+export interface NodeMetricsMessage {
+    type: 'node:metrics';
+    time: number;
+    metrics: Array<{ name: string; value: number }>;
+}

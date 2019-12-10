@@ -22,12 +22,14 @@ export interface Metadata {
     index?: string;
 }
 
+export type Fields = { [k: string]: any };
+
 type SerializedHecMsg = Buffer;
 
 export interface Event {
     time: Date | EpochMillis;
     body: string | { [k: string]: any };
-    fields?: { [k: string]: any };
+    fields?: Fields;
     metadata?: Metadata;
 }
 
@@ -35,14 +37,14 @@ export interface Metric {
     time: Date | EpochMillis;
     name: string;
     value: number;
-    fields?: { [k: string]: any };
+    fields?: Fields;
     metadata?: Metadata;
 }
 
 export interface MultiMetrics {
     time: Date | EpochMillis;
     measurements: { [name: string]: number };
-    fields?: { [k: string]: any };
+    fields?: Fields;
     metadata?: Metadata;
 }
 
@@ -53,23 +55,24 @@ export function serializeTime(time: Date | EpochMillis): number {
     return +(time / 1000);
 }
 
-export function serializeEvent(event: Event, defaultMetadata?: Metadata): SerializedHecMsg {
+export function serializeEvent(event: Event, defaultMetadata?: Metadata, defaultFields?: Fields): SerializedHecMsg {
     return Buffer.from(
         JSON.stringify({
             time: serializeTime(event.time),
             event: event.body,
-            fields: event.fields,
+            fields: { ...defaultFields, ...event.fields },
             ...{ ...defaultMetadata, ...event.metadata },
         }),
         'utf-8'
     );
 }
 
-export function serializeMetric(metric: Metric, defaultMetadata?: Metadata): SerializedHecMsg {
+export function serializeMetric(metric: Metric, defaultMetadata?: Metadata, defaultFields?: Fields): SerializedHecMsg {
     return Buffer.from(
         JSON.stringify({
             time: serializeTime(metric.time),
             fields: {
+                ...defaultFields,
                 ...metric.fields,
                 metric_name: metric.name,
                 _value: metric.value,
@@ -80,7 +83,11 @@ export function serializeMetric(metric: Metric, defaultMetadata?: Metadata): Ser
     );
 }
 
-export function serializeMetrics(metrics: MultiMetrics, defaultMetadata?: Metadata): SerializedHecMsg {
+export function serializeMetrics(
+    metrics: MultiMetrics,
+    defaultMetadata?: Metadata,
+    defaultFields?: Fields
+): SerializedHecMsg {
     const measurements = Object.fromEntries(
         Object.entries(metrics.measurements).map(([key, value]) => [`metric_name:${key}`, value])
     );
@@ -88,6 +95,7 @@ export function serializeMetrics(metrics: MultiMetrics, defaultMetadata?: Metada
         JSON.stringify({
             time: serializeTime(metrics.time),
             fields: {
+                ...defaultFields,
                 ...metrics.fields,
                 ...measurements,
             },

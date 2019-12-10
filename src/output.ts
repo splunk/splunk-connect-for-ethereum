@@ -1,13 +1,24 @@
 import { SplunkHecConfig } from './config';
 import { HecClient } from './hec';
-import { BlockMessage, LogEventMessage, PendingTransactionMessage, TransactionMessage } from './msgs';
+import {
+    BlockMessage,
+    LogEventMessage,
+    PendingTransactionMessage,
+    TransactionMessage,
+    NodeMetricsMessage,
+} from './msgs';
 import { createDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 
 const consoleOutput = createDebug('output');
 consoleOutput.enabled = true;
 
-export type OutputMessage = BlockMessage | TransactionMessage | PendingTransactionMessage | LogEventMessage;
+export type OutputMessage =
+    | BlockMessage
+    | TransactionMessage
+    | PendingTransactionMessage
+    | LogEventMessage
+    | NodeMetricsMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -45,6 +56,17 @@ export class HecOutput implements Output, ManagedResource {
                     metadata: {
                         index: this.config.eventIndex,
                         sourcetype: this.config.sourcetypes.event,
+                    },
+                });
+                break;
+            case 'node:metrics':
+                const metricsPrefix = this.config.metricsPrefix ? this.config.metricsPrefix + '.' : '';
+                this.hec.pushMetrics({
+                    time: msg.time,
+                    measurements: Object.fromEntries(msg.metrics.map(m => [`${metricsPrefix}${m.name}`, m.value])),
+                    metadata: {
+                        index: this.config.metricsIndex,
+                        sourcetype: this.config.sourcetypes.nodeMetrics,
                     },
                 });
                 break;

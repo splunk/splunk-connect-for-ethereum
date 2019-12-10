@@ -1,10 +1,37 @@
 import { createModuleDebug } from '../utils/debug';
 import { GethAdapter } from './geth';
 import { EthereumClient } from '../eth/client';
+import { OutputMessage } from '../output';
+import {
+    quroumIstanbulSnapshot,
+    quorumIstanbulCandidates,
+    quorumRaftRole,
+    quorumRaftLeader,
+    quorumRaftCluster,
+} from '../eth/requests';
 
 const { debug, warn } = createModuleDebug('platforms:quorum');
 
 export type QUORUM_CONSENSUS = 'istanbul' | 'raft';
+
+export async function captureIstanbulData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+    debug('Capturing istanbul data from quorum node');
+    const [snapshot, candidates] = await Promise.all([
+        ethClient.request(quroumIstanbulSnapshot()),
+        ethClient.request(quorumIstanbulCandidates()),
+    ]);
+    return []; // TODO
+}
+
+export async function captureRaftData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+    debug('Capturing raft data from quorum node');
+    const [role, leader, cluster] = await Promise.all([
+        ethClient.request(quorumRaftRole()),
+        ethClient.request(quorumRaftLeader()),
+        ethClient.request(quorumRaftCluster()),
+    ]);
+    return []; // TODO
+}
 
 export class QuorumAdapter extends GethAdapter {
     private consensus: 'instanbul' | 'raft' | null = null;
@@ -26,5 +53,17 @@ export class QuorumAdapter extends GethAdapter {
 
     public get name() {
         return this.consensus == null ? 'Quorum' : `Quorum:${this.consensus}`;
+    }
+
+    public async captureNodeStats(ethClient: EthereumClient, captureTime: number) {
+        const [baseGethMsgs, quorumProtocolMsgs] = await Promise.all([
+            super.captureNodeStats(ethClient, captureTime),
+            this.consensus === 'instanbul'
+                ? captureIstanbulData(ethClient, captureTime)
+                : this.consensus === 'raft'
+                ? captureRaftData(ethClient, captureTime)
+                : [],
+        ]);
+        return [...baseGethMsgs, ...quorumProtocolMsgs];
     }
 }

@@ -6,8 +6,6 @@ export interface NodePlatformAdapter {
     readonly name: string;
     readonly fullVersion: string;
     readonly enode: string | null;
-
     initialize?(ethClient: EthereumClient): Promise<void>;
-
-    captureNodeStats(ethClient: EthereumClient): Promise<OutputMessage[]>;
+    captureNodeStats(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]>;
 }

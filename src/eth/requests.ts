@@ -5,6 +5,7 @@ import {
     GethMemStats,
     GethMetrics,
     GethNodeInfo,
+    GethPeers,
     GethTxpool,
     ParityMode,
     ParityNodeKind,
@@ -74,6 +75,10 @@ export const peerCount = (): EthRequest<[], number> => ({
 
 export const gethNodeInfo = (): EthRequest<[], GethNodeInfo> => ({
     method: 'admin_nodeInfo',
+});
+
+export const gethPeers = (): EthRequest<[], GethPeers> => ({
+    method: 'admin_peers',
 });
 
 export const gethMetrics = (param: boolean): EthRequest<[boolean], GethMetrics> => ({

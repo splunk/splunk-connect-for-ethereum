@@ -2,7 +2,7 @@ import { Command } from '@oclif/command';
 import debugModule from 'debug';
 import { AbiDecoder } from './abi';
 import { BlockWatcher } from './block';
-import { BlockRangeCheckpoint } from './checkpoint';
+import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
 import { defaultSourcetypes, SplunkHecConfig } from './config';
 import { BatchedEthereumClient } from './eth/client';
@@ -80,7 +80,7 @@ class Ethlogger extends Command {
                     flushTime: 10000,
                     multipleMetricFormatEnabled: true,
                 }),
-                basePrefix: 'ethlogger',
+                basePrefix: 'ethlogger.internal',
                 fields: {
                     version: this.config.version,
                     nodeVersion: process.version,
@@ -91,7 +91,7 @@ class Ethlogger extends Command {
             statsCollector.addSource(hec, 'hec');
 
             const checkpoints = addResource(
-                new BlockRangeCheckpoint({
+                new Checkpoint({
                     path: 'checkpoints.json',
                 })
             );
