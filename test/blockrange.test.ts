@@ -103,6 +103,50 @@ test('chunkedBlockRanges', () => {
           },
         ]
     `);
+    expect(chunkedBlockRanges({ from: 0, to: 127000 }, 25, 10)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "from": 0,
+            "to": 24,
+          },
+          Object {
+            "from": 25,
+            "to": 49,
+          },
+          Object {
+            "from": 50,
+            "to": 74,
+          },
+          Object {
+            "from": 75,
+            "to": 99,
+          },
+          Object {
+            "from": 100,
+            "to": 124,
+          },
+          Object {
+            "from": 125,
+            "to": 149,
+          },
+          Object {
+            "from": 150,
+            "to": 174,
+          },
+          Object {
+            "from": 175,
+            "to": 199,
+          },
+          Object {
+            "from": 200,
+            "to": 224,
+          },
+          Object {
+            "from": 225,
+            "to": 249,
+          },
+        ]
+    `);
 });
 
 test('blockRangeSize', () => {

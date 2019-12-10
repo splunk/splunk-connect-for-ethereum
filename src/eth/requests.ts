@@ -1,5 +1,5 @@
 import { numberToHex } from 'web3-utils';
-import { bigIntToNumber, parseBigInt } from '../utils/bn';
+import { bigIntToNumber } from '../utils/bn';
 import { JsonRpcResponse } from './jsonrpc';
 import {
     GethMemStats,
@@ -62,7 +62,7 @@ export const hashRate = (): EthRequest<[], number> => ({
 /** Returns the current price per gas in wei */
 export const gasPrice = (): EthRequest<[], number | string> => ({
     method: 'eth_gasPrice',
-    response: r => parseBigInt(r.result),
+    response: r => bigIntToNumber(r.result),
 });
 
 /** Returns number of peers currently connected to the client */

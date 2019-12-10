@@ -52,14 +52,12 @@ class SystemStats {
     }
 }
 
-export class StatsCollector implements ManagedResource {
+export class InternalStatsCollector implements ManagedResource {
     private readonly sources: SourceHandle<Stats>[] = [];
     private active: boolean = true;
     private collectTimer: NodeJS.Timer | null = null;
 
-    constructor(
-        public config: { collectInterval: number; dest: HecClient; basePrefix?: string; fields?: { [k: string]: any } }
-    ) {
+    constructor(public config: { collectInterval: number; dest: HecClient; basePrefix?: string }) {
         this.addSource(new SystemStats(), 'system');
     }
 
@@ -80,10 +78,6 @@ export class StatsCollector implements ManagedResource {
         debug('Collecting stats from %d sources', this.sources.length);
         this.config.dest.pushMetrics({
             time,
-            fields: {
-                pid: process.pid,
-                ...this.config.fields,
-            },
             measurements: Object.fromEntries(this.collectStats().map(({ name, value }) => [name, value])),
         });
         this.start();

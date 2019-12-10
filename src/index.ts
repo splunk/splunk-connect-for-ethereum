@@ -14,8 +14,9 @@ import { shutdownAll, ManagedResource } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import LRUCache from './utils/lru';
 import { ContractInfo } from './contract';
-import { StatsCollector } from './utils/stats';
+import { InternalStatsCollector } from './utils/stats';
 import { introspectTargetNodePlatform } from './introspect';
+import { NodeStatsCollector } from './nodestats';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -49,7 +50,6 @@ class Ethlogger extends Command {
             const platformAdapter = await introspectTargetNodePlatform(client);
 
             info('Detected node platform %o', platformAdapter.name);
-            return;
 
             const hecConfig: SplunkHecConfig = {
                 url: flags['hec-url'],
@@ -58,37 +58,53 @@ class Ethlogger extends Command {
                 sourcetypes: defaultSourcetypes,
                 multipleMetricFormatEnabled: true,
                 defaultMetadata: {
-                    host: 'lando',
+                    host: platformAdapter.enode || transport.originHost,
                     source: 'ethlogger',
                 },
+                defaultFields: {
+                    enode: platformAdapter.enode || undefined,
+                    platform: platformAdapter.name,
+                },
+                eventIndex: 'hecevents',
                 metricsIndex: 'somemetrics',
+                internalMetricsIndex: 'somemetrics',
+                metricsPrefix: 'eth',
             };
 
             const hec = new HecClient(hecConfig);
             const output = new HecOutput(hec, hecConfig);
             addResource(output);
 
-            const statsCollector = new StatsCollector({
+            const internalStatsCollector = new InternalStatsCollector({
                 collectInterval: 1000,
                 dest: hec.clone({
                     defaultMetadata: {
                         host: process.env.HOST || process.env.HOSTNAME,
-                        source: 'ethlogger://internals',
+                        source: 'ethlogger:internal',
                         sourcetype: 'ethlogger:stats',
-                        index: 'somemetrics',
+                        index: hecConfig.internalMetricsIndex,
+                    },
+                    defaultFields: {
+                        version: this.config.version,
+                        nodeVersion: process.version,
+                        pid: process.pid,
                     },
                     flushTime: 10000,
                     multipleMetricFormatEnabled: true,
                 }),
                 basePrefix: 'ethlogger.internal',
-                fields: {
-                    version: this.config.version,
-                    nodeVersion: process.version,
-                },
             });
-            addResource(statsCollector);
-            statsCollector.addSource(transport, 'ethTransport');
-            statsCollector.addSource(hec, 'hec');
+            addResource(internalStatsCollector);
+            internalStatsCollector.addSource(transport, 'ethTransport');
+            internalStatsCollector.addSource(hec, 'hec');
+
+            const nodeStatsCollector = new NodeStatsCollector({
+                ethClient: client,
+                platformAdapter,
+                output,
+                interval: 1000,
+            });
+            addResource(nodeStatsCollector);
 
             const checkpoints = addResource(
                 new Checkpoint({
@@ -105,7 +121,7 @@ class Ethlogger extends Command {
             }
 
             const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 25_000 });
-            statsCollector.addSource(contractInfoCache, 'contractInfoCache');
+            internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
 
             const blockWatcher = new BlockWatcher({
                 checkpoints,
@@ -116,11 +132,15 @@ class Ethlogger extends Command {
                 contractInfoCache,
             });
             resources.unshift(blockWatcher);
-            statsCollector.addSource(blockWatcher, 'blockWatcher');
+            internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
 
-            statsCollector.start();
+            internalStatsCollector.start();
 
-            await Promise.race([blockWatcher.start(), waitForSignal('SIGINT')]);
+            await Promise.race([
+                Promise.all([blockWatcher.start(), nodeStatsCollector.start()]),
+                waitForSignal('SIGINT'),
+            ]);
+
             info('Recieved signal, proceeding with shutdown sequence');
             const cleanShutdown = await shutdownAll(resources, 10_000);
             info('Shutdown complete.');

@@ -1,5 +1,5 @@
 import { AbiDecoder } from './abi';
-import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges } from './blockrange';
+import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { Checkpoint } from './checkpoint';
 import { ContractInfo, getContractInfo } from './contract';
 import { EthereumClient } from './eth/client';
@@ -13,6 +13,7 @@ import { parallel, sleep } from './utils/async';
 import { Cache, cached, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
+import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 
 const { debug, info, warn, error, trace } = createModuleDebug('block');
 
@@ -51,6 +52,8 @@ export class BlockWatcher implements ManagedResource {
     private pollInterval: number = 500;
     private abortManager = new AbortManager();
     private endCallbacks: Array<() => void> = [];
+    private waitAfterFailure: WaitTime;
+    private chunkQueueMaxSize: number;
     private contractInfoCache: Cache<string, Promise<ContractInfo>> = new NoopCache();
     private counters = { ...initialCounters };
 
@@ -61,12 +64,16 @@ export class BlockWatcher implements ManagedResource {
         abiDecoder,
         startAt = 'latest',
         contractInfoCache,
+        waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
+        chunkQueueMaxSize = 1000,
     }: {
         ethClient: EthereumClient;
         checkpoints: Checkpoint;
         output: Output;
         abiDecoder?: AbiDecoder;
         startAt?: StartBlock;
+        waitAfterFailure?: WaitTime;
+        chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
     }) {
         this.ethClient = ethClient;
@@ -74,6 +81,8 @@ export class BlockWatcher implements ManagedResource {
         this.output = output;
         this.abiDecoder = abiDecoder;
         this.startAt = startAt;
+        this.waitAfterFailure = waitAfterFailure;
+        this.chunkQueueMaxSize = chunkQueueMaxSize;
         if (contractInfoCache) {
             this.contractInfoCache = contractInfoCache;
         }
@@ -104,6 +113,7 @@ export class BlockWatcher implements ManagedResource {
             );
         }
 
+        let failures = 0;
         while (this.active) {
             try {
                 const latestBlockNumber = await ethClient.request(blockNumber());
@@ -120,20 +130,49 @@ export class BlockWatcher implements ManagedResource {
                         throw ABORT;
                     }
                     await parallel(
-                        chunkedBlockRanges(range, this.chunkSize).map(chunk => async () => {
+                        chunkedBlockRanges(range, this.chunkSize, this.chunkQueueMaxSize).map(chunk => async () => {
                             if (!this.active) {
                                 return;
                             }
-                            await this.processChunk(chunk);
+                            await retry(() => this.processChunk(chunk), {
+                                attempts: 100,
+                                waitBetween: this.waitAfterFailure,
+                                taskName: `block range ${serializeBlockRange(chunk)}`,
+                                abortManager: this.abortManager,
+                                onRetry: attempt =>
+                                    warn(
+                                        'Retrying to process block range %s (attempt %d)',
+                                        serializeBlockRange(chunk),
+                                        attempt
+                                    ),
+                            });
                         }),
                         { maxConcurrent: 3, abortManager: this.abortManager }
                     );
+                    failures = 0;
                 }
             } catch (e) {
+                if (e === ABORT) {
+                    break;
+                }
                 error('Error in block watcher polling loop', e);
+                failures++;
+                const waitTime = resolveWaitTime(this.waitAfterFailure, failures);
+                if (waitTime > 0) {
+                    warn('Waiting for %d ms after %d consecutive failures', waitTime, failures);
+                    await this.abortManager.race(sleep(waitTime));
+                }
             }
             if (this.active) {
-                await sleep(this.pollInterval);
+                try {
+                    await this.abortManager.race(sleep(this.pollInterval));
+                } catch (e) {
+                    if (e === ABORT) {
+                        break;
+                    } else {
+                        warn('Unexpected error while waiting for next polling loop iteration', e);
+                    }
+                }
             }
         }
         if (this.endCallbacks != null) {
@@ -144,7 +183,7 @@ export class BlockWatcher implements ManagedResource {
 
     private async processChunk(chunk: BlockRange) {
         const startTime = Date.now();
-        info('Processing chunk %o', chunk);
+        info('Processing chunk %s', serializeBlockRange(chunk));
 
         debug('Requesting block range', chunk);
         const blockRequestStart = Date.now();
@@ -155,7 +194,12 @@ export class BlockWatcher implements ManagedResource {
         for (const block of blocks) {
             await this.processBlock(block);
         }
-        info('Completed chunk %o (%d blocks) in %d ms', chunk, blocks.length, Date.now() - startTime);
+        info(
+            'Completed %d blocks of chunk %o in %d ms',
+            blocks.length,
+            serializeBlockRange(chunk),
+            Date.now() - startTime
+        );
     }
 
     private async processBlock(block: RawBlockResponse) {

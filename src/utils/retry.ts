@@ -73,3 +73,9 @@ export const exponentialBackoff = ({ min, max }: { min: number; max?: number }):
     const t = Math.round(Math.random() * min * Math.pow(2, attempt));
     return max != null ? Math.min(max, t) : t;
 };
+
+export const linearBackoff = ({ min, max, step }: { min: number; max: number; step: number }): WaitTimeFn => (
+    attempt: number
+) => {
+    return Math.min(max, min + (attempt - 1) * step);
+};

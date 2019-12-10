@@ -1,6 +1,6 @@
 import { EthereumClient } from '../eth/client';
 import { gethMemStats, gethMetrics, gethNodeInfo, gethTxpool } from '../eth/requests';
-import { GethNodeInfo, GethMetrics, GethMemStats } from '../eth/responses';
+import { GethMemStats, GethMetrics, GethNodeInfo } from '../eth/responses';
 import { OutputMessage } from '../output';
 import { createModuleDebug } from '../utils/debug';
 import { GenericNodeAdapter } from './generic';
@@ -164,7 +164,19 @@ export async function captureGethMetrics(ethClient: EthereumClient, captureTime:
 
 export async function captureTxpoolData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
     const txpool = await ethClient.request(gethTxpool());
-    return [];
+    const pending = Object.values(txpool.pending).flatMap(o => Object.values(o));
+    const queued = Object.values(txpool.queued).flatMap(o => Object.values(o));
+    return [
+        {
+            type: 'node:metrics',
+            time: captureTime,
+            metrics: [
+                { name: 'geth.txpool.pending', value: pending.length },
+                { name: 'geth.txpool.queued', value: queued.length },
+            ],
+        },
+        // TODO: send messages for raw pending/queued transactions
+    ];
 }
 
 export class GethAdapter extends GenericNodeAdapter {

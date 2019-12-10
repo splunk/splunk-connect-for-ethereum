@@ -49,13 +49,19 @@ export function serializeBlockRange(range: BlockRange): string {
 }
 
 /** Creates chunks of up to `maxChunkSize` covering the same blocks as the original range */
-export function chunkedBlockRanges(range: BlockRange, maxChunkSize: number): BlockRange[] {
+export function chunkedBlockRanges(
+    range: BlockRange,
+    maxChunkSize: number,
+    maxChunks: number = Infinity
+): BlockRange[] {
     const result = [];
     let start = range.from;
-    for (; start < range.to - 2 - maxChunkSize; start += maxChunkSize) {
+    for (; start < range.to - 2 - maxChunkSize && result.length < maxChunks; start += maxChunkSize) {
         result.push({ from: start, to: start + maxChunkSize - 1 });
     }
-    result.push({ from: start, to: range.to });
+    if (result.length < maxChunks) {
+        result.push({ from: start, to: range.to });
+    }
     return result;
 }
 

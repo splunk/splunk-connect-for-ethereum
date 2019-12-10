@@ -1,23 +1,40 @@
+import { readFileSync } from 'fs-extra';
+import { join } from 'path';
 import {
+    durationStringToMs,
     formatGethMemStats,
     formatGethMetrics,
     parseAbbreviatedNumber,
-    durationStringToMs,
 } from '../../src/platforms/geth';
-import { readFileSync } from 'fs-extra';
-import { join } from 'path';
 
 // import { EthereumClient } from '../../src/eth/client';
 // import { HttpTransport } from '../../src/eth/http';
-// import { gethMemStats, gethMetrics } from '../../src/eth/requests';
-// test('temp', async () => {
+// import { gethTxpool } from '../../src/eth/requests';
+// import { NodeMetricsMessage } from '../../src/msgs';
+// test.only('temp', async () => {
 //     const ethClient = new EthereumClient(
 //         new HttpTransport({
 //             url: 'http://localhost:22000',
 //         })
 //     );
 
-//     console.log(JSON.stringify(await ethClient.request(gethMetrics(false))));
+//     // console.log(JSON.stringify(await ethClient.request(gethTxpool())));
+
+//     const msgs = await captureGethMetrics(ethClient, Date.now());
+
+//     const metrics: any = {};
+
+//     for (const msg of msgs) {
+//         if (msg.type === 'node:metrics') {
+//             for (const { name, value } of msg.metrics) {
+//                 metrics[`metric_name:eth.foo123.${name}`] = value;
+//             }
+//         }
+//     }
+
+//     console.log(JSON.stringify(metrics, null, 2));
+//     console.log(JSON.stringify(metrics).length);
+
 //     // console.log(JSON.stringify(await ethClient.request(gethMemStats())));
 // });
 

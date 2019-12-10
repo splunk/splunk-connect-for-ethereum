@@ -49,6 +49,15 @@ export class HttpTransport implements EthereumTransport {
             : new HttpAgent(baseAgentOptions);
     }
 
+    public get source() {
+        const u = new URL(this.config.url);
+        return `jsonprc+${u.origin}`;
+    }
+
+    public get originHost() {
+        return new URL(this.config.url).hostname;
+    }
+
     public async send(request: JsonRpcRequest): Promise<JsonRpcResponse> {
         debug('Sending JSON RPC request: %o', request.method);
         const result = await this.sendInternal(request);

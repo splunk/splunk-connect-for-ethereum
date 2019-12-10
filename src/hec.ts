@@ -112,6 +112,8 @@ export interface HecConfig {
     token: string | null;
     /** Defaults for host, source, sourcetype and index. Can be overriden for each message */
     defaultMetadata?: Metadata;
+    /** Default set of fields to apply to all events and metrics sent with this HEC client */
+    defaultFields?: Fields;
     /** Maximum number of entries in the HEC message queue before flushing it */
     maxQueueEntries?: number;
     /** Maximum number of bytes in the HEC message queue before flushing it */
@@ -145,6 +147,7 @@ export interface HecConfig {
 const CONFIG_DEFAULTS = {
     token: null,
     defaultMetadata: {},
+    defaultFields: {},
     maxQueueEntries: -1,
     maxQueueSize: 512_000,
     flushTime: 0,
@@ -249,18 +252,18 @@ export class HecClient {
     }
 
     public pushEvent(event: Event) {
-        const serialized = serializeEvent(event, this.config.defaultMetadata);
+        const serialized = serializeEvent(event, this.config.defaultMetadata, this.config.defaultFields);
         this.pushSerializedMsg(serialized);
     }
 
     public pushMetric(metric: Metric) {
-        const serialized = serializeMetric(metric, this.config.defaultMetadata);
+        const serialized = serializeMetric(metric, this.config.defaultMetadata, this.config.defaultFields);
         this.pushSerializedMsg(serialized);
     }
 
     public pushMetrics(metrics: MultiMetrics) {
         if (this.config.multipleMetricFormatEnabled) {
-            const serialized = serializeMetrics(metrics, this.config.defaultMetadata);
+            const serialized = serializeMetrics(metrics, this.config.defaultMetadata, this.config.defaultFields);
             this.pushSerializedMsg(serialized);
         } else {
             const { measurements, ...rest } = metrics;

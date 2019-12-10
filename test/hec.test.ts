@@ -111,6 +111,7 @@ test('parseHecConfig', () => {
         })
     ).toMatchInlineSnapshot(`
         Object {
+          "defaultFields": Object {},
           "defaultMetadata": Object {},
           "flushTime": 0,
           "gzip": true,

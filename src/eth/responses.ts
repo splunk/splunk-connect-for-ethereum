@@ -97,7 +97,28 @@ export type GethMemStats = {
     [name: string]: number | any;
 };
 
-export type GethTxpool = any; // TODO
+export interface GethTxpoolTransaction {
+    blockHash: string | null;
+    blockNumber: string | null;
+    from: string;
+    gas: string;
+    gasPrice: string;
+    hash: string;
+    input: string;
+    nonce: string;
+    to: string;
+    transactionIndex: string | null;
+    value: string | null;
+}
+
+export interface GethTxpoolMap {
+    [originAddress: string]: { [nounce: string]: GethTxpoolTransaction[] };
+}
+
+export interface GethTxpool {
+    pending: GethTxpoolMap;
+    queued: GethTxpoolMap;
+}
 
 export type GethPeers = any; // TODO
 
