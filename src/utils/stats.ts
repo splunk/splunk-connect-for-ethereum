@@ -117,8 +117,12 @@ export function httpClientStats(agentStatus: AgentStatus): Stats {
     };
 }
 
+// Calculate nth percentile with linear interpolation between closest ranks
 function percentile(n: number, measurements: number[]): number {
-    return measurements[Math.max(0, Math.ceil((measurements.length * n) / 100) - 1)];
+    const len = measurements.length;
+    const pos = (len * n) / 100 - 1;
+    const lower = measurements[Math.max(0, Math.floor(pos))];
+    return lower + (measurements[Math.min(Math.max(0, Math.ceil(pos)), len - 1)] - lower) * (pos % 1);
 }
 
 const memo = <T>(fn: () => T) => {
@@ -155,7 +159,7 @@ export class AggregateMetric {
         }
         const last = measurements[count - 1];
         const sum = measurements.reduce((a, b) => a + b, 0);
-        const sorted = memo(() => [...measurements].sort());
+        const sorted = memo(() => [...measurements].sort((a, b) => a - b));
         const stats = {
             count: enabledAggregations?.count ? count : undefined,
             sum: enabledAggregations?.sum ? sum : undefined,

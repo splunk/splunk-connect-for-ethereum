@@ -19,7 +19,7 @@ test('AggregateMetric', () => {
           "foo.count": 9,
           "foo.max": 36,
           "foo.min": 1,
-          "foo.p99": 5,
+          "foo.p99": 34.38,
           "foo.sum": 68,
         }
     `);
@@ -40,6 +40,16 @@ test('AggregateMetric', () => {
           "some.prefix.foo.p80": 1,
           "some.prefix.foo.p90": 1,
           "some.prefix.foo.p99": 1,
+        }
+    `);
+
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5].forEach(v => m.push(v));
+    expect(m.flush('foo', { p80: true, p90: true, p95: true, p99: true })).toMatchInlineSnapshot(`
+        Object {
+          "foo.p80": 1,
+          "foo.p90": 1,
+          "foo.p95": 2.200000000000003,
+          "foo.p99": 4.439999999999998,
         }
     `);
 });
