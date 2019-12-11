@@ -19,12 +19,15 @@ test('AggregateMetric', () => {
           "foo.count": 9,
           "foo.max": 36,
           "foo.min": 1,
-          "foo.p95": 5,
           "foo.p99": 5,
           "foo.sum": 68,
         }
     `);
-    expect(m.flush('foo')).toMatchInlineSnapshot(`Object {}`);
+    expect(m.flush('foo')).toMatchInlineSnapshot(`
+        Object {
+          "foo.count": 0,
+        }
+    `);
 
     m.push(1);
 
