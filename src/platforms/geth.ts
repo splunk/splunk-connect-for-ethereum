@@ -204,10 +204,11 @@ export class GethAdapter extends GenericNodeAdapter {
     }
 
     public async captureNodeStats(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
-        const [metrics, txpool] = await Promise.all([
+        const [genericStats, metrics, txpool] = await Promise.all([
+            super.captureNodeStats(ethClient, captureTime),
             captureGethMetrics(ethClient, captureTime),
             captureTxpoolData(ethClient, captureTime),
         ]);
-        return [...metrics, ...txpool];
+        return [...genericStats, ...metrics, ...txpool];
     }
 }

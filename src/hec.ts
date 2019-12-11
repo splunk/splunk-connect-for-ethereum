@@ -8,7 +8,7 @@ import { AbortSignal } from 'node-fetch/externals';
 import { sleep } from './utils/async';
 import { isHttps, isSuccessfulStatus } from './utils/http';
 import { WaitTime, exponentialBackoff, resolveWaitTime } from './utils/retry';
-import { httpClientStats as httpAgentStats } from './utils/stats';
+import { httpClientStats as httpAgentStats, AggregateMetric } from './utils/stats';
 
 const { debug, info, error, trace } = createModuleDebug('hec');
 
@@ -206,6 +206,7 @@ export function isMetric(msg: Event | Metric): msg is Metric {
 }
 
 const initialCounters = {
+    errorCount: 0,
     retryCount: 0,
     queuedMessages: 0,
     sentMessages: 0,
@@ -224,6 +225,12 @@ export class HecClient {
     private httpAgent: HttpAgent | HttpsAgent;
     private counters = {
         ...initialCounters,
+    };
+    private aggregates = {
+        requestDuration: new AggregateMetric(),
+        batchSize: new AggregateMetric(),
+        batchSizeBytes: new AggregateMetric(),
+        batchSizeCompressed: new AggregateMetric(),
     };
 
     public constructor(config: HecConfig) {
@@ -309,7 +316,14 @@ export class HecClient {
     }
 
     public flushStats() {
-        const stats = this.stats;
+        const stats = {
+            ...this.counters,
+            ...this.aggregates.requestDuration.flush('requestDuration'),
+            ...this.aggregates.batchSize.flush('batchSize'),
+            ...this.aggregates.batchSizeBytes.flush('batchSizeBytes'),
+            ...this.aggregates.batchSizeCompressed.flush('batchSizeCompressed'),
+            activeFlushingCount: this.activeFlushing.size,
+        };
         this.counters = { ...initialCounters };
         return stats;
     }
@@ -336,7 +350,6 @@ export class HecClient {
             return Promise.resolve();
         }
         const queue = this.queue;
-
         this.queue = [];
         this.queueSizeBytes = 0;
 
@@ -359,6 +372,11 @@ export class HecClient {
         const rawBodySize = rawBody.length;
         const body = this.config.gzip ? await compressBody(rawBody) : rawBody;
         const bodySize = body.length;
+        this.aggregates.batchSize.push(msgs.length);
+        this.aggregates.batchSizeBytes.push(rawBodySize);
+        if (this.config.gzip) {
+            this.aggregates.batchSizeCompressed.push(bodySize);
+        }
         const headers: { [k: string]: string } = {
             'Content-Length': String(bodySize),
             'User-Agent': this.config.userAgent,
@@ -374,6 +392,7 @@ export class HecClient {
         while (true) {
             attempt++;
             try {
+                const requestStart = Date.now();
                 const response = await fetch(this.config.url, {
                     method: 'POST',
                     headers,
@@ -382,6 +401,7 @@ export class HecClient {
                     signal: abortSignal,
                     timeout: this.config.timeout,
                 });
+                this.aggregates.requestDuration.push(Date.now() - requestStart);
 
                 if (!isSuccessfulStatus(response.status)) {
                     if (debug.enabled) {
@@ -407,6 +427,7 @@ export class HecClient {
                 this.counters.transferredBytes += bodySize;
                 break;
             } catch (e) {
+                this.counters.errorCount++;
                 error('Failed to send batch to HEC (attempt %s)', attempt, e);
                 if (abortSignal.aborted) {
                     throw new Error('Aborted');
@@ -432,7 +453,7 @@ export class HecClient {
         }
         if (this.flushTimer == null) {
             this.flushTimer = setTimeout(() => {
-                debug('Flushing HEC queue for time limit being reachted');
+                debug('Flushing HEC queue for time limit being reached');
                 this.flushInternal();
             }, this.config.flushTime || 0);
         }

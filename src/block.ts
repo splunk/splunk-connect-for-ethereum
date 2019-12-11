@@ -14,6 +14,7 @@ import { Cache, cached, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
+import { AggregateMetric } from './utils/stats';
 
 const { debug, info, warn, error, trace } = createModuleDebug('block');
 
@@ -56,6 +57,11 @@ export class BlockWatcher implements ManagedResource {
     private chunkQueueMaxSize: number;
     private contractInfoCache: Cache<string, Promise<ContractInfo>> = new NoopCache();
     private counters = { ...initialCounters };
+    private aggregates = {
+        blockProcessTime: new AggregateMetric(),
+        txProcessTime: new AggregateMetric(),
+        eventProcessTime: new AggregateMetric(),
+    };
 
     constructor({
         ethClient,
@@ -203,6 +209,7 @@ export class BlockWatcher implements ManagedResource {
     }
 
     private async processBlock(block: RawBlockResponse) {
+        const startTime = Date.now();
         const outputMessages: OutputMessage[] = [];
         const formattedBlock = formatBlock(block);
         if (formattedBlock.number == null) {
@@ -225,6 +232,7 @@ export class BlockWatcher implements ManagedResource {
         txMsgs.forEach(msgs => msgs.forEach(msg => this.output.write(msg)));
         this.checkpoints.markBlockComplete(formattedBlock.number);
         this.counters.blocksProcessed++;
+        this.aggregates.blockProcessTime.push(Date.now() - startTime);
     }
 
     private async processTransaction(
@@ -258,8 +266,9 @@ export class BlockWatcher implements ManagedResource {
             callInfo = this.abiDecoder.decodeMethod(rawTx.input, toInfo.fingerprint);
         }
 
-        trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
         this.counters.transactionsProcessed++;
+        this.aggregates.txProcessTime.push(Date.now() - startTime);
+        trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
         return [
             {
                 type: 'transaction',
@@ -278,8 +287,10 @@ export class BlockWatcher implements ManagedResource {
     }
 
     private async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
+        const startTime = Date.now();
         const contractInfo = await this.lookupContractInfo(evt.address);
         const decodedEventData = this.abiDecoder?.decodeLogEvent(evt, contractInfo?.fingerprint);
+        this.aggregates.eventProcessTime.push(Date.now() - startTime);
         this.counters.transactionLogEventsProcessed++;
         return {
             type: 'event',
@@ -315,8 +326,14 @@ export class BlockWatcher implements ManagedResource {
     }
 
     public flushStats() {
-        const counters = this.counters;
+        const stats = {
+            ...this.counters,
+            ...this.aggregates.blockProcessTime.flush('blockProcessTime'),
+            ...this.aggregates.txProcessTime.flush('txProcessTime'),
+            ...this.aggregates.eventProcessTime.flush('eventProcessTime'),
+            abortHandles: this.abortManager.size,
+        };
         this.counters = { ...initialCounters };
-        return { ...counters, abortHandles: this.abortManager.size };
+        return stats;
     }
 }

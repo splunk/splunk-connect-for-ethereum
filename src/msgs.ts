@@ -196,3 +196,9 @@ export interface NodeMetricsMessage {
     time: number;
     metrics: Array<{ name: string; value: number }>;
 }
+
+export interface QuorumProtocolMessage {
+    type: 'quorum:protocol';
+    time: number;
+    data: { consensusMechanism: 'istanbul' | 'raft'; [k: string]: any };
+}

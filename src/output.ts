@@ -3,9 +3,10 @@ import { HecClient } from './hec';
 import {
     BlockMessage,
     LogEventMessage,
-    PendingTransactionMessage,
-    TransactionMessage,
     NodeMetricsMessage,
+    PendingTransactionMessage,
+    QuorumProtocolMessage,
+    TransactionMessage,
 } from './msgs';
 import { createDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
@@ -18,7 +19,8 @@ export type OutputMessage =
     | TransactionMessage
     | PendingTransactionMessage
     | LogEventMessage
-    | NodeMetricsMessage;
+    | NodeMetricsMessage
+    | QuorumProtocolMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -63,10 +65,20 @@ export class HecOutput implements Output, ManagedResource {
                 const metricsPrefix = this.config.metricsPrefix ? this.config.metricsPrefix + '.' : '';
                 this.hec.pushMetrics({
                     time: msg.time,
-                    measurements: Object.fromEntries(msg.metrics.map(m => [`${metricsPrefix}${m.name}`, m.value])),
+                    measurements: Object.fromEntries(msg.metrics.map(m => [metricsPrefix + m.name, m.value])),
                     metadata: {
                         index: this.config.metricsIndex,
                         sourcetype: this.config.sourcetypes.nodeMetrics,
+                    },
+                });
+                break;
+            case 'quorum:protocol':
+                this.hec.pushEvent({
+                    time: msg.time,
+                    body: msg.data,
+                    metadata: {
+                        index: this.config.eventIndex,
+                        sourcetype: this.config.sourcetypes.quorumProtocol,
                     },
                 });
                 break;

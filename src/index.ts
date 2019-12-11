@@ -5,18 +5,18 @@ import { BlockWatcher } from './block';
 import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
 import { defaultSourcetypes, SplunkHecConfig } from './config';
+import { ContractInfo } from './contract';
 import { BatchedEthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
-import { HecOutput } from './output';
-import { createModuleDebug, enableTraceLogging } from './utils/debug';
-import { shutdownAll, ManagedResource } from './utils/resource';
-import { waitForSignal } from './utils/signal';
-import LRUCache from './utils/lru';
-import { ContractInfo } from './contract';
-import { InternalStatsCollector } from './utils/stats';
 import { introspectTargetNodePlatform } from './introspect';
 import { NodeStatsCollector } from './nodestats';
+import { HecOutput } from './output';
+import { createModuleDebug, enableTraceLogging } from './utils/debug';
+import LRUCache from './utils/lru';
+import { ManagedResource, shutdownAll } from './utils/resource';
+import { waitForSignal } from './utils/signal';
+import { InternalStatsCollector } from './utils/stats';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -89,7 +89,7 @@ class Ethlogger extends Command {
                         nodeVersion: process.version,
                         pid: process.pid,
                     },
-                    flushTime: 10000,
+                    flushTime: 5000,
                     multipleMetricFormatEnabled: true,
                 }),
                 basePrefix: 'ethlogger.internal',
@@ -105,6 +105,7 @@ class Ethlogger extends Command {
                 interval: 1000,
             });
             addResource(nodeStatsCollector);
+            internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
 
             const checkpoints = addResource(
                 new Checkpoint({
@@ -120,7 +121,7 @@ class Ethlogger extends Command {
                 await abiDecoder.loadAbiDir(flags['eth-abi-dir']);
             }
 
-            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 25_000 });
+            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 1000 });
             internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
 
             const blockWatcher = new BlockWatcher({
@@ -137,7 +138,14 @@ class Ethlogger extends Command {
             internalStatsCollector.start();
 
             await Promise.race([
-                Promise.all([blockWatcher.start(), nodeStatsCollector.start()]),
+                Promise.all(
+                    [blockWatcher.start(), nodeStatsCollector.start()].map(p =>
+                        p.catch(e => {
+                            error('Error in ethlogger task:', e);
+                            return Promise.reject(e);
+                        })
+                    )
+                ),
                 waitForSignal('SIGINT'),
             ]);
 

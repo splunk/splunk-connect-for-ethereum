@@ -1,18 +1,28 @@
-import { NodePlatformAdapter } from './platforms';
-import { ManagedResource } from './utils/resource';
-import { sleep, alwaysResolve } from './utils/async';
-import { Output } from './output';
-import { AbortManager, ABORT } from './utils/abort';
-import { createModuleDebug } from './utils/debug';
 import { EthereumClient } from './eth/client';
-import { WaitTime, resolveWaitTime, linearBackoff } from './utils/retry';
+import { Output } from './output';
+import { NodePlatformAdapter } from './platforms';
+import { ABORT, AbortManager } from './utils/abort';
+import { alwaysResolve, sleep } from './utils/async';
+import { createModuleDebug } from './utils/debug';
+import { ManagedResource } from './utils/resource';
+import { linearBackoff, resolveWaitTime, WaitTime } from './utils/retry';
+import { AggregateMetric } from './utils/stats';
 
 const { debug, info, error } = createModuleDebug('nodestats');
+
+const initialCounters = {
+    collectCount: 0,
+    errorCount: 0,
+};
 
 export class NodeStatsCollector implements ManagedResource {
     private abort = new AbortManager();
     private lastPromise: Promise<number> | null = null;
     private waitAfterFailure: WaitTime;
+    private counters = { ...initialCounters };
+    private aggregates = {
+        collectDuration: new AggregateMetric(),
+    };
     constructor(
         private config: {
             platformAdapter: NodePlatformAdapter;
@@ -31,17 +41,20 @@ export class NodeStatsCollector implements ManagedResource {
         while (!this.abort.aborted) {
             const startTime = Date.now();
             try {
+                this.counters.collectCount++;
                 const p = this.collect();
                 this.lastPromise = p;
                 const results = await p;
+                this.aggregates.collectDuration.push(Date.now() - startTime);
                 info('Collected %d nodestats messages in %d ms', results, Date.now() - startTime);
                 failed = 0;
             } catch (e) {
                 if (e === ABORT) {
-                    return;
+                    break;
                 }
+                this.counters.errorCount++;
                 failed++;
-                error('Failed to collecto node stats (%d consecutive failures):', failed, e);
+                error('Failed to collect node stats (%d consecutive failures):', failed, e);
                 const waitAfterFailure = resolveWaitTime(this.waitAfterFailure, failed);
                 debug('Waiting for %d ms after failure #%d', waitAfterFailure, failed);
                 await this.abort.race(sleep(waitAfterFailure));
@@ -63,6 +76,12 @@ export class NodeStatsCollector implements ManagedResource {
             msgs.forEach(msg => output.write(msg));
         }
         return msgs.length;
+    }
+
+    public flushStats() {
+        const stats = { ...this.counters, ...this.aggregates.collectDuration.flush('collectDuration') };
+        this.counters = { ...initialCounters };
+        return stats;
     }
 
     public async shutdown() {

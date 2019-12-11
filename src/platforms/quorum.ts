@@ -20,7 +20,17 @@ export async function captureIstanbulData(ethClient: EthereumClient, captureTime
         ethClient.request(quroumIstanbulSnapshot()),
         ethClient.request(quorumIstanbulCandidates()),
     ]);
-    return []; // TODO
+    return [
+        {
+            type: 'quorum:protocol',
+            time: captureTime,
+            data: {
+                consensusMechanism: 'istanbul',
+                snapshot,
+                candidates,
+            },
+        },
+    ];
 }
 
 export async function captureRaftData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
@@ -30,7 +40,18 @@ export async function captureRaftData(ethClient: EthereumClient, captureTime: nu
         ethClient.request(quorumRaftLeader()),
         ethClient.request(quorumRaftCluster()),
     ]);
-    return []; // TODO
+    return [
+        {
+            type: 'quorum:protocol',
+            time: captureTime,
+            data: {
+                consensusMechanism: 'raft',
+                role,
+                leader,
+                cluster,
+            },
+        },
+    ];
 }
 
 export class QuorumAdapter extends GethAdapter {

@@ -4,7 +4,7 @@ import { createModuleDebug } from '../utils/debug';
 import { isHttps } from '../utils/http';
 import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { EthereumTransport } from './transport';
-import { httpClientStats } from '../utils/stats';
+import { httpClientStats, AggregateMetric } from '../utils/stats';
 
 const { debug, trace } = createModuleDebug('eth:http');
 
@@ -25,8 +25,6 @@ const CONFIG_DEFAULTS = {
 
 const initialCounters = {
     requests: 0,
-    batches: 0,
-    sumBatchSize: 0,
     errors: 0,
 };
 
@@ -34,6 +32,7 @@ export class HttpTransport implements EthereumTransport {
     private config: HttpTransportConfig & typeof CONFIG_DEFAULTS;
     private httpAgent: HttpAgent | HttpsAgent;
     private counters = { ...initialCounters };
+    private aggregates = { requestDuration: new AggregateMetric(), batchSize: new AggregateMetric() };
 
     constructor(config: HttpTransportConfig) {
         this.config = { ...CONFIG_DEFAULTS, ...config };
@@ -83,10 +82,7 @@ export class HttpTransport implements EthereumTransport {
         trace(`Sending JSON RPC request over HTTP: %O`, request);
         const body = JSON.stringify(request);
         this.counters.requests++;
-        if (Array.isArray(request)) {
-            this.counters.batches++;
-            this.counters.sumBatchSize += request.length;
-        }
+        this.aggregates.batchSize.push(Array.isArray(request) ? request.length : 1);
         try {
             const response = await fetch(this.config.url, {
                 method: 'POST',
@@ -98,24 +94,22 @@ export class HttpTransport implements EthereumTransport {
                 agent: this.httpAgent,
                 timeout: this.config.timeout,
             });
-
             if (response.status < 200 || response.status > 299) {
                 throw new Error(
                     `JSON RPC service ${this.config.url} responded with HTTP status ${response.status} (${response.statusText})`
                 );
             }
-
             const data = await response.json();
-
             trace('Received JSON RPC response:\n%O', data);
             if (!isValidJsonRpcResponse(data)) {
                 throw new Error('Invalid JSON RPC response');
             }
-
+            this.aggregates.requestDuration.push(Date.now() - startTime);
             debug('Completed JSON RPC request in %d ms', Date.now() - startTime);
             return data as JsonRpcResponse | JsonRpcResponse[];
         } catch (e) {
             this.counters.errors++;
+            this.aggregates.requestDuration.push(Date.now() - startTime);
             throw e;
         }
     }
@@ -128,7 +122,11 @@ export class HttpTransport implements EthereumTransport {
     }
 
     public flushStats() {
-        const stats = this.stats;
+        const stats = {
+            ...this.counters,
+            ...this.aggregates.requestDuration.flush('requestDuration'),
+            ...this.aggregates.batchSize.flush('batchSize'),
+        };
         this.counters = { ...initialCounters };
         return stats;
     }
