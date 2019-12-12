@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
-import { AbiDecoder } from './abi';
+import { AbiRepository } from './abi';
 import { BlockWatcher } from './block';
 import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
@@ -21,7 +21,7 @@ import { InternalStatsCollector } from './utils/stats';
 const { debug, error, info } = createModuleDebug('cli');
 
 class Ethlogger extends Command {
-    static description = 'Splunk Connect for Ethereum and Quorum';
+    static description = 'Splunk Connect for Ethereum';
     static flags = CLI_FLAGS;
 
     async run() {
@@ -98,15 +98,6 @@ class Ethlogger extends Command {
             internalStatsCollector.addSource(transport, 'ethTransport');
             internalStatsCollector.addSource(hec, 'hec');
 
-            const nodeStatsCollector = new NodeStatsCollector({
-                ethClient: client,
-                platformAdapter,
-                output,
-                interval: 1000,
-            });
-            addResource(nodeStatsCollector);
-            internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
-
             const checkpoints = addResource(
                 new Checkpoint({
                     path: 'checkpoints.json',
@@ -114,21 +105,32 @@ class Ethlogger extends Command {
             );
             await checkpoints.initialize();
 
-            let abiDecoder;
+            let abiRepo;
             if (flags['eth-abi-dir']) {
-                abiDecoder = new AbiDecoder();
-                resources.unshift(abiDecoder);
-                await abiDecoder.loadAbiDir(flags['eth-abi-dir']);
+                abiRepo = new AbiRepository();
+                resources.unshift(abiRepo);
+                await abiRepo.loadAbiDir(flags['eth-abi-dir']);
             }
 
             const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 1000 });
             internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
 
+            const nodeStatsCollector = new NodeStatsCollector({
+                ethClient: client,
+                platformAdapter,
+                abiRepo,
+                contractInfoCache,
+                output,
+                statsInterval: 1000,
+            });
+            addResource(nodeStatsCollector);
+            internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
+
             const blockWatcher = new BlockWatcher({
                 checkpoints,
                 ethClient: client,
                 output,
-                abiDecoder,
+                abiRepo: abiRepo,
                 startAt: 'genesis',
                 contractInfoCache,
             });

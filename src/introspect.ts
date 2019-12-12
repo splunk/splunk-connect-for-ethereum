@@ -30,7 +30,7 @@ export function createNodeAdapter(eth: EthereumClient, version: string): NodePla
 }
 
 export async function introspectTargetNodePlatform(eth: EthereumClient): Promise<NodePlatformAdapter> {
-    debug(`Introspecting target ethereum node`);
+    info(`Introspecting target ethereum node at %s`, eth.transport.source);
     const version = await eth.request(clientVersion());
     info('Retrieved ethereum node version: %s', version);
 

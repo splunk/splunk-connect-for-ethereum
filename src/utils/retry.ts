@@ -12,7 +12,7 @@ export function resolveWaitTime(waitTime: WaitTime, attempt: number): number {
     return typeof waitTime === 'function' ? waitTime(attempt) : waitTime;
 }
 
-export const RETRY_ABORT = '[[RETRY ABORT]]';
+export const RETRY_ABORT = Symbol('[[RETRY ABORT]]');
 
 export async function retry<R>(
     task: () => Promise<R>,

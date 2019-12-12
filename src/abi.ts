@@ -6,6 +6,7 @@ import { computeContractFingerprint } from './contract';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { RawLogResponse } from './eth/responses';
+import { parseBigInt } from './utils/bn';
 
 const { debug, warn } = createModuleDebug('abi');
 
@@ -91,12 +92,7 @@ export function decodeParameterValue(value: string | number | boolean, type: str
         if (intBits(type, 'uint') <= 53) {
             return parseInt(value as string, 10);
         } else {
-            const bn = BigInt(value);
-            if (bn > BigInt(Number.MAX_SAFE_INTEGER)) {
-                return bn.toString();
-            } else {
-                return parseInt(bn.toString(), 10);
-            }
+            return parseBigInt(value as string);
         }
     }
 
@@ -107,12 +103,7 @@ export function decodeParameterValue(value: string | number | boolean, type: str
         if (intBits(type, 'int') <= 53) {
             return parseInt(value as string, 10);
         } else {
-            const bn = BigInt(value);
-            if (bn > BigInt(Number.MAX_SAFE_INTEGER) || bn < BigInt(Number.MIN_SAFE_INTEGER)) {
-                return bn.toString();
-            } else {
-                return parseInt(bn.toString(), 10);
-            }
+            return parseBigInt(value as string);
         }
     }
 
@@ -142,7 +133,7 @@ export interface ContractAbi {
     fileName: string;
 }
 
-export class AbiDecoder implements ManagedResource {
+export class AbiRepository implements ManagedResource {
     private signatures: Map<string, AbiMatch> = new Map();
     private contracts: Map<string, ContractAbi> = new Map();
     private abiCoder: AbiCoder = require('web3-eth-abi');

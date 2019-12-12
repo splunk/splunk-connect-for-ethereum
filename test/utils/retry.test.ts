@@ -58,7 +58,7 @@ describe('retry', () => {
             { waitBetween: 3, abortManager }
         );
 
-        await expect(p).rejects.toMatchInlineSnapshot(`"[[ABORT]]"`);
+        await expect(p).rejects.toMatchInlineSnapshot(`Symbol([[ABORT]])`);
         expect(Date.now() - startTime).toBeGreaterThanOrEqual(12);
         expect(tried).toBeGreaterThanOrEqual(5);
         expect(tried).toBeLessThan(15);

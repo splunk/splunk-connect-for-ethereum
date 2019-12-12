@@ -8,11 +8,11 @@ import { bigIntToNumber } from '../utils/bn';
 const { debug, warn } = createModuleDebug('platforms:generic');
 
 export async function captureDefaultMetrics(eth: EthereumClient, captureTime: number): Promise<OutputMessage> {
-    const metrics: Array<{ name: string; value: number } | null> = await Promise.all([
-        eth.request(hashRate()).then(value => ({ name: 'hashRate', value })),
-        eth.request(peerCount()).then(value => ({ name: 'peerCount', value })),
+    const metrics: Array<[string, number] | null> = await Promise.all([
+        eth.request(hashRate()).then(value => ['hashRate', value]),
+        eth.request(peerCount()).then(value => ['peerCount', value]),
         eth.request(gasPrice()).then(
-            value => ({ name: 'gasPrice', value: bigIntToNumber(value) }),
+            value => ['gasPrice', bigIntToNumber(value)],
             e => {
                 warn('Error obtaining gas price: %s', e.message);
                 return null;
@@ -20,15 +20,15 @@ export async function captureDefaultMetrics(eth: EthereumClient, captureTime: nu
         ),
     ]);
     return {
-        type: 'node:metrics',
+        type: 'nodeMetrics',
         time: captureTime,
-        metrics: metrics.filter(m => m != null) as Array<{ name: string; value: number }>,
+        metrics: Object.fromEntries(metrics.filter(m => m != null) as Array<[string, number]>),
     };
 }
 
 export class GenericNodeAdapter implements NodePlatformAdapter {
     public readonly fullVersion: string;
-    private extractedName: string | null = 'Generic:unknown';
+    private extractedName: string | null = 'generic:unknown';
 
     constructor(clientVersion: string) {
         this.fullVersion = clientVersion;
@@ -40,7 +40,7 @@ export class GenericNodeAdapter implements NodePlatformAdapter {
     }
 
     public get name(): string {
-        return this.extractedName != null ? `Generic:${this.extractedName}` : `Generic:unknown`;
+        return this.extractedName != null ? `generic:${this.extractedName}` : `generic:unknown`;
     }
 
     public get enode(): string | null {

@@ -22,9 +22,9 @@ export async function captureIstanbulData(ethClient: EthereumClient, captureTime
     ]);
     return [
         {
-            type: 'quorum:protocol',
+            type: 'quorumProtocol',
             time: captureTime,
-            data: {
+            body: {
                 consensusMechanism: 'istanbul',
                 snapshot,
                 candidates,
@@ -42,9 +42,9 @@ export async function captureRaftData(ethClient: EthereumClient, captureTime: nu
     ]);
     return [
         {
-            type: 'quorum:protocol',
+            type: 'quorumProtocol',
             time: captureTime,
-            data: {
+            body: {
                 consensusMechanism: 'raft',
                 role,
                 leader,
@@ -55,14 +55,14 @@ export async function captureRaftData(ethClient: EthereumClient, captureTime: nu
 }
 
 export class QuorumAdapter extends GethAdapter {
-    private consensus: 'instanbul' | 'raft' | null = null;
+    private consensus: 'istanbul' | 'raft' | null = null;
     public async initialize(ethClient: EthereumClient) {
         await super.initialize(ethClient);
 
         debug('Attempting to determine quorum consenus mechanism');
 
         if ('istanbul' in (this.nodeInfo?.protocols || {})) {
-            this.consensus = 'instanbul';
+            this.consensus = 'istanbul';
         } else {
             // TODO check for raft
             warn(
@@ -73,13 +73,13 @@ export class QuorumAdapter extends GethAdapter {
     }
 
     public get name() {
-        return this.consensus == null ? 'Quorum' : `Quorum:${this.consensus}`;
+        return this.consensus == null ? 'quorum' : `quorum:${this.consensus}`;
     }
 
     public async captureNodeStats(ethClient: EthereumClient, captureTime: number) {
         const [baseGethMsgs, quorumProtocolMsgs] = await Promise.all([
             super.captureNodeStats(ethClient, captureTime),
-            this.consensus === 'instanbul'
+            this.consensus === 'istanbul'
                 ? captureIstanbulData(ethClient, captureTime)
                 : this.consensus === 'raft'
                 ? captureRaftData(ethClient, captureTime)

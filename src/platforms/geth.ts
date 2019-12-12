@@ -1,13 +1,15 @@
 import { EthereumClient } from '../eth/client';
-import { gethMemStats, gethMetrics, gethNodeInfo, gethTxpool } from '../eth/requests';
-import { GethMemStats, GethMetrics, GethNodeInfo } from '../eth/responses';
+import { gethMemStats, gethMetrics, gethNodeInfo, gethTxpool, gethPeers } from '../eth/requests';
+import { GethMemStats, GethMetrics, GethNodeInfo, GethPeer } from '../eth/responses';
 import { OutputMessage } from '../output';
 import { createModuleDebug } from '../utils/debug';
 import { GenericNodeAdapter } from './generic';
+import { formatPendingTransaction } from '../format';
+import { PendingTransactionMessage } from '../msgs';
 
-const { debug } = createModuleDebug('platforms:geth');
+const { debug, error } = createModuleDebug('platforms:geth');
 
-type MetricsObj = { [k: string]: number | string | MetricsObj | any };
+type MetricsObj = { [k: string]: number | string | any[] | MetricsObj };
 
 const ABBREVIATE_UNITS: { [k: string]: number } = {
     K: 1_000,
@@ -113,36 +115,27 @@ function formatGenericMetrics(obj: MetricsObj, prefix: string): Array<{ name: st
             return [];
         }
         if (typeof obj === 'object') {
-            return formatGenericMetrics(value, `${prefix}.${uncapitalize(name)}`);
+            return formatGenericMetrics(value as MetricsObj, `${prefix}.${uncapitalize(name)}`);
         }
         return [];
     });
 }
 
-export function formatGethMetrics(metrics: GethMetrics): Array<{ name: string; value: number }> {
-    return formatGenericMetrics(metrics, 'geth.metrics');
+export function formatGethMetrics(metrics: GethMetrics): [string, number | undefined][] {
+    return formatGenericMetrics(metrics, 'geth.metrics').map(({ name, value }) => [name, value]);
 }
 
-export function formatGethMemStats(memStats: GethMemStats): Array<{ name: string; value: number }> {
+export function formatGethMemStats(memStats: GethMemStats): [string, number | undefined][] {
     const prefix = 'geth.memStats.';
     const { BySize: bySize, ...rest } = memStats;
     return Object.entries(rest)
         .filter(([, v]) => typeof v === 'number')
-        .map(([name, value]) => ({
-            name: prefix + uncapitalize(name),
-            value,
-        }))
+        .map(([name, value]) => [prefix + uncapitalize(name), value] as [string, number | undefined])
         .concat(
             bySize != null
                 ? bySize.flatMap(s => [
-                      {
-                          name: `${prefix}bySize.${s.Size}.mallocs`,
-                          value: s.Mallocs,
-                      },
-                      {
-                          name: `${prefix}bySize.${s.Size}.frees`,
-                          value: s.Frees,
-                      },
+                      [`${prefix}bySize.${s.Size}.mallocs`, s.Mallocs],
+                      [`${prefix}bySize.${s.Size}.frees`, s.Frees],
                   ])
                 : []
         );
@@ -155,28 +148,54 @@ export async function captureGethMetrics(ethClient: EthereumClient, captureTime:
     ]);
     return [
         {
-            type: 'node:metrics',
+            type: 'nodeMetrics',
             time: captureTime,
-            metrics: [...formatGethMetrics(metricsResults), ...formatGethMemStats(memStatsResults)],
+            metrics: Object.fromEntries([...formatGethMetrics(metricsResults), ...formatGethMemStats(memStatsResults)]),
         },
     ];
 }
 
 export async function captureTxpoolData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
-    const txpool = await ethClient.request(gethTxpool());
-    const pending = Object.values(txpool.pending).flatMap(o => Object.values(o));
-    const queued = Object.values(txpool.queued).flatMap(o => Object.values(o));
-    return [
-        {
-            type: 'node:metrics',
-            time: captureTime,
-            metrics: [
-                { name: 'geth.txpool.pending', value: pending.length },
-                { name: 'geth.txpool.queued', value: queued.length },
-            ],
-        },
-        // TODO: send messages for raw pending/queued transactions
-    ];
+    try {
+        const txpool = await ethClient.request(gethTxpool());
+        const pending = Object.values(txpool.pending).flatMap(o => Object.values(o).flat(1));
+        const queued = Object.values(txpool.queued).flatMap(o => Object.values(o).flat(1));
+        return [
+            {
+                type: 'nodeMetrics',
+                time: captureTime,
+                metrics: { 'geth.txpool.pending': pending.length, 'geth.txpool.queued': queued.length },
+            },
+            ...pending.map(
+                tx =>
+                    ({
+                        type: 'pendingtx',
+                        time: captureTime,
+                        body: formatPendingTransaction(tx, 'pending'),
+                    } as PendingTransactionMessage)
+            ),
+            ...queued.map(
+                tx =>
+                    ({
+                        type: 'pendingtx',
+                        time: captureTime,
+                        body: formatPendingTransaction(tx, 'queued'),
+                    } as PendingTransactionMessage)
+            ),
+        ];
+    } catch (e) {
+        error('Failed to retrive txpool data from geth node', e);
+        return [];
+    }
+}
+
+export async function capturePeers(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+    const peers = await ethClient.request(gethPeers());
+    return peers.map((peer: GethPeer) => ({
+        type: 'gethPeer',
+        time: captureTime,
+        body: peer,
+    }));
 }
 
 export class GethAdapter extends GenericNodeAdapter {
@@ -196,7 +215,7 @@ export class GethAdapter extends GenericNodeAdapter {
     }
 
     public get name(): string {
-        return 'Geth';
+        return 'geth';
     }
 
     public get enode(): string | null {
@@ -208,6 +227,7 @@ export class GethAdapter extends GenericNodeAdapter {
             super.captureNodeStats(ethClient, captureTime),
             captureGethMetrics(ethClient, captureTime),
             captureTxpoolData(ethClient, captureTime),
+            capturePeers(ethClient, captureTime),
         ]);
         return [...genericStats, ...metrics, ...txpool];
     }

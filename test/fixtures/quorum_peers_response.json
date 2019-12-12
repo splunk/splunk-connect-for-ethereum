@@ -1,0 +1,122 @@
+[
+    {
+        "enode": "enode://239c1f044a2b03b6c4713109af036b775c5418fe4ca63b04b1ce00124af00ddab7cc088fc46020cdc783b6207efe624551be4c06a994993d8d70f684688fb7cf@172.16.239.17:33200",
+        "id": "3cb4aaea0f49f73c9de4a34db131288f355bc27090e542ae0be213c20350b767",
+        "name": "Geth/node7-istanbul/v1.8.18-stable-2d22fd00(quorum-v2.2.3)/linux-amd64/go1.11.6",
+        "caps": ["istanbul/64"],
+        "network": {
+            "localAddress": "172.16.239.11:21000",
+            "remoteAddress": "172.16.239.17:33200",
+            "inbound": true,
+            "trusted": false,
+            "static": false
+        },
+        "protocols": {
+            "istanbul": {
+                "version": 64,
+                "difficulty": 38965,
+                "head": "0x2ed2d03bd431d1eb645cf32e2433b1e2e530e1fcd55826096903b5c201ec4023"
+            }
+        }
+    },
+    {
+        "enode": "enode://0ba6b9f606a43a95edc6247cdb1c1e105145817be7bcafd6b2c0ba15d58145f0dc1a194f70ba73cd6f4cdd6864edc7687f311254c7555cc32e4d45aeb1b80416@172.16.239.12:44792",
+        "id": "995dbe18829f1affb75402e66571d97f340c8495b661a823f2c2145ca47d63c2",
+        "name": "Geth/node2-istanbul/v1.8.18-stable-2d22fd00(quorum-v2.2.3)/linux-amd64/go1.11.6",
+        "caps": ["istanbul/64"],
+        "network": {
+            "localAddress": "172.16.239.11:21000",
+            "remoteAddress": "172.16.239.12:44792",
+            "inbound": true,
+            "trusted": false,
+            "static": false
+        },
+        "protocols": {
+            "istanbul": {
+                "version": 64,
+                "difficulty": 38964,
+                "head": "0xb7d9981d781d7f3b58f9aa9c727d7d37b3b34fd36cc8d758e2531b31e320a8a6"
+            }
+        }
+    },
+    {
+        "enode": "enode://eacaa74c4b0e7a9e12d2fe5fee6595eda841d6d992c35dbbcc50fcee4aa86dfbbdeff7dc7e72c2305d5a62257f82737a8cffc80474c15c611c037f52db1a3a7b@172.16.239.16:49472",
+        "id": "ab62dd7df5863a5f3bb61f458157d4437104e3b8df4451a85f7b2438ef6699ff",
+        "name": "Geth/node6-istanbul/v1.8.18-stable-2d22fd00(quorum-v2.2.3)/linux-amd64/go1.11.6",
+        "caps": ["istanbul/64"],
+        "network": {
+            "localAddress": "172.16.239.11:21000",
+            "remoteAddress": "172.16.239.16:49472",
+            "inbound": true,
+            "trusted": false,
+            "static": false
+        },
+        "protocols": {
+            "istanbul": {
+                "version": 64,
+                "difficulty": 38962,
+                "head": "0xa2ae9a44f2130c07ab02e802bb6338e8373a2c50184159a638822662c26c990c"
+            }
+        }
+    },
+    {
+        "enode": "enode://579f786d4e2830bbcc02815a27e8a9bacccc9605df4dc6f20bcc1a6eb391e7225fff7cb83e5b4ecd1f3a94d8b733803f2f66b7e871961e7b029e22c155c3a778@172.16.239.13:50842",
+        "id": "c39143f98d04e97bd9e31ac1e36cbeb565b061217930767886474e3cde903ac5",
+        "name": "Geth/node3-istanbul/v1.8.18-stable-2d22fd00(quorum-v2.2.3)/linux-amd64/go1.11.6",
+        "caps": ["istanbul/64"],
+        "network": {
+            "localAddress": "172.16.239.11:21000",
+            "remoteAddress": "172.16.239.13:50842",
+            "inbound": true,
+            "trusted": false,
+            "static": false
+        },
+        "protocols": {
+            "istanbul": {
+                "version": 64,
+                "difficulty": 38965,
+                "head": "0x2ed2d03bd431d1eb645cf32e2433b1e2e530e1fcd55826096903b5c201ec4023"
+            }
+        }
+    },
+    {
+        "enode": "enode://3d9ca5956b38557aba991e31cf510d4df641dce9cc26bfeb7de082f0c07abb6ede3a58410c8f249dabeecee4ad3979929ac4c7c496ad20b8cfdd061b7401b4f5@172.16.239.14:44268",
+        "id": "c75f7dcb9fd6063f0ada0998f512a992f3fb749857d758ffda1330e590fa915e",
+        "name": "Geth/node4-istanbul/v1.8.18-stable-2d22fd00(quorum-v2.2.3)/linux-amd64/go1.11.6",
+        "caps": ["istanbul/64"],
+        "network": {
+            "localAddress": "172.16.239.11:21000",
+            "remoteAddress": "172.16.239.14:44268",
+            "inbound": true,
+            "trusted": false,
+            "static": false
+        },
+        "protocols": {
+            "istanbul": {
+                "version": 64,
+                "difficulty": 38964,
+                "head": "0xb7d9981d781d7f3b58f9aa9c727d7d37b3b34fd36cc8d758e2531b31e320a8a6"
+            }
+        }
+    },
+    {
+        "enode": "enode://3701f007bfa4cb26512d7df18e6bbd202e8484a6e11d387af6e482b525fa25542d46ff9c99db87bd419b980c24a086117a397f6d8f88e74351b41693880ea0cb@172.16.239.15:50974",
+        "id": "f06c06f1e958cb2edf90d8bfb912de287f9b047b4228436e94b5b78e3ee16171",
+        "name": "Geth/node5-istanbul/v1.8.18-stable-2d22fd00(quorum-v2.2.3)/linux-amd64/go1.11.6",
+        "caps": ["istanbul/64"],
+        "network": {
+            "localAddress": "172.16.239.11:21000",
+            "remoteAddress": "172.16.239.15:50974",
+            "inbound": true,
+            "trusted": false,
+            "static": false
+        },
+        "protocols": {
+            "istanbul": {
+                "version": 64,
+                "difficulty": 38965,
+                "head": "0x2ed2d03bd431d1eb645cf32e2433b1e2e530e1fcd55826096903b5c201ec4023"
+            }
+        }
+    }
+]

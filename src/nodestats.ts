@@ -7,6 +7,9 @@ import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { linearBackoff, resolveWaitTime, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
+import { AbiRepository } from './abi';
+import { ContractInfo } from './contract';
+import { Cache } from './utils/cache';
 
 const { debug, info, error } = createModuleDebug('nodestats');
 
@@ -28,7 +31,9 @@ export class NodeStatsCollector implements ManagedResource {
             platformAdapter: NodePlatformAdapter;
             ethClient: EthereumClient;
             output: Output;
-            interval: number;
+            abiRepo?: AbiRepository;
+            contractInfoCache?: Cache<string, Promise<ContractInfo>>;
+            statsInterval: number;
             waitAfterFailure?: WaitTime;
         }
     ) {
@@ -37,12 +42,18 @@ export class NodeStatsCollector implements ManagedResource {
 
     public async start() {
         debug('Starting node stats collector');
+        await Promise.all([this.startCollectingNodeStats()]);
+        debug('Node stats collector completed');
+    }
+
+    private async startCollectingNodeStats() {
+        debug('Starting node stats collection every %d ms', this.config.statsInterval);
         let failed = 0;
         while (!this.abort.aborted) {
             const startTime = Date.now();
             try {
                 this.counters.collectCount++;
-                const p = this.collect();
+                const p = this.collectNodeStats();
                 this.lastPromise = p;
                 const results = await p;
                 this.aggregates.collectDuration.push(Date.now() - startTime);
@@ -62,14 +73,13 @@ export class NodeStatsCollector implements ManagedResource {
                 this.lastPromise = null;
             }
 
-            const waitForNext = Math.max(0, this.config.interval - (Date.now() - startTime));
+            const waitForNext = Math.max(0, this.config.statsInterval - (Date.now() - startTime));
             debug('Waiting for %d ms before collecting node stats again', waitForNext);
             await this.abort.race(sleep(waitForNext));
         }
-        debug('Node stats collector completed');
     }
 
-    private async collect(): Promise<number> {
+    private async collectNodeStats(): Promise<number> {
         const { platformAdapter, ethClient, output } = this.config;
         const msgs = await this.abort.race(platformAdapter.captureNodeStats(ethClient, Date.now()));
         if (!this.abort.aborted) {

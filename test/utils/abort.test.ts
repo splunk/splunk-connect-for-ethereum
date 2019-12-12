@@ -18,6 +18,6 @@ test('AbortablePromise', async () => {
     expect(abort.aborted).toBe(false);
     setTimeout(() => abort.abort(), 10);
 
-    await expect(p2).rejects.toMatchInlineSnapshot(`"[[ABORT]]"`);
+    await expect(p2).rejects.toMatchInlineSnapshot(`Symbol([[ABORT]])`);
     expect(abort.aborted).toBe(true);
 });

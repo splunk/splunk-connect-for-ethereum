@@ -92,27 +92,15 @@ export type GethMetrics = {
     [k: string]: number | string | GethMetrics | any;
 };
 
+// See https://golang.org/pkg/runtime/#MemStats
 export type GethMemStats = {
     BySize?: Array<{ Size: number; Mallocs: number; Frees: number }>;
-    [name: string]: number | any;
+} & {
+    [name: string]: number | string | any[] | object;
 };
 
-export interface GethTxpoolTransaction {
-    blockHash: string | null;
-    blockNumber: string | null;
-    from: string;
-    gas: string;
-    gasPrice: string;
-    hash: string;
-    input: string;
-    nonce: string;
-    to: string;
-    transactionIndex: string | null;
-    value: string | null;
-}
-
 export interface GethTxpoolMap {
-    [originAddress: string]: { [nounce: string]: GethTxpoolTransaction[] };
+    [originAddress: string]: { [nounce: string]: RawTransactionResponse[] };
 }
 
 export interface GethTxpool {
@@ -120,7 +108,26 @@ export interface GethTxpool {
     queued: GethTxpoolMap;
 }
 
-export type GethPeers = any; // TODO
+export interface GethPeer {
+    enode: string;
+    id: string;
+    name: string;
+    caps?: string[];
+    network: {
+        localAddress: string;
+        remoteAddress: string;
+        inbound: boolean;
+        trusted: boolean;
+        static: boolean;
+        [k: string]: any;
+    };
+    protocols: {
+        [k: string]: any;
+    };
+    [k: string]: any;
+}
+
+export type GethPeers = GethPeer[];
 
 export interface ParityNodeKind {
     availability: 'personal' | 'public';

@@ -1,4 +1,4 @@
-import { AbiDecoder } from './abi';
+import { AbiRepository } from './abi';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { Checkpoint } from './checkpoint';
 import { ContractInfo, getContractInfo } from './contract';
@@ -47,7 +47,7 @@ export class BlockWatcher implements ManagedResource {
     private ethClient: EthereumClient;
     private checkpoints: Checkpoint;
     private output: Output;
-    private abiDecoder?: AbiDecoder;
+    private abiRepo?: AbiRepository;
     private startAt: StartBlock;
     private chunkSize: number = 25;
     private pollInterval: number = 500;
@@ -67,7 +67,7 @@ export class BlockWatcher implements ManagedResource {
         ethClient,
         checkpoints,
         output,
-        abiDecoder,
+        abiRepo,
         startAt = 'latest',
         contractInfoCache,
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
@@ -76,7 +76,7 @@ export class BlockWatcher implements ManagedResource {
         ethClient: EthereumClient;
         checkpoints: Checkpoint;
         output: Output;
-        abiDecoder?: AbiDecoder;
+        abiRepo?: AbiRepository;
         startAt?: StartBlock;
         waitAfterFailure?: WaitTime;
         chunkQueueMaxSize?: number;
@@ -85,7 +85,7 @@ export class BlockWatcher implements ManagedResource {
         this.ethClient = ethClient;
         this.checkpoints = checkpoints;
         this.output = output;
-        this.abiDecoder = abiDecoder;
+        this.abiRepo = abiRepo;
         this.startAt = startAt;
         this.waitAfterFailure = waitAfterFailure;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
@@ -220,7 +220,7 @@ export class BlockWatcher implements ManagedResource {
         outputMessages.push({
             type: 'block',
             time: blockTime,
-            block: formattedBlock,
+            body: formattedBlock,
         });
         const txMsgs = await this.abortManager.race(
             Promise.all(block.transactions.map(tx => this.processTransaction(tx, blockTime, formattedBlock)))
@@ -262,8 +262,8 @@ export class BlockWatcher implements ManagedResource {
         }
 
         let callInfo;
-        if (this.abiDecoder && toInfo && toInfo.isContract) {
-            callInfo = this.abiDecoder.decodeMethod(rawTx.input, toInfo.fingerprint);
+        if (this.abiRepo && toInfo && toInfo.isContract) {
+            callInfo = this.abiRepo.decodeMethod(rawTx.input, toInfo.fingerprint);
         }
 
         this.counters.transactionsProcessed++;
@@ -273,7 +273,7 @@ export class BlockWatcher implements ManagedResource {
             {
                 type: 'transaction',
                 time: blockTime,
-                tx: formatTransaction(
+                body: formatTransaction(
                     rawTx,
                     receipt!,
                     toAddressInfo(fromInfo),
@@ -289,28 +289,27 @@ export class BlockWatcher implements ManagedResource {
     private async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
         const startTime = Date.now();
         const contractInfo = await this.lookupContractInfo(evt.address);
-        const decodedEventData = this.abiDecoder?.decodeLogEvent(evt, contractInfo?.fingerprint);
+        const decodedEventData = this.abiRepo?.decodeLogEvent(evt, contractInfo?.fingerprint);
         this.aggregates.eventProcessTime.push(Date.now() - startTime);
         this.counters.transactionLogEventsProcessed++;
         return {
             type: 'event',
             time: blockTime,
-            event: formatLogEvent(evt, toAddressInfo(contractInfo), decodedEventData),
+            body: formatLogEvent(evt, toAddressInfo(contractInfo), decodedEventData),
         };
     }
 
     private async lookupContractInfo(address: Address): Promise<ContractInfo | undefined> {
-        const abiDecoder = this.abiDecoder;
-        if (abiDecoder == null) {
+        const abiRepo = this.abiRepo;
+        if (abiRepo == null) {
             return;
         }
         const result = await cached(address, this.contractInfoCache, (addr: Address) =>
             getContractInfo(
                 addr,
                 this.ethClient,
-                (sig: string) => abiDecoder.getMatchingSignatureName(sig),
-                (_address: string, fingerprint: string) =>
-                    abiDecoder.getContractByFingerprint(fingerprint)?.contractName
+                (sig: string) => abiRepo.getMatchingSignatureName(sig),
+                (_address: string, fingerprint: string) => abiRepo.getContractByFingerprint(fingerprint)?.contractName
             )
         );
         return result;

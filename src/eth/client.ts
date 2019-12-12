@@ -43,7 +43,7 @@ export async function executeBatchRequest(batch: BatchReq[], transport: Ethereum
 }
 
 export class EthereumClient {
-    constructor(protected transport: EthereumTransport) {}
+    constructor(public readonly transport: EthereumTransport) {}
 
     async request<P extends any[], R>(req: EthRequest<P, R>): Promise<R> {
         const payload = createJsonRpcPayload(req.method, req.params);

@@ -43,7 +43,7 @@ export interface Metric {
 
 export interface MultiMetrics {
     time: Date | EpochMillis;
-    measurements: { [name: string]: number };
+    measurements: { [name: string]: number | undefined };
     fields?: Fields;
     metadata?: Metadata;
 }
@@ -275,11 +275,13 @@ export class HecClient {
         } else {
             const { measurements, ...rest } = metrics;
             for (const [name, value] of Object.entries(measurements)) {
-                this.pushMetric({
-                    ...rest,
-                    name,
-                    value,
-                });
+                if (value != null) {
+                    this.pushMetric({
+                        ...rest,
+                        name,
+                        value,
+                    });
+                }
             }
         }
     }

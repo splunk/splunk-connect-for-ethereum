@@ -1,14 +1,14 @@
-import { AbiDecoder, intBits, decodeParameterValue, computeSignatureHash, computeSignature } from '../src/abi';
+import { AbiRepository, intBits, decodeParameterValue, computeSignatureHash, computeSignature } from '../src/abi';
 import { join } from 'path';
 
-test('AbiDecoder#decodeMethod', async () => {
-    const abiDecoder = new AbiDecoder();
+test('AbiRepository#decodeMethod', async () => {
+    const abiRepo = new AbiRepository();
 
-    await expect(abiDecoder.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
+    await expect(abiRepo.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
 
-    expect(abiDecoder.signatureCount).toMatchInlineSnapshot(`30`);
+    expect(abiRepo.signatureCount).toMatchInlineSnapshot(`30`);
 
-    const res1 = abiDecoder.decodeMethod(
+    const res1 = abiRepo.decodeMethod(
         `0x23b872dd000000000000000000000000bcbccc14595f6050f83212ddc2c06c2527269ccb0000000000000000000000000e88984287591fc5ef79fe1374e9b86fdd372bcb0000000000000000000000000000000000000000000000000000000000005d35`
     );
     expect(res1).toMatchInlineSnapshot(`
@@ -40,7 +40,7 @@ test('AbiDecoder#decodeMethod', async () => {
         }
     `);
 
-    const res2 = abiDecoder.decodeMethod(
+    const res2 = abiRepo.decodeMethod(
         `0xa22cb4650000000000000000000000007c77f845f9c9c0d0c0f422a072787db0582a729a0000000000000000000000000000000000000000000000000000000000000001`,
         'da148233860cf79ce56829590f280ed40af82bb19d8d3e3bcdaa97f008b8475f'
     );
@@ -68,12 +68,12 @@ test('AbiDecoder#decodeMethod', async () => {
     `);
 });
 
-test('AbiDecoder#decodeLogEvent', async () => {
-    const abiDecoder = new AbiDecoder();
-    await expect(abiDecoder.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
+test('AbiRepository#decodeLogEvent', async () => {
+    const abiRepo = new AbiRepository();
+    await expect(abiRepo.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
 
     expect(
-        abiDecoder.decodeLogEvent(
+        abiRepo.decodeLogEvent(
             {
                 logIndex: '0x1',
                 blockNumber: '0x1bf',

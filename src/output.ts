@@ -7,6 +7,7 @@ import {
     PendingTransactionMessage,
     QuorumProtocolMessage,
     TransactionMessage,
+    GethPeerMessage,
 } from './msgs';
 import { createDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
@@ -20,7 +21,8 @@ export type OutputMessage =
     | PendingTransactionMessage
     | LogEventMessage
     | NodeMetricsMessage
-    | QuorumProtocolMessage;
+    | QuorumProtocolMessage
+    | GethPeerMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -32,53 +34,35 @@ export class HecOutput implements Output, ManagedResource {
     public write(msg: OutputMessage) {
         switch (msg.type) {
             case 'block':
-                this.hec.pushEvent({
-                    time: msg.time,
-                    body: msg.block,
-                    metadata: {
-                        index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.block,
-                    },
-                });
-                break;
             case 'transaction':
-                this.hec.pushEvent({
-                    time: msg.time,
-                    body: msg.tx,
-                    metadata: {
-                        index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.transaction,
-                    },
-                });
-                break;
             case 'event':
+            case 'pendingtx':
+            case 'quorumProtocol':
+            case 'gethPeer':
                 this.hec.pushEvent({
                     time: msg.time,
-                    body: msg.event,
+                    body: msg.body,
                     metadata: {
                         index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.event,
+                        sourcetype: this.config.sourcetypes[msg.type],
                     },
                 });
                 break;
-            case 'node:metrics':
+            case 'nodeMetrics':
                 const metricsPrefix = this.config.metricsPrefix ? this.config.metricsPrefix + '.' : '';
                 this.hec.pushMetrics({
                     time: msg.time,
-                    measurements: Object.fromEntries(msg.metrics.map(m => [metricsPrefix + m.name, m.value])),
+                    measurements:
+                        metricsPrefix === ''
+                            ? msg.metrics
+                            : Object.fromEntries(
+                                  Object.entries(msg.metrics)
+                                      .filter(([, v]) => v != null)
+                                      .map(([name, value]) => [metricsPrefix + name, value])
+                              ),
                     metadata: {
                         index: this.config.metricsIndex,
                         sourcetype: this.config.sourcetypes.nodeMetrics,
-                    },
-                });
-                break;
-            case 'quorum:protocol':
-                this.hec.pushEvent({
-                    time: msg.time,
-                    body: msg.data,
-                    metadata: {
-                        index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.quorumProtocol,
                     },
                 });
                 break;

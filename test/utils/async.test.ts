@@ -168,7 +168,9 @@ test('parallel abort', async () => {
                 .then(spy),
     ];
 
-    await expect(parallel(tasks, { maxConcurrent: 2, abortManager })).rejects.toMatchInlineSnapshot(`"[[ABORT]]"`);
+    await expect(parallel(tasks, { maxConcurrent: 2, abortManager })).rejects.toMatchInlineSnapshot(
+        `Symbol([[ABORT]])`
+    );
 
     expect(spy.mock.calls).toMatchInlineSnapshot(`
         Array [

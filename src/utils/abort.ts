@@ -1,10 +1,16 @@
-export interface AbortPromise extends PromiseLike<never> {
-    aborted: boolean;
+export interface Abortable {
     abort(): void;
 }
 
-export const ABORT = '[[ABORT]]';
+/** Promise that rejects when aborted */
+export interface AbortPromise extends PromiseLike<never>, Abortable {
+    aborted: boolean;
+}
 
+/** Value an AbortPromise is rejected with when aborted. Use to distinguish aborts from regular errors */
+export const ABORT = Symbol('[[ABORT]]');
+
+/** Default implementation of an AbortPromise that has an abort() method */
 export class AbortablePromise implements AbortPromise {
     public aborted: boolean = false;
     private p: Promise<never>;
@@ -42,7 +48,7 @@ export function raceAbort<T>(promise: Promise<T>, abort?: AbortPromise): Promise
     return Promise.race([promise, Promise.resolve(abort)]);
 }
 
-export class AbortManager {
+export class AbortManager implements Abortable {
     public aborted: boolean = false;
     private handles: Set<AbortPromise> = new Set();
 
