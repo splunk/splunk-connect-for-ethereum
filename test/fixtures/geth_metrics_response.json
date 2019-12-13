@@ -1,0 +1,819 @@
+{
+    "chain": {
+        "inserts": {
+            "Avg01Min": "51 (0.85/s)",
+            "Avg05Min": "177 (0.59/s)",
+            "Avg15Min": "249 (0.28/s)",
+            "Maximum": "31.790945ms",
+            "Minimum": "533.687µs",
+            "Overall": "302 (0.84/s)",
+            "Percentiles": {
+                "5": "1.622736ms",
+                "20": "1.886774ms",
+                "50": "2.147799ms",
+                "80": "4.579833ms",
+                "95": "10.52114ms"
+            }
+        }
+    },
+    "db": {
+        "preimage": {
+            "hits": {
+                "Overall": 0
+            },
+            "total": {
+                "Overall": 0
+            }
+        }
+    },
+    "discv5": {
+        "InboundTraffic": {
+            "Avg01Min": "0 (0.00/s)",
+            "Avg05Min": "0 (0.00/s)",
+            "Avg15Min": "0 (0.00/s)",
+            "Overall": "0 (0.00/s)"
+        },
+        "OutboundTraffic": {
+            "Avg01Min": "0 (0.00/s)",
+            "Avg05Min": "0 (0.00/s)",
+            "Avg15Min": "0 (0.00/s)",
+            "Overall": "0 (0.00/s)"
+        }
+    },
+    "eth": {
+        "db": {
+            "chaindata": {
+                "compact": {
+                    "input": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "output": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "time": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "writedelay": {
+                        "counter": {
+                            "Avg01Min": "0 (0.00/s)",
+                            "Avg05Min": "0 (0.00/s)",
+                            "Avg15Min": "0 (0.00/s)",
+                            "Overall": "0 (0.00/s)"
+                        },
+                        "duration": {
+                            "Avg01Min": "0 (0.00/s)",
+                            "Avg05Min": "0 (0.00/s)",
+                            "Avg15Min": "0 (0.00/s)",
+                            "Overall": "0 (0.00/s)"
+                        }
+                    }
+                },
+                "disk": {
+                    "read": {
+                        "Avg01Min": "149 (2.48/s)",
+                        "Avg05Min": "84.58K (281.94/s)",
+                        "Avg15Min": "558.48K (620.53/s)",
+                        "Overall": "4.60K (12.78/s)"
+                    },
+                    "write": {
+                        "Avg01Min": "236.22K (3.94K/s)",
+                        "Avg05Min": "867.93K (2.89K/s)",
+                        "Avg15Min": "1.45M (1.61K/s)",
+                        "Overall": "1.39M (3.86K/s)"
+                    }
+                }
+            }
+        },
+        "downloader": {
+            "bodies": {
+                "drop": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "in": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "req": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Maximum": "0s",
+                    "Minimum": "0s",
+                    "Overall": "0 (0.00/s)",
+                    "Percentiles": {
+                        "5": "0s",
+                        "20": "0s",
+                        "50": "0s",
+                        "80": "0s",
+                        "95": "0s"
+                    }
+                },
+                "timeout": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            },
+            "headers": {
+                "drop": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "in": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "req": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Maximum": "0s",
+                    "Minimum": "0s",
+                    "Overall": "0 (0.00/s)",
+                    "Percentiles": {
+                        "5": "0s",
+                        "20": "0s",
+                        "50": "0s",
+                        "80": "0s",
+                        "95": "0s"
+                    }
+                },
+                "timeout": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            },
+            "receipts": {
+                "drop": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "in": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "req": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Maximum": "0s",
+                    "Minimum": "0s",
+                    "Overall": "0 (0.00/s)",
+                    "Percentiles": {
+                        "5": "0s",
+                        "20": "0s",
+                        "50": "0s",
+                        "80": "0s",
+                        "95": "0s"
+                    }
+                },
+                "timeout": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            },
+            "states": {
+                "drop": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "in": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            }
+        },
+        "fetcher": {
+            "fetch": {
+                "bodies": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "headers": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            },
+            "filter": {
+                "bodies": {
+                    "in": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "out": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                },
+                "headers": {
+                    "in": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "out": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                }
+            },
+            "prop": {
+                "announces": {
+                    "dos": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "drop": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "in": {
+                        "Avg01Min": "20 (0.33/s)",
+                        "Avg05Min": "69 (0.23/s)",
+                        "Avg15Min": "97 (0.11/s)",
+                        "Overall": "117 (0.33/s)"
+                    },
+                    "out": {
+                        "Avg01Min": "51 (0.85/s)",
+                        "Avg05Min": "177 (0.59/s)",
+                        "Avg15Min": "249 (0.28/s)",
+                        "Maximum": "2562047h47m16.854775807s",
+                        "Minimum": "3.004626ms",
+                        "Overall": "302 (0.84/s)",
+                        "Percentiles": {
+                            "5": "3.588335ms",
+                            "20": "5.805709ms",
+                            "50": "-2562047h47m16.854775808s",
+                            "80": "-2562047h47m16.854775808s",
+                            "95": "-2562047h47m16.854775808s"
+                        }
+                    }
+                },
+                "broadcasts": {
+                    "dos": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "drop": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "in": {
+                        "Avg01Min": "256 (4.26/s)",
+                        "Avg05Min": "868 (2.89/s)",
+                        "Avg15Min": "1.22K (1.35/s)",
+                        "Overall": "1.47K (4.07/s)"
+                    },
+                    "out": {
+                        "Avg01Min": "51 (0.85/s)",
+                        "Avg05Min": "177 (0.59/s)",
+                        "Avg15Min": "249 (0.28/s)",
+                        "Maximum": "2562047h47m16.854775807s",
+                        "Minimum": "1.345938ms",
+                        "Overall": "302 (0.84/s)",
+                        "Percentiles": {
+                            "5": "1.619732ms",
+                            "20": "1.956826ms",
+                            "50": "-2562047h47m16.854775808s",
+                            "80": "-2562047h47m16.854775808s",
+                            "95": "-2562047h47m16.854775808s"
+                        }
+                    }
+                }
+            }
+        },
+        "misc": {
+            "in": {
+                "packets": {
+                    "Avg01Min": "3.44K (57.34/s)",
+                    "Avg05Min": "12.11K (40.37/s)",
+                    "Avg15Min": "17.70K (19.67/s)",
+                    "Overall": "20.42K (56.58/s)"
+                },
+                "traffic": {
+                    "Avg01Min": "910.76K (15.18K/s)",
+                    "Avg05Min": "3.18M (10.60K/s)",
+                    "Avg15Min": "4.52M (5.02K/s)",
+                    "Overall": "5.39M (14.92K/s)"
+                }
+            },
+            "out": {
+                "packets": {
+                    "Avg01Min": "3.51K (58.58/s)",
+                    "Avg05Min": "12.18K (40.59/s)",
+                    "Avg15Min": "17.66K (19.63/s)",
+                    "Overall": "20.52K (56.86/s)"
+                },
+                "traffic": {
+                    "Avg01Min": "931.92K (15.53K/s)",
+                    "Avg05Min": "3.24M (10.80K/s)",
+                    "Avg15Min": "4.59M (5.10K/s)",
+                    "Overall": "5.49M (15.20K/s)"
+                }
+            }
+        },
+        "prop": {
+            "blocks": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "216 (3.60/s)",
+                        "Avg05Min": "737 (2.46/s)",
+                        "Avg15Min": "1.03K (1.15/s)",
+                        "Overall": "1.25K (3.47/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "356.67K (5.94K/s)",
+                        "Avg05Min": "1.23M (4.09K/s)",
+                        "Avg15Min": "1.72M (1.91K/s)",
+                        "Overall": "2.07M (5.75K/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "210 (3.50/s)",
+                        "Avg05Min": "723 (2.41/s)",
+                        "Avg15Min": "1.01K (1.13/s)",
+                        "Overall": "1.23K (3.40/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "353.37K (5.89K/s)",
+                        "Avg05Min": "1.21M (4.04K/s)",
+                        "Avg15Min": "1.69M (1.88K/s)",
+                        "Overall": "2.04M (5.64K/s)"
+                    }
+                }
+            },
+            "hashes": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "35 (0.59/s)",
+                        "Avg05Min": "126 (0.42/s)",
+                        "Avg15Min": "178 (0.20/s)",
+                        "Overall": "216 (0.60/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "1.33K (22.13/s)",
+                        "Avg05Min": "4.68K (15.61/s)",
+                        "Avg15Min": "6.59K (7.32/s)",
+                        "Overall": "7.97K (22.13/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "37 (0.61/s)",
+                        "Avg05Min": "139 (0.46/s)",
+                        "Avg15Min": "196 (0.22/s)",
+                        "Overall": "239 (0.66/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "1.39K (23.09/s)",
+                        "Avg05Min": "5.15K (17.18/s)",
+                        "Avg15Min": "7.27K (8.07/s)",
+                        "Overall": "8.82K (24.44/s)"
+                    }
+                }
+            },
+            "txns": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "956 (15.94/s)",
+                        "Avg05Min": "3.46K (11.54/s)",
+                        "Avg15Min": "4.88K (5.42/s)",
+                        "Overall": "5.90K (16.39/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "154.76K (2.58K/s)",
+                        "Avg05Min": "558.51K (1.86K/s)",
+                        "Avg15Min": "786.94K (874.38/s)",
+                        "Overall": "950.97K (2.64K/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "935 (15.59/s)",
+                        "Avg05Min": "3.36K (11.22/s)",
+                        "Avg15Min": "4.70K (5.22/s)",
+                        "Overall": "5.65K (15.70/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "151.28K (2.52K/s)",
+                        "Avg05Min": "543.43K (1.81K/s)",
+                        "Avg15Min": "759.21K (843.57/s)",
+                        "Overall": "912.78K (2.54K/s)"
+                    }
+                }
+            }
+        },
+        "req": {
+            "bodies": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                }
+            },
+            "headers": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                }
+            },
+            "receipts": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                }
+            },
+            "states": {
+                "in": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                },
+                "out": {
+                    "packets": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    },
+                    "traffic": {
+                        "Avg01Min": "0 (0.00/s)",
+                        "Avg05Min": "0 (0.00/s)",
+                        "Avg15Min": "0 (0.00/s)",
+                        "Overall": "0 (0.00/s)"
+                    }
+                }
+            }
+        }
+    },
+    "les": {
+        "misc": {
+            "in": {
+                "packets": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "traffic": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            },
+            "out": {
+                "packets": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "traffic": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                }
+            }
+        }
+    },
+    "p2p": {
+        "InboundConnects": {
+            "Avg01Min": "0 (0.00/s)",
+            "Avg05Min": "37 (0.12/s)",
+            "Avg15Min": "243 (0.27/s)",
+            "Overall": "2 (0.01/s)"
+        },
+        "InboundTraffic": {
+            "Avg01Min": "1.50M (25.05K/s)",
+            "Avg05Min": "5.33M (17.76K/s)",
+            "Avg15Min": "7.92M (8.80K/s)",
+            "Overall": "8.91M (24.69K/s)"
+        },
+        "OutboundConnects": {
+            "Avg01Min": "0 (0.00/s)",
+            "Avg05Min": "74 (0.25/s)",
+            "Avg15Min": "485 (0.54/s)",
+            "Overall": "4 (0.01/s)"
+        },
+        "OutboundTraffic": {
+            "Avg01Min": "1.52M (25.27K/s)",
+            "Avg05Min": "5.35M (17.84K/s)",
+            "Avg15Min": "7.94M (8.82K/s)",
+            "Overall": "8.93M (24.74K/s)"
+        }
+    },
+    "system": {
+        "disk": {
+            "readbytes": {
+                "Overall": 10313500
+            },
+            "readcount": {
+                "Avg01Min": "22.10K (368.25/s)",
+                "Avg05Min": "79.39K (264.65/s)",
+                "Avg15Min": "120.67K (134.08/s)",
+                "Overall": "132.36K (367.59/s)"
+            },
+            "readdata": {
+                "Avg01Min": "1.73M (28.86K/s)",
+                "Avg05Min": "6.36M (21.19K/s)",
+                "Avg15Min": "10.46M (11.62K/s)",
+                "Overall": "10.31M (28.64K/s)"
+            },
+            "writebytes": {
+                "Overall": 29244562
+            },
+            "writecount": {
+                "Avg01Min": "31.03K (517.24/s)",
+                "Avg05Min": "113.12K (377.06/s)",
+                "Avg15Min": "184.72K (205.25/s)",
+                "Overall": "183.47K (509.53/s)"
+            },
+            "writedata": {
+                "Avg01Min": "4.96M (82.60K/s)",
+                "Avg05Min": "18.24M (60.82K/s)",
+                "Avg15Min": "30.72M (34.13K/s)",
+                "Overall": "29.24M (81.22K/s)"
+            }
+        },
+        "memory": {
+            "allocs": {
+                "Avg01Min": "1.87M (31.15K/s)",
+                "Avg05Min": "7.27M (24.24K/s)",
+                "Avg15Min": "14.11M (15.68K/s)",
+                "Overall": "11.10M (30.83K/s)"
+            },
+            "frees": {
+                "Avg01Min": "2.25M (37.47K/s)",
+                "Avg05Min": "6.92M (23.08K/s)",
+                "Avg15Min": "11.01M (12.24K/s)",
+                "Overall": "10.52M (29.22K/s)"
+            },
+            "inuse": {
+                "Avg01Min": "-26516807 (-441946.79/s)",
+                "Avg05Min": "8.70G (29.01M/s)",
+                "Avg15Min": "57.93G (64.36M/s)",
+                "Overall": "266.31M (739.60K/s)"
+            },
+            "pauses": {
+                "Avg01Min": "3.10M (51.73K/s)",
+                "Avg05Min": "367.43M (1.22M/s)",
+                "Avg15Min": "2.37G (2.63M/s)",
+                "Overall": "46.46M (129.04K/s)"
+            }
+        }
+    },
+    "trie": {
+        "cachemiss": {
+            "Overall": 1786
+        },
+        "cacheunload": {
+            "Overall": 27
+        },
+        "memcache": {
+            "commit": {
+                "nodes": {
+                    "Avg01Min": "11 (0.18/s)",
+                    "Avg05Min": "38 (0.13/s)",
+                    "Avg15Min": "53 (0.06/s)",
+                    "Overall": "64 (0.18/s)"
+                },
+                "size": {
+                    "Avg01Min": "2.38K (39.70/s)",
+                    "Avg05Min": "7.92K (26.42/s)",
+                    "Avg15Min": "10.73K (11.92/s)",
+                    "Overall": "12.67K (35.11/s)"
+                },
+                "time": {
+                    "Mean": "2.02µs",
+                    "Measurements": 1,
+                    "Percentiles": {
+                        "5": "2.02µs",
+                        "20": "2.02µs",
+                        "50": "2.02µs",
+                        "80": "2.02µs",
+                        "95": "2.02µs"
+                    }
+                }
+            },
+            "flush": {
+                "nodes": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "size": {
+                    "Avg01Min": "0 (0.00/s)",
+                    "Avg05Min": "0 (0.00/s)",
+                    "Avg15Min": "0 (0.00/s)",
+                    "Overall": "0 (0.00/s)"
+                },
+                "time": {
+                    "Mean": "0s",
+                    "Measurements": 0,
+                    "Percentiles": {
+                        "5": "0s",
+                        "20": "0s",
+                        "50": "0s",
+                        "80": "0s",
+                        "95": "0s"
+                    }
+                }
+            },
+            "gc": {
+                "nodes": {
+                    "Avg01Min": "51 (0.85/s)",
+                    "Avg05Min": "123 (0.41/s)",
+                    "Avg15Min": "151 (0.17/s)",
+                    "Overall": "171 (0.47/s)"
+                },
+                "size": {
+                    "Avg01Min": "11.08K (184.63/s)",
+                    "Avg05Min": "25.84K (86.14/s)",
+                    "Avg15Min": "31.40K (34.89/s)",
+                    "Overall": "35.55K (98.48/s)"
+                },
+                "time": {
+                    "Mean": "10.393µs",
+                    "Measurements": 1,
+                    "Percentiles": {
+                        "5": "10.393µs",
+                        "20": "10.393µs",
+                        "50": "10.393µs",
+                        "80": "10.393µs",
+                        "95": "10.393µs"
+                    }
+                }
+            }
+        }
+    },
+    "txpool": {
+        "invalid": {
+            "Overall": 0
+        },
+        "pending": {
+            "discard": {
+                "Overall": 0
+            },
+            "nofunds": {
+                "Overall": 0
+            },
+            "ratelimit": {
+                "Overall": 0
+            },
+            "replace": {
+                "Overall": 0
+            }
+        },
+        "queued": {
+            "discard": {
+                "Overall": 0
+            },
+            "nofunds": {
+                "Overall": 0
+            },
+            "ratelimit": {
+                "Overall": 0
+            },
+            "replace": {
+                "Overall": 0
+            }
+        },
+        "underpriced": {
+            "Overall": 0
+        }
+    }
+}

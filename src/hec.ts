@@ -6,9 +6,9 @@ import { default as HttpAgent, HttpsAgent, HttpOptions } from 'agentkeepalive';
 import AbortController from 'abort-controller';
 import { AbortSignal } from 'node-fetch/externals';
 import { sleep } from './utils/async';
-import { isHttps, isSuccessfulStatus } from './utils/http';
+import { isHttps, isSuccessfulStatus } from './utils/httputils';
 import { WaitTime, exponentialBackoff, resolveWaitTime } from './utils/retry';
-import { httpClientStats as httpAgentStats } from './utils/stats';
+import { httpClientStats as httpAgentStats, AggregateMetric } from './utils/stats';
 
 const { debug, info, error, trace } = createModuleDebug('hec');
 
@@ -22,12 +22,14 @@ export interface Metadata {
     index?: string;
 }
 
+export type Fields = { [k: string]: any };
+
 type SerializedHecMsg = Buffer;
 
 export interface Event {
     time: Date | EpochMillis;
     body: string | { [k: string]: any };
-    fields?: { [k: string]: any };
+    fields?: Fields;
     metadata?: Metadata;
 }
 
@@ -35,14 +37,14 @@ export interface Metric {
     time: Date | EpochMillis;
     name: string;
     value: number;
-    fields?: { [k: string]: any };
+    fields?: Fields;
     metadata?: Metadata;
 }
 
 export interface MultiMetrics {
     time: Date | EpochMillis;
-    measurements: { [name: string]: number };
-    fields?: { [k: string]: any };
+    measurements: { [name: string]: number | undefined };
+    fields?: Fields;
     metadata?: Metadata;
 }
 
@@ -53,23 +55,24 @@ export function serializeTime(time: Date | EpochMillis): number {
     return +(time / 1000);
 }
 
-export function serializeEvent(event: Event, defaultMetadata?: Metadata): SerializedHecMsg {
+export function serializeEvent(event: Event, defaultMetadata?: Metadata, defaultFields?: Fields): SerializedHecMsg {
     return Buffer.from(
         JSON.stringify({
             time: serializeTime(event.time),
             event: event.body,
-            fields: event.fields,
+            fields: { ...defaultFields, ...event.fields },
             ...{ ...defaultMetadata, ...event.metadata },
         }),
         'utf-8'
     );
 }
 
-export function serializeMetric(metric: Metric, defaultMetadata?: Metadata): SerializedHecMsg {
+export function serializeMetric(metric: Metric, defaultMetadata?: Metadata, defaultFields?: Fields): SerializedHecMsg {
     return Buffer.from(
         JSON.stringify({
             time: serializeTime(metric.time),
             fields: {
+                ...defaultFields,
                 ...metric.fields,
                 metric_name: metric.name,
                 _value: metric.value,
@@ -80,7 +83,11 @@ export function serializeMetric(metric: Metric, defaultMetadata?: Metadata): Ser
     );
 }
 
-export function serializeMetrics(metrics: MultiMetrics, defaultMetadata?: Metadata): SerializedHecMsg {
+export function serializeMetrics(
+    metrics: MultiMetrics,
+    defaultMetadata?: Metadata,
+    defaultFields?: Fields
+): SerializedHecMsg {
     const measurements = Object.fromEntries(
         Object.entries(metrics.measurements).map(([key, value]) => [`metric_name:${key}`, value])
     );
@@ -88,6 +95,7 @@ export function serializeMetrics(metrics: MultiMetrics, defaultMetadata?: Metada
         JSON.stringify({
             time: serializeTime(metrics.time),
             fields: {
+                ...defaultFields,
                 ...metrics.fields,
                 ...measurements,
             },
@@ -104,6 +112,8 @@ export interface HecConfig {
     token: string | null;
     /** Defaults for host, source, sourcetype and index. Can be overriden for each message */
     defaultMetadata?: Metadata;
+    /** Default set of fields to apply to all events and metrics sent with this HEC client */
+    defaultFields?: Fields;
     /** Maximum number of entries in the HEC message queue before flushing it */
     maxQueueEntries?: number;
     /** Maximum number of bytes in the HEC message queue before flushing it */
@@ -120,7 +130,7 @@ export interface HecConfig {
     requestKeepAlive?: boolean;
     /** If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs) */
     validateCertificate?: boolean;
-    /** Maximum number of sockets HEC will use */
+    /** Maximum number of sockets HEC will use (per host) */
     maxSockets?: number;
     /** User-agent header sent to HEC */
     userAgent?: string;
@@ -137,6 +147,7 @@ export interface HecConfig {
 const CONFIG_DEFAULTS = {
     token: null,
     defaultMetadata: {},
+    defaultFields: {},
     maxQueueEntries: -1,
     maxQueueSize: 512_000,
     flushTime: 0,
@@ -195,6 +206,7 @@ export function isMetric(msg: Event | Metric): msg is Metric {
 }
 
 const initialCounters = {
+    errorCount: 0,
     retryCount: 0,
     queuedMessages: 0,
     sentMessages: 0,
@@ -213,6 +225,12 @@ export class HecClient {
     private httpAgent: HttpAgent | HttpsAgent;
     private counters = {
         ...initialCounters,
+    };
+    private aggregates = {
+        requestDuration: new AggregateMetric(),
+        batchSize: new AggregateMetric(),
+        batchSizeBytes: new AggregateMetric(),
+        batchSizeCompressed: new AggregateMetric(),
     };
 
     public constructor(config: HecConfig) {
@@ -241,27 +259,29 @@ export class HecClient {
     }
 
     public pushEvent(event: Event) {
-        const serialized = serializeEvent(event, this.config.defaultMetadata);
+        const serialized = serializeEvent(event, this.config.defaultMetadata, this.config.defaultFields);
         this.pushSerializedMsg(serialized);
     }
 
     public pushMetric(metric: Metric) {
-        const serialized = serializeMetric(metric, this.config.defaultMetadata);
+        const serialized = serializeMetric(metric, this.config.defaultMetadata, this.config.defaultFields);
         this.pushSerializedMsg(serialized);
     }
 
     public pushMetrics(metrics: MultiMetrics) {
         if (this.config.multipleMetricFormatEnabled) {
-            const serialized = serializeMetrics(metrics, this.config.defaultMetadata);
+            const serialized = serializeMetrics(metrics, this.config.defaultMetadata, this.config.defaultFields);
             this.pushSerializedMsg(serialized);
         } else {
             const { measurements, ...rest } = metrics;
             for (const [name, value] of Object.entries(measurements)) {
-                this.pushMetric({
-                    ...rest,
-                    name,
-                    value,
-                });
+                if (value != null) {
+                    this.pushMetric({
+                        ...rest,
+                        name,
+                        value,
+                    });
+                }
             }
         }
     }
@@ -298,7 +318,14 @@ export class HecClient {
     }
 
     public flushStats() {
-        const stats = this.stats;
+        const stats = {
+            ...this.counters,
+            ...this.aggregates.requestDuration.flush('requestDuration'),
+            ...this.aggregates.batchSize.flush('batchSize'),
+            ...this.aggregates.batchSizeBytes.flush('batchSizeBytes'),
+            ...this.aggregates.batchSizeCompressed.flush('batchSizeCompressed'),
+            activeFlushingCount: this.activeFlushing.size,
+        };
         this.counters = { ...initialCounters };
         return stats;
     }
@@ -325,7 +352,6 @@ export class HecClient {
             return Promise.resolve();
         }
         const queue = this.queue;
-
         this.queue = [];
         this.queueSizeBytes = 0;
 
@@ -348,6 +374,11 @@ export class HecClient {
         const rawBodySize = rawBody.length;
         const body = this.config.gzip ? await compressBody(rawBody) : rawBody;
         const bodySize = body.length;
+        this.aggregates.batchSize.push(msgs.length);
+        this.aggregates.batchSizeBytes.push(rawBodySize);
+        if (this.config.gzip) {
+            this.aggregates.batchSizeCompressed.push(bodySize);
+        }
         const headers: { [k: string]: string } = {
             'Content-Length': String(bodySize),
             'User-Agent': this.config.userAgent,
@@ -363,6 +394,7 @@ export class HecClient {
         while (true) {
             attempt++;
             try {
+                const requestStart = Date.now();
                 const response = await fetch(this.config.url, {
                     method: 'POST',
                     headers,
@@ -371,6 +403,7 @@ export class HecClient {
                     signal: abortSignal,
                     timeout: this.config.timeout,
                 });
+                this.aggregates.requestDuration.push(Date.now() - requestStart);
 
                 if (!isSuccessfulStatus(response.status)) {
                     if (debug.enabled) {
@@ -396,6 +429,7 @@ export class HecClient {
                 this.counters.transferredBytes += bodySize;
                 break;
             } catch (e) {
+                this.counters.errorCount++;
                 error('Failed to send batch to HEC (attempt %s)', attempt, e);
                 if (abortSignal.aborted) {
                     throw new Error('Aborted');
@@ -421,9 +455,9 @@ export class HecClient {
         }
         if (this.flushTimer == null) {
             this.flushTimer = setTimeout(() => {
-                debug('Flushing HEC queue for time limit being reachted');
+                debug('Flushing HEC queue for time limit being reached');
                 this.flushInternal();
-            }, this.config.flushTime || 0);
+            }, this.config.flushTime ?? 0);
         }
     }
 }

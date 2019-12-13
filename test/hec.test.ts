@@ -22,6 +22,7 @@ test('serializeEvent', () => {
     ).toMatchInlineSnapshot(`
         Object {
           "event": "hello world",
+          "fields": Object {},
           "host": "myhost",
           "index": "myindex",
           "source": "somesource",
@@ -67,8 +68,8 @@ test('serializeMetrics', () => {
             serializeMetrics({
                 time: new Date('2019-11-29T12:15:27.123Z'),
                 measurements: {
-                    'ethlogger.system.cpu.user': 47.11,
-                    'ethlogger.system.cpu.system': 8.15,
+                    'ethlogger.internal.system.cpu.user': 47.11,
+                    'ethlogger.internal.system.cpu.system': 8.15,
                 },
                 fields: {
                     pid: 3158,
@@ -86,8 +87,8 @@ test('serializeMetrics', () => {
     ).toMatchInlineSnapshot(`
         Object {
           "fields": Object {
-            "metric_name:ethlogger.system.cpu.system": 8.15,
-            "metric_name:ethlogger.system.cpu.user": 47.11,
+            "metric_name:ethlogger.internal.system.cpu.system": 8.15,
+            "metric_name:ethlogger.internal.system.cpu.user": 47.11,
             "nodeVersoin": "12.3.1",
             "pid": 3158,
             "version": "1.0.0",
@@ -110,6 +111,7 @@ test('parseHecConfig', () => {
         })
     ).toMatchInlineSnapshot(`
         Object {
+          "defaultFields": Object {},
           "defaultMetadata": Object {},
           "flushTime": 0,
           "gzip": true,

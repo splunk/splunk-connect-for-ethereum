@@ -1,10 +1,10 @@
-import { BlockRangeCheckpoint } from '../src/checkpoint';
+import { Checkpoint } from '../src/checkpoint';
 
-test('BlockRangeCheckpoint', () => {
-    const empty = new BlockRangeCheckpoint({ path: '.foo' });
+test('Checkpoint', () => {
+    const empty = new Checkpoint({ path: '.foo' });
     expect(empty.isEmpty()).toBe(true);
 
-    const checkpoints = new BlockRangeCheckpoint({ path: '.foo', initialBlockNumber: 0 });
+    const checkpoints = new Checkpoint({ path: '.foo', initialBlockNumber: 0 });
     expect(checkpoints.serialize()).toMatchInlineSnapshot(`
         "{
           \\"v\\": 1,
@@ -53,7 +53,7 @@ test('BlockRangeCheckpoint', () => {
         ]
     `);
 
-    const restored = new BlockRangeCheckpoint({ path: '.foo' });
+    const restored = new Checkpoint({ path: '.foo' });
     restored.initializeFromCheckpointContents(`
       {
         "v": 1,

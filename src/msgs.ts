@@ -1,3 +1,5 @@
+import { GethPeer } from './eth/responses';
+
 export type Address = string;
 export type Value = string | number | boolean | Array<string | number | boolean>;
 
@@ -22,13 +24,13 @@ export interface FormattedBlock {
     /** the bloom filter for the logs of the block */
     logsBloom: string | null;
     /** integer of the difficulty for this block */
-    difficulty: number;
+    difficulty: number | string;
     /** integer of the total difficulty of the chain until this block */
-    totalDifficulty: number;
+    totalDifficulty: number | string;
     /** the maximum gas allowed in this block */
-    gasLimit: number;
+    gasLimit: number | string;
     /** the total used gas by all transactions in this block */
-    gasUsed: number;
+    gasUsed: number | string;
     /** the unix timestamp (seconds since epoch) for when the block was collated */
     timestamp: number | string;
     /** the "extra data" field of this block */
@@ -49,10 +51,10 @@ export interface FormattedBlock {
 export interface BlockMessage {
     type: 'block';
     time: number;
-    block: FormattedBlock;
+    body: FormattedBlock;
 }
 
-export interface FormattedPendingTransaction {
+export interface BaseFormattedTransaction {
     /** hash of the transaction */
     hash: string;
     /** address of the sender */
@@ -66,25 +68,38 @@ export interface FormattedPendingTransaction {
     /** the data send along with the transaction */
     input: string;
     /** the number of transactions made by the sender prior to this one */
-    nonce: string;
+    nonce: number;
     /** value transferred in Wei */
-    value: string;
+    value: number | string;
     /** ECDSA recovery id */
     v: string;
     /** ECDSA signature r */
     r: string;
     /** ECDSA signature s */
     s: string;
+
+    // additional info
+
+    /** Information about the recipient address of the transaction */
+    toInfo?: AddressInfo;
+    /** Information about the sender address of the transaction */
+    fromInfo?: AddressInfo;
+    /** Information about the function extracted from `input` if ABI information is available */
+    call?: FunctionCall;
+}
+
+export interface FormattedPendingTransaction extends BaseFormattedTransaction {
+    type: 'pending' | 'queued';
 }
 
 export interface PendingTransactionMessage {
-    type: 'transaction:pending';
+    type: 'pendingtx';
     time: number;
-    tx: FormattedPendingTransaction;
+    body: FormattedPendingTransaction;
 }
 
 /** Transaction and transaction receipt information formatted for output */
-export interface FormattedTransaction extends FormattedPendingTransaction {
+export interface FormattedTransaction extends BaseFormattedTransaction {
     /** hash of the block where this transaction was in */
     blockHash: string | null;
     /** integer of the transaction's index position in the block */
@@ -108,15 +123,8 @@ export interface FormattedTransaction extends FormattedPendingTransaction {
 
     // additional/computed information
 
-    /** Information about the recipient address of the transaction */
-    toInfo?: AddressInfo;
-    /** Information about the sender address of the transaction */
-    fromInfo?: AddressInfo;
     /** Information about the created contract address */
     contractAddressInfo?: AddressInfo;
-
-    /** Information about the function extracted from `input` if ABI information is available */
-    call?: FunctionCall;
 }
 
 export interface AddressInfo {
@@ -132,7 +140,14 @@ export interface FunctionCall {
     /** Function signature (name and parameter types) */
     signature: string;
     /** List of decoded parameters */
-    params: Array<{ name: string; type: string; value: Value }>;
+    params: Array<{
+        /** Paramter name */
+        name: string;
+        /** Data type */
+        type: string;
+        /** Decoded value */
+        value: Value;
+    }>;
     /** A map of parameter names and their decoded value */
     args: { [name: string]: Value };
 }
@@ -140,7 +155,7 @@ export interface FunctionCall {
 export interface TransactionMessage {
     type: 'transaction';
     time: number;
-    tx: FormattedTransaction;
+    body: FormattedTransaction;
 }
 
 export interface FormattedLogEvent {
@@ -188,5 +203,61 @@ export interface EventData {
 export interface LogEventMessage {
     type: 'event';
     time: number;
-    event: FormattedLogEvent;
+    body: FormattedLogEvent;
+}
+
+export interface NodeInfo {
+    /** Detected node platform */
+    platform: string;
+    /** Full client version string retrieved from the node */
+    clientVersion: string;
+    /** enode if we were able to determine */
+    enode: string | null;
+    /** Network ID retrieved from the node */
+    networkId: number | null;
+    /** Name of the network (if supplied or auto-detected) */
+    network: string | null;
+    /** Ethereum protocol version */
+    protocolVersion: number | null;
+    /** Describes transport used to access node information (jsonprc+URL)  */
+    transport: string;
+
+    [k: string]: any;
+}
+
+export interface NodeInfoMessage {
+    type: 'nodeInfo';
+    time: number;
+    body: NodeInfo;
+}
+
+export interface GethPeerMessage {
+    type: 'gethPeer';
+    time: number;
+    body: GethPeer;
+}
+
+export interface QuorumProtocolMessage {
+    type: 'quorumProtocol';
+    time: number;
+    body: { consensusMechanism: 'istanbul' | 'raft'; [k: string]: any };
+}
+
+export interface NodeMetrics {
+    gasPrice?: number;
+    hashRate?: number;
+    peerCount?: number;
+    pendingTransactionCount?: number;
+    'syncing.currentBlock'?: number;
+    'syncing.startingBlock'?: number;
+    'syncing.highestBlock'?: number;
+    'geth.txpool.pending'?: number;
+    'geth.txpool.queued'?: number;
+    [name: string]: number | undefined;
+}
+
+export interface NodeMetricsMessage {
+    type: 'nodeMetrics';
+    time: number;
+    metrics: NodeMetrics;
 }

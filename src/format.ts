@@ -1,6 +1,15 @@
 import { toChecksumAddress } from 'web3-utils';
 import { RawBlockResponse, RawLogResponse, RawTransactionReceipt, RawTransactionResponse } from './eth/responses';
-import { AddressInfo, EventData, FormattedBlock, FormattedLogEvent, FormattedTransaction, FunctionCall } from './msgs';
+import {
+    AddressInfo,
+    EventData,
+    FormattedBlock,
+    FormattedLogEvent,
+    FormattedTransaction,
+    FunctionCall,
+    FormattedPendingTransaction,
+    BaseFormattedTransaction,
+} from './msgs';
 import { bigIntToNumber, parseBigInt } from './utils/bn';
 
 export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
@@ -15,12 +24,12 @@ export function formatBlock(rawBlock: RawBlockResponse): FormattedBlock {
         transactionsRoot: rawBlock.transactionsRoot,
         receiptsRoot: rawBlock.receiptsRoot,
         logsBloom: rawBlock.logsBloom,
-        difficulty: bigIntToNumber(rawBlock.difficulty),
-        gasLimit: bigIntToNumber(rawBlock.gasLimit),
-        gasUsed: bigIntToNumber(rawBlock.gasUsed),
+        difficulty: parseBigInt(rawBlock.difficulty),
+        gasLimit: parseBigInt(rawBlock.gasLimit),
+        gasUsed: parseBigInt(rawBlock.gasUsed),
         extraData: rawBlock.extraData,
         nonce: rawBlock.nonce,
-        totalDifficulty: bigIntToNumber(rawBlock.totalDifficulty),
+        totalDifficulty: parseBigInt(rawBlock.totalDifficulty),
         size: bigIntToNumber(rawBlock.size),
         uncles: rawBlock.uncles,
         transactionCount: rawBlock.transactions == null ? 0 : rawBlock.transactions.length,
@@ -41,6 +50,22 @@ function formatStatus(receiptStatus?: string): 'success' | 'failure' | null {
     return null;
 }
 
+function formatBaseTransaction(rawTx: RawTransactionResponse): BaseFormattedTransaction {
+    return {
+        hash: rawTx.hash,
+        from: toChecksumAddress(rawTx.from),
+        to: rawTx.to != null ? toChecksumAddress(rawTx.to) : null,
+        gas: bigIntToNumber(rawTx.gas),
+        gasPrice: bigIntToNumber(rawTx.gasPrice),
+        input: rawTx.input,
+        nonce: bigIntToNumber(rawTx.nonce),
+        value: parseBigInt(rawTx.value),
+        v: rawTx.v,
+        r: rawTx.r,
+        s: rawTx.s,
+    };
+}
+
 export function formatTransaction(
     rawTx: RawTransactionResponse,
     receipt: RawTransactionReceipt,
@@ -50,20 +75,10 @@ export function formatTransaction(
     call?: FunctionCall
 ): FormattedTransaction {
     return {
-        hash: rawTx.hash,
-        blockNumber: rawTx.blockNumber != null ? bigIntToNumber(rawTx.blockNumber) : null,
+        ...formatBaseTransaction(rawTx),
         blockHash: rawTx.blockHash,
-        from: toChecksumAddress(rawTx.from),
-        to: rawTx.to != null ? toChecksumAddress(rawTx.to) : null,
-        gas: bigIntToNumber(rawTx.gas),
-        gasPrice: bigIntToNumber(rawTx.gasPrice),
-        input: rawTx.input,
-        nonce: rawTx.nonce,
+        blockNumber: rawTx.blockNumber != null ? bigIntToNumber(rawTx.blockNumber) : null,
         transactionIndex: rawTx.transactionIndex != null ? bigIntToNumber(rawTx.transactionIndex) : null,
-        value: rawTx.value,
-        v: rawTx.v,
-        r: rawTx.r,
-        s: rawTx.s,
         status: formatStatus(receipt.status),
         contractAddress: receipt.contractAddress != null ? toChecksumAddress(receipt.contractAddress) : null,
         cumulativeGasUsed: bigIntToNumber(receipt.cumulativeGasUsed),
@@ -71,6 +86,22 @@ export function formatTransaction(
         fromInfo,
         toInfo,
         contractAddressInfo,
+        call,
+    };
+}
+
+export function formatPendingTransaction(
+    rawTx: RawTransactionResponse,
+    type: 'pending' | 'queued',
+    fromInfo?: AddressInfo,
+    toInfo?: AddressInfo,
+    call?: FunctionCall
+): FormattedPendingTransaction {
+    return {
+        type,
+        ...formatBaseTransaction(rawTx),
+        fromInfo,
+        toInfo,
         call,
     };
 }

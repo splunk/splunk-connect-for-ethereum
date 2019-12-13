@@ -1,4 +1,5 @@
 import { flags } from '@oclif/command';
+import { StartBlock } from './block';
 
 export const CLI_FLAGS = {
     version: flags.version({ char: 'v' }),
@@ -38,6 +39,34 @@ export const CLI_FLAGS = {
     'eth-abi-dir': flags.string({
         env: 'ABI_DIR',
         description: 'Directory containing ABI ',
+    }),
+
+    'start-at-block': flags.option<StartBlock>({
+        env: 'START_AT_BLOCK',
+        multiple: false,
+        helpValue: 'genesis|latest|<number>',
+        description:
+            '[default: genesis] First block to start ingesting from. ' +
+            'Possible values are "genesis", "latest", an absolute block number ' +
+            'or a negative number describing how many blocks before the latest one to start at.',
+        parse: s => {
+            if (s === 'genesis' || s === 'latest') {
+                return s;
+            }
+            const n = parseInt(s, 10);
+            if (isNaN(n)) {
+                throw new Error(`Invalid start block: ${JSON.stringify(s)}`);
+            }
+            if (n % 1 !== 0) {
+                throw new Error(`Invalid start block: ${JSON.stringify(s)} - block number must be an integer`);
+            }
+            return n;
+        },
+    }),
+
+    'network-name': flags.string({
+        env: 'NETWORK_NAME',
+        description: 'The network name will be attached to all events sent to Splunk',
     }),
 
     // 'quorum-support': flags.boolean({

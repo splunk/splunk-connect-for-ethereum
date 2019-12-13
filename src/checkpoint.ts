@@ -6,13 +6,13 @@ import { alwaysResolve, sleep } from './utils/async';
 
 const { debug, info, error } = createModuleDebug('checkpoint');
 
-export interface BlockRangeCheckpointConfig {
+export interface CheckpointConfig {
     path: string;
     initialBlockNumber?: number;
     saveInterval?: number;
 }
 
-export class BlockRangeCheckpoint implements ManagedResource {
+export class Checkpoint implements ManagedResource {
     private active: boolean = true;
     private completed: BlockRange[] = [];
     public initialBlockNumber: number | undefined;
@@ -22,7 +22,7 @@ export class BlockRangeCheckpoint implements ManagedResource {
     private savePromise: Promise<void> | null = null;
     private readonly saveInterval: number;
 
-    constructor({ initialBlockNumber, path, saveInterval = 250 }: BlockRangeCheckpointConfig) {
+    constructor({ initialBlockNumber, path, saveInterval = 250 }: CheckpointConfig) {
         this.initialBlockNumber = initialBlockNumber;
         this.path = path;
         this.saveInterval = saveInterval;

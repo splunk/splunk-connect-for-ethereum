@@ -97,7 +97,7 @@ test('formatTransaction', () => {
           "gasUsed": 79935,
           "hash": "0xbb3a336e3f823ec18197f1e13ee875700f08f03e2cab75f0d0b118dabb44cba0",
           "input": "0xf7d8c88300000000000000000000000000000000000000000000000000000000000cee6100000000000000000000000000000000000000000000000000000000000ac3e1",
-          "nonce": "0x18",
+          "nonce": 24,
           "r": "0x2a378831cf81d99a3f06a18ae1b6ca366817ab4d88a70053c41d7a8f0368e031",
           "s": "0x450d831a05b6e418724436c05c155e0a1b7b921015d0fbc2f667aed709ac4fb5",
           "status": "success",
@@ -105,7 +105,7 @@ test('formatTransaction', () => {
           "toInfo": undefined,
           "transactionIndex": 17,
           "v": "0x25",
-          "value": "0x1c6bf526340000",
+          "value": 8000000000000000,
         }
     `);
 });

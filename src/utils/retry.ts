@@ -2,17 +2,21 @@ import { ABORT, AbortManager } from './abort';
 import { sleep } from './async';
 import { createModuleDebug } from './debug';
 
-const { debug } = createModuleDebug('utils:retry');
+const { debug, warn } = createModuleDebug('utils:retry');
 
+/** A function dynamically computing the time to wait beteween retry attempts */
 export type WaitTimeFn = (attempt: number) => number;
 
+/** Wait time is either a function (WaitTimeFn) or an absolute number */
 export type WaitTime = WaitTimeFn | number;
 
+/** Retruens the number of milliseonds to wait for a given waitTime and attempt number (1-based) */
 export function resolveWaitTime(waitTime: WaitTime, attempt: number): number {
     return typeof waitTime === 'function' ? waitTime(attempt) : waitTime;
 }
 
-export const RETRY_ABORT = '[[RETRY ABORT]]';
+/** Can be thrown by retryable task to abort retry loop */
+export const RETRY_ABORT = Symbol('[[RETRY ABORT]]');
 
 export async function retry<R>(
     task: () => Promise<R>,
@@ -22,12 +26,14 @@ export async function retry<R>(
         taskName = 'anonymous task',
         onRetry,
         abortManager = new AbortManager(),
+        warnOnError = false,
     }: {
         attempts?: number;
         waitBetween?: WaitTime;
         taskName?: string;
         onRetry?: (attempt: number) => void;
         abortManager?: AbortManager;
+        warnOnError?: boolean;
     } = {}
 ): Promise<R> {
     const startTime = Date.now();
@@ -53,7 +59,7 @@ export async function retry<R>(
                 debug('[%s] Retry loop aborted', taskName);
                 throw RETRY_ABORT;
             }
-            debug('[%s] Task failed: ', taskName, e.message);
+            (warnOnError ? warn : debug)('Task %s failed: ', taskName, e);
             if (abortManager.aborted) {
                 throw RETRY_ABORT;
             }
@@ -72,4 +78,10 @@ export async function retry<R>(
 export const exponentialBackoff = ({ min, max }: { min: number; max?: number }): WaitTimeFn => (attempt: number) => {
     const t = Math.round(Math.random() * min * Math.pow(2, attempt));
     return max != null ? Math.min(max, t) : t;
+};
+
+export const linearBackoff = ({ min, max, step }: { min: number; max: number; step: number }): WaitTimeFn => (
+    attempt: number
+) => {
+    return Math.min(max, min + (attempt - 1) * step);
 };

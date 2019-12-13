@@ -1,25 +1,29 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
-import { AbiDecoder } from './abi';
+import { AbiRepository } from './abi';
 import { BlockWatcher } from './block';
-import { BlockRangeCheckpoint } from './checkpoint';
+import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
 import { defaultSourcetypes, SplunkHecConfig } from './config';
+import { ContractInfo } from './contract';
 import { BatchedEthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
+import { introspectTargetNodePlatform } from './introspect';
+import { NodeStatsCollector } from './nodestats';
 import { HecOutput } from './output';
 import { createModuleDebug, enableTraceLogging } from './utils/debug';
-import { shutdownAll, ManagedResource } from './utils/resource';
-import { waitForSignal } from './utils/signal';
 import LRUCache from './utils/lru';
-import { ContractInfo } from './contract';
-import { StatsCollector } from './utils/stats';
+import { ManagedResource, shutdownAll } from './utils/resource';
+import { waitForSignal } from './utils/signal';
+import { InternalStatsCollector } from './utils/stats';
+import { removeEmtpyValues } from './utils/obj';
+import { ABORT } from './utils/abort';
 
 const { debug, error, info } = createModuleDebug('cli');
 
 class Ethlogger extends Command {
-    static description = 'Splunk Connect for Ethereum and Quorum';
+    static description = 'Splunk Connect for Ethereum';
     static flags = CLI_FLAGS;
 
     async run() {
@@ -41,6 +45,19 @@ class Ethlogger extends Command {
         };
 
         try {
+            const transport = new HttpTransport({
+                url: flags['eth-rpc-url'],
+            });
+            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
+            const platformAdapter = await introspectTargetNodePlatform(client, flags['network-name']);
+
+            info(
+                'Detected node platform=%o network=%d protocol=%d',
+                platformAdapter.name,
+                platformAdapter.networkId,
+                platformAdapter.protocolVersion
+            );
+
             const hecConfig: SplunkHecConfig = {
                 url: flags['hec-url'],
                 token: flags['hec-token'],
@@ -48,75 +65,105 @@ class Ethlogger extends Command {
                 sourcetypes: defaultSourcetypes,
                 multipleMetricFormatEnabled: true,
                 defaultMetadata: {
-                    host: 'lando',
+                    host: transport.originHost,
                     source: 'ethlogger',
                 },
+                defaultFields: removeEmtpyValues({
+                    enode: platformAdapter.enode || undefined,
+                    platform: platformAdapter.name,
+                    networkId: platformAdapter.networkId,
+                    network: flags['network-name'],
+                    protocolVersion: platformAdapter.protocolVersion,
+                }),
+                eventIndex: 'hecevents',
                 metricsIndex: 'somemetrics',
+                internalMetricsIndex: 'somemetrics',
+                metricsPrefix: 'eth',
             };
 
             const hec = new HecClient(hecConfig);
             const output = new HecOutput(hec, hecConfig);
             addResource(output);
 
-            const statsCollector = new StatsCollector({
+            const internalStatsCollector = new InternalStatsCollector({
                 collectInterval: 1000,
                 dest: hec.clone({
                     defaultMetadata: {
                         host: process.env.HOST || process.env.HOSTNAME,
-                        source: 'ethlogger://internals',
+                        source: 'ethlogger:internal',
                         sourcetype: 'ethlogger:stats',
-                        index: 'somemetrics',
+                        index: hecConfig.internalMetricsIndex,
                     },
-                    flushTime: 10000,
+                    defaultFields: {
+                        version: this.config.version,
+                        nodeVersion: process.version,
+                        pid: process.pid,
+                    },
+                    flushTime: 5000,
                     multipleMetricFormatEnabled: true,
                 }),
-                basePrefix: 'ethlogger',
-                fields: {
-                    version: this.config.version,
-                    nodeVersion: process.version,
-                },
+                basePrefix: 'ethlogger.internal',
             });
-            addResource(statsCollector);
-            statsCollector.addSource(hec, 'hec');
+            addResource(internalStatsCollector);
+            internalStatsCollector.addSource(transport, 'ethTransport');
+            internalStatsCollector.addSource(hec, 'hec');
 
             const checkpoints = addResource(
-                new BlockRangeCheckpoint({
+                new Checkpoint({
                     path: 'checkpoints.json',
                 })
             );
             await checkpoints.initialize();
 
-            const transport = new HttpTransport({
-                url: flags['eth-rpc-url'],
-            });
-            statsCollector.addSource(transport, 'ethTransport');
-
-            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
-
-            let abiDecoder;
+            let abiRepo;
             if (flags['eth-abi-dir']) {
-                abiDecoder = new AbiDecoder();
-                resources.unshift(abiDecoder);
-                await abiDecoder.loadAbiDir(flags['eth-abi-dir']);
+                abiRepo = new AbiRepository();
+                resources.unshift(abiRepo);
+                await abiRepo.loadAbiDir(flags['eth-abi-dir']);
             }
 
-            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 25_000 });
-            statsCollector.addSource(contractInfoCache, 'contractInfoCache');
+            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 1000 });
+            internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
+
+            const nodeStatsCollector = new NodeStatsCollector({
+                ethClient: client,
+                platformAdapter,
+                abiRepo,
+                contractInfoCache,
+                output,
+                statsInterval: 1000,
+                infoInterval: 60_000,
+            });
+            addResource(nodeStatsCollector);
+            internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
 
             const blockWatcher = new BlockWatcher({
                 checkpoints,
                 ethClient: client,
                 output,
-                abiDecoder,
-                startAt: 'genesis',
+                abiRepo: abiRepo,
+                startAt: flags['start-at-block'],
                 contractInfoCache,
             });
             resources.unshift(blockWatcher);
-            statsCollector.addSource(blockWatcher, 'blockWatcher');
+            internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
 
-            statsCollector.start();
+            internalStatsCollector.start();
 
-            await Promise.race([blockWatcher.start(), waitForSignal('SIGINT')]);
+            await Promise.race([
+                Promise.all(
+                    [blockWatcher.start(), nodeStatsCollector.start()].map(p =>
+                        p.catch(e => {
+                            if (e !== ABORT) {
+                                error('Error in ethlogger task:', e);
+                                return Promise.reject(e);
+                            }
+                        })
+                    )
+                ),
+                waitForSignal('SIGINT'),
+            ]);
+
             info('Recieved signal, proceeding with shutdown sequence');
             const cleanShutdown = await shutdownAll(resources, 10_000);
             info('Shutdown complete.');

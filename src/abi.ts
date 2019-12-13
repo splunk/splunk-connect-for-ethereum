@@ -6,6 +6,7 @@ import { computeContractFingerprint } from './contract';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { RawLogResponse } from './eth/responses';
+import { parseBigInt } from './utils/bn';
 
 const { debug, warn } = createModuleDebug('abi');
 
@@ -55,7 +56,7 @@ export function computeSignature(abi: Abi) {
     if (abi.name == null) {
         throw new Error('Cannot add ABI item without name');
     }
-    return `${abi.name}(${(abi.inputs || []).map(i => i.type).join(',')})`;
+    return `${abi.name}(${(abi.inputs ?? []).map(i => i.type).join(',')})`;
 }
 
 export function computeSignatureHash(sigName: string, type: 'event' | 'function'): string {
@@ -91,12 +92,7 @@ export function decodeParameterValue(value: string | number | boolean, type: str
         if (intBits(type, 'uint') <= 53) {
             return parseInt(value as string, 10);
         } else {
-            const bn = BigInt(value);
-            if (bn > BigInt(Number.MAX_SAFE_INTEGER)) {
-                return bn.toString();
-            } else {
-                return parseInt(bn.toString(), 10);
-            }
+            return parseBigInt(value as string);
         }
     }
 
@@ -107,12 +103,7 @@ export function decodeParameterValue(value: string | number | boolean, type: str
         if (intBits(type, 'int') <= 53) {
             return parseInt(value as string, 10);
         } else {
-            const bn = BigInt(value);
-            if (bn > BigInt(Number.MAX_SAFE_INTEGER) || bn < BigInt(Number.MIN_SAFE_INTEGER)) {
-                return bn.toString();
-            } else {
-                return parseInt(bn.toString(), 10);
-            }
+            return parseBigInt(value as string);
         }
     }
 
@@ -142,7 +133,7 @@ export interface ContractAbi {
     fileName: string;
 }
 
-export class AbiDecoder implements ManagedResource {
+export class AbiRepository implements ManagedResource {
     private signatures: Map<string, AbiMatch> = new Map();
     private contracts: Map<string, ContractAbi> = new Map();
     private abiCoder: AbiCoder = require('web3-eth-abi');
@@ -177,10 +168,13 @@ export class AbiDecoder implements ManagedResource {
         let contractName: string;
         if (isTruffleBuildFile(abiData)) {
             abis = abiData.abi;
-            contractName = abiData.contractName || fileName;
+            contractName =
+                abiData.contractName ||
+                // Fall back to file name without file extension
+                basename(fileName).split('.', 1)[0];
         } else if (isAbiArray(abiData)) {
             abis = abiData;
-            contractName = basename(fileName);
+            contractName = basename(fileName).split('.', 1)[0];
         } else {
             warn('Invalid contents of ABI file %s', fileName);
             return;
@@ -190,7 +184,7 @@ export class AbiDecoder implements ManagedResource {
             .filter(abi => (abi.type === 'function' || abi.type === 'event') && abi.name != null)
             .map(item => ({
                 item,
-                sigName: computeSignature({ name: item.name!, inputs: item.inputs || [], type: 'function' }),
+                sigName: computeSignature({ name: item.name!, inputs: item.inputs ?? [], type: 'function' }),
             }));
 
         const functions = items
@@ -224,7 +218,7 @@ export class AbiDecoder implements ManagedResource {
             match.candidates.push({
                 name: item.name!,
                 type: item.type as 'function' | 'event',
-                inputs: item.inputs || [],
+                inputs: item.inputs ?? [],
                 contractName,
                 contractFingerprint,
                 fileName,
@@ -272,7 +266,7 @@ export class AbiDecoder implements ManagedResource {
                 abi.contractName,
                 abi.fileName
             );
-            const inputs = abi.inputs || [];
+            const inputs = abi.inputs ?? [];
             const decodedParams = this.abiCoder.decodeParameters(
                 inputs.map(i => i.type),
                 data.slice(10)

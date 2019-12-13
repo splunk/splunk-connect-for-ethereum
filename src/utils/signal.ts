@@ -7,7 +7,7 @@ export type Signal = 'SIGINT' | 'SIGTERM' | 'SIGHUP';
 export function waitForSignal(signal: Signal): Promise<void> {
     return new Promise(resolve => {
         debug('Listening on signal %s', signal);
-        process.on(signal, () => {
+        process.once(signal, () => {
             warn(`Received signal ${signal}`);
             resolve();
         });

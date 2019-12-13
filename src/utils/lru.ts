@@ -17,7 +17,10 @@ export default class LRUCache<K, V> implements Cache<K, V> {
     constructor({
         maxSize,
     }: {
-        /** The maximum number of items before evicting the least recently used items  */
+        /**
+         * The maximum number of items before evicting the least recently used items.
+         * The cache will keep up to twice the amount of entries in memory.
+         */
         maxSize: number;
     }) {
         this.cache = new Map();
@@ -79,12 +82,12 @@ export default class LRUCache<K, V> implements Cache<K, V> {
     }
 
     public flushStats(): Stats {
-        const counters = this.counters;
-        this.counters = { ...initialCounters };
-        return {
+        const stats = {
+            ...this.counters,
             size: this.size,
             oldSize: this.old.size,
-            ...counters,
         };
+        this.counters = { ...initialCounters };
+        return stats;
     }
 }

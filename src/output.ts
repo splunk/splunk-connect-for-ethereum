@@ -1,13 +1,31 @@
 import { SplunkHecConfig } from './config';
 import { HecClient } from './hec';
-import { BlockMessage, LogEventMessage, PendingTransactionMessage, TransactionMessage } from './msgs';
+import {
+    BlockMessage,
+    GethPeerMessage,
+    LogEventMessage,
+    NodeMetricsMessage,
+    PendingTransactionMessage,
+    QuorumProtocolMessage,
+    TransactionMessage,
+    NodeInfoMessage,
+} from './msgs';
 import { createDebug } from './utils/debug';
+import { prefixKeys } from './utils/obj';
 import { ManagedResource } from './utils/resource';
 
 const consoleOutput = createDebug('output');
 consoleOutput.enabled = true;
 
-export type OutputMessage = BlockMessage | TransactionMessage | PendingTransactionMessage | LogEventMessage;
+export type OutputMessage =
+    | BlockMessage
+    | TransactionMessage
+    | PendingTransactionMessage
+    | LogEventMessage
+    | NodeInfoMessage
+    | NodeMetricsMessage
+    | QuorumProtocolMessage
+    | GethPeerMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -19,32 +37,29 @@ export class HecOutput implements Output, ManagedResource {
     public write(msg: OutputMessage) {
         switch (msg.type) {
             case 'block':
-                this.hec.pushEvent({
-                    time: msg.time,
-                    body: msg.block,
-                    metadata: {
-                        index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.block,
-                    },
-                });
-                break;
             case 'transaction':
+            case 'event':
+            case 'pendingtx':
+            case 'nodeInfo':
+            case 'quorumProtocol':
+            case 'gethPeer':
                 this.hec.pushEvent({
                     time: msg.time,
-                    body: msg.tx,
+                    body: msg.body,
                     metadata: {
                         index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.transaction,
+                        sourcetype: this.config.sourcetypes[msg.type],
                     },
                 });
                 break;
-            case 'event':
-                this.hec.pushEvent({
+            case 'nodeMetrics':
+                const metricsPrefix = this.config.metricsPrefix ? this.config.metricsPrefix + '.' : '';
+                this.hec.pushMetrics({
                     time: msg.time,
-                    body: msg.event,
+                    measurements: prefixKeys(msg.metrics, metricsPrefix, true),
                     metadata: {
-                        index: this.config.eventIndex,
-                        sourcetype: this.config.sourcetypes.event,
+                        index: this.config.metricsIndex,
+                        sourcetype: this.config.sourcetypes.nodeMetrics,
                     },
                 });
                 break;
@@ -60,7 +75,7 @@ export class HecOutput implements Output, ManagedResource {
 
 export class ConsoleOutput implements Output {
     write(msg: OutputMessage) {
-        console.log(msg); // eslint-disable-line no-console
+        consoleOutput('%O', msg);
     }
 
     public async shutdown() {
@@ -72,6 +87,16 @@ export class FileOutput implements Output {
     write(msg: OutputMessage) {
         // TODO
         console.log(msg); // eslint-disable-line no-console
+    }
+
+    public async shutdown() {
+        // noop
+    }
+}
+
+export class DevNullOutput implements Output {
+    write() {
+        // noop
     }
 
     public async shutdown() {
