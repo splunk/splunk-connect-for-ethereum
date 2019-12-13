@@ -4,7 +4,7 @@ import { JsonRpcResponse } from './jsonrpc';
 import {
     GethMemStats,
     GethMetrics,
-    GethNodeInfo,
+    GethNodeInfoResponse,
     GethPeers,
     GethTxpool,
     ParityMode,
@@ -13,6 +13,8 @@ import {
     ParityPendingTransaction,
     RawBlockResponse,
     RawTransactionReceipt,
+    SyncStatus,
+    RawTransactionResponse,
 } from './responses';
 
 export interface EthRequest<P extends any[], R> {
@@ -43,9 +45,25 @@ export const getCode = (address: string): EthRequest<[string, string], string> =
     params: [address, 'latest'],
 });
 
+export const pendingTransactions = (): EthRequest<[], RawTransactionResponse[]> => ({
+    method: 'eth_pendingTransactions',
+});
+
 /** Returns the current client version */
 export const clientVersion = (): EthRequest<[], string> => ({
     method: 'web3_clientVersion',
+});
+
+/** Returns the current network id */
+export const netVersion = (): EthRequest<[], number> => ({
+    method: 'net_version',
+    response: r => bigIntToNumber(r.result),
+});
+
+/** Returns the current ethereum protocol version */
+export const protocolVersion = (): EthRequest<[], number> => ({
+    method: 'eth_protocolVersion',
+    response: r => bigIntToNumber(r.result),
 });
 
 /** Returns true if client is actively mining new blocks */
@@ -71,9 +89,14 @@ export const peerCount = (): EthRequest<[], number> => ({
     response: r => bigIntToNumber(r.result),
 });
 
+/** Returns an object with sync status data or FALSE, when not syncing */
+export const syncing = (): EthRequest<[], SyncStatus> => ({
+    method: 'eth_syncing',
+});
+
 // Geth specific requests
 
-export const gethNodeInfo = (): EthRequest<[], GethNodeInfo> => ({
+export const gethNodeInfo = (): EthRequest<[], GethNodeInfoResponse> => ({
     method: 'admin_nodeInfo',
 });
 

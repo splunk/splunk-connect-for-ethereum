@@ -1,7 +1,7 @@
 import { default as HttpAgent, HttpOptions, HttpsAgent } from 'agentkeepalive';
 import fetch from 'node-fetch';
 import { createModuleDebug } from '../utils/debug';
-import { isHttps } from '../utils/http';
+import { isHttps } from '../utils/httputils';
 import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { EthereumTransport } from './transport';
 import { httpClientStats, AggregateMetric } from '../utils/stats';

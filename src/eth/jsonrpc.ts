@@ -25,7 +25,7 @@ export function createJsonRpcPayload(method: string, params?: any[]): JsonRpcReq
         jsonrpc: '2.0',
         id: nextMsgId(),
         method,
-        params: params || [],
+        params: params ?? [],
     };
 }
 

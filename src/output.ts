@@ -2,14 +2,16 @@ import { SplunkHecConfig } from './config';
 import { HecClient } from './hec';
 import {
     BlockMessage,
+    GethPeerMessage,
     LogEventMessage,
     NodeMetricsMessage,
     PendingTransactionMessage,
     QuorumProtocolMessage,
     TransactionMessage,
-    GethPeerMessage,
+    NodeInfoMessage,
 } from './msgs';
 import { createDebug } from './utils/debug';
+import { prefixKeys } from './utils/obj';
 import { ManagedResource } from './utils/resource';
 
 const consoleOutput = createDebug('output');
@@ -20,6 +22,7 @@ export type OutputMessage =
     | TransactionMessage
     | PendingTransactionMessage
     | LogEventMessage
+    | NodeInfoMessage
     | NodeMetricsMessage
     | QuorumProtocolMessage
     | GethPeerMessage;
@@ -37,6 +40,7 @@ export class HecOutput implements Output, ManagedResource {
             case 'transaction':
             case 'event':
             case 'pendingtx':
+            case 'nodeInfo':
             case 'quorumProtocol':
             case 'gethPeer':
                 this.hec.pushEvent({
@@ -52,14 +56,7 @@ export class HecOutput implements Output, ManagedResource {
                 const metricsPrefix = this.config.metricsPrefix ? this.config.metricsPrefix + '.' : '';
                 this.hec.pushMetrics({
                     time: msg.time,
-                    measurements:
-                        metricsPrefix === ''
-                            ? msg.metrics
-                            : Object.fromEntries(
-                                  Object.entries(msg.metrics)
-                                      .filter(([, v]) => v != null)
-                                      .map(([name, value]) => [metricsPrefix + name, value])
-                              ),
+                    measurements: prefixKeys(msg.metrics, metricsPrefix, true),
                     metadata: {
                         index: this.config.metricsIndex,
                         sourcetype: this.config.sourcetypes.nodeMetrics,
@@ -78,7 +75,7 @@ export class HecOutput implements Output, ManagedResource {
 
 export class ConsoleOutput implements Output {
     write(msg: OutputMessage) {
-        console.log(msg); // eslint-disable-line no-console
+        consoleOutput('%O', msg);
     }
 
     public async shutdown() {
@@ -90,6 +87,16 @@ export class FileOutput implements Output {
     write(msg: OutputMessage) {
         // TODO
         console.log(msg); // eslint-disable-line no-console
+    }
+
+    public async shutdown() {
+        // noop
+    }
+}
+
+export class DevNullOutput implements Output {
+    write() {
+        // noop
     }
 
     public async shutdown() {

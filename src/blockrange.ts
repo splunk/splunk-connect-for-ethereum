@@ -83,6 +83,9 @@ export function getInverseBlockRanges(
     start: number | null,
     end: number | null
 ): BlockRange[] {
+    if (start != null && end != null && start >= end) {
+        return [];
+    }
     if (compactedRanges.length === 0) {
         if (start != null && end != null) {
             return [{ from: start, to: end }];

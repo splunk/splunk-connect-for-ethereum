@@ -24,13 +24,13 @@ export interface FormattedBlock {
     /** the bloom filter for the logs of the block */
     logsBloom: string | null;
     /** integer of the difficulty for this block */
-    difficulty: number;
+    difficulty: number | string;
     /** integer of the total difficulty of the chain until this block */
-    totalDifficulty: number;
+    totalDifficulty: number | string;
     /** the maximum gas allowed in this block */
-    gasLimit: number;
+    gasLimit: number | string;
     /** the total used gas by all transactions in this block */
-    gasUsed: number;
+    gasUsed: number | string;
     /** the unix timestamp (seconds since epoch) for when the block was collated */
     timestamp: number | string;
     /** the "extra data" field of this block */
@@ -206,6 +206,31 @@ export interface LogEventMessage {
     body: FormattedLogEvent;
 }
 
+export interface NodeInfo {
+    /** Detected node platform */
+    platform: string;
+    /** Full client version string retrieved from the node */
+    clientVersion: string;
+    /** enode if we were able to determine */
+    enode: string | null;
+    /** Network ID retrieved from the node */
+    networkId: number | null;
+    /** Name of the network (if supplied or auto-detected) */
+    network: string | null;
+    /** Ethereum protocol version */
+    protocolVersion: number | null;
+    /** Describes transport used to access node information (jsonprc+URL)  */
+    transport: string;
+
+    [k: string]: any;
+}
+
+export interface NodeInfoMessage {
+    type: 'nodeInfo';
+    time: number;
+    body: NodeInfo;
+}
+
 export interface GethPeerMessage {
     type: 'gethPeer';
     time: number;
@@ -222,10 +247,12 @@ export interface NodeMetrics {
     gasPrice?: number;
     hashRate?: number;
     peerCount?: number;
-
+    pendingTransactionCount?: number;
+    'syncing.currentBlock'?: number;
+    'syncing.startingBlock'?: number;
+    'syncing.highestBlock'?: number;
     'geth.txpool.pending'?: number;
     'geth.txpool.queued'?: number;
-
     [name: string]: number | undefined;
 }
 

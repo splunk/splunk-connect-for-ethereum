@@ -9,32 +9,35 @@ import { QuorumAdapter } from './platforms/quorum';
 
 const { debug, info, error } = createModuleDebug('introspect');
 
-export function createNodeAdapter(eth: EthereumClient, version: string): NodePlatformAdapter {
+export function createNodeAdapter(version: string, network?: string): NodePlatformAdapter {
     if (version.startsWith('Geth/')) {
         debug('Detected geth node');
         if (version.includes('quorum')) {
             debug('Found "quorum" in version string - using Quroum adapter');
-            const adapter = new QuorumAdapter(version);
+            const adapter = new QuorumAdapter(version, network);
             return adapter;
         } else {
-            const adapter = new GethAdapter(version);
+            const adapter = new GethAdapter(version, network);
             return adapter;
         }
     }
-    if (version.startsWith('Parity//')) {
+    if (version.startsWith('Parity//') || version.startsWith('Parity-Ethereum//')) {
         debug('Detected parity node');
-        return new ParityAdapter(version);
+        return new ParityAdapter(version, network);
     }
     debug('No specific support for given node type, falling bakc to generic adapter');
-    return new GenericNodeAdapter(version);
+    return new GenericNodeAdapter(version, network);
 }
 
-export async function introspectTargetNodePlatform(eth: EthereumClient): Promise<NodePlatformAdapter> {
+export async function introspectTargetNodePlatform(
+    eth: EthereumClient,
+    network?: string
+): Promise<NodePlatformAdapter> {
     info(`Introspecting target ethereum node at %s`, eth.transport.source);
     const version = await eth.request(clientVersion());
     info('Retrieved ethereum node version: %s', version);
 
-    const adapter = createNodeAdapter(eth, version);
+    const adapter = createNodeAdapter(version, network);
     if (typeof adapter.initialize === 'function') {
         debug('Initializing node platform adatper: %s', adapter.name);
         try {

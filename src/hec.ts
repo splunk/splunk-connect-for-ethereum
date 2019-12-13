@@ -6,7 +6,7 @@ import { default as HttpAgent, HttpsAgent, HttpOptions } from 'agentkeepalive';
 import AbortController from 'abort-controller';
 import { AbortSignal } from 'node-fetch/externals';
 import { sleep } from './utils/async';
-import { isHttps, isSuccessfulStatus } from './utils/http';
+import { isHttps, isSuccessfulStatus } from './utils/httputils';
 import { WaitTime, exponentialBackoff, resolveWaitTime } from './utils/retry';
 import { httpClientStats as httpAgentStats, AggregateMetric } from './utils/stats';
 
@@ -457,7 +457,7 @@ export class HecClient {
             this.flushTimer = setTimeout(() => {
                 debug('Flushing HEC queue for time limit being reached');
                 this.flushInternal();
-            }, this.config.flushTime || 0);
+            }, this.config.flushTime ?? 0);
         }
     }
 }

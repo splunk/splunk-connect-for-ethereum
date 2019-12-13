@@ -17,6 +17,8 @@ import LRUCache from './utils/lru';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
+import { removeEmtpyValues } from './utils/obj';
+import { ABORT } from './utils/abort';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -47,9 +49,14 @@ class Ethlogger extends Command {
                 url: flags['eth-rpc-url'],
             });
             const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
-            const platformAdapter = await introspectTargetNodePlatform(client);
+            const platformAdapter = await introspectTargetNodePlatform(client, flags['network-name']);
 
-            info('Detected node platform %o', platformAdapter.name);
+            info(
+                'Detected node platform=%o network=%d protocol=%d',
+                platformAdapter.name,
+                platformAdapter.networkId,
+                platformAdapter.protocolVersion
+            );
 
             const hecConfig: SplunkHecConfig = {
                 url: flags['hec-url'],
@@ -58,13 +65,16 @@ class Ethlogger extends Command {
                 sourcetypes: defaultSourcetypes,
                 multipleMetricFormatEnabled: true,
                 defaultMetadata: {
-                    host: platformAdapter.enode || transport.originHost,
+                    host: transport.originHost,
                     source: 'ethlogger',
                 },
-                defaultFields: {
+                defaultFields: removeEmtpyValues({
                     enode: platformAdapter.enode || undefined,
                     platform: platformAdapter.name,
-                },
+                    networkId: platformAdapter.networkId,
+                    network: flags['network-name'],
+                    protocolVersion: platformAdapter.protocolVersion,
+                }),
                 eventIndex: 'hecevents',
                 metricsIndex: 'somemetrics',
                 internalMetricsIndex: 'somemetrics',
@@ -122,6 +132,7 @@ class Ethlogger extends Command {
                 contractInfoCache,
                 output,
                 statsInterval: 1000,
+                infoInterval: 60_000,
             });
             addResource(nodeStatsCollector);
             internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
@@ -131,7 +142,7 @@ class Ethlogger extends Command {
                 ethClient: client,
                 output,
                 abiRepo: abiRepo,
-                startAt: 'genesis',
+                startAt: flags['start-at-block'],
                 contractInfoCache,
             });
             resources.unshift(blockWatcher);
@@ -143,8 +154,10 @@ class Ethlogger extends Command {
                 Promise.all(
                     [blockWatcher.start(), nodeStatsCollector.start()].map(p =>
                         p.catch(e => {
-                            error('Error in ethlogger task:', e);
-                            return Promise.reject(e);
+                            if (e !== ABORT) {
+                                error('Error in ethlogger task:', e);
+                                return Promise.reject(e);
+                            }
                         })
                     )
                 ),

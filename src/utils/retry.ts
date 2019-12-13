@@ -2,16 +2,20 @@ import { ABORT, AbortManager } from './abort';
 import { sleep } from './async';
 import { createModuleDebug } from './debug';
 
-const { debug } = createModuleDebug('utils:retry');
+const { debug, warn } = createModuleDebug('utils:retry');
 
+/** A function dynamically computing the time to wait beteween retry attempts */
 export type WaitTimeFn = (attempt: number) => number;
 
+/** Wait time is either a function (WaitTimeFn) or an absolute number */
 export type WaitTime = WaitTimeFn | number;
 
+/** Retruens the number of milliseonds to wait for a given waitTime and attempt number (1-based) */
 export function resolveWaitTime(waitTime: WaitTime, attempt: number): number {
     return typeof waitTime === 'function' ? waitTime(attempt) : waitTime;
 }
 
+/** Can be thrown by retryable task to abort retry loop */
 export const RETRY_ABORT = Symbol('[[RETRY ABORT]]');
 
 export async function retry<R>(
@@ -22,12 +26,14 @@ export async function retry<R>(
         taskName = 'anonymous task',
         onRetry,
         abortManager = new AbortManager(),
+        warnOnError = false,
     }: {
         attempts?: number;
         waitBetween?: WaitTime;
         taskName?: string;
         onRetry?: (attempt: number) => void;
         abortManager?: AbortManager;
+        warnOnError?: boolean;
     } = {}
 ): Promise<R> {
     const startTime = Date.now();
@@ -53,7 +59,7 @@ export async function retry<R>(
                 debug('[%s] Retry loop aborted', taskName);
                 throw RETRY_ABORT;
             }
-            debug('[%s] Task failed: ', taskName, e.message);
+            (warnOnError ? warn : debug)('Task %s failed: ', taskName, e);
             if (abortManager.aborted) {
                 throw RETRY_ABORT;
             }

@@ -16,7 +16,7 @@ import { ManagedResource } from './utils/resource';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
 
-const { debug, info, warn, error, trace } = createModuleDebug('block');
+const { debug, info, warn, error, trace } = createModuleDebug('blockwatcher');
 
 export type StartBlock = 'latest' | 'genesis' | number;
 
@@ -28,12 +28,6 @@ const toAddressInfo = (contractInfo?: ContractInfo): AddressInfo | undefined =>
           }
         : undefined;
 
-const initialCounters = {
-    blocksProcessed: 0,
-    transactionsProcessed: 0,
-    transactionLogEventsProcessed: 0,
-};
-
 export function parseBlockTime(timestamp: number | string): number {
     if (typeof timestamp === 'number') {
         return timestamp * 1000;
@@ -42,6 +36,18 @@ export function parseBlockTime(timestamp: number | string): number {
     throw new Error(`Unable to parse block timestamp "${timestamp}"`);
 }
 
+const initialCounters = {
+    blocksProcessed: 0,
+    transactionsProcessed: 0,
+    transactionLogEventsProcessed: 0,
+};
+
+/**
+ * BlockWatcher will query all blocks, transactions, receipts and logs from an ethereum node,
+ * compute some additional information, such as address information and decoded ABI data and
+ * will send them to the output. It uses checkpoints to keep track of state and will resume
+ * where it left off when restarted.
+ */
 export class BlockWatcher implements ManagedResource {
     private active: boolean = true;
     private ethClient: EthereumClient;
@@ -49,7 +55,7 @@ export class BlockWatcher implements ManagedResource {
     private output: Output;
     private abiRepo?: AbiRepository;
     private startAt: StartBlock;
-    private chunkSize: number = 25;
+    private chunkSize: number = 100;
     private pollInterval: number = 500;
     private abortManager = new AbortManager();
     private endCallbacks: Array<() => void> = [];
@@ -68,7 +74,7 @@ export class BlockWatcher implements ManagedResource {
         checkpoints,
         output,
         abiRepo,
-        startAt = 'latest',
+        startAt = 'genesis',
         contractInfoCache,
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
@@ -102,7 +108,7 @@ export class BlockWatcher implements ManagedResource {
             if (typeof this.startAt === 'number') {
                 if (this.startAt < 0) {
                     const latestBlockNumber = await ethClient.request(blockNumber());
-                    checkpoints.initialBlockNumber = Math.max(0, latestBlockNumber - this.startAt);
+                    checkpoints.initialBlockNumber = Math.max(0, latestBlockNumber + this.startAt);
                 } else {
                     checkpoints.initialBlockNumber = this.startAt;
                 }
@@ -111,8 +117,10 @@ export class BlockWatcher implements ManagedResource {
             } else if (this.startAt === 'latest') {
                 const latestBlockNumber = await ethClient.request(blockNumber());
                 checkpoints.initialBlockNumber = latestBlockNumber;
+            } else {
+                throw new Error(`Invalid start block: ${JSON.stringify(this.startAt)}`);
             }
-            debug(
+            info(
                 'Determined initial block number: %d from configured value %o',
                 checkpoints.initialBlockNumber,
                 this.startAt
@@ -123,13 +131,16 @@ export class BlockWatcher implements ManagedResource {
         while (this.active) {
             try {
                 const latestBlockNumber = await ethClient.request(blockNumber());
-                info('Received latest block number: %d', latestBlockNumber);
+                debug('Received latest block number: %d', latestBlockNumber);
                 const todo = checkpoints.getIncompleteRanges(latestBlockNumber);
-                debug(
-                    'Found %d block ranges (total of %d blocks) to process',
-                    todo.length,
-                    todo.map(blockRangeSize).reduce((a, b) => a + b, 0)
-                );
+                debug('Found %d block ranges to process', todo.length);
+                if (todo.length) {
+                    info(
+                        'Latest block number is %d - processing remaining %d blocks',
+                        latestBlockNumber,
+                        todo.map(blockRangeSize).reduce((a, b) => a + b, 0)
+                    );
+                }
 
                 for (const range of todo) {
                     if (!this.active) {
@@ -145,6 +156,7 @@ export class BlockWatcher implements ManagedResource {
                                 waitBetween: this.waitAfterFailure,
                                 taskName: `block range ${serializeBlockRange(chunk)}`,
                                 abortManager: this.abortManager,
+                                warnOnError: true,
                                 onRetry: attempt =>
                                     warn(
                                         'Retrying to process block range %s (attempt %d)',
@@ -196,12 +208,12 @@ export class BlockWatcher implements ManagedResource {
         const blocks = await this.ethClient.requestBatch(
             blockRangeToArray(chunk).map(blockNumber => getBlock(blockNumber))
         );
-        info('Received %d blocks in %d ms', blocks.length, Date.now() - blockRequestStart);
+        debug('Received %d blocks in %d ms', blocks.length, Date.now() - blockRequestStart);
         for (const block of blocks) {
             await this.processBlock(block);
         }
         info(
-            'Completed %d blocks of chunk %o in %d ms',
+            'Completed %d blocks of chunk %s in %d ms',
             blocks.length,
             serializeBlockRange(chunk),
             Date.now() - startTime
@@ -282,7 +294,7 @@ export class BlockWatcher implements ManagedResource {
                     callInfo
                 ),
             },
-            ...(await Promise.all(receipt?.logs?.map(l => this.processTransactionLog(l, blockTime)) || [])),
+            ...(await Promise.all(receipt?.logs?.map(l => this.processTransactionLog(l, blockTime)) ?? [])),
         ];
     }
 

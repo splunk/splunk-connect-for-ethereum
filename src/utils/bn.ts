@@ -3,7 +3,7 @@ const MIN_NUMBER = BigInt(Number.MIN_SAFE_INTEGER);
 
 /**
  * Parses the given input using JS's native BigInt and returns a number or a string depending on the size of the number.
- * @param input
+ * @param input "0x"-prefixed hex string, base 10 number string or number
  * @returns the value as number if it is safe to do so (given JS's number precision) - otherwise returns a string
  */
 export function parseBigInt(input: number | string): number | string {
@@ -17,7 +17,7 @@ export function parseBigInt(input: number | string): number | string {
 /**
  * Parses the given input using JS's native BigInt and returns a number.
  * If the value exeeds the safe bounds of integers in JS it will throw an error.
- * @param input
+ * @param input "0x"-prefixed hex string, base 10 number string or number
  */
 export function bigIntToNumber(input: number | string): number {
     const n = BigInt(input);

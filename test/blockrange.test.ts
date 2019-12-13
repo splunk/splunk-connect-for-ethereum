@@ -160,4 +160,5 @@ test('getInverseBlockRanges', () => {
     expect(getInverseBlockRanges([], 0, null)).toEqual([]);
     expect(getInverseBlockRanges([], null, 17)).toEqual([]);
     expect(getInverseBlockRanges([], 0, 17)).toEqual([{ from: 0, to: 17 }]);
+    expect(getInverseBlockRanges([], 17, 2)).toMatchInlineSnapshot(`Array []`);
 });

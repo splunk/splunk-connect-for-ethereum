@@ -67,7 +67,19 @@ export interface RawLogResponse {
     topics: string[];
 }
 
-export interface GethNodeInfo {
+export type SyncStatus =
+    /** The node is not syncing if SyncStatus is false */
+    | false
+    | {
+          /** The block at which the import started (will only be reset, after the sync reached his head) */
+          startingBlock: number;
+          /** The current block, same as eth_blockNumber */
+          currentBlock: number;
+          /** The estimated highest block */
+          highestBlock: number;
+      };
+
+export interface GethNodeInfoResponse {
     enode: string;
     id: string;
     ip: string;
@@ -78,11 +90,12 @@ export interface GethNodeInfo {
         listener: number;
     };
     protocols: {
-        eth: {
+        eth?: {
             difficulty: number | string;
             genesis: string;
             head: string;
             network: number;
+            [k: string]: any;
         };
         [k: string]: any;
     };
@@ -143,7 +156,7 @@ export interface ParityPeers {
 
 export type ParityMode = 'active' | 'passive' | 'dark' | 'offline';
 
-export interface ParityPendingTransaction {
+export interface ParityPendingTransaction extends RawTransactionResponse {
     hash: string;
     nonce: string;
     blockHash: null;

@@ -11,7 +11,7 @@ export interface AbortPromise extends PromiseLike<never>, Abortable {
 export const ABORT = Symbol('[[ABORT]]');
 
 /** Default implementation of an AbortPromise that has an abort() method */
-export class AbortablePromise implements AbortPromise {
+class AbortablePromise implements AbortPromise {
     public aborted: boolean = false;
     private p: Promise<never>;
     private triggerAbort: null | (() => void) = null;
@@ -41,6 +41,12 @@ export class AbortablePromise implements AbortPromise {
     }
 }
 
+/** Returns a new abort promise that never aborts */
+export function neverAbort(): AbortPromise {
+    return new AbortablePromise();
+}
+
+/** Promise.race() with the given abort promise */
 export function raceAbort<T>(promise: Promise<T>, abort?: AbortPromise): Promise<T> {
     if (abort == null) {
         return promise;
@@ -48,6 +54,7 @@ export function raceAbort<T>(promise: Promise<T>, abort?: AbortPromise): Promise
     return Promise.race([promise, Promise.resolve(abort)]);
 }
 
+/** Helper to abort a set of asynchronous tasks */
 export class AbortManager implements Abortable {
     public aborted: boolean = false;
     private handles: Set<AbortPromise> = new Set();

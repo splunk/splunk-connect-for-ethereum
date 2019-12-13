@@ -58,18 +58,27 @@ export class QuorumAdapter extends GethAdapter {
     private consensus: 'istanbul' | 'raft' | null = null;
     public async initialize(ethClient: EthereumClient) {
         await super.initialize(ethClient);
-
         debug('Attempting to determine quorum consenus mechanism');
-
-        if ('istanbul' in (this.nodeInfo?.protocols || {})) {
+        if ('istanbul' in (this.nodeInfo?.gethInfo?.protocols ?? {})) {
             this.consensus = 'istanbul';
         } else {
             // TODO check for raft
             warn(
                 'Unable to determine quorum consensus mechanism by inspecting nodeInfo protocols: %o',
-                this.nodeInfo?.protocols
+                this.gethNodeInfo?.protocols
             );
         }
+    }
+
+    public async captureNodeInfo(ethClient: EthereumClient) {
+        const gethResult = await super.captureNodeInfo(ethClient);
+        return {
+            ...gethResult,
+            name: this.name,
+            quorum: {
+                consensus: this.consensus ?? null,
+            },
+        };
     }
 
     public get name() {
