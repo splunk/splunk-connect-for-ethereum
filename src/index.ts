@@ -19,6 +19,7 @@ import { removeEmtpyValues, subsituteVariables } from './utils/obj';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
+import { inspect } from 'util';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -47,7 +48,9 @@ class Ethlogger extends Command {
         try {
             if (flags['print-config']) {
                 const config = await loadEthloggerConfig(flags['config-file'], flags, true);
-                info('CONFIG: %O', config);
+                debug('Printing config');
+                // eslint-disable-next-line no-console
+                console.log(inspect(config, { depth: 10, colors: true, showHidden: false, compact: false }));
                 await loadEthloggerConfig(flags['config-file'], flags);
                 return;
             }

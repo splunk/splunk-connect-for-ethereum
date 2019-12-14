@@ -213,6 +213,7 @@ export class HecClient {
     }
 
     public clone(configOverrides?: Partial<HecConfig>): HecClient {
+        debug('Cloning HEC client with overrides %O', configOverrides);
         if (configOverrides == null || Object.keys(removeEmtpyValues(configOverrides)).length === 0) {
             debug('Reusing HEC client for clone without any overrides');
             return this;

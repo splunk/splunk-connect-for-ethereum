@@ -63,6 +63,37 @@ export const CLI_FLAGS = {
         description:
             'Disable to allow HEC client to connect to HTTPS without rejecting invalid (self-signed) certificates',
     }),
+    'hec-events-index': flags.string({
+        env: 'SPLUNK_EVENTS_INDEX',
+        description:
+            'Splunk index to send events to. You can alternatively use separate HEC tokens to correcly route your data.',
+    }),
+    'hec-metrics-index': flags.string({
+        env: 'SPLUNK_METRICS_INDEX',
+        description:
+            'Splunk index to send metrics to. You can alternatively use separate HEC tokens to correcly route your data.',
+    }),
+    'hec-internal-index': flags.string({
+        env: 'SPLUNK_INTERNAL_INDEX',
+        description:
+            'Splunk index to send internal metrics to. You can alternatively use separate HEC tokens to correcly route your data.',
+    }),
+
+    'hec-events-token': flags.string({
+        env: 'SPLUNK_EVENTS_HEC_TOKEN',
+        description:
+            'HEC token to use for sending events. You can alternatively configure different indexes to correctly route your data.',
+    }),
+    'hec-metrics-token': flags.string({
+        env: 'SPLUNK_METRICS_HEC_TOKEN',
+        description:
+            'HEC token to use for sending metrics. You can alternatively configure different indexes to correctly route your data.',
+    }),
+    'hec-internal-token': flags.string({
+        env: 'SPLUNK_INTERNAL_HEC_TOKEN',
+        description:
+            'HEC token to use for sending internal metrics. You can alternatively configure different indexes to correctly route your data.',
+    }),
 
     'eth-rpc-url': flags.string({
         env: 'ETH_RPC_URL',

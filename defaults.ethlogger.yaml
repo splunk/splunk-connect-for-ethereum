@@ -1,17 +1,13 @@
-checkpoint:
-    filename: checkpoints.json
-    saveInterval: 250
-output:
-    type: hec
-    sourcetypes:
-        block: 'ethereum:block'
-        transaction: 'ethereum:transaction'
-        event: 'ethereum:transaction:event'
-        pendingtx: 'ethereum:transaction:pending'
-        nodeInfo: 'ethereum:node:info'
-        nodeMetrics: 'ethereum:node:metrics'
-        quorumProtocol: 'ethereum:quorum:protocol'
-        gethPeer: 'ethereum:geth:peer'
+eth:
+    http:
+        timeout: 1m
+        validateCertificate: true
+        requestKeepAlive: true
+        maxSockets: 256
+    client:
+        maxBatchSize: 100
+        maxBatchTime: 0
+    metricsPrefix: eth
 hec:
     default:
         flushTime: 0
@@ -23,11 +19,11 @@ hec:
         validateCertificate: true
         maxSockets: 128
         userAgent: ethlogger-hec-client/1.0
+        multipleMetricFormatEnabled: false
         retryWaitTime:
             type: exponential-backoff
             min: 10ms
             max: 3m
-        multipleMetricFormatEnabled: false
         defaultMetadata:
             host: $TRANSPORT_ORIGIN
             source: ethlogger
@@ -46,16 +42,21 @@ hec:
             version: $VERSION
             nodeVersion: $NODE_VERSION
             pid: $PID
-eth:
-    http:
-        timeout: 1m
-        validateCertificate: true
-        requestKeepAlive: true
-        maxSockets: 256
-    client:
-        maxBatchSize: 100
-        maxBatchTime: 0
-    metricsPrefix: eth
+output:
+    type: hec
+    sourcetypes:
+        block: 'ethereum:block'
+        transaction: 'ethereum:transaction'
+        event: 'ethereum:transaction:event'
+        pendingtx: 'ethereum:transaction:pending'
+        nodeInfo: 'ethereum:node:info'
+        nodeMetrics: 'ethereum:node:metrics'
+        quorumProtocol: 'ethereum:quorum:protocol'
+        gethPeer: 'ethereum:geth:peer'
+checkpoint:
+    filename: checkpoints.json
+    saveInterval: 250
+
 abi:
     fingerprintContracts: true
 contractInfo:
@@ -82,5 +83,4 @@ nodeInfo:
         step: 2.5s
         max: 2m
 internalMetrics:
-    enabled: true
     collectInterval: 1s

@@ -2,6 +2,9 @@ import { debug as create } from 'debug';
 
 export let TRACE_ENABLED: boolean = false;
 
+// eslint-disable-next-line no-console
+create.log = console.error.bind(console);
+
 export const createDebug = (name: string) => create(`ethlogger:${name}`);
 
 export const createModuleDebug = (name: string) => {

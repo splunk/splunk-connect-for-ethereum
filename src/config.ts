@@ -7,9 +7,9 @@ import { createModuleDebug } from './utils/debug';
 import { durationStringToMs } from './utils/parse';
 import { exponentialBackoff, linearBackoff, WaitTime } from './utils/retry';
 import { safeLoad } from 'js-yaml';
-import { removeEmtpyValues, deepMerge } from './utils/obj';
+import { removeEmtpyValues, deepMerge, isEmpty } from './utils/obj';
 
-const { debug, error } = createModuleDebug('config');
+const { debug, warn, error } = createModuleDebug('config');
 
 export class ConfigError extends Error {}
 
@@ -307,6 +307,13 @@ export type ExponentalBackoffConfig = { type: 'exponential-backoff'; min?: numbe
 export type LinearBackoffConfig = { type: 'linear-backoff'; min?: number; step?: number; max?: number };
 export type WaitTimeConfig = DurationConfig | ExponentalBackoffConfig | LinearBackoffConfig;
 
+export function parseDuration(value?: DurationConfig): Duration | undefined {
+    if (typeof value === 'string') {
+        return durationStringToMs(value);
+    }
+    return value;
+}
+
 export function waitTimeFromConfig(config?: WaitTimeConfig | DeepPartial<WaitTimeConfig>): WaitTime | undefined {
     if (config == null) {
         return undefined;
@@ -315,12 +322,20 @@ export function waitTimeFromConfig(config?: WaitTimeConfig | DeepPartial<WaitTim
         return config;
     } else if (typeof config === 'object' && 'type' in config) {
         if (config.type === 'exponential-backoff') {
-            return exponentialBackoff({ min: config.min ?? 0, max: config.max });
+            const args = { min: parseDuration(config.min) ?? 0, max: parseDuration(config.max) };
+            debug('Creating exponential-backoff wait time function with args %o', args);
+            return exponentialBackoff(args);
         } else if (config.type === 'linear-backoff') {
             if (config.max == null || (config.step ?? 0) > config.max) {
                 throw new ConfigError('Invalid linear-backoff wait time specified: max and step values are required');
             }
-            return linearBackoff({ min: config.min ?? 0, step: config.step ?? 1000, max: config.max ?? 10000 });
+            const args = {
+                min: parseDuration(config.min) ?? 0,
+                step: parseDuration(config.step) ?? 1000,
+                max: parseDuration(config.max) ?? 10000,
+            };
+            debug('Creating linear-backoff wait time function with args %o', args);
+            return linearBackoff(args);
         } else {
             throw new ConfigError(`Invalid wait time type: ${(config as any).type}`);
         }
@@ -360,18 +375,54 @@ export async function loadConfigFile(
     return {};
 }
 
-export function parseDuration(value?: DurationConfig): Duration | undefined {
-    if (typeof value === 'string') {
-        return durationStringToMs(value);
-    }
-    return value;
-}
-
 type CliFlags<T = typeof CLI_FLAGS> = {
     [P in keyof T]: T[P] extends IOptionFlag<infer R> ? R : any;
 };
 
 export const DEFAULT_CONFIG_FILE_NAME = 'ethlogger.yaml';
+
+export function checkConfig(config: EthloggerConfig): string[] {
+    const problems = [];
+
+    // Check if HEC URL is either specified in defaults or for each enabled metrics/events hec client
+    if (config.output.type === 'hec') {
+        if (config.hec.default.url == null) {
+            if (config.hec.events?.url == null) {
+                problems.push('No URL for HEC events specified. Use --hec-url or configure via ethlogger.yaml');
+            }
+
+            if (config.nodeMetrics.enabled && config.hec.metrics?.url == null) {
+                problems.push('No URL for HEC metrics specified. Use --hec-url or configure via ethlogger.yaml');
+            }
+
+            if (config.internalMetrics.enabled && config.hec.internal?.url == null) {
+                problems.push(
+                    'No URL for HEC internal metrics specified. Use --hec-url or configure via ethlogger.yaml'
+                );
+            }
+        }
+
+        if (config.nodeMetrics.enabled) {
+            if (config.hec.metrics?.defaultMetadata?.index == null && config.hec.metrics?.token == null) {
+                problems.push(
+                    'No index nor hec token specified for metrics. Metrics may not be routed to the correct Splunk index. ' +
+                        'Use flags --hec-metrics-index or --hec-metrics-token or configure via ethlogger.yaml'
+                );
+            }
+        }
+
+        if (config.internalMetrics.enabled) {
+            if (config.hec.internal?.defaultMetadata?.index == null && config.hec.internal?.token == null) {
+                problems.push(
+                    'No index nor hec token specified for internal metrics. Metrics may not be routed to the correct Splunk index. ' +
+                        'Use flags --hec-internal-index or --hec-internal-token or configure via ethlogger.yaml'
+                );
+            }
+        }
+    }
+
+    return problems;
+}
 
 export async function loadEthloggerConfig(
     fileName: string | undefined,
@@ -412,10 +463,16 @@ export async function loadEthloggerConfig(
         return val;
     };
 
-    const parseSpecificHecConfig = (defaults?: DeepPartial<HecConfigSchema>): HecConfig => {
+    const parseSpecificHecConfig = (
+        defaults: DeepPartial<HecConfigSchema> | undefined,
+        indexFlag: keyof CliFlags,
+        tokenFlag: keyof CliFlags
+    ): HecConfig | undefined => {
         const result = removeEmtpyValues({
             defaultFields: defaults?.defaultFields,
-            defaultMetadata: defaults?.defaultMetadata,
+            defaultMetadata: flags[indexFlag]
+                ? Object.assign({}, defaults?.defaultMetadata, { index: flags[indexFlag] })
+                : defaults?.defaultMetadata,
             flushTime: parseDuration(defaults?.flushTime),
             gzip: defaults?.gzip,
             maxQueueEntries: defaults?.maxQueueEntries,
@@ -426,12 +483,12 @@ export async function loadEthloggerConfig(
             requestKeepAlive: defaults?.requestKeepAlive,
             retryWaitTime: waitTimeFromConfig(defaults?.retryWaitTime as WaitTimeConfig),
             timeout: parseDuration(defaults?.timeout),
-            token: defaults?.token,
+            token: flags[tokenFlag] ?? defaults?.token,
             url: defaults?.url,
             userAgent: defaults?.userAgent,
             validateCertificate: defaults?.validateCertificate,
         });
-        return result;
+        return isEmpty(result) ? undefined : result;
     };
 
     const parseOutput = (defaults?: Partial<OutputConfigSchema>): OutputConfigSchema => {
@@ -502,9 +559,9 @@ export async function loadEthloggerConfig(
                     flags['reject-invalid-certs'] ??
                     defaults.hec?.default?.validateCertificate,
             },
-            events: defaults.hec?.events === null ? undefined : parseSpecificHecConfig(defaults.hec?.events),
-            metrics: defaults.hec?.metrics === null ? undefined : parseSpecificHecConfig(defaults.hec?.metrics),
-            internal: defaults.hec?.internal === null ? undefined : parseSpecificHecConfig(defaults.hec?.internal),
+            events: parseSpecificHecConfig(defaults.hec?.events, 'hec-events-index', 'hec-events-token'),
+            metrics: parseSpecificHecConfig(defaults.hec?.metrics, 'hec-metrics-index', 'hec-metrics-token'),
+            internal: parseSpecificHecConfig(defaults.hec?.internal, 'hec-internal-index', 'hec-internal-token'),
         },
         output: parseOutput(defaults.output),
         abi: {
@@ -526,7 +583,23 @@ export async function loadEthloggerConfig(
             maxCacheEntries: defaults.contractInfo?.maxCacheEntries ?? 25000,
         },
         internalMetrics: {
-            enabled: flags['collect-internal-metrics'] ?? defaults.internalMetrics?.enabled ?? true,
+            enabled:
+                flags['collect-internal-metrics'] ??
+                defaults.internalMetrics?.enabled ??
+                (() => {
+                    if (
+                        flags['hec-internal-index'] != null ||
+                        defaults.hec?.internal?.defaultMetadata?.index != null ||
+                        flags['hec-internal-token'] != null ||
+                        defaults.hec?.internal?.token != null
+                    ) {
+                        return true;
+                    }
+                    warn(
+                        'Implicitly disabling ethlogger-internal metrics collection. No dedicated index or HEC token specified.'
+                    );
+                    return false;
+                })(),
             collectInterval: parseDuration(defaults.internalMetrics?.collectInterval) ?? 1000,
         },
         nodeInfo: {
@@ -541,5 +614,20 @@ export async function loadEthloggerConfig(
         },
     };
 
-    return config as EthloggerConfig;
+    const result = config as EthloggerConfig;
+
+    const problems = checkConfig(result);
+
+    if (problems.length > 0) {
+        for (const msg of problems) {
+            error('Detected problem in ethlogger config: %s', msg);
+        }
+        if (!dryRun) {
+            throw new ConfigError(
+                problems.length > 1 ? 'Detected multipe problems in ethlogger configuration, see logs' : problems[0]
+            );
+        }
+    }
+
+    return result;
 }

@@ -14,7 +14,10 @@ export function prefixKeys<T extends { [k: string]: any }>(obj: T, prefix?: stri
     );
 }
 
-/** Recursively (deeply) merges 2 object of the same type. It only merges plain object, not arrays. */
+/**
+ * Recursively (deeply) merges 2 object of the same type. It only merges plain object, not arrays.
+ * It does not mutate the original object but may return references to (parts of the) orginal object.
+ */
 export function deepMerge<T extends { [k: string]: any }>(a: T, b: T): T {
     return Object.fromEntries([
         ...Object.entries(a).map(([k, v]) => {
@@ -39,4 +42,8 @@ export function subsituteVariables<T = { [k: string]: string }>(obj: T, variable
             .filter(([, v]) => v != null)
             .map(([k, v]) => [k, varEntries.reduce((cur, [variable, repl]) => replaceAll(cur, variable, repl), v)])
     );
+}
+
+export function isEmpty(obj: object): boolean {
+    return obj == null || Object.values(obj).filter(v => v != null).length === 0;
 }
