@@ -5,16 +5,9 @@ import { isHttps } from '../utils/httputils';
 import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { EthereumTransport } from './transport';
 import { httpClientStats, AggregateMetric } from '../utils/stats';
+import { HttpTransportConfig } from '../config';
 
 const { debug, trace } = createModuleDebug('eth:http');
-
-export interface HttpTransportConfig {
-    url: string;
-    timeout?: number;
-    validateCertificate?: boolean;
-    requestKeepAlive?: boolean;
-    maxSockets?: number;
-}
 
 const CONFIG_DEFAULTS = {
     timeout: 60_000,
@@ -34,13 +27,13 @@ export class HttpTransport implements EthereumTransport {
     private counters = { ...initialCounters };
     private aggregates = { requestDuration: new AggregateMetric(), batchSize: new AggregateMetric() };
 
-    constructor(config: HttpTransportConfig) {
+    constructor(private url: string, config: HttpTransportConfig) {
         this.config = { ...CONFIG_DEFAULTS, ...config };
         const baseAgentOptions: HttpOptions = {
             keepAlive: true,
             maxSockets: 256,
         };
-        this.httpAgent = isHttps(this.config.url)
+        this.httpAgent = isHttps(url)
             ? new HttpsAgent({
                   ...baseAgentOptions,
                   rejectUnauthorized: this.config.validateCertificate,
@@ -49,12 +42,12 @@ export class HttpTransport implements EthereumTransport {
     }
 
     public get source() {
-        const u = new URL(this.config.url);
+        const u = new URL(this.url);
         return `jsonprc+${u.origin}`;
     }
 
     public get originHost() {
-        return new URL(this.config.url).hostname;
+        return new URL(this.url).hostname;
     }
 
     public async send(request: JsonRpcRequest): Promise<JsonRpcResponse> {
@@ -84,7 +77,7 @@ export class HttpTransport implements EthereumTransport {
         this.counters.requests++;
         this.aggregates.batchSize.push(Array.isArray(request) ? request.length : 1);
         try {
-            const response = await fetch(this.config.url, {
+            const response = await fetch(this.url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,7 +89,7 @@ export class HttpTransport implements EthereumTransport {
             });
             if (response.status < 200 || response.status > 299) {
                 throw new Error(
-                    `JSON RPC service ${this.config.url} responded with HTTP status ${response.status} (${response.statusText})`
+                    `JSON RPC service ${this.url} responded with HTTP status ${response.status} (${response.statusText})`
                 );
             }
             const data = await response.json();

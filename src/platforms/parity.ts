@@ -52,7 +52,7 @@ export class ParityAdapter implements NodePlatformAdapter {
     }
 
     public get name(): string {
-        return 'Parity';
+        return 'parity';
     }
 
     public get enode(): string | null {

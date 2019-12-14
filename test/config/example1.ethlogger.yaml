@@ -1,0 +1,26 @@
+eth:
+    url: https://dai.poa.network
+    network: xdai
+hec:
+    default:
+        url: https://localhost:8088
+        token: e3822da6-6024-484b-979d-26664c2e7515
+        validateCertificate: false
+        multipleMetricFormatEnabled: true
+    events:
+        token: 00000000-0000-0000-0000-000000000000
+        defaultMetadata:
+            index: myevents
+    metrics:
+        token: 11111111-1111-1111-1111-111111111111
+    internal:
+        url: https://foo.bar.com:8088
+        token: 22222222-2222-2222-2222-222222222222
+abi:
+    fingerprintContracts: false
+    retryWaitTime:
+        type: exponential-backoff
+        max: 0
+
+blockWatcher:
+    startAt: latest

@@ -1,5 +1,7 @@
-export function removeEmtpyValues<T extends { [k: string]: undefined | null | any }>(obj: T): T {
-    return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null));
+export function removeEmtpyValues<R extends { [k: string]: any }, I extends { [P in keyof R]: any | null | undefined }>(
+    obj: I
+): R {
+    return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null)) as R;
 }
 
 export function prefixKeys<T extends { [k: string]: any }>(obj: T, prefix?: string | null, removeEmtpy?: boolean): T {
@@ -9,5 +11,32 @@ export function prefixKeys<T extends { [k: string]: any }>(obj: T, prefix?: stri
     const entries = Object.entries(obj);
     return Object.fromEntries(
         (removeEmtpy ? entries.filter(([, v]) => v != null) : entries).map(([k, v]) => [prefix + k, v])
+    );
+}
+
+/** Recursively (deeply) merges 2 object of the same type. It only merges plain object, not arrays. */
+export function deepMerge<T extends { [k: string]: any }>(a: T, b: T): T {
+    return Object.fromEntries([
+        ...Object.entries(a).map(([k, v]) => {
+            if (typeof v === 'object' && !Array.isArray(v)) {
+                return [k, b[k] == null ? v : deepMerge(v, b[k] ?? {})];
+            }
+            return [k, b[k] ?? v];
+        }),
+        ...Object.entries(b).filter(([k]) => !(k in a)),
+    ]);
+}
+
+const replaceAll = (s: string, search: string, repl: string) => s.split(search).join(repl);
+
+export function subsituteVariables<T = { [k: string]: string }>(obj: T, variables: { [name: string]: string }): T {
+    const varEntries = Object.entries(variables).map(([k, v]) => [`$${k}`, v]);
+    if (varEntries.length === 0) {
+        return obj;
+    }
+    return Object.fromEntries(
+        Object.entries(obj)
+            .filter(([, v]) => v != null)
+            .map(([k, v]) => [k, varEntries.reduce((cur, [variable, repl]) => replaceAll(cur, variable, repl), v)])
     );
 }

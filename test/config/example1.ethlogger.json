@@ -1,0 +1,11 @@
+{
+    "abi": {
+        "fingerprintContracts": true
+    },
+    "hec": {
+        "default": {
+            "maxRetries": 123,
+            "retryWaitTime": "15s"
+        }
+    }
+}
