@@ -2,6 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "AbiRepositoryConfigSchema": {
+            "description": "The ABI repository is used to decode ABI information from smart contract calls and event logs.\nIt generates and adds some additinal information in transaction and events, including smart contract\nmethod call parameter names, values and data types, as well as smart contract names associated with a\nparticular contract address.",
             "properties": {
                 "directory": {
                     "description": "If specified, the ABI repository will recursively search this directory for ABI files",
@@ -18,6 +19,7 @@
             "type": "object"
         },
         "BlockWatcherConfigSchema": {
+            "description": "Block watcher is the component that retrieves blocks, transactions, event logs from the node and sends\nthem to output.",
             "properties": {
                 "blocksMaxChunkSize": {
                     "description": "Max. number of blocks to fetch at once",
@@ -37,41 +39,10 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "exponential-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
                         },
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "step": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "linear-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
                             "type": [
@@ -101,8 +72,10 @@
             "type": "object"
         },
         "CheckpointConfigSchema": {
+            "description": "The checkpoint is where ethlogger keeps track of its state, which blocks have already been processed.\nThis allows it to resume where it left off after being shut down and restarted.",
             "properties": {
                 "filename": {
+                    "default": "checkpoints.json",
                     "description": "File path (relative to the current working directory) where the checkpoint file will be stored",
                     "type": "string"
                 },
@@ -117,6 +90,7 @@
             "type": "object"
         },
         "ConsoleOutputConfig": {
+            "description": "Console output prints all generated events and metrics to STDOUT",
             "properties": {
                 "type": {
                     "enum": [
@@ -128,6 +102,7 @@
             "type": "object"
         },
         "ContractInfoConfigSchema": {
+            "description": "Ethlogger checks for each address it encounters whether it is a smart contract by attempting to\nretrieve the contract code. To reduce the performance hit by this operation, ethlogger can cache\ncontract information in memory.",
             "properties": {
                 "maxCacheEntries": {
                     "description": "Maximum number of contract info results to cache in memory. Set to 0 to disable the cache.",
@@ -137,6 +112,7 @@
             "type": "object"
         },
         "DevNullOutputConfig": {
+            "description": "Null output will just drop all generated events and metrics",
             "properties": {
                 "type": {
                     "enum": [
@@ -148,9 +124,10 @@
             "type": "object"
         },
         "EthereumClientConfigSchema": {
+            "description": "Etherem client settings - configure batching multiple JSON RPC method calls into single HTTP requests",
             "properties": {
                 "maxBatchSize": {
-                    "description": "Maximum number of JSON RPC requests to pack into a single batch",
+                    "description": "Maximum number of JSON RPC requests to pack into a single batch. Set to `1` to disable batching.",
                     "type": "number"
                 },
                 "maxBatchTime": {
@@ -164,6 +141,7 @@
             "type": "object"
         },
         "EthereumConfigSchema": {
+            "description": "General Ethereum configuration including client and transport, defining how ethlogger talks to the ethereum node",
             "properties": {
                 "client": {
                     "$ref": "#/definitions/EthereumClientConfigSchema",
@@ -184,9 +162,37 @@
             },
             "type": "object"
         },
+        "ExponentalBackoffConfig": {
+            "description": "Exponentiallly increasing wait time with randomness",
+            "properties": {
+                "max": {
+                    "description": "Maximum wait time",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "min": {
+                    "description": "Minimum wait time",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "type": {
+                    "enum": [
+                        "exponential-backoff"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "FileOutputConfig": {
+            "description": "File output will append all generated messages to a file. (this output type has not been implemented)",
             "properties": {
                 "path": {
+                    "description": "Path to otuput file",
                     "type": "string"
                 },
                 "type": {
@@ -198,7 +204,29 @@
             },
             "type": "object"
         },
+        "HecClientsConfigSchema": {
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/HecConfigSchema",
+                    "description": "Base settings that apply to all HEC clients"
+                },
+                "events": {
+                    "$ref": "#/definitions/Partial<HecConfigSchema>",
+                    "description": "HEC settings (overrides for `default`) for events sent to Splunk"
+                },
+                "internal": {
+                    "$ref": "#/definitions/Partial<HecConfigSchema>",
+                    "description": "HEC settings (overrides for `defualt`) for internal metrics sent to Splunk"
+                },
+                "metrics": {
+                    "$ref": "#/definitions/Partial<HecConfigSchema>",
+                    "description": "HEC settings (overrides for `default`) for metrics sent to Splunk"
+                }
+            },
+            "type": "object"
+        },
         "HecConfigSchema": {
+            "description": "Settings for the Splunk HTTP Event Collector client",
             "properties": {
                 "defaultFields": {
                     "additionalProperties": {
@@ -252,7 +280,7 @@
                     "type": "number"
                 },
                 "multipleMetricFormatEnabled": {
-                    "description": "Enable sending multipe metrics in a single message to HEC.\nSupported as of Splunk 8.0.0\nhttps://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format",
+                    "description": "Enable sending multipe metrics in a single message to HEC.\nSupported as of Splunk 8.0.0\n\nhttps://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format",
                     "type": "boolean"
                 },
                 "requestKeepAlive": {
@@ -262,41 +290,10 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "exponential-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
                         },
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "step": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "linear-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
                             "type": [
@@ -340,34 +337,8 @@
                     "type": "string"
                 },
                 "sourcetypes": {
-                    "description": "Sourcetypes to use for different kinds of events we send to Splunk",
-                    "properties": {
-                        "block": {
-                            "type": "string"
-                        },
-                        "event": {
-                            "type": "string"
-                        },
-                        "gethPeer": {
-                            "type": "string"
-                        },
-                        "nodeInfo": {
-                            "type": "string"
-                        },
-                        "nodeMetrics": {
-                            "type": "string"
-                        },
-                        "pendingtx": {
-                            "type": "string"
-                        },
-                        "quorumProtocol": {
-                            "type": "string"
-                        },
-                        "transaction": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
+                    "$ref": "#/definitions/SourcetypesSchema",
+                    "description": "Sourcetypes to use for different kinds of events we send to Splunk"
                 },
                 "type": {
                     "enum": [
@@ -379,6 +350,7 @@
             "type": "object"
         },
         "HttpTransportConfigSchema": {
+            "description": "Settings for ethlogger connecting to the ethereum node via JSON RPC over HTTP",
             "properties": {
                 "maxSockets": {
                     "description": "Maximum number of sockets HEC will use (per host)",
@@ -389,7 +361,7 @@
                     "type": "boolean"
                 },
                 "timeout": {
-                    "description": "Time before failing JSON RPC requests",
+                    "description": "Time before failing JSON RPC requests. Specify a number in milliseconds or a golang-style duration expression.",
                     "type": [
                         "string",
                         "number"
@@ -403,6 +375,7 @@
             "type": "object"
         },
         "InternalMetricsConfigSchema": {
+            "description": "Ethlogger-internal metrics allow for visibilty into the operation of ethlogger itself,\ndetect and troubleshoot bottlenecks and improve configuration.",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect internal metrics",
@@ -418,7 +391,41 @@
             },
             "type": "object"
         },
+        "LinearBackoffConfig": {
+            "description": "Linear increasing wait time",
+            "properties": {
+                "max": {
+                    "description": "Maximum wait time",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "min": {
+                    "description": "Minimum wait time (after the first failure)",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "step": {
+                    "description": "Increase of wait time for each failure after the first until max is reached",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "type": {
+                    "enum": [
+                        "linear-backoff"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "NodeInfoConfigSchema": {
+            "description": "Platfrom specific node information is collection on regular interval",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node info",
@@ -434,41 +441,10 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "exponential-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
                         },
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "step": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "linear-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
                             "type": [
@@ -483,6 +459,7 @@
             "type": "object"
         },
         "NodeMetricsConfigSchema": {
+            "description": "The node metrics colletor retrieves numeric measurements from nodes on a periodic basis.",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node metrics",
@@ -498,41 +475,10 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "exponential-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
                         },
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "step": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "linear-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
                             "type": [
@@ -600,7 +546,7 @@
                     "type": "number"
                 },
                 "multipleMetricFormatEnabled": {
-                    "description": "Enable sending multipe metrics in a single message to HEC.\nSupported as of Splunk 8.0.0\nhttps://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format",
+                    "description": "Enable sending multipe metrics in a single message to HEC.\nSupported as of Splunk 8.0.0\n\nhttps://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format",
                     "type": "boolean"
                 },
                 "requestKeepAlive": {
@@ -610,41 +556,10 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "exponential-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
                         },
                         {
-                            "properties": {
-                                "max": {
-                                    "type": "number"
-                                },
-                                "min": {
-                                    "type": "number"
-                                },
-                                "step": {
-                                    "type": "number"
-                                },
-                                "type": {
-                                    "enum": [
-                                        "linear-backoff"
-                                    ],
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
+                            "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
                             "type": [
@@ -680,6 +595,43 @@
                 }
             },
             "type": "object"
+        },
+        "SourcetypesSchema": {
+            "properties": {
+                "block": {
+                    "default": "ethereum:block",
+                    "type": "string"
+                },
+                "event": {
+                    "default": "ethereum:transaction:event",
+                    "type": "string"
+                },
+                "gethPeer": {
+                    "default": "ethereum:geth:peer",
+                    "type": "string"
+                },
+                "nodeInfo": {
+                    "default": "ethereum:node:info",
+                    "type": "string"
+                },
+                "nodeMetrics": {
+                    "default": "ethereum:node:metrics",
+                    "type": "string"
+                },
+                "pendingtx": {
+                    "default": "ethereum:transaction:pending",
+                    "type": "string"
+                },
+                "quorumProtocol": {
+                    "default": "ethereum:quorum:protocol",
+                    "type": "string"
+                },
+                "transaction": {
+                    "default": "ethereum:transaction",
+                    "type": "string"
+                }
+            },
+            "type": "object"
         }
     },
     "properties": {
@@ -689,7 +641,7 @@
         },
         "blockWatcher": {
             "$ref": "#/definitions/BlockWatcherConfigSchema",
-            "description": "Block watcher - the component monitoring the blocks"
+            "description": "Block watcher settings, configure how blocks, transactions, event logs are ingested"
         },
         "checkpoint": {
             "$ref": "#/definitions/CheckpointConfigSchema",
@@ -704,26 +656,8 @@
             "description": "Ethereum node configuration"
         },
         "hec": {
-            "description": "HTTP event collector",
-            "properties": {
-                "default": {
-                    "$ref": "#/definitions/HecConfigSchema",
-                    "description": "Base settings that apply to"
-                },
-                "events": {
-                    "$ref": "#/definitions/Partial<HecConfigSchema>",
-                    "description": "HEC settings for events sent to Splunk"
-                },
-                "internal": {
-                    "$ref": "#/definitions/Partial<HecConfigSchema>",
-                    "description": "HEC settings for internal metrics sent to Splunk"
-                },
-                "metrics": {
-                    "$ref": "#/definitions/Partial<HecConfigSchema>",
-                    "description": "HEC settings for metrics sent to Splunk"
-                }
-            },
-            "type": "object"
+            "$ref": "#/definitions/HecClientsConfigSchema",
+            "description": "HTTP event collector"
         },
         "internalMetrics": {
             "$ref": "#/definitions/InternalMetricsConfigSchema",

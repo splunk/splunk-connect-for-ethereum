@@ -13,30 +13,21 @@ const { debug, warn, error } = createModuleDebug('config');
 
 export class ConfigError extends Error {}
 
-// Configuration file schema
+/** Root configuration schema for ethlogger */
 export interface EthloggerConfigSchema {
     /** Ethereum node configuration */
     eth: EthereumConfigSchema;
     /** Output configuration */
     output: OutputConfigSchema;
     /** HTTP event collector */
-    hec: {
-        /** Base settings that apply to  */
-        default: HecConfigSchema;
-        /** HEC settings for events sent to Splunk */
-        events?: OptionalHecConfigSchema;
-        /** HEC settings for metrics sent to Splunk */
-        metrics?: OptionalHecConfigSchema;
-        /** HEC settings for internal metrics sent to Splunk */
-        internal?: OptionalHecConfigSchema;
-    };
+    hec: HecClientsConfigSchema;
     /** Checkpoint configuration - how ethlogger keeps track of state between restarts */
     checkpoint: CheckpointConfigSchema;
     /** ABI repository configuration */
     abi: AbiRepositoryConfigSchema;
     /** Contract info cache settings */
     contractInfo: ContractInfoConfigSchema;
-    /** Block watcher - the component monitoring the blocks */
+    /** Block watcher settings, configure how blocks, transactions, event logs are ingested */
     blockWatcher: BlockWatcherConfigSchema;
     /** Settings for the node metrics collector */
     nodeMetrics: NodeMetricsConfigSchema;
@@ -65,6 +56,18 @@ export interface EthloggerConfig {
     internalMetrics: InternalMetricsConfig;
 }
 
+export interface HecClientsConfigSchema {
+    /** Base settings that apply to all HEC clients  */
+    default: HecConfigSchema;
+    /** HEC settings (overrides for `default`) for events sent to Splunk */
+    events?: OptionalHecConfigSchema;
+    /** HEC settings (overrides for `default`) for metrics sent to Splunk */
+    metrics?: OptionalHecConfigSchema;
+    /** HEC settings (overrides for `defualt`) for internal metrics sent to Splunk */
+    internal?: OptionalHecConfigSchema;
+}
+
+/** General Ethereum configuration including client and transport, defining how ethlogger talks to the ethereum node */
 export interface EthereumConfigSchema {
     /** URL of JSON RPC endpoint */
     url: string;
@@ -88,8 +91,15 @@ export interface EthereumConfig extends EthereumConfigSchema {
     client: EthereumClientConfig;
 }
 
+/**
+ * The checkpoint is where ethlogger keeps track of its state, which blocks have already been processed.
+ * This allows it to resume where it left off after being shut down and restarted.
+ */
 export interface CheckpointConfigSchema {
-    /** File path (relative to the current working directory) where the checkpoint file will be stored */
+    /**
+     * File path (relative to the current working directory) where the checkpoint file will be stored
+     * @default checkpoints.json
+     */
     filename: string;
     /** Maximum duration before saving updated checkpoint information to disk */
     saveInterval: DurationConfig;
@@ -99,6 +109,12 @@ export interface CheckpointConfig extends CheckpointConfigSchema {
     saveInterval: Duration;
 }
 
+/**
+ * The ABI repository is used to decode ABI information from smart contract calls and event logs.
+ * It generates and adds some additinal information in transaction and events, including smart contract
+ * method call parameter names, values and data types, as well as smart contract names associated with a
+ * particular contract address.
+ */
 export interface AbiRepositoryConfigSchema {
     /** If specified, the ABI repository will recursively search this directory for ABI files */
     directory?: string;
@@ -116,6 +132,11 @@ export interface AbiRepositoryConfigSchema {
 
 export type AbiRepositoryConfig = AbiRepositoryConfigSchema;
 
+/**
+ * Ethlogger checks for each address it encounters whether it is a smart contract by attempting to
+ * retrieve the contract code. To reduce the performance hit by this operation, ethlogger can cache
+ * contract information in memory.
+ */
 export interface ContractInfoConfigSchema {
     /** Maximum number of contract info results to cache in memory. Set to 0 to disable the cache. */
     maxCacheEntries: number;
@@ -123,6 +144,10 @@ export interface ContractInfoConfigSchema {
 
 export type ContractInfoConfig = ContractInfoConfigSchema;
 
+/**
+ * Block watcher is the component that retrieves blocks, transactions, event logs from the node and sends
+ * them to output.
+ */
 export interface BlockWatcherConfigSchema {
     /** Specify `false` to disable the block watcher */
     enabled: boolean;
@@ -145,6 +170,7 @@ export interface BlockWatcherConfig extends Omit<BlockWatcherConfigSchema, 'retr
     retryWaitTime: WaitTime;
 }
 
+/** The node metrics colletor retrieves numeric measurements from nodes on a periodic basis. */
 export interface NodeMetricsConfigSchema {
     /** Specify `false` to disable node metrics collection */
     enabled: boolean;
@@ -159,6 +185,7 @@ export interface NodeMetricsConfig extends Omit<NodeMetricsConfigSchema, 'retryW
     retryWaitTime: WaitTime;
 }
 
+/** Platfrom specific node information is collection on regular interval */
 export interface NodeInfoConfigSchema {
     /** Specify `false` to disable node info collection */
     enabled: boolean;
@@ -173,6 +200,10 @@ export interface NodeInfoConfig extends Omit<NodeInfoConfigSchema, 'retryWaitTim
     retryWaitTime: WaitTime;
 }
 
+/**
+ * Ethlogger-internal metrics allow for visibilty into the operation of ethlogger itself,
+ * detect and troubleshoot bottlenecks and improve configuration.
+ */
 export interface InternalMetricsConfigSchema {
     /** Specify `false` to disable internal metrics collection */
     enabled: boolean;
@@ -184,8 +215,9 @@ export interface InternalMetricsConfig extends InternalMetricsConfigSchema {
     collectInterval: Duration;
 }
 
+/** Etherem client settings - configure batching multiple JSON RPC method calls into single HTTP requests */
 export interface EthereumClientConfigSchema {
-    /** Maximum number of JSON RPC requests to pack into a single batch */
+    /** Maximum number of JSON RPC requests to pack into a single batch. Set to `1` to disable batching. */
     maxBatchSize: number;
     /** Maximum time to wait before submitting a batch of JSON RPC requests */
     maxBatchTime: DurationConfig;
@@ -195,8 +227,12 @@ export interface EthereumClientConfig extends EthereumClientConfigSchema {
     maxBatchTime: Duration;
 }
 
+/** Settings for ethlogger connecting to the ethereum node via JSON RPC over HTTP */
 export interface HttpTransportConfigSchema {
-    /** Time before failing JSON RPC requests */
+    /**
+     * Time before failing JSON RPC requests. Specify a number in milliseconds or a golang-style duration expression.
+     * @example "30s"
+     */
     timeout?: DurationConfig;
     /** If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs) */
     validateCertificate?: boolean;
@@ -213,29 +249,43 @@ export interface HttpTransportConfig extends HttpTransportConfigSchema {
 export interface HecOutputConfig {
     type: 'hec';
     /** Sourcetypes to use for different kinds of events we send to Splunk */
-    sourcetypes: {
-        block?: string;
-        transaction?: string;
-        event?: string;
-        pendingtx?: string;
-        nodeInfo?: string;
-        nodeMetrics?: string;
-        quorumProtocol?: string;
-        gethPeer?: string;
-    };
+    sourcetypes: SourcetypesSchema;
     /** A common prefix for all metrics emitted to Splunk */
     metricsPrefix?: string;
 }
 
+export interface SourcetypesSchema {
+    /** @default "ethereum:block" */
+    block?: string;
+    /** @default "ethereum:transaction" */
+    transaction?: string;
+    /** @default "ethereum:transaction:event" */
+    event?: string;
+    /** @default "ethereum:transaction:pending" */
+    pendingtx?: string;
+    /** @default "ethereum:node:info" */
+    nodeInfo?: string;
+    /** @default "ethereum:node:metrics" */
+    nodeMetrics?: string;
+    /** @default "ethereum:quorum:protocol" */
+    quorumProtocol?: string;
+    /** @default "ethereum:geth:peer" */
+    gethPeer?: string;
+}
+
+/** Console output prints all generated events and metrics to STDOUT */
 export interface ConsoleOutputConfig {
     type: 'console';
 }
 
+/** File output will append all generated messages to a file. (this output type has not been implemented) */
 export interface FileOutputConfig {
     type: 'file';
+    /** Path to otuput file */
     path: string;
 }
 
+/** Null output will just drop all generated events and metrics */
 export interface DevNullOutputConfig {
     type: 'null';
 }
@@ -244,6 +294,7 @@ export type OutputConfigSchema = HecOutputConfig | ConsoleOutputConfig | FileOut
 
 export type OutputConfig = OutputConfigSchema;
 
+/** Settings for the Splunk HTTP Event Collector client */
 export interface HecConfigSchema {
     /** The URL of HEC. If only the base URL is specified (path is omitted) then the default path will be used */
     url?: string;
@@ -283,6 +334,7 @@ export interface HecConfigSchema {
     /**
      * Enable sending multipe metrics in a single message to HEC.
      * Supported as of Splunk 8.0.0
+     *
      * https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format
      */
     multipleMetricFormatEnabled?: boolean;
@@ -303,8 +355,28 @@ export type Duration = number;
 /** Duration specified as golang style duration expression (eg "1h30m") or a number in milliseconds */
 export type DurationConfig = number | string;
 
-export type ExponentalBackoffConfig = { type: 'exponential-backoff'; min?: number; max?: number };
-export type LinearBackoffConfig = { type: 'linear-backoff'; min?: number; step?: number; max?: number };
+/** Exponentiallly increasing wait time with randomness */
+export interface ExponentalBackoffConfig {
+    type: 'exponential-backoff';
+    /** Minimum wait time */
+    min?: DurationConfig;
+    /** Maximum wait time */
+    max?: DurationConfig;
+}
+/** Linear increasing wait time */
+export interface LinearBackoffConfig {
+    type: 'linear-backoff';
+    /** Minimum wait time (after the first failure) */
+    min?: DurationConfig;
+    /** Increase of wait time for each failure after the first until max is reached */
+    step?: DurationConfig;
+    /** Maximum wait time */
+    max?: DurationConfig;
+}
+/**
+ * Time to wait between retries. Can either be a fixed duration or a dynamic backoff function
+ * where the wait time is determined based on the number of attempts made so far.
+ */
 export type WaitTimeConfig = DurationConfig | ExponentalBackoffConfig | LinearBackoffConfig;
 
 export function parseDuration(value?: DurationConfig): Duration | undefined {

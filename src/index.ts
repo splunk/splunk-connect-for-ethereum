@@ -1,5 +1,6 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
+import { inspect } from 'util';
 import { AbiRepository } from './abi';
 import { BlockWatcher } from './blockwatcher';
 import { Checkpoint } from './checkpoint';
@@ -10,16 +11,15 @@ import { BatchedEthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
 import { introspectTargetNodePlatform } from './introspect';
+import { substituteVariablesInHecMetadata } from './meta';
 import { NodeStatsCollector } from './nodestats';
 import { createOutput } from './output';
 import { ABORT } from './utils/abort';
 import { createModuleDebug, enableTraceLogging } from './utils/debug';
 import LRUCache from './utils/lru';
-import { removeEmtpyValues, subsituteVariables } from './utils/obj';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
-import { inspect } from 'util';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -67,30 +67,10 @@ class Ethlogger extends Command {
                 platformAdapter.protocolVersion
             );
 
-            const metaVariables = removeEmtpyValues({
-                HOSTNAME: process.env.HOSTNAME || process.env.HOST,
-                ENODE: platformAdapter.enode,
-                PLATFORM: platformAdapter.name,
-                NETWORK_ID: String(platformAdapter.networkId),
-                NETWORK: config.eth.network, // TODO guess known network names
-                PID: String(process.pid),
-                VERSION: this.config.version,
-                NODE_VERSION: process.version,
-                TRANSPORT_ORIGIN: transport.originHost,
-            });
-
-            Object.entries(config.hec).forEach(([name, cfg]) => {
-                debug('Replacing metadata variables in HEC config %s', name);
-                if (cfg && cfg.defaultFields != null) {
-                    cfg.defaultFields = subsituteVariables(cfg.defaultFields, metaVariables);
-                }
-                if (cfg && cfg.defaultMetadata != null) {
-                    cfg.defaultMetadata = subsituteVariables(cfg.defaultMetadata, metaVariables);
-                }
-                debug('Replaced metadata variables in HEC config: %O', {
-                    defaultFields: cfg?.defaultFields,
-                    defaultMetadata: cfg?.defaultMetadata,
-                });
+            substituteVariablesInHecMetadata(config, {
+                ethloggerVersion: this.config.version,
+                platformAdapter,
+                transportOriginHost: transport.originHost,
             });
 
             const baseHec = new HecClient(config.hec.default);
