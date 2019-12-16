@@ -1,24 +1,25 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
+import { inspect } from 'util';
 import { AbiRepository } from './abi';
-import { BlockWatcher } from './block';
+import { BlockWatcher } from './blockwatcher';
 import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
-import { defaultSourcetypes, SplunkHecConfig } from './config';
+import { ConfigError, loadEthloggerConfig } from './config';
 import { ContractInfo } from './contract';
 import { BatchedEthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
 import { introspectTargetNodePlatform } from './introspect';
+import { substituteVariablesInHecMetadata } from './meta';
 import { NodeStatsCollector } from './nodestats';
-import { HecOutput } from './output';
+import { createOutput } from './output';
+import { ABORT } from './utils/abort';
 import { createModuleDebug, enableTraceLogging } from './utils/debug';
 import LRUCache from './utils/lru';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
-import { removeEmtpyValues } from './utils/obj';
-import { ABORT } from './utils/abort';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -45,9 +46,17 @@ class Ethlogger extends Command {
         };
 
         try {
-            const transport = new HttpTransport({
-                url: flags['eth-rpc-url'],
-            });
+            if (flags['print-config']) {
+                const config = await loadEthloggerConfig(flags['config-file'], flags, true);
+                debug('Printing config');
+                // eslint-disable-next-line no-console
+                console.log(inspect(config, { depth: 10, colors: true, showHidden: false, compact: false }));
+                await loadEthloggerConfig(flags['config-file'], flags);
+                return;
+            }
+            const config = await loadEthloggerConfig('ethlogger.yaml', flags);
+
+            const transport = new HttpTransport(config.eth.url, config.eth.http);
             const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
             const platformAdapter = await introspectTargetNodePlatform(client, flags['network-name']);
 
@@ -58,71 +67,43 @@ class Ethlogger extends Command {
                 platformAdapter.protocolVersion
             );
 
-            const hecConfig: SplunkHecConfig = {
-                url: flags['hec-url'],
-                token: flags['hec-token'],
-                validateCertificate: false,
-                sourcetypes: defaultSourcetypes,
-                multipleMetricFormatEnabled: true,
-                defaultMetadata: {
-                    host: transport.originHost,
-                    source: 'ethlogger',
-                },
-                defaultFields: removeEmtpyValues({
-                    enode: platformAdapter.enode || undefined,
-                    platform: platformAdapter.name,
-                    networkId: platformAdapter.networkId,
-                    network: flags['network-name'],
-                    protocolVersion: platformAdapter.protocolVersion,
-                }),
-                eventIndex: 'hecevents',
-                metricsIndex: 'somemetrics',
-                internalMetricsIndex: 'somemetrics',
-                metricsPrefix: 'eth',
-            };
+            substituteVariablesInHecMetadata(config, {
+                ethloggerVersion: this.config.version,
+                platformAdapter,
+                transportOriginHost: transport.originHost,
+            });
 
-            const hec = new HecClient(hecConfig);
-            const output = new HecOutput(hec, hecConfig);
+            const baseHec = new HecClient(config.hec.default);
+            const output = createOutput(config, baseHec);
             addResource(output);
 
             const internalStatsCollector = new InternalStatsCollector({
-                collectInterval: 1000,
-                dest: hec.clone({
-                    defaultMetadata: {
-                        host: process.env.HOST || process.env.HOSTNAME,
-                        source: 'ethlogger:internal',
-                        sourcetype: 'ethlogger:stats',
-                        index: hecConfig.internalMetricsIndex,
-                    },
-                    defaultFields: {
-                        version: this.config.version,
-                        nodeVersion: process.version,
-                        pid: process.pid,
-                    },
-                    flushTime: 5000,
-                    multipleMetricFormatEnabled: true,
-                }),
+                collect: config.internalMetrics.enabled,
+                collectInterval: config.internalMetrics.collectInterval,
+                dest: baseHec.clone(config.hec.internal),
                 basePrefix: 'ethlogger.internal',
             });
             addResource(internalStatsCollector);
             internalStatsCollector.addSource(transport, 'ethTransport');
-            internalStatsCollector.addSource(hec, 'hec');
+            internalStatsCollector.addSource(baseHec, 'hec');
 
             const checkpoints = addResource(
                 new Checkpoint({
-                    path: 'checkpoints.json',
+                    path: config.checkpoint.filename,
+                    saveInterval: config.checkpoint.saveInterval,
                 })
             );
             await checkpoints.initialize();
 
-            let abiRepo;
-            if (flags['eth-abi-dir']) {
-                abiRepo = new AbiRepository();
-                resources.unshift(abiRepo);
-                await abiRepo.loadAbiDir(flags['eth-abi-dir']);
+            const abiRepo = new AbiRepository();
+            resources.unshift(abiRepo);
+            if (config.abi.directory != null) {
+                await abiRepo.loadAbiDir(config.abi.directory!);
             }
 
-            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 1000 });
+            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({
+                maxSize: config.contractInfo.maxCacheEntries,
+            });
             internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
 
             const nodeStatsCollector = new NodeStatsCollector({
@@ -131,8 +112,11 @@ class Ethlogger extends Command {
                 abiRepo,
                 contractInfoCache,
                 output,
-                statsInterval: 1000,
-                infoInterval: 60_000,
+                metricsEnabled: config.nodeMetrics.enabled,
+                metricsInterval: config.nodeMetrics.collectInterval,
+                infoEnabled: config.nodeInfo.enabled,
+                infoInterval: config.nodeInfo.collectInterval,
+                metricsRetryWaitTime: config.nodeInfo.retryWaitTime,
             });
             addResource(nodeStatsCollector);
             internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
@@ -142,8 +126,10 @@ class Ethlogger extends Command {
                 ethClient: client,
                 output,
                 abiRepo: abiRepo,
-                startAt: flags['start-at-block'],
+                startAt: config.blockWatcher.startAt,
                 contractInfoCache,
+                chunkSize: config.blockWatcher.blocksMaxChunkSize,
+                pollInterval: config.blockWatcher.pollInterval,
             });
             resources.unshift(blockWatcher);
             internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
@@ -169,8 +155,10 @@ class Ethlogger extends Command {
             info('Shutdown complete.');
             process.exit(cleanShutdown ? 0 : 2);
         } catch (e) {
-            error('FATAL: ', e);
-            process.exit(1);
+            if (!(e instanceof ConfigError)) {
+                error('FATAL: ', e);
+            }
+            this.error(e.message, { exit: 1 });
         }
     }
 }

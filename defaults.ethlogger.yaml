@@ -1,0 +1,86 @@
+eth:
+    http:
+        timeout: 1m
+        validateCertificate: true
+        requestKeepAlive: true
+        maxSockets: 256
+    client:
+        maxBatchSize: 100
+        maxBatchTime: 0
+    metricsPrefix: eth
+hec:
+    default:
+        flushTime: 0
+        maxQueueEntries: -1
+        maxQueueSize: 512000
+        gzip: true
+        timeout: 30s
+        requestKeepAlive: true
+        validateCertificate: true
+        maxSockets: 128
+        userAgent: ethlogger-hec-client/1.0
+        multipleMetricFormatEnabled: false
+        retryWaitTime:
+            type: exponential-backoff
+            min: 10ms
+            max: 3m
+        defaultMetadata:
+            host: $TRANSPORT_ORIGIN
+            source: ethlogger
+        defaultFields:
+            enode: $ENODE
+            networkId: $NETWORK_ID
+            network: $NETWORK
+            platform: $PLATFORM
+    internal:
+        flushTime: 5s
+        defaultMetadata:
+            host: $HOSTNAME
+            source: ethlogger:internal
+            sourcetype: ethlogger:internal
+        defaultFields:
+            version: $VERSION
+            nodeVersion: $NODE_VERSION
+            pid: $PID
+output:
+    type: hec
+    sourcetypes:
+        block: 'ethereum:block'
+        transaction: 'ethereum:transaction'
+        event: 'ethereum:transaction:event'
+        pendingtx: 'ethereum:transaction:pending'
+        nodeInfo: 'ethereum:node:info'
+        nodeMetrics: 'ethereum:node:metrics'
+        quorumProtocol: 'ethereum:quorum:protocol'
+        gethPeer: 'ethereum:geth:peer'
+checkpoint:
+    filename: checkpoints.json
+    saveInterval: 250
+
+abi:
+    fingerprintContracts: true
+contractInfo:
+    maxCacheEntries: 25000
+blockWatcher:
+    enabled: true
+    pollInterval: 500ms
+    blocksMaxChunkSize: 25
+    startAt: genesis
+nodeMetrics:
+    enabled: true
+    collectInterval: 1s
+    retryWaitTime:
+        type: linear-backoff
+        min: 0
+        step: 2.5s
+        max: 2m
+nodeInfo:
+    enabled: true
+    collectInterval: 1m
+    retryWaitTime:
+        type: linear-backoff
+        min: 0
+        step: 2.5s
+        max: 2m
+internalMetrics:
+    collectInterval: 1s

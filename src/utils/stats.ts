@@ -57,7 +57,7 @@ export class InternalStatsCollector implements ManagedResource {
     private active: boolean = true;
     private collectTimer: NodeJS.Timer | null = null;
 
-    constructor(public config: { collectInterval: number; dest: HecClient; basePrefix?: string }) {
+    constructor(public config: { collect: boolean; collectInterval: number; dest: HecClient; basePrefix?: string }) {
         this.addSource(new SystemStats(), 'system');
     }
 
@@ -75,11 +75,14 @@ export class InternalStatsCollector implements ManagedResource {
     private next = () => {
         this.collectTimer = null;
         const time = Date.now();
-        debug('Collecting stats from %d sources', this.sources.length);
-        this.config.dest.pushMetrics({
-            time,
-            measurements: Object.fromEntries(this.collectStats().map(({ name, value }) => [name, value])),
-        });
+        const stats = this.collectStats();
+        if (this.config.collect) {
+            debug('Collecting stats from %d sources', this.sources.length);
+            this.config.dest.pushMetrics({
+                time,
+                measurements: Object.fromEntries(stats.map(({ name, value }) => [name, value])),
+            });
+        }
         this.start();
     };
 

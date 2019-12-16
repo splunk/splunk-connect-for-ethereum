@@ -1,14 +1,16 @@
-import fetch from 'node-fetch';
-import BufferList from 'bl';
-import { createGzip } from 'zlib';
-import { createModuleDebug } from './utils/debug';
-import { default as HttpAgent, HttpsAgent, HttpOptions } from 'agentkeepalive';
 import AbortController from 'abort-controller';
+import { default as HttpAgent, HttpOptions, HttpsAgent } from 'agentkeepalive';
+import BufferList from 'bl';
+import fetch from 'node-fetch';
 import { AbortSignal } from 'node-fetch/externals';
+import { createGzip } from 'zlib';
+import { HecConfig } from './config';
 import { sleep } from './utils/async';
+import { createModuleDebug } from './utils/debug';
 import { isHttps, isSuccessfulStatus } from './utils/httputils';
-import { WaitTime, exponentialBackoff, resolveWaitTime } from './utils/retry';
-import { httpClientStats as httpAgentStats, AggregateMetric } from './utils/stats';
+import { exponentialBackoff, resolveWaitTime } from './utils/retry';
+import { AggregateMetric, httpClientStats as httpAgentStats } from './utils/stats';
+import { deepMerge, removeEmtpyValues } from './utils/obj';
 
 const { debug, info, error, trace } = createModuleDebug('hec');
 
@@ -105,45 +107,6 @@ export function serializeMetrics(
     );
 }
 
-export interface HecConfig {
-    /** The URL of HEC. If only the base URL is specified (path is omitted) then the default path will be used */
-    url: string;
-    /** The HEC token used to authenticate HTTP requests */
-    token: string | null;
-    /** Defaults for host, source, sourcetype and index. Can be overriden for each message */
-    defaultMetadata?: Metadata;
-    /** Default set of fields to apply to all events and metrics sent with this HEC client */
-    defaultFields?: Fields;
-    /** Maximum number of entries in the HEC message queue before flushing it */
-    maxQueueEntries?: number;
-    /** Maximum number of bytes in the HEC message queue before flushing it */
-    maxQueueSize?: number;
-    /** Maximum number of milliseconds to wait before flushing the HEC message queue */
-    flushTime?: number;
-    /** Gzip compress the request body sent to HEC (Content-Encoding: gzip) */
-    gzip?: boolean;
-    /** Maximum number of attempts to send a batch to HEC. By default this there is no limit */
-    maxRetries?: number;
-    /** Number of milliseconds to wait before considereing an HTTP request as failed */
-    timeout?: number;
-    /** Keep sockets to HEC open */
-    requestKeepAlive?: boolean;
-    /** If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs) */
-    validateCertificate?: boolean;
-    /** Maximum number of sockets HEC will use (per host) */
-    maxSockets?: number;
-    /** User-agent header sent to HEC */
-    userAgent?: string;
-    /** Wait time before retrying to send a (batch of) HEC messages */
-    retryWaitTime?: WaitTime;
-    /**
-     * Enable sending multipe metrics in a single message to HEC.
-     * Supported as of Splunk 8.0.0
-     * https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format
-     */
-    multipleMetricFormatEnabled?: boolean;
-}
-
 const CONFIG_DEFAULTS = {
     token: null,
     defaultMetadata: {},
@@ -158,14 +121,14 @@ const CONFIG_DEFAULTS = {
     validateCertificate: true,
     maxSockets: 256,
     userAgent: 'ethlogger-hec-client/1.0',
-    retryWaitTime: exponentialBackoff({ min: 10, max: 180_000 }),
+    retryWaitTime: exponentialBackoff({ min: 0, max: 180_000 }),
     multipleMetricFormatEnabled: false,
 };
 
 type CookedHecConfig = Required<HecConfig>;
 
 export function parseHecConfig(config: HecConfig): CookedHecConfig {
-    const url = new URL(config.url);
+    const url = new URL(config.url!);
     if (url.pathname === '' || url.pathname === '/') {
         url.pathname = '/services/collector/event/1.0';
     }
@@ -173,6 +136,7 @@ export function parseHecConfig(config: HecConfig): CookedHecConfig {
         ...CONFIG_DEFAULTS,
         ...config,
         url: url.href,
+        token: config.token ?? '',
     };
 }
 
@@ -249,7 +213,17 @@ export class HecClient {
     }
 
     public clone(configOverrides?: Partial<HecConfig>): HecClient {
-        const cloned = new HecClient({ ...this.config, ...configOverrides });
+        debug('Cloning HEC client with overrides %O', configOverrides);
+        if (configOverrides == null || Object.keys(removeEmtpyValues(configOverrides)).length === 0) {
+            debug('Reusing HEC client for clone without any overrides');
+            return this;
+        }
+        if (configOverrides?.url && configOverrides.url !== this.config.url) {
+            debug('Creating new HEC client with different URL', configOverrides.url);
+            return new HecClient(deepMerge(this.config, configOverrides || {}));
+        }
+        debug('Creating new HEC client instance but reusing HTTP agent and socket pool');
+        const cloned = new HecClient(deepMerge(this.config, configOverrides || {}));
         cloned.httpAgent = this.httpAgent;
         return cloned;
     }

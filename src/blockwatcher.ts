@@ -55,7 +55,7 @@ export class BlockWatcher implements ManagedResource {
     private output: Output;
     private abiRepo?: AbiRepository;
     private startAt: StartBlock;
-    private chunkSize: number = 100;
+    private chunkSize: number = 25;
     private pollInterval: number = 500;
     private abortManager = new AbortManager();
     private endCallbacks: Array<() => void> = [];
@@ -78,15 +78,19 @@ export class BlockWatcher implements ManagedResource {
         contractInfoCache,
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
+        chunkSize = 25,
+        pollInterval = 500,
     }: {
         ethClient: EthereumClient;
         checkpoints: Checkpoint;
         output: Output;
-        abiRepo?: AbiRepository;
-        startAt?: StartBlock;
+        abiRepo: AbiRepository;
+        startAt: StartBlock;
         waitAfterFailure?: WaitTime;
         chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
+        chunkSize: number;
+        pollInterval: number;
     }) {
         this.ethClient = ethClient;
         this.checkpoints = checkpoints;
@@ -94,6 +98,8 @@ export class BlockWatcher implements ManagedResource {
         this.abiRepo = abiRepo;
         this.startAt = startAt;
         this.waitAfterFailure = waitAfterFailure;
+        this.chunkSize = chunkSize;
+        this.pollInterval = pollInterval;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
         if (contractInfoCache) {
             this.contractInfoCache = contractInfoCache;

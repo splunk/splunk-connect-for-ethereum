@@ -1,0 +1,695 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "AbiRepositoryConfigSchema": {
+            "description": "The ABI repository is used to decode ABI information from smart contract calls and event logs.\nIt generates and adds some additinal information in transaction and events, including smart contract\nmethod call parameter names, values and data types, as well as smart contract names associated with a\nparticular contract address.",
+            "properties": {
+                "directory": {
+                    "description": "If specified, the ABI repository will recursively search this directory for ABI files",
+                    "type": "string"
+                },
+                "fileExtension": {
+                    "type": "string"
+                },
+                "fingerprintContracts": {
+                    "description": "If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.\n\nNOTE: disabling it is currently being ignored since non-fingerprint matching hasn't been implemented",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "BlockWatcherConfigSchema": {
+            "description": "Block watcher is the component that retrieves blocks, transactions, event logs from the node and sends\nthem to output.",
+            "properties": {
+                "blocksMaxChunkSize": {
+                    "description": "Max. number of blocks to fetch at once",
+                    "type": "number"
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable the block watcher",
+                    "type": "boolean"
+                },
+                "pollInterval": {
+                    "description": "Interval in which to look for the latest block number (if not busy processing the backlog)",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        }
+                    ],
+                    "description": "Wait time before retrying to fetch and process blocks after failure"
+                },
+                "startAt": {
+                    "anyOf": [
+                        {
+                            "enum": [
+                                "genesis",
+                                "latest"
+                            ],
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "description": "If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.\nSpecify a positive integer for an absolute block number or a negative integer to start at n blocks\nbefore the latest one. You can also specify \"genesis\" (block 0) or \"latest\" (currently latest block)."
+                }
+            },
+            "type": "object"
+        },
+        "CheckpointConfigSchema": {
+            "description": "The checkpoint is where ethlogger keeps track of its state, which blocks have already been processed.\nThis allows it to resume where it left off after being shut down and restarted.",
+            "properties": {
+                "filename": {
+                    "default": "checkpoints.json",
+                    "description": "File path (relative to the current working directory) where the checkpoint file will be stored",
+                    "type": "string"
+                },
+                "saveInterval": {
+                    "description": "Maximum duration before saving updated checkpoint information to disk",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "ConsoleOutputConfig": {
+            "description": "Console output prints all generated events and metrics to STDOUT",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "console"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ContractInfoConfigSchema": {
+            "description": "Ethlogger checks for each address it encounters whether it is a smart contract by attempting to\nretrieve the contract code. To reduce the performance hit by this operation, ethlogger can cache\ncontract information in memory.",
+            "properties": {
+                "maxCacheEntries": {
+                    "description": "Maximum number of contract info results to cache in memory. Set to 0 to disable the cache.",
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "DevNullOutputConfig": {
+            "description": "Null output will just drop all generated events and metrics",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "null"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "EthereumClientConfigSchema": {
+            "description": "Etherem client settings - configure batching multiple JSON RPC method calls into single HTTP requests",
+            "properties": {
+                "maxBatchSize": {
+                    "description": "Maximum number of JSON RPC requests to pack into a single batch. Set to `1` to disable batching.",
+                    "type": "number"
+                },
+                "maxBatchTime": {
+                    "description": "Maximum time to wait before submitting a batch of JSON RPC requests",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "EthereumConfigSchema": {
+            "description": "General Ethereum configuration including client and transport, defining how ethlogger talks to the ethereum node",
+            "properties": {
+                "client": {
+                    "$ref": "#/definitions/EthereumClientConfigSchema",
+                    "description": "Ethereum client configuration"
+                },
+                "http": {
+                    "$ref": "#/definitions/HttpTransportConfigSchema",
+                    "description": "HTTP tansport configuration"
+                },
+                "network": {
+                    "description": "Network name send as a field with every event and metric to HEC.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public networkIds associated\nwith particular networks (ethereum mainnet, ropsten, ...). This value\nwill allow consumers of data to distinguis between different networks\nin case multiple ethloggers are sending events from different networks.",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL of JSON RPC endpoint",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "ExponentalBackoffConfig": {
+            "description": "Exponentiallly increasing wait time with randomness",
+            "properties": {
+                "max": {
+                    "description": "Maximum wait time",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "min": {
+                    "description": "Minimum wait time",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "type": {
+                    "enum": [
+                        "exponential-backoff"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "FileOutputConfig": {
+            "description": "File output will append all generated messages to a file. (this output type has not been implemented)",
+            "properties": {
+                "path": {
+                    "description": "Path to otuput file",
+                    "type": "string"
+                },
+                "type": {
+                    "enum": [
+                        "file"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "HecClientsConfigSchema": {
+            "properties": {
+                "default": {
+                    "$ref": "#/definitions/HecConfigSchema",
+                    "description": "Base settings that apply to all HEC clients. Overrides for events, metrics and\ninternal metrics will be layered on top of the defaults and allow for using\ndifferent HEC tokens, URL or destination index."
+                },
+                "events": {
+                    "$ref": "#/definitions/Partial<HecConfigSchema>",
+                    "description": "HEC settings (overrides for `default`) for events sent to Splunk"
+                },
+                "internal": {
+                    "$ref": "#/definitions/Partial<HecConfigSchema>",
+                    "description": "HEC settings (overrides for `default`) for internal metrics sent to Splunk"
+                },
+                "metrics": {
+                    "$ref": "#/definitions/Partial<HecConfigSchema>",
+                    "description": "HEC settings (overrides for `default`) for metrics sent to Splunk"
+                }
+            },
+            "type": "object"
+        },
+        "HecConfigSchema": {
+            "description": "Settings for the Splunk HTTP Event Collector client",
+            "properties": {
+                "defaultFields": {
+                    "additionalProperties": {
+                    },
+                    "description": "Default set of fields to apply to all events and metrics sent with this HEC client",
+                    "type": "object"
+                },
+                "defaultMetadata": {
+                    "description": "Defaults for host, source, sourcetype and index. Can be overriden for each message",
+                    "properties": {
+                        "host": {
+                            "type": "string"
+                        },
+                        "index": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        },
+                        "sourcetype": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "flushTime": {
+                    "description": "Maximum number of milliseconds to wait before flushing the HEC message queue",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "gzip": {
+                    "description": "Gzip compress the request body sent to HEC (Content-Encoding: gzip)",
+                    "type": "boolean"
+                },
+                "maxQueueEntries": {
+                    "description": "Maximum number of entries in the HEC message queue before flushing it",
+                    "type": "number"
+                },
+                "maxQueueSize": {
+                    "description": "Maximum number of bytes in the HEC message queue before flushing it",
+                    "type": "number"
+                },
+                "maxRetries": {
+                    "description": "Maximum number of attempts to send a batch to HEC. By default this there is no limit",
+                    "type": "number"
+                },
+                "maxSockets": {
+                    "description": "Maximum number of sockets HEC will use (per host)",
+                    "type": "number"
+                },
+                "multipleMetricFormatEnabled": {
+                    "description": "Enable sending multipe metrics in a single message to HEC.\nSupported as of Splunk 8.0.0\n\nhttps://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format",
+                    "type": "boolean"
+                },
+                "requestKeepAlive": {
+                    "description": "Set to `false` to disable HTTP keep-alive for connections to Splunk",
+                    "type": "boolean"
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        }
+                    ],
+                    "description": "Wait time before retrying to send a (batch of) HEC messages"
+                },
+                "timeout": {
+                    "description": "Number of milliseconds to wait before considereing an HTTP request as failed",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "token": {
+                    "description": "The HEC token used to authenticate HTTP requests",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "The URL of HEC. If only the base URL is specified (path is omitted) then the default path will be used",
+                    "type": "string"
+                },
+                "userAgent": {
+                    "description": "User-agent header sent to HEC",
+                    "type": "string"
+                },
+                "validateCertificate": {
+                    "description": "If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "HecOutputConfig": {
+            "properties": {
+                "metricsPrefix": {
+                    "description": "A common prefix for all metrics emitted to Splunk",
+                    "type": "string"
+                },
+                "sourcetypes": {
+                    "$ref": "#/definitions/SourcetypesSchema",
+                    "description": "Sourcetypes to use for different kinds of events we send to Splunk"
+                },
+                "type": {
+                    "enum": [
+                        "hec"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "HttpTransportConfigSchema": {
+            "description": "Settings for ethlogger connecting to the ethereum node via JSON RPC over HTTP",
+            "properties": {
+                "maxSockets": {
+                    "description": "Maximum number of sockets HEC will use (per host)",
+                    "type": "number"
+                },
+                "requestKeepAlive": {
+                    "description": "Keep sockets to JSON RPC open",
+                    "type": "boolean"
+                },
+                "timeout": {
+                    "description": "Time before failing JSON RPC requests. Specify a number in milliseconds or a golang-style duration expression.",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "validateCertificate": {
+                    "description": "If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "InternalMetricsConfigSchema": {
+            "description": "Ethlogger-internal metrics allow for visibilty into the operation of ethlogger itself,\ndetect and troubleshoot bottlenecks and improve configuration.",
+            "properties": {
+                "collectInterval": {
+                    "description": "Interval in which to collect internal metrics",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable internal metrics collection",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "LinearBackoffConfig": {
+            "description": "Linear increasing wait time",
+            "properties": {
+                "max": {
+                    "description": "Maximum wait time",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "min": {
+                    "description": "Minimum wait time (after the first failure)",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "step": {
+                    "description": "Increase of wait time for each failure after the first until max is reached",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "type": {
+                    "enum": [
+                        "linear-backoff"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "NodeInfoConfigSchema": {
+            "description": "Platfrom specific node information is collection on regular interval",
+            "properties": {
+                "collectInterval": {
+                    "description": "Interval in which to collect node info",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable node info collection",
+                    "type": "boolean"
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        }
+                    ],
+                    "description": "Wait time before retrying to collect node info after failure"
+                }
+            },
+            "type": "object"
+        },
+        "NodeMetricsConfigSchema": {
+            "description": "The node metrics colletor retrieves numeric measurements from nodes on a periodic basis.",
+            "properties": {
+                "collectInterval": {
+                    "description": "Interval in which to collect node metrics",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable node metrics collection",
+                    "type": "boolean"
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        }
+                    ],
+                    "description": "Wait time before retrying to collect node metrics after failure"
+                }
+            },
+            "type": "object"
+        },
+        "Partial<HecConfigSchema>": {
+            "properties": {
+                "defaultFields": {
+                    "additionalProperties": {
+                    },
+                    "description": "Default set of fields to apply to all events and metrics sent with this HEC client",
+                    "type": "object"
+                },
+                "defaultMetadata": {
+                    "description": "Defaults for host, source, sourcetype and index. Can be overriden for each message",
+                    "properties": {
+                        "host": {
+                            "type": "string"
+                        },
+                        "index": {
+                            "type": "string"
+                        },
+                        "source": {
+                            "type": "string"
+                        },
+                        "sourcetype": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "flushTime": {
+                    "description": "Maximum number of milliseconds to wait before flushing the HEC message queue",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "gzip": {
+                    "description": "Gzip compress the request body sent to HEC (Content-Encoding: gzip)",
+                    "type": "boolean"
+                },
+                "maxQueueEntries": {
+                    "description": "Maximum number of entries in the HEC message queue before flushing it",
+                    "type": "number"
+                },
+                "maxQueueSize": {
+                    "description": "Maximum number of bytes in the HEC message queue before flushing it",
+                    "type": "number"
+                },
+                "maxRetries": {
+                    "description": "Maximum number of attempts to send a batch to HEC. By default this there is no limit",
+                    "type": "number"
+                },
+                "maxSockets": {
+                    "description": "Maximum number of sockets HEC will use (per host)",
+                    "type": "number"
+                },
+                "multipleMetricFormatEnabled": {
+                    "description": "Enable sending multipe metrics in a single message to HEC.\nSupported as of Splunk 8.0.0\n\nhttps://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format",
+                    "type": "boolean"
+                },
+                "requestKeepAlive": {
+                    "description": "Set to `false` to disable HTTP keep-alive for connections to Splunk",
+                    "type": "boolean"
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": [
+                                "string",
+                                "number"
+                            ]
+                        }
+                    ],
+                    "description": "Wait time before retrying to send a (batch of) HEC messages"
+                },
+                "timeout": {
+                    "description": "Number of milliseconds to wait before considereing an HTTP request as failed",
+                    "type": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "token": {
+                    "description": "The HEC token used to authenticate HTTP requests",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "The URL of HEC. If only the base URL is specified (path is omitted) then the default path will be used",
+                    "type": "string"
+                },
+                "userAgent": {
+                    "description": "User-agent header sent to HEC",
+                    "type": "string"
+                },
+                "validateCertificate": {
+                    "description": "If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "SourcetypesSchema": {
+            "properties": {
+                "block": {
+                    "default": "ethereum:block",
+                    "type": "string"
+                },
+                "event": {
+                    "default": "ethereum:transaction:event",
+                    "type": "string"
+                },
+                "gethPeer": {
+                    "default": "ethereum:geth:peer",
+                    "type": "string"
+                },
+                "nodeInfo": {
+                    "default": "ethereum:node:info",
+                    "type": "string"
+                },
+                "nodeMetrics": {
+                    "default": "ethereum:node:metrics",
+                    "type": "string"
+                },
+                "pendingtx": {
+                    "default": "ethereum:transaction:pending",
+                    "type": "string"
+                },
+                "quorumProtocol": {
+                    "default": "ethereum:quorum:protocol",
+                    "type": "string"
+                },
+                "transaction": {
+                    "default": "ethereum:transaction",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "description": "Root configuration schema for ethlogger",
+    "properties": {
+        "abi": {
+            "$ref": "#/definitions/AbiRepositoryConfigSchema",
+            "description": "ABI repository configuration"
+        },
+        "blockWatcher": {
+            "$ref": "#/definitions/BlockWatcherConfigSchema",
+            "description": "Block watcher settings, configure how blocks, transactions, event logs are ingested"
+        },
+        "checkpoint": {
+            "$ref": "#/definitions/CheckpointConfigSchema",
+            "description": "Checkpoint configuration - how ethlogger keeps track of state between restarts"
+        },
+        "contractInfo": {
+            "$ref": "#/definitions/ContractInfoConfigSchema",
+            "description": "Contract info cache settings"
+        },
+        "eth": {
+            "$ref": "#/definitions/EthereumConfigSchema",
+            "description": "Ethereum node configuration"
+        },
+        "hec": {
+            "$ref": "#/definitions/HecClientsConfigSchema",
+            "description": "HTTP event collector"
+        },
+        "internalMetrics": {
+            "$ref": "#/definitions/InternalMetricsConfigSchema",
+            "description": "Settings for internal metrics collection"
+        },
+        "nodeInfo": {
+            "$ref": "#/definitions/NodeInfoConfigSchema",
+            "description": "Settings for the node info collector"
+        },
+        "nodeMetrics": {
+            "$ref": "#/definitions/NodeMetricsConfigSchema",
+            "description": "Settings for the node metrics collector"
+        },
+        "output": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/HecOutputConfig"
+                },
+                {
+                    "$ref": "#/definitions/ConsoleOutputConfig"
+                },
+                {
+                    "$ref": "#/definitions/FileOutputConfig"
+                },
+                {
+                    "$ref": "#/definitions/DevNullOutputConfig"
+                }
+            ],
+            "description": "In the output configuration you can specify where ethlogger will send generated\nmetrics and events to. By default it will send all information to Splunk HEC,\nbut you can instead send it to console output or a file."
+        }
+    },
+    "type": "object"
+}
+

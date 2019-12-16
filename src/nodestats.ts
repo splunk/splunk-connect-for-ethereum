@@ -23,7 +23,8 @@ const initialCounters = {
 export class NodeStatsCollector implements ManagedResource {
     private abort = new AbortManager();
     private donePromise: Promise<any> | null = null;
-    private waitAfterFailure: WaitTime;
+    private metricsRetryWaitTime: WaitTime;
+    private infoRetryWaitTime: WaitTime;
     private counters = { ...initialCounters };
     private aggregates = {
         infoCollectDuration: new AggregateMetric(),
@@ -36,32 +37,41 @@ export class NodeStatsCollector implements ManagedResource {
             output: Output;
             abiRepo?: AbiRepository;
             contractInfoCache?: Cache<string, Promise<ContractInfo>>;
-            statsInterval: number;
+            metricsEnabled: boolean;
+            metricsInterval: number;
+            infoEnabled: boolean;
             infoInterval: number;
-            waitAfterFailure?: WaitTime;
+            metricsRetryWaitTime?: WaitTime;
+            infoRetryWaitTime?: WaitTime;
         }
     ) {
-        this.waitAfterFailure = config.waitAfterFailure ?? linearBackoff({ min: 0, step: 2500, max: 120_000 });
+        this.metricsRetryWaitTime = config.metricsRetryWaitTime ?? linearBackoff({ min: 0, step: 2500, max: 120_000 });
+        this.infoRetryWaitTime = config.infoRetryWaitTime ?? linearBackoff({ min: 0, step: 2500, max: 120_000 });
     }
 
     public async start() {
         debug('Starting node stats collector');
-        const p = Promise.all([this.startCollectingNodeInfo(), this.startCollectingNodeStats()]);
+        const p = Promise.all([this.startCollectingNodeInfo(), this.startCollectingNodeMetrics()]);
         this.donePromise = p;
         await p;
         debug('Node stats collector completed');
     }
 
     private async startCollectingNodeInfo() {
+        if (!this.config.infoEnabled) {
+            debug('Node info collection is disabled');
+            return;
+        }
         debug('Starting node info collection every %d ms', this.config.infoInterval);
-        const { platformAdapter, ethClient, output } = this.config;
+        const { platformAdapter, ethClient, output, infoInterval } = this.config;
+        const abort = this.abort;
         let failed = 0;
-        while (!this.abort.aborted) {
+        while (!abort.aborted) {
             const startTime = Date.now();
             try {
                 this.counters.infoCollectCount++;
 
-                const nodeInfo = await this.abort.race(platformAdapter.captureNodeInfo(ethClient));
+                const nodeInfo = await abort.race(platformAdapter.captureNodeInfo(ethClient));
                 output.write({
                     type: 'nodeInfo',
                     time: Date.now(),
@@ -78,21 +88,21 @@ export class NodeStatsCollector implements ManagedResource {
                 this.counters.infoErrorCount++;
                 failed++;
                 error('Failed to collect node info (%d consecutive failures):', failed, e);
-                const waitAfterFailure = resolveWaitTime(this.waitAfterFailure, failed);
+                const waitAfterFailure = resolveWaitTime(this.infoRetryWaitTime, failed);
                 debug('Waiting for %d ms after failure #%d', waitAfterFailure, failed);
-                await this.abort.race(sleep(waitAfterFailure));
-            } finally {
-                this.donePromise = null;
+                await abort.race(sleep(waitAfterFailure));
             }
-
-            const waitForNext = Math.max(0, this.config.infoInterval - (Date.now() - startTime));
+            const waitForNext = Math.max(0, infoInterval - (Date.now() - startTime));
             debug('Waiting for %d ms before collecting node info again', waitForNext);
-            await this.abort.race(sleep(waitForNext));
+            await abort.race(sleep(waitForNext));
         }
     }
 
-    private async startCollectingNodeStats() {
-        debug('Starting node stats collection every %d ms', this.config.statsInterval);
+    private async startCollectingNodeMetrics() {
+        if (!this.config.metricsEnabled) {
+            return;
+        }
+        debug('Starting node metrics collection every %d ms', this.config.metricsInterval);
         let failed = 0;
         while (!this.abort.aborted) {
             const startTime = Date.now();
@@ -100,7 +110,7 @@ export class NodeStatsCollector implements ManagedResource {
                 this.counters.collectCount++;
                 const results = await this.collectNodeStats();
                 this.aggregates.collectDuration.push(Date.now() - startTime);
-                info('Collected %d nodestats messages in %d ms', results, Date.now() - startTime);
+                info('Collected %d node metrics messages in %d ms', results, Date.now() - startTime);
                 failed = 0;
             } catch (e) {
                 if (e === ABORT) {
@@ -108,15 +118,15 @@ export class NodeStatsCollector implements ManagedResource {
                 }
                 this.counters.errorCount++;
                 failed++;
-                error('Failed to collect node stats (%d consecutive failures):', failed, e);
-                const waitAfterFailure = resolveWaitTime(this.waitAfterFailure, failed);
+                error('Failed to collect node metrics (%d consecutive failures):', failed, e);
+                const waitAfterFailure = resolveWaitTime(this.metricsRetryWaitTime, failed);
                 debug('Waiting for %d ms after failure #%d', waitAfterFailure, failed);
                 await this.abort.race(sleep(waitAfterFailure));
             } finally {
                 this.donePromise = null;
             }
 
-            const waitForNext = Math.max(0, this.config.statsInterval - (Date.now() - startTime));
+            const waitForNext = Math.max(0, this.config.metricsInterval - (Date.now() - startTime));
             debug('Waiting for %d ms before collecting node stats again', waitForNext);
             await this.abort.race(sleep(waitForNext));
         }
