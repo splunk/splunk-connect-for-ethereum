@@ -11,10 +11,10 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 12
-            - name: build
+            - name: Build ethlogger CLI
               run: |
                   npm i -g yarn
-                  yarn install
+                  yarn install --frozen-lockfile
                   yarn build
     unit-tests:
         runs-on: self-hosted
@@ -27,8 +27,23 @@ jobs:
             - name: Run unit tests and linter
               run: |
                   npm i -g yarn
-                  yarn install
+                  yarn install --frozen-lockfile
                   yarn test --verbose
+              env:
+                  CI: true
+    check-format:
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v1
+            - name: Use Node.js 12
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+            - name: Check code format
+              run: |
+                  npm i -g yarn
+                  yarn install --frozen-lockfile
+                  yarn format:verify
               env:
                   CI: true
     check-generated-files:
@@ -42,7 +57,7 @@ jobs:
             - name: Check if generated files are up-to-date
               run: |
                   npm i -g yarn
-                  yarn install
+                  yarn install --frozen-lockfile
                   yarn generate:all
                   echo "Checking if generated files are up-to-date"
                   git diff --exit-code

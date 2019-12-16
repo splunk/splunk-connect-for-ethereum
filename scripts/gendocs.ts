@@ -42,7 +42,7 @@ function formatTypeInfo(type: TypeInfo): string {
     throw new Error('INVALID TYPE: ' + JSON.stringify(type));
 }
 
-function formatDescription(text?: string): string {
+function formatDescription(text?: string) {
     return text != null
         ? text
               .trim()
@@ -51,94 +51,37 @@ function formatDescription(text?: string): string {
         : '';
 }
 
-// function flagsToString(flags: number): string {
-//     const result = [];
-//     for (const f in ts.TypeFlags) {
-//         const n = parseInt(f, 10);
-//         if (typeof n === 'number' && !isNaN(n)) {
-//             if ((n & flags) !== 0) {
-//                 result.push(ts.TypeFlags[f]);
-//             }
-//         }
-//     }
-//     return result.join(', ');
-// }
-
-// function objectFlagsToString(flags: number): string {
-//     const result = [];
-//     for (const f in ts.ObjectFlags) {
-//         const n = parseInt(f, 10);
-//         if (typeof n === 'number' && !isNaN(n)) {
-//             if ((n & flags) !== 0) {
-//                 result.push(ts.ObjectFlags[f]);
-//             }
-//         }
-//     }
-//     return result.join(', ');
-// }
-
-// function syntaxKindToSstring(flags: number): string {
-//     const result = [];
-//     for (const f in ts.TypeFlags) {
-//         const n = parseInt(f, 10);
-//         if (typeof n === 'number' && !isNaN(n)) {
-//             if ((n & flags) !== 0) {
-//                 result.push(ts.TypeFlags[f]);
-//             }
-//         }
-//     }
-//     return result.join(', ');
-// }
-
-// function getReferencedTypeSymbol(prop: ts.Symbol, typeChecker: ts.TypeChecker): ts.Symbol | undefined {
-//     const decl = prop.getDeclarations();
-//     if (decl && decl.length) {
-//         const type = <ts.TypeReferenceNode>(<any>decl[0]).type;
-//         if (type && type.kind & ts.SyntaxKind.TypeReference && type.typeName) {
-//             const symbol = typeChecker.getSymbolAtLocation(type.typeName);
-//             if (symbol && symbol.flags & ts.SymbolFlags.Alias) {
-//                 return typeChecker.getAliasedSymbol(symbol);
-//             }
-//             return symbol;
-//         }
-//     }
-//     return undefined;
-// }
-
-class Section {
-    public fields: Field[] = [];
-    constructor(public title: string, public description?: string) {}
-
-    format(): string {
-        let out = `### ${this.title}\n\n`;
-        if (this.description) {
-            out += `${formatDescription(this.description)}\n\n`;
-        }
-        const hasExample = this.fields.some(f => f.example != null);
-        const hasDefault = this.fields.some(f => f.default != null);
-        const hasDescription = this.fields.some(f => !!f.description?.trim());
-        const rows = this.fields.map(field => [
-            inlineCode(field.name),
-            formatTypeInfo(field.type),
-            ...(hasDescription ? [formatDescription(field.description)] : []),
-            ...(hasExample ? [field.example ? inlineCode(field.example) : undefined] : []),
-            ...(hasDefault ? [field.default ? inlineCode(field.default) : undefined] : []),
-        ]);
-        out += markdownTable([
-            [
-                'Name',
-                'Type',
-                ...(hasDescription ? ['Description'] : []),
-                ...(hasExample ? ['Example'] : []),
-                ...(hasDefault ? ['Default'] : []),
-            ],
-            ...rows,
-        ]);
-        return out;
-    }
+interface Section {
+    name: string;
+    description?: string;
+    fields: Field[];
 }
 
-async function main() {
+const formatExample = (example?: string) => (example != null ? `Example: ${inlineCode(example)}` : undefined);
+
+function formatSection({ name, description, fields }: Section): string {
+    let out = `### ${name}\n\n`;
+    if (description) {
+        out += `${formatDescription(description)}\n\n`;
+    }
+    const hasDefault = fields.some(f => f.default != null);
+    const hasDescription = fields.some(f => !!f.description?.trim() || f.example != null);
+    const rows = fields.map(field => [
+        inlineCode(field.name),
+        formatTypeInfo(field.type),
+        ...(hasDescription
+            ? [[formatDescription(field.description), formatExample(field.example)].filter(s => !!s).join('<br><br>')]
+            : []),
+        ...(hasDefault ? [field.default ? inlineCode(field.default) : undefined] : []),
+    ]);
+    out += markdownTable([
+        ['Name', 'Type', ...(hasDescription ? ['Description'] : []), ...(hasDefault ? ['Default'] : [])],
+        ...rows,
+    ]);
+    return out;
+}
+
+function createConfigurationSchemaReference(): string {
     const configFile = join(__dirname, '../tsconfig.json');
 
     const config = ts.parseConfigFileTextToJson(configFile, ts.sys.readFile(configFile)!);
@@ -201,12 +144,16 @@ async function main() {
         if (seenSections.has(entryNodeType.symbol.name)) {
             return;
         }
-        const typeName = entryNodeType.symbol?.name?.replace(/Schema$/, '').replace(/Config$/, '');
-        log('Creating reference section for type %o -> %o', entryNodeType.symbol?.name, typeName);
+        seenSections.add(entryNodeType.symbol.name);
 
+        const fields: Field[] = [];
         const docs = entryNodeType.symbol?.getDocumentationComment(typeChecker);
-
-        const section = new Section(typeName, docs && docs.length ? ts.displayPartsToString(docs) : undefined);
+        const section: Section = {
+            name: entryNodeType.symbol?.name?.replace(/Schema$/, '').replace(/Config$/, ''),
+            description: docs && docs.length ? ts.displayPartsToString(docs) : undefined,
+            fields,
+        };
+        log('Adding reference section for type %o -> %o', entryNodeType.symbol?.name, section.name);
         sections.push(section);
         const members = entryNodeType.symbol.members?.values();
         if (members) {
@@ -220,52 +167,39 @@ async function main() {
                     const flags = type.flags;
                     if (flags & ts.TypeFlags.StringLiteral) {
                         return { type: 'literal', value: JSON.stringify((type as ts.LiteralType).value) };
-                    } else if (flags & ts.TypeFlags.String) {
+                    }
+                    if (flags & ts.TypeFlags.String) {
                         return { type: 'primitive', name: 'string' };
-                    } else if (flags & ts.TypeFlags.Number) {
+                    }
+                    if (flags & ts.TypeFlags.Number) {
                         return { type: 'primitive', name: 'number' };
-                    } else if (flags & ts.TypeFlags.Boolean) {
+                    }
+                    if (flags & ts.TypeFlags.Boolean) {
                         return { type: 'primitive', name: 'boolean' };
                     }
-
                     if (flags & ts.TypeFlags.Union) {
                         const unionType = type as ts.UnionType;
                         return unionType.types.map(resolveType);
                     }
-
                     if (flags & ts.TypeFlags.Object) {
                         const name = type.symbol?.name?.replace(/Schema$/, '').replace(/Config$/, '');
                         if (name && name !== '__type') {
                             appendSectionForType(type);
                             return { type: 'object', name };
                         }
-
                         const objectType = type as ts.ObjectType;
-
                         if (objectType.objectFlags & ts.ObjectFlags.Anonymous) {
                             return { type: 'primitive', name: 'object' };
                         } else {
-                            // console.log(getReferencedTypeSymbol(type.symbol, typeChecker));
-                            // typeChecker.typeToString(type);
-                            // console.log(flagsToString(type.flags));
-                            // console.log(objectFlagsToString(objectType.objectFlags));
-                            // console.log((type as ts.TypeReference).target?.symbol?.name);
-                            // if (objectType.objectFlags & ts.ObjectFlags.Reference) {
-                            //     console.log('REF');
-                            // }
+                            // TODO HACK - need to extract generic type parameter from Partial<HecConfigSchema>
+                            return { type: 'object', name: 'Hec' };
                         }
                     }
-                    // log('%s -> %o', member.name, type);
-                    // console.log(flagsToString(type.flags));
-                    // console.log('---');
-
                     return { type: 'unknown' };
                 };
-
                 const docs = member.getDocumentationComment(typeChecker).filter(d => d.kind === 'text');
                 const example = member.getJsDocTags().find(t => t.name === 'example')?.text;
                 const defaultValue = member.getJsDocTags().find(t => t.name === 'default')?.text;
-
                 section.fields.push({
                     name: member.name,
                     type: resolveType(memberType),
@@ -276,28 +210,48 @@ async function main() {
             }
         }
     }
-
     appendSectionForType(entryNodeType);
+    return sections.map(formatSection).join('\n\n\n');
+}
 
-    const content = sections.map(s => s.format()).join('\n\n\n');
+function replaceContent(originalContent: string, anchorName: string, replacement: string): string {
+    const startAnchor = `<!-- ${anchorName} -->`;
+    const endAnchor = `<!-- ${anchorName}-END -->`;
+    const start = originalContent.indexOf(startAnchor);
+    const end = originalContent.indexOf(endAnchor);
+    if (start < 0 || end < 0) {
+        throw new Error(`Did not found anchors ${startAnchor} for replacing content in markdown file`);
+    }
+    return [originalContent.slice(0, start), startAnchor, '\n', replacement, '\n', originalContent.slice(end)].join(
+        '\n'
+    );
+}
 
-    const configReferencePath = join(__dirname, '../docs/configuration.md');
-    const mdContent = await readFile(configReferencePath, { encoding: 'utf-8' });
+async function main() {
+    const configSchemaReference = createConfigurationSchemaReference();
 
-    const start = mdContent.indexOf(`<!-- REFERENCE -->`);
-    const end = mdContent.indexOf(`<!-- REFERENCE-END -->`);
+    const configurationDocsPath = join(__dirname, '../docs/configuration.md');
+    const configDocsContent = await readFile(configurationDocsPath, { encoding: 'utf-8' });
 
-    const updatedContent = `${mdContent.slice(
-        0,
-        start
-    )}\n<!-- REFERENCE -->\n<!-- THIS IS GENERATED - DO NOT EDIT -->\n\n${content}\n\n${mdContent.slice(end)}`;
+    const exampleContent = await readFile(join(__dirname, '../test/config/example1.ethlogger.yaml'), {
+        encoding: 'utf-8',
+    });
 
-    await writeFile(configReferencePath, updatedContent, { encoding: 'utf-8' });
+    const exampleCodeBlock = '\n```yaml\n' + exampleContent + '\n```\n';
 
+    const updatedContent = replaceContent(
+        replaceContent(configDocsContent, 'REFERENCE', configSchemaReference),
+        'EXAMPLE',
+        exampleCodeBlock
+    );
+
+    log(`Writing updated ${configurationDocsPath}`);
+    await writeFile(configurationDocsPath, updatedContent, { encoding: 'utf-8' });
+    log(`Prettier-formatting ${configurationDocsPath}`);
     execSync('yarn prettier --write docs/*.md', { cwd: join(__dirname, '..') });
 }
 
 main().catch(e => {
     log('ERROR', e.stack);
-    // process.exit(1);
+    process.exit(1);
 });

@@ -208,7 +208,7 @@
             "properties": {
                 "default": {
                     "$ref": "#/definitions/HecConfigSchema",
-                    "description": "Base settings that apply to all HEC clients"
+                    "description": "Base settings that apply to all HEC clients. Overrides for events, metrics and\ninternal metrics will be layered on top of the defaults and allow for using\ndifferent HEC tokens, URL or destination index."
                 },
                 "events": {
                     "$ref": "#/definitions/Partial<HecConfigSchema>",
@@ -216,7 +216,7 @@
                 },
                 "internal": {
                     "$ref": "#/definitions/Partial<HecConfigSchema>",
-                    "description": "HEC settings (overrides for `defualt`) for internal metrics sent to Splunk"
+                    "description": "HEC settings (overrides for `default`) for internal metrics sent to Splunk"
                 },
                 "metrics": {
                     "$ref": "#/definitions/Partial<HecConfigSchema>",
@@ -284,7 +284,7 @@
                     "type": "boolean"
                 },
                 "requestKeepAlive": {
-                    "description": "Keep sockets to HEC open",
+                    "description": "Set to `false` to disable HTTP keep-alive for connections to Splunk",
                     "type": "boolean"
                 },
                 "retryWaitTime": {
@@ -550,7 +550,7 @@
                     "type": "boolean"
                 },
                 "requestKeepAlive": {
-                    "description": "Keep sockets to HEC open",
+                    "description": "Set to `false` to disable HTTP keep-alive for connections to Splunk",
                     "type": "boolean"
                 },
                 "retryWaitTime": {
@@ -634,6 +634,7 @@
             "type": "object"
         }
     },
+    "description": "Root configuration schema for ethlogger",
     "properties": {
         "abi": {
             "$ref": "#/definitions/AbiRepositoryConfigSchema",
@@ -686,7 +687,7 @@
                     "$ref": "#/definitions/DevNullOutputConfig"
                 }
             ],
-            "description": "Output configuration"
+            "description": "In the output configuration you can specify where ethlogger will send generated\nmetrics and events to. By default it will send all information to Splunk HEC,\nbut you can instead send it to console output or a file."
         }
     },
     "type": "object"

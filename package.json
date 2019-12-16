@@ -46,7 +46,6 @@
         "pretty-quick": "^2.0.1",
         "ts-jest": "^24.2.0",
         "ts-node": "^8.5.4",
-        "ts-node-dev": "^1.0.0-pre.44",
         "typescript": "^3.7.3",
         "typescript-json-schema": "^0.41.0"
     },
@@ -76,6 +75,8 @@
         "test": "jest --config jest.config.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",
         "prepack": "yarn build",
+        "format": "git ls-files | grep -E \"\\.(jsx?|tsx?|css|md|ya?ml)$\" | xargs prettier --write",
+        "format:verify": "git ls-files | grep -E \"\\.(jsx?|tsx?|css|md|ya?ml)$\" | xargs prettier --list-different",
         "generate:configschema": "typescript-json-schema ./tsconfig.json EthloggerConfigSchema > config.schema.json",
         "generate:docs": "ts-node scripts/gendocs.ts",
         "generate:all": "yarn generate:configschema && yarn generate:docs"

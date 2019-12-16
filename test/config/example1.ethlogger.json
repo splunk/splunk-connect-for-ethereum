@@ -1,11 +1,32 @@
 {
-    "abi": {
-        "fingerprintContracts": true
+    "eth": {
+        "url": "https://dai.poa.network",
+        "network": "xdai"
     },
     "hec": {
         "default": {
-            "maxRetries": 123,
-            "retryWaitTime": "15s"
+            "url": "https://localhost:8088",
+            "token": "44422111-0000-3232-9821-26664c2e7515",
+            "multipleMetricFormatEnabled": true
+        },
+        "events": {
+            "defaultMetadata": {
+                "index": "myevents"
+            }
+        },
+        "metrics": {
+            "defaultMetadata": {
+                "index": "mymetrics"
+            }
         }
+    },
+    "blockWatcher": {
+        "startAt": "latest"
+    },
+    "abi": {
+        "directory": "./abis"
+    },
+    "internalMetrics": {
+        "enabled": false
     }
 }

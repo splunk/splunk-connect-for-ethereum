@@ -1,32 +1,78 @@
 # Ethlogger Configuration Files
 
-For fine-grained control over ethlogger's operation you can
+For fine-grained control over ethlogger's operation you can create a configuration file and tweak any of the settings available. Some settings can also be adjusted using [CLI flags](./cli.md) or [environment variables](./env.md) (CLI flags and environemnt variables do take precedence over settings in the configuration, if specified).
+
+The configuration file can be created either in `YAML` or in `JSON` format. You can specify the configuration file path using the `--config-file` (short `-c`) CLI flag:
+
+```sh-session
+$ ethlogger -c path/to/myconfig.yaml
+```
+
+or, if omitted, ethlogger will look for a file called `ethlogger.yaml` in the current working directory. If this file is not present either, then ethlogger will go with the default configuration.
+
+The configuration file content will be layered on top of the defaults, so it is only necessary to specify settings where the default needs to be overridden.
 
 ## Example
 
+`ethlogger.yaml`
+
 <!-- EXAMPLE -->
-<!-- THIS IS GENERATED - DO NOT EDIT -->
+
+```yaml
+eth:
+    url: https://dai.poa.network
+    network: xdai
+hec:
+    default:
+        url: https://localhost:8088
+        token: 44422111-0000-3232-9821-26664c2e7515
+        validateCertificate: false
+        # Splunk 8.0 or higher support compact metrics HEC messages
+        multipleMetricFormatEnabled: true
+    events:
+        defaultMetadata:
+            index: myevents
+    metrics:
+        defaultMetadata:
+            index: mymetrics
+blockWatcher:
+    startAt: latest
+abi:
+    directory: ./abis
+internalMetrics:
+    enabled: false
+```
+
 <!-- EXAMPLE-END -->
+
+## Debugging ethlogger configuration
+
+Ethlogger has a dedicated flag `--print-config` to show the effective configuration after merging defaults, config file, environment variables and CLI flags.
+
+```sh-session
+$ ethlogger -c myconfig.yaml --print-config
+```
 
 ## Reference
 
 <!-- REFERENCE -->
-<!-- THIS IS GENERATED - DO NOT EDIT -->
 
 ### Ethlogger
 
-| Name              | Type                                                                                                                               | Description                                                                         |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `eth`             | [`Ethereum`](#Ethereum)                                                                                                            | Ethereum node configuration                                                         |
-| `output`          | [`HecOutput`](#HecOutput) \| [`ConsoleOutput`](#ConsoleOutput) \| [`FileOutput`](#FileOutput) \| [`DevNullOutput`](#DevNullOutput) | Output configuration                                                                |
-| `hec`             | [`HecClients`](#HecClients)                                                                                                        | HTTP event collector                                                                |
-| `checkpoint`      | [`Checkpoint`](#Checkpoint)                                                                                                        | Checkpoint configuration - how ethlogger keeps track of state between restarts      |
-| `abi`             | [`AbiRepository`](#AbiRepository)                                                                                                  | ABI repository configuration                                                        |
-| `contractInfo`    | [`ContractInfo`](#ContractInfo)                                                                                                    | Contract info cache settings                                                        |
-| `blockWatcher`    | [`BlockWatcher`](#BlockWatcher)                                                                                                    | Block watcher settings, configure how blocks, transactions, event logs are ingested |
-| `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                             |
-| `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                |
-| `internalMetrics` | [`InternalMetrics`](#InternalMetrics)                                                                                              | Settings for internal metrics collection                                            |
+Root configuration schema for ethlogger
+
+| Name              | Type                                                                                                                               | Description                                                                                                                                                                                                            |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `eth`             | [`Ethereum`](#Ethereum)                                                                                                            | Ethereum node configuration                                                                                                                                                                                            |
+| `output`          | [`HecOutput`](#HecOutput) \| [`ConsoleOutput`](#ConsoleOutput) \| [`FileOutput`](#FileOutput) \| [`DevNullOutput`](#DevNullOutput) | In the output configuration you can specify where ethlogger will send generated metrics and events to. By default it will send all information to Splunk HEC, but you can instead send it to console output or a file. |
+| `hec`             | [`HecClients`](#HecClients)                                                                                                        | HTTP event collector                                                                                                                                                                                                   |
+| `checkpoint`      | [`Checkpoint`](#Checkpoint)                                                                                                        | Checkpoint configuration - how ethlogger keeps track of state between restarts                                                                                                                                         |
+| `abi`             | [`AbiRepository`](#AbiRepository)                                                                                                  | ABI repository configuration                                                                                                                                                                                           |
+| `contractInfo`    | [`ContractInfo`](#ContractInfo)                                                                                                    | Contract info cache settings                                                                                                                                                                                           |
+| `blockWatcher`    | [`BlockWatcher`](#BlockWatcher)                                                                                                    | Block watcher settings, configure how blocks, transactions, event logs are ingested                                                                                                                                    |
+| `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                                                                                                                                                                |
+| `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                                                                                                                                                   |
+| `internalMetrics` | [`InternalMetrics`](#InternalMetrics)                                                                                              | Settings for internal metrics collection                                                                                                                                                                               |
 
 ### Ethereum
 
@@ -43,12 +89,12 @@ General Ethereum configuration including client and transport, defining how ethl
 
 Settings for ethlogger connecting to the ethereum node via JSON RPC over HTTP
 
-| Name                  | Type                 | Description                                                                                                    | Example |
-| --------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- | ------- |
-| `timeout`             | `string` \| `number` | Time before failing JSON RPC requests. Specify a number in milliseconds or a golang-style duration expression. | `"30s"` |
-| `validateCertificate` | `boolean`            | If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)             |         |
-| `requestKeepAlive`    | `boolean`            | Keep sockets to JSON RPC open                                                                                  |         |
-| `maxSockets`          | `number`             | Maximum number of sockets HEC will use (per host)                                                              |         |
+| Name                  | Type                 | Description                                                                                                                            |
+| --------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `timeout`             | `string` \| `number` | Time before failing JSON RPC requests. Specify a number in milliseconds or a golang-style duration expression.<br><br>Example: `"30s"` |
+| `validateCertificate` | `boolean`            | If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)                                     |
+| `requestKeepAlive`    | `boolean`            | Keep sockets to JSON RPC open                                                                                                          |
+| `maxSockets`          | `number`             | Maximum number of sockets HEC will use (per host)                                                                                      |
 
 ### EthereumClient
 
@@ -107,12 +153,12 @@ Null output will just drop all generated events and metrics
 
 ### HecClients
 
-| Name       | Type          | Description                                                                |
-| ---------- | ------------- | -------------------------------------------------------------------------- |
-| `default`  | [`Hec`](#Hec) | Base settings that apply to all HEC clients                                |
-| `events`   | `???`         | HEC settings (overrides for `default`) for events sent to Splunk           |
-| `metrics`  | `???`         | HEC settings (overrides for `default`) for metrics sent to Splunk          |
-| `internal` | `???`         | HEC settings (overrides for `defualt`) for internal metrics sent to Splunk |
+| Name       | Type          | Description                                                                                                                                                                                                |
+| ---------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `default`  | [`Hec`](#Hec) | Base settings that apply to all HEC clients. Overrides for events, metrics and internal metrics will be layered on top of the defaults and allow for using different HEC tokens, URL or destination index. |
+| `events`   | [`Hec`](#Hec) | HEC settings (overrides for `default`) for events sent to Splunk                                                                                                                                           |
+| `metrics`  | [`Hec`](#Hec) | HEC settings (overrides for `default`) for metrics sent to Splunk                                                                                                                                          |
+| `internal` | [`Hec`](#Hec) | HEC settings (overrides for `default`) for internal metrics sent to Splunk                                                                                                                                 |
 
 ### Hec
 
@@ -130,7 +176,7 @@ Settings for the Splunk HTTP Event Collector client
 | `gzip`                        | `boolean`                                                                                              | Gzip compress the request body sent to HEC (Content-Encoding: gzip)                                                                                                                                         |
 | `maxRetries`                  | `number`                                                                                               | Maximum number of attempts to send a batch to HEC. By default this there is no limit                                                                                                                        |
 | `timeout`                     | `string` \| `number`                                                                                   | Number of milliseconds to wait before considereing an HTTP request as failed                                                                                                                                |
-| `requestKeepAlive`            | `boolean`                                                                                              | Keep sockets to HEC open                                                                                                                                                                                    |
+| `requestKeepAlive`            | `boolean`                                                                                              | Set to `false` to disable HTTP keep-alive for connections to Splunk                                                                                                                                         |
 | `validateCertificate`         | `boolean`                                                                                              | If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)                                                                                                          |
 | `maxSockets`                  | `number`                                                                                               | Maximum number of sockets HEC will use (per host)                                                                                                                                                           |
 | `userAgent`                   | `string`                                                                                               | User-agent header sent to HEC                                                                                                                                                                               |
@@ -197,27 +243,6 @@ Block watcher is the component that retrieves blocks, transactions, event logs f
 | `startAt`            | `number` \| `"latest"` \| `"genesis"`                                                                  | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. Specify a positive integer for an absolute block number or a negative integer to start at n blocks before the latest one. You can also specify "genesis" (block 0) or "latest" (currently latest block). |
 | `retryWaitTime`      | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to fetch and process blocks after failure                                                                                                                                                                                                                                        |
 
-### ExponentalBackoff
-
-Exponentiallly increasing wait time with randomness
-
-| Name   | Type                    | Description       |
-| ------ | ----------------------- | ----------------- |
-| `type` | `"exponential-backoff"` |                   |
-| `min`  | `string` \| `number`    | Minimum wait time |
-| `max`  | `string` \| `number`    | Maximum wait time |
-
-### LinearBackoff
-
-Linear increasing wait time
-
-| Name   | Type                 | Description                                                                 |
-| ------ | -------------------- | --------------------------------------------------------------------------- |
-| `type` | `"linear-backoff"`   |                                                                             |
-| `min`  | `string` \| `number` | Minimum wait time (after the first failure)                                 |
-| `step` | `string` \| `number` | Increase of wait time for each failure after the first until max is reached |
-| `max`  | `string` \| `number` | Maximum wait time                                                           |
-
 ### NodeMetrics
 
 The node metrics colletor retrieves numeric measurements from nodes on a periodic basis.
@@ -228,27 +253,6 @@ The node metrics colletor retrieves numeric measurements from nodes on a periodi
 | `collectInterval` | `string` \| `number`                                                                                   | Interval in which to collect node metrics                       |
 | `retryWaitTime`   | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to collect node metrics after failure |
 
-### ExponentalBackoff
-
-Exponentiallly increasing wait time with randomness
-
-| Name   | Type                    | Description       |
-| ------ | ----------------------- | ----------------- |
-| `type` | `"exponential-backoff"` |                   |
-| `min`  | `string` \| `number`    | Minimum wait time |
-| `max`  | `string` \| `number`    | Maximum wait time |
-
-### LinearBackoff
-
-Linear increasing wait time
-
-| Name   | Type                 | Description                                                                 |
-| ------ | -------------------- | --------------------------------------------------------------------------- |
-| `type` | `"linear-backoff"`   |                                                                             |
-| `min`  | `string` \| `number` | Minimum wait time (after the first failure)                                 |
-| `step` | `string` \| `number` | Increase of wait time for each failure after the first until max is reached |
-| `max`  | `string` \| `number` | Maximum wait time                                                           |
-
 ### NodeInfo
 
 Platfrom specific node information is collection on regular interval
@@ -258,27 +262,6 @@ Platfrom specific node information is collection on regular interval
 | `enabled`         | `boolean`                                                                                              | Specify `false` to disable node info collection              |
 | `collectInterval` | `string` \| `number`                                                                                   | Interval in which to collect node info                       |
 | `retryWaitTime`   | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to collect node info after failure |
-
-### ExponentalBackoff
-
-Exponentiallly increasing wait time with randomness
-
-| Name   | Type                    | Description       |
-| ------ | ----------------------- | ----------------- |
-| `type` | `"exponential-backoff"` |                   |
-| `min`  | `string` \| `number`    | Minimum wait time |
-| `max`  | `string` \| `number`    | Maximum wait time |
-
-### LinearBackoff
-
-Linear increasing wait time
-
-| Name   | Type                 | Description                                                                 |
-| ------ | -------------------- | --------------------------------------------------------------------------- |
-| `type` | `"linear-backoff"`   |                                                                             |
-| `min`  | `string` \| `number` | Minimum wait time (after the first failure)                                 |
-| `step` | `string` \| `number` | Increase of wait time for each failure after the first until max is reached |
-| `max`  | `string` \| `number` | Maximum wait time                                                           |
 
 ### InternalMetrics
 

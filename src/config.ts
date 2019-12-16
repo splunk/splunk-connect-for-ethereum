@@ -17,7 +17,11 @@ export class ConfigError extends Error {}
 export interface EthloggerConfigSchema {
     /** Ethereum node configuration */
     eth: EthereumConfigSchema;
-    /** Output configuration */
+    /**
+     * In the output configuration you can specify where ethlogger will send generated
+     * metrics and events to. By default it will send all information to Splunk HEC,
+     * but you can instead send it to console output or a file.
+     */
     output: OutputConfigSchema;
     /** HTTP event collector */
     hec: HecClientsConfigSchema;
@@ -57,13 +61,17 @@ export interface EthloggerConfig {
 }
 
 export interface HecClientsConfigSchema {
-    /** Base settings that apply to all HEC clients  */
+    /**
+     * Base settings that apply to all HEC clients. Overrides for events, metrics and
+     * internal metrics will be layered on top of the defaults and allow for using
+     * different HEC tokens, URL or destination index.
+     */
     default: HecConfigSchema;
     /** HEC settings (overrides for `default`) for events sent to Splunk */
     events?: OptionalHecConfigSchema;
     /** HEC settings (overrides for `default`) for metrics sent to Splunk */
     metrics?: OptionalHecConfigSchema;
-    /** HEC settings (overrides for `defualt`) for internal metrics sent to Splunk */
+    /** HEC settings (overrides for `default`) for internal metrics sent to Splunk */
     internal?: OptionalHecConfigSchema;
 }
 
@@ -321,7 +329,7 @@ export interface HecConfigSchema {
     maxRetries?: number;
     /** Number of milliseconds to wait before considereing an HTTP request as failed */
     timeout?: DurationConfig;
-    /** Keep sockets to HEC open */
+    /** Set to `false` to disable HTTP keep-alive for connections to Splunk */
     requestKeepAlive?: boolean;
     /** If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs) */
     validateCertificate?: boolean;
