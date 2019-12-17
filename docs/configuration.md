@@ -180,7 +180,7 @@ Settings for the Splunk HTTP Event Collector client
 | `validateCertificate`         | `boolean`                                                                                              | If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)                                                                                                          |
 | `maxSockets`                  | `number`                                                                                               | Maximum number of sockets HEC will use (per host)                                                                                                                                                           |
 | `userAgent`                   | `string`                                                                                               | User-agent header sent to HEC                                                                                                                                                                               |
-| `retryWaitTime`               | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to send a (batch of) HEC messages                                                                                                                                                 |
+| `retryWaitTime`               | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to send a (batch of) HEC messages after an error                                                                                                                                  |
 | `multipleMetricFormatEnabled` | `boolean`                                                                                              | Enable sending multipe metrics in a single message to HEC. Supported as of Splunk 8.0.0<br><br>https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format |
 
 ### ExponentalBackoff
@@ -274,6 +274,18 @@ Ethlogger-internal metrics allow for visibilty into the operation of ethlogger i
 
 <!-- REFERENCE-END -->
 
-## notes
+## Additional Information
 
-blah
+### Durations
+
+bla
+
+### Wait times
+
+### JSON Schema
+
+You can find a JSON schema
+
+#### Editor Integration
+
+-   VS Code: https://code.visualstudio.com/docs/languages/json#_json-schemas-and-settings
