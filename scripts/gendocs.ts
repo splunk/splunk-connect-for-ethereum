@@ -1,8 +1,10 @@
-import * as ts from 'typescript';
-import debug from 'debug';
-import { join, dirname, basename } from 'path';
-import { readFile, writeFile } from 'fs-extra';
+import { IFlag } from '@oclif/command/lib/flags';
 import { execSync } from 'child_process';
+import debug from 'debug';
+import { readFile, writeFile } from 'fs-extra';
+import { basename, dirname, join } from 'path';
+import * as ts from 'typescript';
+import { CLI_FLAGS } from '../src/cliflags';
 
 const markdownTable = require('markdown-table'); // eslint-disable-line
 
@@ -214,6 +216,28 @@ function createConfigurationSchemaReference(): string {
     return sections.map(formatSection).join('\n\n\n');
 }
 
+function generateCliReference(): string {
+    const usage = execSync('./bin/run --help').toString('utf-8');
+    return '```\n' + usage.trim() + '\n```';
+}
+
+function generateEnvReference(): string {
+    const flags = CLI_FLAGS;
+
+    const rows = [
+        ['Environment Variable', 'Type', 'Description'],
+        ...Object.entries(flags)
+            .filter(([, flag]) => flag.env != null)
+            .map(([, flag]) => [
+                inlineCode(flag.env!),
+                inlineCode(flag.type === 'option' ? 'string' : flag.type),
+                flag.description,
+            ]),
+    ];
+
+    return markdownTable(rows);
+}
+
 function replaceContent(originalContent: string, anchorName: string, replacement: string): string {
     const startAnchor = `<!-- ${anchorName} -->`;
     const endAnchor = `<!-- ${anchorName}-END -->`;
@@ -244,10 +268,22 @@ async function main() {
         'EXAMPLE',
         exampleCodeBlock
     );
-
     log(`Writing updated ${configurationDocsPath}`);
     await writeFile(configurationDocsPath, updatedContent, { encoding: 'utf-8' });
-    log(`Prettier-formatting ${configurationDocsPath}`);
+
+    const cliReference = generateCliReference();
+    const envReference = generateEnvReference();
+    const cliReferenceDocsPath = join(__dirname, '../docs/cli.md');
+    const cliReferenceContent = await readFile(cliReferenceDocsPath, { encoding: 'utf-8' });
+    const updatedCliReferenceContent = replaceContent(
+        replaceContent(cliReferenceContent, 'CLIREF', cliReference),
+        'ENVREF',
+        envReference
+    );
+    log(`Writing updated ${cliReferenceDocsPath}`);
+    await writeFile(cliReferenceDocsPath, updatedCliReferenceContent, { encoding: 'utf-8' });
+
+    log(`Prettier-formatting markdown files`);
     execSync('yarn prettier --write docs/*.md', { cwd: join(__dirname, '..') });
 }
 

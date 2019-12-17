@@ -14,6 +14,8 @@ Ethlogger is a general purpose utility for logging Ethereum blocks and transacti
 $ ethlogger [...options]
 ```
 
+Details about ethlogger's command-line usage in the [CLI docs](./docs/cli.md)
+
 ### Configuration
 
 Find out how to configure ethlogger in the [configuration docs](./docs/configuration.md).

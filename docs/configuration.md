@@ -1,6 +1,6 @@
 # Ethlogger Configuration Files
 
-For fine-grained control over ethlogger's operation you can create a configuration file and tweak any of the settings available. Some settings can also be adjusted using [CLI flags](./cli.md) or [environment variables](./env.md) (CLI flags and environemnt variables do take precedence over settings in the configuration, if specified).
+For fine-grained control over ethlogger's operation you can create a configuration file and tweak any of the settings available. Some settings can also be adjusted using [CLI flags](./cli.md#cli-flags-reference) or [environment variables](./cli.md#environment-variables) (CLI flags and environemnt variables do take precedence over settings in the configuration, if specified).
 
 The configuration file can be created either in `YAML` or in `JSON` format. You can specify the configuration file path using the `--config-file` (short `-c`) CLI flag:
 
@@ -180,7 +180,7 @@ Settings for the Splunk HTTP Event Collector client
 | `validateCertificate`         | `boolean`                                                                                              | If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)                                                                                                          |
 | `maxSockets`                  | `number`                                                                                               | Maximum number of sockets HEC will use (per host)                                                                                                                                                           |
 | `userAgent`                   | `string`                                                                                               | User-agent header sent to HEC                                                                                                                                                                               |
-| `retryWaitTime`               | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to send a (batch of) HEC messages                                                                                                                                                 |
+| `retryWaitTime`               | `string` \| `number` \| [`ExponentalBackoff`](#ExponentalBackoff) \| [`LinearBackoff`](#LinearBackoff) | Wait time before retrying to send a (batch of) HEC messages after an error                                                                                                                                  |
 | `multipleMetricFormatEnabled` | `boolean`                                                                                              | Enable sending multipe metrics in a single message to HEC. Supported as of Splunk 8.0.0<br><br>https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format |
 
 ### ExponentalBackoff
@@ -274,6 +274,20 @@ Ethlogger-internal metrics allow for visibilty into the operation of ethlogger i
 
 <!-- REFERENCE-END -->
 
-## notes
+## Additional Information
 
-blah
+### Durations
+
+> // TODO
+
+### Wait times
+
+> // TODO
+
+### JSON Schema
+
+> // TODO
+
+#### Editor Integration
+
+-   VS Code: https://code.visualstudio.com/docs/languages/json#_json-schemas-and-settings

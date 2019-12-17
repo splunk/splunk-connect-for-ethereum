@@ -47,14 +47,14 @@ class Ethlogger extends Command {
 
         try {
             if (flags['print-config']) {
-                const config = await loadEthloggerConfig(flags['config-file'], flags, true);
+                const config = await loadEthloggerConfig(flags, true);
                 debug('Printing config');
                 // eslint-disable-next-line no-console
                 console.log(inspect(config, { depth: 10, colors: true, showHidden: false, compact: false }));
-                await loadEthloggerConfig(flags['config-file'], flags);
+                await loadEthloggerConfig(flags);
                 return;
             }
-            const config = await loadEthloggerConfig('ethlogger.yaml', flags);
+            const config = await loadEthloggerConfig(flags);
 
             const transport = new HttpTransport(config.eth.url, config.eth.http);
             const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
@@ -85,7 +85,7 @@ class Ethlogger extends Command {
             });
             addResource(internalStatsCollector);
             internalStatsCollector.addSource(transport, 'ethTransport');
-            internalStatsCollector.addSource(baseHec, 'hec');
+            internalStatsCollector.addSource(output, 'output');
 
             const checkpoints = addResource(
                 new Checkpoint({

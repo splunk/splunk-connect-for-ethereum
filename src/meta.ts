@@ -62,7 +62,7 @@ export function substituteVariablesInHecMetadata(
         ENODE: platformAdapter.enode ?? undefined,
         PLATFORM: platformAdapter.name,
         NETWORK_ID: networkId != null ? String(networkId) : undefined,
-        NETWORK: config.eth.network ?? (networkId != null ? KNOWN_NETOWORK_NAMES[networkId] : undefined), // TODO guess known network names
+        NETWORK: config.eth.network ?? (networkId != null ? KNOWN_NETOWORK_NAMES[networkId] : undefined),
         PID: String(pid),
         VERSION: ethloggerVersion,
         NODE_VERSION: nodeVersion,
