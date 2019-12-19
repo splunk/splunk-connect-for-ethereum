@@ -1,0 +1,32 @@
+version: '3.6'
+
+services:
+    # splunk:
+    #     image: splunk/splunk:latest
+    #     container_name: splunk
+    #     environment:
+    #         - SPLUNK_START_ARGS=--accept-license
+    #         - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+    #         - SPLUNK_PASSWORD=changeme
+    #     ports:
+    #         - 8000:8000
+    #         - 8088:8088
+    #     # volumes:
+    #     #     - ./splunk_data:/opt/splunk/var:rw
+    #     healthcheck:
+    #         test: ['CMD', 'curl', '-f', 'http://localhost:8000']
+    #         interval: 5s
+    #         timeout: 5s
+    #         retries: 20
+    ethlogger:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: ethlogger
+        environment:
+            - SPLUNK_HEC_URL=https://splunk:8088
+            - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+        volumes:
+            - ./ethlogger_state:/app:rw
+        # depends_on:
+        #     - splunk

@@ -1,0 +1,23 @@
+eth:
+    url: https://dai.poa.network
+    network: xdai
+hec:
+    default:
+        validateCertificate: false
+        # Splunk 8.0 or higher support compact metrics HEC messages
+        multipleMetricFormatEnabled: true
+    events:
+        defaultMetadata:
+            index: main
+    metrics:
+        defaultMetadata:
+            index: _metrics
+    internal:
+        defaultMetadata:
+            index: _metrics
+blockWatcher:
+    startAt: latest
+abi:
+    directory: ./abis
+internalMetrics:
+    enabled: false
