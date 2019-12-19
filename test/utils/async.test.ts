@@ -1,4 +1,4 @@
-import { AbortManager } from '../../src/utils/abort';
+import { AbortHandle } from '../../src/utils/abort';
 import { parallel, sleep } from '../../src/utils/async';
 
 test('parallel', async () => {
@@ -139,7 +139,7 @@ test('parallel', async () => {
 });
 
 test('parallel abort', async () => {
-    const abortManager = new AbortManager();
+    const abortHandle = new AbortHandle();
     const spy = jest.fn();
     const tasks = [
         () =>
@@ -155,7 +155,7 @@ test('parallel abort', async () => {
                 .then(() => 3)
                 .then(spy),
         () => {
-            abortManager.abort();
+            abortHandle.abort();
             return Promise.resolve(4).then(spy);
         },
         () =>
@@ -168,9 +168,7 @@ test('parallel abort', async () => {
                 .then(spy),
     ];
 
-    await expect(parallel(tasks, { maxConcurrent: 2, abortManager })).rejects.toMatchInlineSnapshot(
-        `Symbol([[ABORT]])`
-    );
+    await expect(parallel(tasks, { maxConcurrent: 2, abortHandle })).rejects.toMatchInlineSnapshot(`Symbol([[ABORT]])`);
 
     expect(spy.mock.calls).toMatchInlineSnapshot(`
         Array [

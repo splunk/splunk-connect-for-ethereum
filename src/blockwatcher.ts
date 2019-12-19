@@ -8,7 +8,7 @@ import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/
 import { formatBlock, formatLogEvent, formatTransaction } from './format';
 import { Address, AddressInfo, FormattedBlock, LogEventMessage } from './msgs';
 import { Output, OutputMessage } from './output';
-import { ABORT, AbortManager } from './utils/abort';
+import { ABORT, AbortHandle } from './utils/abort';
 import { parallel, sleep } from './utils/async';
 import { Cache, cached, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
@@ -57,7 +57,7 @@ export class BlockWatcher implements ManagedResource {
     private startAt: StartBlock;
     private chunkSize: number = 25;
     private pollInterval: number = 500;
-    private abortManager = new AbortManager();
+    private abortHandle = new AbortHandle();
     private endCallbacks: Array<() => void> = [];
     private waitAfterFailure: WaitTime;
     private chunkQueueMaxSize: number;
@@ -161,7 +161,7 @@ export class BlockWatcher implements ManagedResource {
                                 attempts: 100,
                                 waitBetween: this.waitAfterFailure,
                                 taskName: `block range ${serializeBlockRange(chunk)}`,
-                                abortManager: this.abortManager,
+                                abortHandle: this.abortHandle,
                                 warnOnError: true,
                                 onRetry: attempt =>
                                     warn(
@@ -171,7 +171,7 @@ export class BlockWatcher implements ManagedResource {
                                     ),
                             });
                         }),
-                        { maxConcurrent: 3, abortManager: this.abortManager }
+                        { maxConcurrent: 3, abortHandle: this.abortHandle }
                     );
                     failures = 0;
                 }
@@ -184,12 +184,12 @@ export class BlockWatcher implements ManagedResource {
                 const waitTime = resolveWaitTime(this.waitAfterFailure, failures);
                 if (waitTime > 0) {
                     warn('Waiting for %d ms after %d consecutive failures', waitTime, failures);
-                    await this.abortManager.race(sleep(waitTime));
+                    await this.abortHandle.race(sleep(waitTime));
                 }
             }
             if (this.active) {
                 try {
-                    await this.abortManager.race(sleep(this.pollInterval));
+                    await this.abortHandle.race(sleep(this.pollInterval));
                 } catch (e) {
                     if (e === ABORT) {
                         break;
@@ -240,7 +240,7 @@ export class BlockWatcher implements ManagedResource {
             time: blockTime,
             body: formattedBlock,
         });
-        const txMsgs = await this.abortManager.race(
+        const txMsgs = await this.abortHandle.race(
             Promise.all(block.transactions.map(tx => this.processTransaction(tx, blockTime, formattedBlock)))
         );
         if (!this.active) {
@@ -336,7 +336,7 @@ export class BlockWatcher implements ManagedResource {
     public async shutdown() {
         info('Shutting down block watcher');
         this.active = false;
-        this.abortManager.abort();
+        this.abortHandle.abort();
         await new Promise<void>(resolve => {
             this.endCallbacks.push(resolve);
         });
@@ -348,7 +348,7 @@ export class BlockWatcher implements ManagedResource {
             ...this.aggregates.blockProcessTime.flush('blockProcessTime'),
             ...this.aggregates.txProcessTime.flush('txProcessTime'),
             ...this.aggregates.eventProcessTime.flush('eventProcessTime'),
-            abortHandles: this.abortManager.size,
+            abortHandles: this.abortHandle.size,
         };
         this.counters = { ...initialCounters };
         return stats;

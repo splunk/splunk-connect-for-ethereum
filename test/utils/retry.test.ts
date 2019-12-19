@@ -1,4 +1,4 @@
-import { AbortManager } from '../../src/utils/abort';
+import { AbortHandle } from '../../src/utils/abort';
 import { retry, exponentialBackoff, resolveWaitTime, linearBackoff } from '../../src/utils/retry';
 
 describe('retry', () => {
@@ -43,9 +43,9 @@ describe('retry', () => {
     it('aborts', async () => {
         let tried = 0;
         const startTime = Date.now();
-        const abortManager = new AbortManager();
+        const abortHandle = new AbortHandle();
         const onAbort = () => {
-            abortManager.abort();
+            abortHandle.abort();
         };
         const p = retry(
             async () => {
@@ -55,7 +55,7 @@ describe('retry', () => {
                 }
                 throw new Error('nope');
             },
-            { waitBetween: 3, abortManager }
+            { waitBetween: 3, abortHandle }
         );
 
         await expect(p).rejects.toMatchInlineSnapshot(`Symbol([[ABORT]])`);

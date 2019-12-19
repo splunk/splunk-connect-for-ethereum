@@ -8,11 +8,11 @@ import { HecConfig } from './config';
 import { sleep } from './utils/async';
 import { createModuleDebug } from './utils/debug';
 import { isHttps, isSuccessfulStatus } from './utils/httputils';
-import { exponentialBackoff, resolveWaitTime } from './utils/retry';
+import { exponentialBackoff, resolveWaitTime, retry, linearBackoff } from './utils/retry';
 import { AggregateMetric, httpClientStats as httpAgentStats } from './utils/stats';
 import { deepMerge, removeEmtpyValues } from './utils/obj';
 
-const { debug, info, error, trace } = createModuleDebug('hec');
+const { debug, info, warn, error, trace } = createModuleDebug('hec');
 
 /** Number of milliseconds since epoch */
 export type EpochMillis = number;
@@ -137,6 +137,7 @@ export function parseHecConfig(config: HecConfig): CookedHecConfig {
         ...config,
         url: url.href,
         token: config.token ?? '',
+        waitForAvailability: config.waitForAvailability ?? 0,
     };
 }
 
@@ -180,7 +181,7 @@ const initialCounters = {
 };
 
 export class HecClient {
-    private readonly config: CookedHecConfig;
+    public readonly config: CookedHecConfig;
     private active: boolean = true;
     private queue: SerializedHecMsg[] = [];
     private queueSizeBytes: number = 0;
@@ -317,6 +318,64 @@ export class HecClient {
         }
     }
 
+    public async checkAvailable(): Promise<void> {
+        const url = new URL(this.config.url);
+        url.pathname = '/services/collector/health';
+
+        debug('Checking if HEC is available at %s', url.href);
+        try {
+            const res = await fetch(url.href, {
+                method: 'GET',
+                headers: {
+                    'User-Agent': this.config.userAgent,
+                },
+                agent: this.httpAgent,
+                timeout: this.config.timeout,
+            });
+            debug('HEC responded to availability check with HTTP status %d', res.status);
+            if (!isSuccessfulStatus(res.status)) {
+                throw new Error(`HTTP Status ${res.status}`);
+            }
+            const data = await res.json();
+
+            debug('Received availability check response: %o', data);
+        } catch (e) {
+            debug('HEC availability check failed', e);
+            throw e;
+        }
+    }
+
+    public async waitUntilAvailable(maxTime: number = 20_000) {
+        const startTime = Date.now();
+        debug('Checking HEC service %s availability (timeout %d ms)', this.config.url, maxTime);
+        let checkFailedOnce = false;
+        await retry(
+            () =>
+                this.checkAvailable().catch(e =>
+                    Promise.reject(`HEC service ${this.config.url} not available: ${e.toString()}`)
+                ),
+            {
+                taskName: 'HEC availablility',
+                waitBetween: linearBackoff({ min: 500, step: 250, max: 2500 }),
+                timeout: maxTime,
+                onError: e => {
+                    if (!checkFailedOnce) {
+                        warn('HEC service not (yet) available:', e);
+                        info(
+                            'Waiting for HEC service %s to become available (timeout %d ms)',
+                            this.config.url,
+                            maxTime
+                        );
+                        checkFailedOnce = true;
+                    }
+                },
+            }
+        );
+        if (checkFailedOnce) {
+            info('HEC service is now available after %d ms', Date.now() - startTime);
+        }
+    }
+
     private flushInternal = (): Promise<void> => {
         if (this.flushTimer != null) {
             clearTimeout(this.flushTimer);
@@ -404,7 +463,8 @@ export class HecClient {
                 break;
             } catch (e) {
                 this.counters.errorCount++;
-                error('Failed to send batch to HEC (attempt %s)', attempt, e);
+                debug('Failed to send batch to HEC (attempt %s)', attempt, e);
+                error('Failed to send batch to HEC (attempt %s): %s', attempt, e.toString());
                 if (abortSignal.aborted) {
                     throw new Error('Aborted');
                 }

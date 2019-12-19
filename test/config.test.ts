@@ -36,7 +36,7 @@ test('defaults', async () => {
                     "http": Object {
                       "maxSockets": 256,
                       "requestKeepAlive": true,
-                      "timeout": 600000,
+                      "timeout": 60000,
                       "validateCertificate": true,
                     },
                     "network": undefined,
@@ -51,7 +51,7 @@ test('defaults', async () => {
                         "platform": "$PLATFORM",
                       },
                       "defaultMetadata": Object {
-                        "host": "$TRANSPORT_ORIGIN",
+                        "host": "$ETH_NODE_HOSTNAME",
                         "source": "ethlogger",
                       },
                       "flushTime": 0,
@@ -68,6 +68,7 @@ test('defaults', async () => {
                       "url": undefined,
                       "userAgent": "ethlogger-hec-client/1.0",
                       "validateCertificate": true,
+                      "waitForAvailability": 60000,
                     },
                     "events": undefined,
                     "internal": Object {
@@ -90,7 +91,7 @@ test('defaults', async () => {
                     "enabled": false,
                   },
                   "nodeInfo": Object {
-                    "collectInterval": 600000,
+                    "collectInterval": 60000,
                     "enabled": true,
                     "retryWaitTime": [Function],
                   },

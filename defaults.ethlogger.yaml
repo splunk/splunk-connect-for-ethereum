@@ -20,12 +20,13 @@ hec:
         maxSockets: 128
         userAgent: ethlogger-hec-client/1.0
         multipleMetricFormatEnabled: false
+        waitForAvailability: 1m
         retryWaitTime:
             type: exponential-backoff
             min: 10ms
             max: 3m
         defaultMetadata:
-            host: $TRANSPORT_ORIGIN
+            host: $ETH_NODE_HOSTNAME
             source: ethlogger
         defaultFields:
             enode: $ENODE
@@ -57,7 +58,6 @@ output:
 checkpoint:
     filename: checkpoints.json
     saveInterval: 250
-
 abi:
     fingerprintContracts: true
 contractInfo:

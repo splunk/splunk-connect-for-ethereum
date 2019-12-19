@@ -8,3 +8,4 @@
 node_modules
 .vscode
 /checkpoints.json
+/.ethlogger-state.json

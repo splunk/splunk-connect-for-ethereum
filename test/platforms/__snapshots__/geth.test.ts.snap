@@ -1265,7 +1265,7 @@ Array [
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.announces.out.maximum",
-    922365136854.7758,
+    922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.announces.out.minimum",
@@ -1285,15 +1285,15 @@ Array [
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.announces.out.percentiles.50",
-    -922365136854.7758,
+    -922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.announces.out.percentiles.80",
-    -922365136854.7758,
+    -922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.announces.out.percentiles.95",
-    -922365136854.7758,
+    -922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.broadcasts.dos.avg01Min",
@@ -1357,7 +1357,7 @@ Array [
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.broadcasts.out.maximum",
-    922365136854.7758,
+    922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.broadcasts.out.minimum",
@@ -1377,15 +1377,15 @@ Array [
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.broadcasts.out.percentiles.50",
-    -922365136854.7758,
+    -922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.broadcasts.out.percentiles.80",
-    -922365136854.7758,
+    -922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.fetcher.prop.broadcasts.out.percentiles.95",
-    -922365136854.7758,
+    -922339756854.7758,
   ],
   Array [
     "geth.metrics.eth.misc.in.packets.avg01Min",

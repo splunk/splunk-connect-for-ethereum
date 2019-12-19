@@ -1,4 +1,3 @@
-import { IFlag } from '@oclif/command/lib/flags';
 import { execSync } from 'child_process';
 import debug from 'debug';
 import { readFile, writeFile } from 'fs-extra';

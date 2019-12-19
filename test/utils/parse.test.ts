@@ -14,8 +14,8 @@ test('durationStringToMs', () => {
     expect(durationStringToMs('1s')).toBe(1000);
     expect(durationStringToMs('-1s')).toBe(-1000);
     expect(durationStringToMs('0.5ms')).toBe(0.5);
-    expect(durationStringToMs('2562047h47m16.854775807s')).toMatchInlineSnapshot(`922365136854.7758`);
-    expect(durationStringToMs('-2562047h47m16.854775807s')).toMatchInlineSnapshot(`-922365136854.7758`);
+    expect(durationStringToMs('2562047h47m16.854775807s')).toMatchInlineSnapshot(`922339756854.7758`);
+    expect(durationStringToMs('-2562047h47m16.854775807s')).toMatchInlineSnapshot(`-922339756854.7758`);
     expect(durationStringToMs('.5us')).toMatchInlineSnapshot(`0.0005`);
     expect(durationStringToMs('1s5ns')).toMatchInlineSnapshot(`1000.000005`);
     expect(durationStringToMs('s')).toBe(NaN);

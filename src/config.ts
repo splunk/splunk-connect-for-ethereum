@@ -349,12 +349,19 @@ export interface HecConfigSchema {
      * https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format
      */
     multipleMetricFormatEnabled?: boolean;
+    /**
+     * If set to > 0, then ethlogger will wait for the HEC service to become available for the given amount of time
+     * by periodically attempting to request the collector/health REST endpoint. This can be useful when starting
+     * Splunk and ethlogger for example in docker-compose, where Splunk takes some time to start.
+     */
+    waitForAvailability?: DurationConfig;
 }
 
 export interface HecConfig extends Omit<HecConfigSchema, 'retryWaitTime'> {
     flushTime?: Duration;
     timeout?: Duration;
     retryWaitTime?: WaitTime;
+    waitForAvailability?: Duration;
 }
 
 export type OptionalHecConfigSchema = Partial<HecConfigSchema>;
@@ -526,6 +533,30 @@ export function checkConfig(config: EthloggerConfig): string[] {
     return problems;
 }
 
+const parseBooleanEnvVar = (envVar?: string): boolean | undefined => {
+    if (envVar != null) {
+        const val = process.env[envVar];
+        if (val != null) {
+            switch (val.trim().toLowerCase()) {
+                case '1':
+                case 'true':
+                case 'yes':
+                case 'on':
+                    return true;
+                case '0':
+                case 'false':
+                case 'no':
+                case 'off':
+                    return false;
+                default:
+                    throw new ConfigError(
+                        `Unexpected vablue for environment variable ${envVar} - boolean value (true or false) expected`
+                    );
+            }
+        }
+    }
+};
+
 export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = false): Promise<EthloggerConfig> {
     const defaultsPath = join(__dirname, '../defaults.ethlogger.yaml');
     debug('Loading config defaults from %s', defaultsPath);
@@ -585,6 +616,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             url: defaults?.url,
             userAgent: defaults?.userAgent,
             validateCertificate: defaults?.validateCertificate,
+            waitForAvailability: parseDuration(defaults?.waitForAvailability),
         });
         return isEmpty(result) ? undefined : result;
     };
@@ -632,7 +664,12 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 maxSockets: defaults.eth?.http?.maxSockets!,
                 requestKeepAlive: defaults.eth?.http?.requestKeepAlive!,
                 timeout: parseDuration(defaults.eth?.http?.timeout!),
-                validateCertificate: flags['eth-reject-invalid-certs'] ?? defaults.eth?.http?.validateCertificate,
+                validateCertificate:
+                    flags['eth-reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['eth-reject-invalid-certs'].env) ??
+                    flags['reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['reject-invalid-certs'].env) ??
+                    defaults.eth?.http?.validateCertificate,
             },
         },
         hec: {
@@ -652,9 +689,12 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 retryWaitTime: waitTimeFromConfig(defaults.hec?.default?.retryWaitTime as WaitTimeConfig),
                 timeout: parseDuration(defaults.hec?.default?.timeout),
                 userAgent: defaults.hec?.default?.userAgent,
+                waitForAvailability: parseDuration(defaults.hec?.default?.waitForAvailability),
                 validateCertificate:
                     flags['hec-reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['hec-reject-invalid-certs'].env) ??
                     flags['reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['reject-invalid-certs'].env) ??
                     defaults.hec?.default?.validateCertificate,
             },
             events: parseSpecificHecConfig(defaults.hec?.events, 'hec-events-index', 'hec-events-token'),

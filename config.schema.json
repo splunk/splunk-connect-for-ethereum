@@ -287,6 +287,10 @@
                 "validateCertificate": {
                     "description": "If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)",
                     "type": "boolean"
+                },
+                "waitForAvailability": {
+                    "description": "If set to > 0, then ethlogger will wait for the HEC service to become available for the given amount of time\nby periodically attempting to request the collector/health REST endpoint. This can be useful when starting\nSplunk and ethlogger for example in docker-compose, where Splunk takes some time to start.",
+                    "type": ["string", "number"]
                 }
             },
             "type": "object"
@@ -512,6 +516,10 @@
                 "validateCertificate": {
                     "description": "If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)",
                     "type": "boolean"
+                },
+                "waitForAvailability": {
+                    "description": "If set to > 0, then ethlogger will wait for the HEC service to become available for the given amount of time\nby periodically attempting to request the collector/health REST endpoint. This can be useful when starting\nSplunk and ethlogger for example in docker-compose, where Splunk takes some time to start.",
+                    "type": ["string", "number"]
                 }
             },
             "type": "object"

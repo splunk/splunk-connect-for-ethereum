@@ -55,7 +55,7 @@ export function raceAbort<T>(promise: Promise<T>, abort?: AbortPromise): Promise
 }
 
 /** Helper to abort a set of asynchronous tasks */
-export class AbortManager implements Abortable {
+export class AbortHandle implements Abortable {
     public aborted: boolean = false;
     private handles: Set<AbortPromise> = new Set();
 

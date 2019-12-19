@@ -18,6 +18,11 @@ export const CLI_FLAGS = {
         description:
             'Causes ethlogger to simply print the configuration merged from config file and CLI flags and exit',
     }),
+    'health-check': flags.boolean({
+        hidden: true,
+        description:
+            'Performs health check for a running ethlogger process by examining the state file created by that process.',
+    }),
 
     'config-file': flags.string({
         char: 'c',
@@ -60,6 +65,7 @@ export const CLI_FLAGS = {
     }),
     'hec-reject-invalid-certs': flags.boolean({
         allowNo: true,
+        env: 'SPLUNK_HEC_REJECT_INVALID_CERTS',
         description:
             'Disable to allow HEC client to connect to HTTPS without rejecting invalid (self-signed) certificates',
     }),
@@ -103,6 +109,7 @@ export const CLI_FLAGS = {
     }),
     'eth-reject-invalid-certs': flags.boolean({
         allowNo: true,
+        env: 'ETH_REJECT_INVALID_CERTS',
         description:
             'Disable to allow ethereum client to connect to HTTPS without rejecting invalid (self-signed) certificates',
     }),

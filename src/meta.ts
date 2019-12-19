@@ -32,8 +32,8 @@ export interface MetadataVariables {
     NODE_VERSION: string;
     /**
      * Hostname (or IP) of the ethereum node from the transport used.
-     * For HTTP transport the host portion of the host portion (without
-     * port) of the URL is used.
+     * For HTTP transport the host portion of the URL (without port)
+     * is used.
      */
     ETH_NODE_HOSTNAME: string;
 }

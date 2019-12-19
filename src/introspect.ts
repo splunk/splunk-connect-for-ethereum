@@ -6,6 +6,7 @@ import { GenericNodeAdapter } from './platforms/generic';
 import { GethAdapter } from './platforms/geth';
 import { ParityAdapter } from './platforms/parity';
 import { QuorumAdapter } from './platforms/quorum';
+import { retry, linearBackoff } from './utils/retry';
 
 const { debug, info, error } = createModuleDebug('introspect');
 
@@ -34,7 +35,15 @@ export async function introspectTargetNodePlatform(
     network?: string
 ): Promise<NodePlatformAdapter> {
     info(`Introspecting target ethereum node at %s`, eth.transport.source);
-    const version = await eth.request(clientVersion());
+    const version = await retry(() => eth.request(clientVersion()), {
+        attempts: 100,
+        taskName: 'determine eth node client version',
+        waitBetween: linearBackoff({ min: 1000, step: 500, max: 30_000 }),
+        warnOnError: true,
+    }).catch(e => {
+        error('Failed to detrmine target node platform', e);
+        throw new Error('Failed to determine target node platform');
+    });
     info('Retrieved ethereum node version: %s', version);
 
     const adapter = createNodeAdapter(version, network);

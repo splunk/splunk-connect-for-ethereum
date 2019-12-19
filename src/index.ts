@@ -5,7 +5,7 @@ import { AbiRepository } from './abi';
 import { BlockWatcher } from './blockwatcher';
 import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
-import { ConfigError, loadEthloggerConfig } from './config';
+import { ConfigError, loadEthloggerConfig, EthloggerConfig } from './config';
 import { ContractInfo } from './contract';
 import { BatchedEthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
@@ -20,12 +20,15 @@ import LRUCache from './utils/lru';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
+import { checkHealthState, HealthStateMonitor } from './health';
 
 const { debug, error, info } = createModuleDebug('cli');
 
 class Ethlogger extends Command {
     static description = 'Splunk Connect for Ethereum';
     static flags = CLI_FLAGS;
+
+    private resources: ManagedResource[] = [];
 
     async run() {
         const { flags } = this.parse(Ethlogger);
@@ -37,13 +40,16 @@ class Ethlogger extends Command {
         if (flags.trace) {
             enableTraceLogging();
         }
-
-        const resources: ManagedResource[] = [];
-
-        const addResource = <R extends ManagedResource>(r: R): R => {
-            resources.unshift(r);
-            return r;
-        };
+        if (flags['health-check']) {
+            const healthy = await checkHealthState();
+            if (healthy) {
+                info('Ethlogger process appears to be healthy');
+                process.exit(0);
+            } else {
+                error('Ethlogger process is unhealthy');
+                process.exit(1);
+            }
+        }
 
         try {
             if (flags['print-config']) {
@@ -55,111 +61,125 @@ class Ethlogger extends Command {
                 return;
             }
             const config = await loadEthloggerConfig(flags);
+            const health = new HealthStateMonitor();
+            health.start();
+            this.resources.push(health);
 
-            const transport = new HttpTransport(config.eth.url, config.eth.http);
-            const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
-            const platformAdapter = await introspectTargetNodePlatform(client, flags['network-name']);
-
-            info(
-                'Detected node platform=%o network=%d protocol=%d',
-                platformAdapter.name,
-                platformAdapter.networkId,
-                platformAdapter.protocolVersion
-            );
-
-            substituteVariablesInHecMetadata(config, {
-                ethloggerVersion: this.config.version,
-                platformAdapter,
-                transportOriginHost: transport.originHost,
-            });
-
-            const baseHec = new HecClient(config.hec.default);
-            const output = createOutput(config, baseHec);
-            addResource(output);
-
-            const internalStatsCollector = new InternalStatsCollector({
-                collect: config.internalMetrics.enabled,
-                collectInterval: config.internalMetrics.collectInterval,
-                dest: baseHec.clone(config.hec.internal),
-                basePrefix: 'ethlogger.internal',
-            });
-            addResource(internalStatsCollector);
-            internalStatsCollector.addSource(transport, 'ethTransport');
-            internalStatsCollector.addSource(output, 'output');
-
-            const checkpoints = addResource(
-                new Checkpoint({
-                    path: config.checkpoint.filename,
-                    saveInterval: config.checkpoint.saveInterval,
-                })
-            );
-            await checkpoints.initialize();
-
-            const abiRepo = new AbiRepository();
-            resources.unshift(abiRepo);
-            if (config.abi.directory != null) {
-                await abiRepo.loadAbiDir(config.abi.directory!);
-            }
-
-            const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({
-                maxSize: config.contractInfo.maxCacheEntries,
-            });
-            internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
-
-            const nodeStatsCollector = new NodeStatsCollector({
-                ethClient: client,
-                platformAdapter,
-                abiRepo,
-                contractInfoCache,
-                output,
-                metricsEnabled: config.nodeMetrics.enabled,
-                metricsInterval: config.nodeMetrics.collectInterval,
-                infoEnabled: config.nodeInfo.enabled,
-                infoInterval: config.nodeInfo.collectInterval,
-                metricsRetryWaitTime: config.nodeInfo.retryWaitTime,
-            });
-            addResource(nodeStatsCollector);
-            internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
-
-            const blockWatcher = new BlockWatcher({
-                checkpoints,
-                ethClient: client,
-                output,
-                abiRepo: abiRepo,
-                startAt: config.blockWatcher.startAt,
-                contractInfoCache,
-                chunkSize: config.blockWatcher.blocksMaxChunkSize,
-                pollInterval: config.blockWatcher.pollInterval,
-            });
-            resources.unshift(blockWatcher);
-            internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
-
-            internalStatsCollector.start();
-
-            await Promise.race([
-                Promise.all(
-                    [blockWatcher.start(), nodeStatsCollector.start()].map(p =>
-                        p.catch(e => {
-                            if (e !== ABORT) {
-                                error('Error in ethlogger task:', e);
-                                return Promise.reject(e);
-                            }
-                        })
-                    )
-                ),
-                waitForSignal('SIGINT'),
-            ]);
+            // Run ethlogger until we receive ctrl+c or hit an unrecoverable error
+            await Promise.race([this.startEthlogger(config), waitForSignal('SIGINT'), waitForSignal('SIGTERM')]);
 
             info('Recieved signal, proceeding with shutdown sequence');
-            const cleanShutdown = await shutdownAll(resources, 10_000);
+            const cleanShutdown = await shutdownAll(this.resources, 10_000);
             info('Shutdown complete.');
             process.exit(cleanShutdown ? 0 : 2);
         } catch (e) {
             if (!(e instanceof ConfigError)) {
-                error('FATAL: ', e);
+                error('FATAL:', e);
             }
             this.error(e.message, { exit: 1 });
+        } finally {
+            await shutdownAll(this.resources, 10_000).catch(e => {
+                error('Failed to shut down resources', e);
+            });
         }
+    }
+
+    async startEthlogger(config: EthloggerConfig): Promise<any> {
+        const addResource = <R extends ManagedResource>(r: R): R => {
+            this.resources.unshift(r);
+            return r;
+        };
+
+        const transport = new HttpTransport(config.eth.url, config.eth.http);
+        const client = new BatchedEthereumClient(transport, { maxBatchSize: 100, maxBatchTime: 0 });
+        const platformAdapter = await introspectTargetNodePlatform(client, config.eth.network);
+
+        info(
+            'Detected node platform=%o network=%d protocol=%d',
+            platformAdapter.name,
+            platformAdapter.networkId,
+            platformAdapter.protocolVersion
+        );
+
+        substituteVariablesInHecMetadata(config, {
+            ethloggerVersion: this.config.version,
+            platformAdapter,
+            transportOriginHost: transport.originHost,
+        });
+
+        const baseHec = new HecClient(config.hec.default);
+        const output = await createOutput(config, baseHec);
+        addResource(output);
+
+        const internalStatsCollector = new InternalStatsCollector({
+            collect: config.internalMetrics.enabled,
+            collectInterval: config.internalMetrics.collectInterval,
+            dest: baseHec.clone(config.hec.internal),
+            basePrefix: 'ethlogger.internal',
+        });
+        addResource(internalStatsCollector);
+        internalStatsCollector.addSource(transport, 'ethTransport');
+        internalStatsCollector.addSource(output, 'output');
+
+        const checkpoints = addResource(
+            new Checkpoint({
+                path: config.checkpoint.filename,
+                saveInterval: config.checkpoint.saveInterval,
+            })
+        );
+        await checkpoints.initialize();
+
+        const abiRepo = new AbiRepository();
+        addResource(abiRepo);
+        if (config.abi.directory != null) {
+            await abiRepo.loadAbiDir(config.abi.directory!);
+        }
+
+        const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({
+            maxSize: config.contractInfo.maxCacheEntries,
+        });
+        internalStatsCollector.addSource(contractInfoCache, 'contractInfoCache');
+
+        const nodeStatsCollector = new NodeStatsCollector({
+            ethClient: client,
+            platformAdapter,
+            abiRepo,
+            contractInfoCache,
+            output,
+            metricsEnabled: config.nodeMetrics.enabled,
+            metricsInterval: config.nodeMetrics.collectInterval,
+            infoEnabled: config.nodeInfo.enabled,
+            infoInterval: config.nodeInfo.collectInterval,
+            metricsRetryWaitTime: config.nodeInfo.retryWaitTime,
+        });
+        addResource(nodeStatsCollector);
+        internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
+
+        const blockWatcher = new BlockWatcher({
+            checkpoints,
+            ethClient: client,
+            output,
+            abiRepo: abiRepo,
+            startAt: config.blockWatcher.startAt,
+            contractInfoCache,
+            chunkSize: config.blockWatcher.blocksMaxChunkSize,
+            pollInterval: config.blockWatcher.pollInterval,
+        });
+        addResource(blockWatcher);
+        internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
+
+        internalStatsCollector.start();
+
+        return Promise.all(
+            [blockWatcher.start(), nodeStatsCollector.start()].map(p =>
+                p.catch(e => {
+                    if (e !== ABORT) {
+                        error('Error in ethlogger task:', e);
+                        return Promise.reject(e);
+                    }
+                })
+            )
+        );
     }
 }
 

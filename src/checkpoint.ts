@@ -1,5 +1,12 @@
 import { readFile, writeFile } from 'fs-extra';
-import { BlockRange, compactRanges, getInverseBlockRanges, parseBlockRange, serializeBlockRange } from './blockrange';
+import {
+    BlockRange,
+    compactRanges,
+    getInverseBlockRanges,
+    parseBlockRange,
+    serializeBlockRange,
+    blockRangeSize,
+} from './blockrange';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { alwaysResolve, sleep } from './utils/async';
@@ -32,9 +39,13 @@ export class Checkpoint implements ManagedResource {
         try {
             const fileContents = await readFile(this.path, { encoding: 'utf-8' });
             this.initializeFromCheckpointContents(fileContents);
+            info('Found existing checkpoints: %o', {
+                initialBlockNumber: this.initialBlockNumber,
+                completedBlockCount: this.completed.map(blockRangeSize).reduce((a, b) => a + b, 0),
+            });
         } catch (e) {
             if (e.code === 'ENOENT') {
-                debug('Checkpoint does not exist yet, starting with empty ranges');
+                info('Checkpoint does not exist yet, starting from a clean slate');
                 return;
             }
             throw new Error(`Failed to initialize checkpoints: ${e}`);
