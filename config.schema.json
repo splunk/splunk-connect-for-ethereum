@@ -31,10 +31,7 @@
                 },
                 "pollInterval": {
                     "description": "Interval in which to look for the latest block number (if not busy processing the backlog)",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "retryWaitTime": {
                     "anyOf": [
@@ -45,10 +42,7 @@
                             "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
-                            "type": [
-                                "string",
-                                "number"
-                            ]
+                            "type": ["string", "number"]
                         }
                     ],
                     "description": "Wait time before retrying to fetch and process blocks after failure"
@@ -56,10 +50,7 @@
                 "startAt": {
                     "anyOf": [
                         {
-                            "enum": [
-                                "genesis",
-                                "latest"
-                            ],
+                            "enum": ["genesis", "latest"],
                             "type": "string"
                         },
                         {
@@ -81,10 +72,7 @@
                 },
                 "saveInterval": {
                     "description": "Maximum duration before saving updated checkpoint information to disk",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 }
             },
             "type": "object"
@@ -93,9 +81,7 @@
             "description": "Console output prints all generated events and metrics to STDOUT",
             "properties": {
                 "type": {
-                    "enum": [
-                        "console"
-                    ],
+                    "enum": ["console"],
                     "type": "string"
                 }
             },
@@ -115,9 +101,7 @@
             "description": "Null output will just drop all generated events and metrics",
             "properties": {
                 "type": {
-                    "enum": [
-                        "null"
-                    ],
+                    "enum": ["null"],
                     "type": "string"
                 }
             },
@@ -132,10 +116,7 @@
                 },
                 "maxBatchTime": {
                     "description": "Maximum time to wait before submitting a batch of JSON RPC requests",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 }
             },
             "type": "object"
@@ -167,22 +148,14 @@
             "properties": {
                 "max": {
                     "description": "Maximum wait time",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "min": {
                     "description": "Minimum wait time",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "type": {
-                    "enum": [
-                        "exponential-backoff"
-                    ],
+                    "enum": ["exponential-backoff"],
                     "type": "string"
                 }
             },
@@ -196,9 +169,7 @@
                     "type": "string"
                 },
                 "type": {
-                    "enum": [
-                        "file"
-                    ],
+                    "enum": ["file"],
                     "type": "string"
                 }
             },
@@ -229,8 +200,7 @@
             "description": "Settings for the Splunk HTTP Event Collector client",
             "properties": {
                 "defaultFields": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "Default set of fields to apply to all events and metrics sent with this HEC client",
                     "type": "object"
                 },
@@ -254,10 +224,7 @@
                 },
                 "flushTime": {
                     "description": "Maximum number of milliseconds to wait before flushing the HEC message queue",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "gzip": {
                     "description": "Gzip compress the request body sent to HEC (Content-Encoding: gzip)",
@@ -296,20 +263,14 @@
                             "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
-                            "type": [
-                                "string",
-                                "number"
-                            ]
+                            "type": ["string", "number"]
                         }
                     ],
-                    "description": "Wait time before retrying to send a (batch of) HEC messages"
+                    "description": "Wait time before retrying to send a (batch of) HEC messages after an error"
                 },
                 "timeout": {
                     "description": "Number of milliseconds to wait before considereing an HTTP request as failed",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "token": {
                     "description": "The HEC token used to authenticate HTTP requests",
@@ -341,9 +302,7 @@
                     "description": "Sourcetypes to use for different kinds of events we send to Splunk"
                 },
                 "type": {
-                    "enum": [
-                        "hec"
-                    ],
+                    "enum": ["hec"],
                     "type": "string"
                 }
             },
@@ -362,10 +321,7 @@
                 },
                 "timeout": {
                     "description": "Time before failing JSON RPC requests. Specify a number in milliseconds or a golang-style duration expression.",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "validateCertificate": {
                     "description": "If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)",
@@ -379,10 +335,7 @@
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect internal metrics",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "enabled": {
                     "description": "Specify `false` to disable internal metrics collection",
@@ -396,29 +349,18 @@
             "properties": {
                 "max": {
                     "description": "Maximum wait time",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "min": {
                     "description": "Minimum wait time (after the first failure)",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "step": {
                     "description": "Increase of wait time for each failure after the first until max is reached",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "type": {
-                    "enum": [
-                        "linear-backoff"
-                    ],
+                    "enum": ["linear-backoff"],
                     "type": "string"
                 }
             },
@@ -429,10 +371,7 @@
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node info",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "enabled": {
                     "description": "Specify `false` to disable node info collection",
@@ -447,10 +386,7 @@
                             "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
-                            "type": [
-                                "string",
-                                "number"
-                            ]
+                            "type": ["string", "number"]
                         }
                     ],
                     "description": "Wait time before retrying to collect node info after failure"
@@ -463,10 +399,7 @@
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node metrics",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "enabled": {
                     "description": "Specify `false` to disable node metrics collection",
@@ -481,10 +414,7 @@
                             "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
-                            "type": [
-                                "string",
-                                "number"
-                            ]
+                            "type": ["string", "number"]
                         }
                     ],
                     "description": "Wait time before retrying to collect node metrics after failure"
@@ -495,8 +425,7 @@
         "Partial<HecConfigSchema>": {
             "properties": {
                 "defaultFields": {
-                    "additionalProperties": {
-                    },
+                    "additionalProperties": {},
                     "description": "Default set of fields to apply to all events and metrics sent with this HEC client",
                     "type": "object"
                 },
@@ -520,10 +449,7 @@
                 },
                 "flushTime": {
                     "description": "Maximum number of milliseconds to wait before flushing the HEC message queue",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "gzip": {
                     "description": "Gzip compress the request body sent to HEC (Content-Encoding: gzip)",
@@ -562,20 +488,14 @@
                             "$ref": "#/definitions/LinearBackoffConfig"
                         },
                         {
-                            "type": [
-                                "string",
-                                "number"
-                            ]
+                            "type": ["string", "number"]
                         }
                     ],
-                    "description": "Wait time before retrying to send a (batch of) HEC messages"
+                    "description": "Wait time before retrying to send a (batch of) HEC messages after an error"
                 },
                 "timeout": {
                     "description": "Number of milliseconds to wait before considereing an HTTP request as failed",
-                    "type": [
-                        "string",
-                        "number"
-                    ]
+                    "type": ["string", "number"]
                 },
                 "token": {
                     "description": "The HEC token used to authenticate HTTP requests",
@@ -692,4 +612,3 @@
     },
     "type": "object"
 }
-

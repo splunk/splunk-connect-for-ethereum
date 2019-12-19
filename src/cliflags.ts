@@ -10,7 +10,7 @@ export const CLI_FLAGS = {
     trace: flags.boolean({
         description:
             'Enable trace output (very, very verbose). ' +
-            'Output will include raw payloads send send and received via JSON RPC and HEC',
+            'Output will include raw payloads sent and received via JSON RPC and HEC',
         exclusive: ['debug'],
     }),
 
@@ -66,17 +66,17 @@ export const CLI_FLAGS = {
     'hec-events-index': flags.string({
         env: 'SPLUNK_EVENTS_INDEX',
         description:
-            'Splunk index to send events to. You can alternatively use separate HEC tokens to correcly route your data.',
+            'Splunk index to send events to. You can alternatively use separate HEC tokens to correctly route your data.',
     }),
     'hec-metrics-index': flags.string({
         env: 'SPLUNK_METRICS_INDEX',
         description:
-            'Splunk index to send metrics to. You can alternatively use separate HEC tokens to correcly route your data.',
+            'Splunk index to send metrics to. You can alternatively use separate HEC tokens to correctly route your data.',
     }),
     'hec-internal-index': flags.string({
         env: 'SPLUNK_INTERNAL_INDEX',
         description:
-            'Splunk index to send internal metrics to. You can alternatively use separate HEC tokens to correcly route your data.',
+            'Splunk index to send internal metrics to. You can alternatively use separate HEC tokens to correctly route your data.',
     }),
 
     'hec-events-token': flags.string({

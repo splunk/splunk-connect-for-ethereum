@@ -13,6 +13,7 @@ import {
 import { createDebug } from './utils/debug';
 import { prefixKeys } from './utils/obj';
 import { ManagedResource } from './utils/resource';
+import { Stats } from './utils/stats';
 
 export const defaultSourcetypes = {
     block: 'ethereum:block',
@@ -37,6 +38,7 @@ export type OutputMessage =
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
+    flushStats(): Stats;
 }
 
 export class HecOutput implements Output, ManagedResource {
@@ -74,6 +76,13 @@ export class HecOutput implements Output, ManagedResource {
         }
     }
 
+    public flushStats() {
+        return {
+            ...prefixKeys(this.eventsHec.flushStats(), 'eventsHec.'),
+            ...prefixKeys(this.metricsHec.flushStats(), 'metricsHec.'),
+        };
+    }
+
     public shutdown() {
         return Promise.all([this.eventsHec.shutdown(), this.metricsHec.shutdown()]).then(() => {
             /* noop */
@@ -84,6 +93,10 @@ export class HecOutput implements Output, ManagedResource {
 export class FileOutput implements Output {
     write() {
         // TODO
+    }
+
+    public flushStats() {
+        return {};
     }
 
     public async shutdown() {
@@ -102,6 +115,10 @@ export class ConsoleOutput implements Output {
         this.consoleOutput('%O', msg);
     }
 
+    public flushStats() {
+        return {};
+    }
+
     public async shutdown() {
         // noop
     }
@@ -110,6 +127,10 @@ export class ConsoleOutput implements Output {
 export class DevNullOutput implements Output {
     write() {
         // noop
+    }
+
+    public flushStats() {
+        return {};
     }
 
     public async shutdown() {

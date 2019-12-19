@@ -159,7 +159,10 @@ export type ContractInfoConfig = ContractInfoConfigSchema;
 export interface BlockWatcherConfigSchema {
     /** Specify `false` to disable the block watcher */
     enabled: boolean;
-    /** Interval in which to look for the latest block number (if not busy processing the backlog) */
+    /**
+     * Interval in which to look for the latest block number (if not busy processing the backlog)
+     * @see [Configuring durations](#Durations)
+     */
     pollInterval: DurationConfig;
     /** Max. number of blocks to fetch at once */
     blocksMaxChunkSize: number;
@@ -337,7 +340,7 @@ export interface HecConfigSchema {
     maxSockets?: number;
     /** User-agent header sent to HEC */
     userAgent?: string;
-    /** Wait time before retrying to send a (batch of) HEC messages */
+    /** Wait time before retrying to send a (batch of) HEC messages after an error */
     retryWaitTime?: WaitTimeConfig;
     /**
      * Enable sending multipe metrics in a single message to HEC.
@@ -423,6 +426,25 @@ export function waitTimeFromConfig(config?: WaitTimeConfig | DeepPartial<WaitTim
     throw new ConfigError(`Invalid wait time config: ${JSON.stringify(config)}`);
 }
 
+function parseStartAt(input: string | number | null | undefined): StartBlock | undefined {
+    if (input == null) {
+        return undefined;
+    }
+    if (typeof input === 'number') {
+        return input;
+    }
+    if (input === 'genesis' || input === 'latest') {
+        return input;
+    }
+    if (typeof input === 'string') {
+        const n = parseInt(input, 10);
+        if (!isNaN(n)) {
+            return n;
+        }
+    }
+    throw new ConfigError(`Invalid start-at-block config: ${JSON.stringify(input)}`);
+}
+
 type DeepPartial<T> = {
     [P in keyof T]?: T[P] extends Array<infer U>
         ? Array<DeepPartial<U>>
@@ -455,7 +477,7 @@ export async function loadConfigFile(
     return {};
 }
 
-type CliFlags<T = typeof CLI_FLAGS> = {
+export type CliFlags<T = typeof CLI_FLAGS> = {
     [P in keyof T]: T[P] extends IOptionFlag<infer R> ? R : any;
 };
 
@@ -504,11 +526,7 @@ export function checkConfig(config: EthloggerConfig): string[] {
     return problems;
 }
 
-export async function loadEthloggerConfig(
-    fileName: string | undefined,
-    flags: CliFlags,
-    dryRun: boolean = false
-): Promise<EthloggerConfig> {
+export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = false): Promise<EthloggerConfig> {
     const defaultsPath = join(__dirname, '../defaults.ethlogger.yaml');
     debug('Loading config defaults from %s', defaultsPath);
     let defaults = await loadConfigFile(defaultsPath, 'yaml');
@@ -652,7 +670,7 @@ export async function loadEthloggerConfig(
             enabled: flags['collect-blocks'] ?? defaults.blockWatcher?.enabled ?? true,
             blocksMaxChunkSize: defaults.blockWatcher?.blocksMaxChunkSize ?? 25,
             pollInterval: parseDuration(defaults.blockWatcher?.pollInterval) ?? 500,
-            startAt: defaults.blockWatcher?.startAt ?? 'genesis',
+            startAt: parseStartAt(flags['start-at-block'] ?? defaults.blockWatcher?.startAt) ?? 'genesis',
             retryWaitTime: waitTimeFromConfig(defaults.blockWatcher?.retryWaitTime) ?? 60000,
         },
         checkpoint: {

@@ -1,0 +1,103 @@
+Splunk Connect for Ethereum
+
+USAGE
+  $ ethlogger
+
+OPTIONS
+  -c, --config-file=config-file
+      Ethlogger configuration file to use. If not specfified ethlogger will look 
+      for a file called ethlogger.yaml or ethlogger.json in the current working 
+      directory
+
+  -h, --help
+      show CLI help
+
+  -v, --version
+      show CLI version
+
+  --abi-dir=abi-dir
+      Directory containing ABI
+
+  --[no-]collect-blocks
+      Enables ethereum block watcher (enabled by default unless specified 
+      otherwise in the config file)
+
+  --[no-]collect-internal-metrics
+      Enables collection of ethlogger-internal metrics (enabled by default unless 
+      specified otherwise in the config file)
+
+  --[no-]collect-node-info
+      Enables collection of node info events (enabled by default unless specified 
+      otherwise in the config file)
+
+  --[no-]collect-node-metrics
+      Enables collection of node metrics (enabled by default unless specified 
+      otherwise in the config file)
+
+  --debug
+      Enable debug log output
+
+  --[no-]eth-reject-invalid-certs
+      Disable to allow ethereum client to connect to HTTPS without rejecting 
+      invalid (self-signed) certificates
+
+  --eth-rpc-url=eth-rpc-url
+      URL to reach the target ethereum node. Supported format is currently only 
+      HTTP(s) for JSON RPC
+
+  --hec-events-index=hec-events-index
+      Splunk index to send events to. You can alternatively use separate HEC 
+      tokens to correctly route your data.
+
+  --hec-events-token=hec-events-token
+      HEC token to use for sending events. You can alternatively configure 
+      different indexes to correctly route your data.
+
+  --hec-internal-index=hec-internal-index
+      Splunk index to send internal metrics to. You can alternatively use separate 
+      HEC tokens to correctly route your data.
+
+  --hec-internal-token=hec-internal-token
+      HEC token to use for sending internal metrics. You can alternatively 
+      configure different indexes to correctly route your data.
+
+  --hec-metrics-index=hec-metrics-index
+      Splunk index to send metrics to. You can alternatively use separate HEC 
+      tokens to correctly route your data.
+
+  --hec-metrics-token=hec-metrics-token
+      HEC token to use for sending metrics. You can alternatively configure 
+      different indexes to correctly route your data.
+
+  --[no-]hec-reject-invalid-certs
+      Disable to allow HEC client to connect to HTTPS without rejecting invalid 
+      (self-signed) certificates
+
+  --hec-token=hec-token
+      Token to authenticate against Splunk HTTP Event Collector
+
+  --hec-url=hec-url
+      URL to connect to Splunk HTTP Event Collector. You can either specify just 
+      the base URL (without path) and the default path will automatically appended 
+      or a full URL.
+
+  --network-name=network-name
+      The network name will be attached to all events sent to Splunk
+
+  --print-config
+      Causes ethlogger to simply print the configuration merged from config file 
+      and CLI flags and exit
+
+  --[no-]reject-invalid-certs
+      Disable to allow all HTTP clients (HEC and ETH) to connect to HTTPS without 
+      rejecting invalid (self-signed) certificates
+
+  --start-at-block=genesis|latest|<number>
+      First block to start ingesting from. Possible values are "genesis", 
+      "latest", an absolute block number or a negative number describing how many 
+      blocks before the latest one to start at.
+
+  --trace
+      Enable trace output (very, very verbose). Output will include raw payloads 
+      sent and received via JSON RPC and HEC
+

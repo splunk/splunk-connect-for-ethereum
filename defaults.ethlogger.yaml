@@ -44,6 +44,7 @@ hec:
             pid: $PID
 output:
     type: hec
+    metricsPrefix: eth
     sourcetypes:
         block: 'ethereum:block'
         transaction: 'ethereum:transaction'
@@ -66,6 +67,11 @@ blockWatcher:
     pollInterval: 500ms
     blocksMaxChunkSize: 25
     startAt: genesis
+    retryWaitTime:
+        type: linear-backoff
+        min: 0
+        step: 2.5s
+        max: 2m
 nodeMetrics:
     enabled: true
     collectInterval: 1s
