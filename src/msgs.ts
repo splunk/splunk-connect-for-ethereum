@@ -128,7 +128,7 @@ export interface FormattedTransaction extends BaseFormattedTransaction {
 }
 
 export interface AddressInfo {
-    /** true if the address is a contract, otherwise false. This is determined by attempting to retrive the addresses code */
+    /** true if the address is a contract, otherwise false. This is determined by attempting to retrieve code stored at the address (if any) */
     isContract: boolean;
     /** Name of the smart contract by matching it against configured ABI information */
     contractName?: string;
@@ -137,7 +137,7 @@ export interface AddressInfo {
 export interface FunctionCall {
     /** Function name */
     name: string;
-    /** Function signature (name and parameter types) */
+    /** Function signature, defined as the first 4 bytes of the keccak256 hash of the function name and parameter types.*/
     signature: string;
     /** List of decoded parameters */
     params: Array<{
@@ -163,15 +163,15 @@ export interface FormattedLogEvent {
     removed?: boolean;
     /** integer of the log index position in the block  */
     logIndex: number | null;
-    /** the block number where this log was in */
+    /** the block number where this log is located */
     blockNumber: number | null;
-    /** hash of the block where this log was in */
+    /** hash of the block where this log is located */
     blockHash: string | null;
-    /** hash of the transactions this log was created from */
+    /** hash of the transaction where this log was created */
     transactionHash: string | null;
-    /** integer of the transactions index position log was created from */
+    /** integer index position of this transaction in it's block */
     transactionIndex: number | null;
-    /** address from which this log originated */
+    /** contract address from which this log originated */
     address: Address;
     /** contains the non-indexed arguments of the log */
     data: string;
@@ -190,9 +190,9 @@ export interface FormattedLogEvent {
 }
 
 export interface EventData {
-    /** Function name */
+    /** Event name */
     name: string;
-    /** Function signature (name and parameter types) */
+    /** Event signature (name and parameter types) */
     signature: string;
     /** List of decoded parameters */
     params: Array<{ name: string; type: string; value: Value }>;
@@ -207,11 +207,11 @@ export interface LogEventMessage {
 }
 
 export interface NodeInfo {
-    /** Detected node platform */
+    /** Detected node platform via introspection of nodeInfo */
     platform: string;
     /** Full client version string retrieved from the node */
     clientVersion: string;
-    /** enode if we were able to determine */
+    /** enode (only if we were able to determine it) */
     enode: string | null;
     /** Network ID retrieved from the node */
     networkId: number | null;
