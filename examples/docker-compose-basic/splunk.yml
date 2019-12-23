@@ -39,9 +39,3 @@ splunk:
                     homePath: $SPLUNK_DB/metrics/db
                     maxTotalDataSizeMB: 512000
                     thawedPath: $SPLUNK_DB/metrics/thaweddb
-                ethereum:
-                    coldPath: $SPLUNK_DB/ethereum/colddb
-                    homePath: $SPLUNK_DB/ethereum/db
-                    maxTotalDataSizeMB: 512000
-                    thawedPath: $SPLUNK_DB/ethereum/thaweddb
-                    enableDataIntegrityControl: 1

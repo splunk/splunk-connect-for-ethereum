@@ -1,8 +1,8 @@
-# Basic example
+# Basic example running ethlogger using docker-compose
 
 This is a simple example showing how to run ethlogger in docker-compose alongside a Splunk Enterprise container.
 
-Ethlogger configuration is provided in the form of environment variables in [docker-compose.yaml](./docker-compose.yaml#L25).
+Ethlogger configuration is provided in the form of [environment variables](../../docs/cli.md#environment-variables) in [docker-compose.yaml](./docker-compose.yaml#L25).
 
 ## Run
 
