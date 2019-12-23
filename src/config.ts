@@ -159,18 +159,11 @@ export type ContractInfoConfig = ContractInfoConfigSchema;
 export interface BlockWatcherConfigSchema {
     /** Specify `false` to disable the block watcher */
     enabled: boolean;
-    /**
-     * Interval in which to look for the latest block number (if not busy processing the backlog)
-     * @see [Configuring durations](#Durations)
-     */
+    /** Interval in which to look for the latest block number (if not busy processing the backlog) */
     pollInterval: DurationConfig;
     /** Max. number of blocks to fetch at once */
     blocksMaxChunkSize: number;
-    /**
-     * If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.
-     * Specify a positive integer for an absolute block number or a negative integer to start at n blocks
-     * before the latest one. You can also specify "genesis" (block 0) or "latest" (currently latest block).
-     */
+    /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
     startAt: StartBlock;
     /** Wait time before retrying to fetch and process blocks after failure */
     retryWaitTime: WaitTimeConfig;
@@ -264,6 +257,7 @@ export interface HecOutputConfig {
     metricsPrefix?: string;
 }
 
+/** Configurable set of `sourcetype` field values emitted by ethlogger */
 export interface SourcetypesSchema {
     /** @default "ethereum:block" */
     block?: string;
@@ -310,14 +304,20 @@ export interface HecConfigSchema {
     url?: string;
     /** The HEC token used to authenticate HTTP requests */
     token?: string;
-    /** Defaults for host, source, sourcetype and index. Can be overriden for each message */
+    /**
+     * Defaults for host, source, sourcetype and index. Can be overriden for each message
+     * @see [Use variables in metadata](#metadata-variables)
+     */
     defaultMetadata?: {
         host?: string;
         source?: string;
         sourcetype?: string;
         index?: string;
     };
-    /** Default set of fields to apply to all events and metrics sent with this HEC client */
+    /**
+     * Default set of fields to apply to all events and metrics sent with this HEC client
+     * @see [Use variables in metadata](#metadata-variables)
+     */
     defaultFields?: { [k: string]: any };
     /** Maximum number of entries in the HEC message queue before flushing it */
     maxQueueEntries?: number;
@@ -350,12 +350,19 @@ export interface HecConfigSchema {
      * https://docs.splunk.com/Documentation/Splunk/8.0.0/Metrics/GetMetricsInOther#The_multiple-metric_JSON_format
      */
     multipleMetricFormatEnabled?: boolean;
+    /**
+     * If set to > 0, then ethlogger will wait for the HEC service to become available for the given amount of time
+     * by periodically attempting to request the collector/health REST endpoint. This can be useful when starting
+     * Splunk and ethlogger for example in docker-compose, where Splunk takes some time to start.
+     */
+    waitForAvailability?: DurationConfig;
 }
 
 export interface HecConfig extends Omit<HecConfigSchema, 'retryWaitTime'> {
     flushTime?: Duration;
     timeout?: Duration;
     retryWaitTime?: WaitTime;
+    waitForAvailability?: Duration;
 }
 
 export type OptionalHecConfigSchema = Partial<HecConfigSchema>;
@@ -527,6 +534,30 @@ export function checkConfig(config: EthloggerConfig): string[] {
     return problems;
 }
 
+const parseBooleanEnvVar = (envVar?: string): boolean | undefined => {
+    if (envVar != null) {
+        const val = process.env[envVar];
+        if (val != null) {
+            switch (val.trim().toLowerCase()) {
+                case '1':
+                case 'true':
+                case 'yes':
+                case 'on':
+                    return true;
+                case '0':
+                case 'false':
+                case 'no':
+                case 'off':
+                    return false;
+                default:
+                    throw new ConfigError(
+                        `Unexpected vablue for environment variable ${envVar} - boolean value (true or false) expected`
+                    );
+            }
+        }
+    }
+};
+
 export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = false): Promise<EthloggerConfig> {
     const defaultsPath = join(__dirname, '../defaults.ethlogger.yaml');
     debug('Loading config defaults from %s', defaultsPath);
@@ -586,6 +617,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             url: defaults?.url,
             userAgent: defaults?.userAgent,
             validateCertificate: defaults?.validateCertificate,
+            waitForAvailability: parseDuration(defaults?.waitForAvailability),
         });
         return isEmpty(result) ? undefined : result;
     };
@@ -633,7 +665,12 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 maxSockets: defaults.eth?.http?.maxSockets!,
                 requestKeepAlive: defaults.eth?.http?.requestKeepAlive!,
                 timeout: parseDuration(defaults.eth?.http?.timeout!),
-                validateCertificate: flags['eth-reject-invalid-certs'] ?? defaults.eth?.http?.validateCertificate,
+                validateCertificate:
+                    flags['eth-reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['eth-reject-invalid-certs'].env) ??
+                    flags['reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['reject-invalid-certs'].env) ??
+                    defaults.eth?.http?.validateCertificate,
             },
         },
         hec: {
@@ -653,9 +690,12 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 retryWaitTime: waitTimeFromConfig(defaults.hec?.default?.retryWaitTime as WaitTimeConfig),
                 timeout: parseDuration(defaults.hec?.default?.timeout),
                 userAgent: defaults.hec?.default?.userAgent,
+                waitForAvailability: parseDuration(defaults.hec?.default?.waitForAvailability),
                 validateCertificate:
                     flags['hec-reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['hec-reject-invalid-certs'].env) ??
                     flags['reject-invalid-certs'] ??
+                    parseBooleanEnvVar(CLI_FLAGS['reject-invalid-certs'].env) ??
                     defaults.hec?.default?.validateCertificate,
             },
             events: parseSpecificHecConfig(defaults.hec?.events, 'hec-events-index', 'hec-events-token'),

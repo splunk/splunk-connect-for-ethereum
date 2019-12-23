@@ -1,4 +1,4 @@
-import { AbortManager } from './abort';
+import { AbortHandle } from './abort';
 import { createModuleDebug } from './debug';
 
 const { error, trace } = createModuleDebug('utils:async');
@@ -54,20 +54,20 @@ class TaskWrapper<R> {
 
 export function parallel<R>(
     tasks: ParallelTask<R>[],
-    { maxConcurrent, abortManager = new AbortManager() }: { maxConcurrent: number; abortManager?: AbortManager }
+    { maxConcurrent, abortHandle = new AbortHandle() }: { maxConcurrent: number; abortHandle?: AbortHandle }
 ): Promise<R[]> {
     const taskQueue = tasks.map((t, i) => new TaskWrapper<R>(t, i));
     let pending = taskQueue.length;
     let running = 0;
     const next = () => {
-        while (!abortManager.aborted && running < maxConcurrent && pending > 0) {
+        while (!abortHandle.aborted && running < maxConcurrent && pending > 0) {
             const task = taskQueue.shift();
             trace(
                 'Starting parallel task %d (running: %d, pending: %d, aborted: %o)',
                 task?.index,
                 running,
                 pending,
-                abortManager.aborted
+                abortHandle.aborted
             );
             running++;
             pending--;
@@ -82,7 +82,7 @@ export function parallel<R>(
             });
         }
     };
-    const allCompletePromise = abortManager.race(Promise.all(taskQueue.map(t => t.promise())));
+    const allCompletePromise = abortHandle.race(Promise.all(taskQueue.map(t => t.promise())));
     next();
     return allCompletePromise;
 }

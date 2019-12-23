@@ -1,8 +1,8 @@
-import { AbortManager } from '../../src/utils/abort';
+import { AbortHandle } from '../../src/utils/abort';
 import { sleep } from '../../src/utils/async';
 
 test('AbortablePromise', async () => {
-    const abort = new AbortManager();
+    const abort = new AbortHandle();
 
     const p1 = abort.race(sleep(10).then(() => 'RESULT1'));
     await expect(p1).resolves.toMatchInlineSnapshot(`"RESULT1"`);

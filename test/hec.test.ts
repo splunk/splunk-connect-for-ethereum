@@ -127,6 +127,7 @@ test('parseHecConfig', () => {
           "url": "https://localhost:8088/services/collector/event/1.0",
           "userAgent": "ethlogger-hec-client/1.0",
           "validateCertificate": false,
+          "waitForAvailability": 0,
         }
     `);
 });

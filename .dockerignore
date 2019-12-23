@@ -1,0 +1,10 @@
+/dist
+/lib
+/tmp
+/test
+/docs
+/node_modules
+/.git
+/.vscode
+/checkpoints.json
+/.ethlogger-state.json

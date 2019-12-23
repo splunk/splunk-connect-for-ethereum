@@ -1,4 +1,3 @@
-import { IFlag } from '@oclif/command/lib/flags';
 import { execSync } from 'child_process';
 import debug from 'debug';
 import { readFile, writeFile } from 'fs-extra';
@@ -24,6 +23,7 @@ interface Field {
     description?: string;
     example?: string;
     default?: string;
+    see?: string;
 }
 
 const inlineCode = (s: string) => '`' + s + '`';
@@ -61,6 +61,8 @@ interface Section {
 
 const formatExample = (example?: string) => (example != null ? `Example: ${inlineCode(example)}` : undefined);
 
+const formatSeeAlso = (see?: string) => (see != null ? `See ${see}` : undefined);
+
 function formatSection({ name, description, fields }: Section): string {
     let out = `### ${name}\n\n`;
     if (description) {
@@ -72,7 +74,11 @@ function formatSection({ name, description, fields }: Section): string {
         inlineCode(field.name),
         formatTypeInfo(field.type),
         ...(hasDescription
-            ? [[formatDescription(field.description), formatExample(field.example)].filter(s => !!s).join('<br><br>')]
+            ? [
+                  [formatDescription(field.description), formatExample(field.example), formatSeeAlso(field.see)]
+                      .filter(s => !!s)
+                      .join('<br><br>'),
+              ]
             : []),
         ...(hasDefault ? [field.default ? inlineCode(field.default) : undefined] : []),
     ]);
@@ -83,9 +89,8 @@ function formatSection({ name, description, fields }: Section): string {
     return out;
 }
 
-function createConfigurationSchemaReference(): string {
+function parsesTypescriptProgram(): ts.Program {
     const configFile = join(__dirname, '../tsconfig.json');
-
     const config = ts.parseConfigFileTextToJson(configFile, ts.sys.readFile(configFile)!);
     const configParseResult = ts.parseJsonConfigFileContent(
         config,
@@ -94,7 +99,6 @@ function createConfigurationSchemaReference(): string {
         {},
         basename(configFile)
     );
-
     const options = configParseResult.options;
     options.noEmit = true;
 
@@ -103,61 +107,65 @@ function createConfigurationSchemaReference(): string {
         options,
         projectReferences: configParseResult.projectReferences,
     });
-    const typeChecker = program.getTypeChecker();
+    return program;
+}
 
-    const findType = (name: string): ts.Type => {
-        for (const sourceFile of program.getSourceFiles()) {
-            if (sourceFile.fileName.startsWith(join(process.cwd(), 'src'))) {
-                function findRecursive(node: ts.Node): ts.Type | undefined {
-                    switch (node.kind) {
-                        case ts.SyntaxKind.InterfaceDeclaration:
-                        case ts.SyntaxKind.TypeAliasDeclaration:
-                            const nodeType = typeChecker.getTypeAtLocation(node);
-                            const typeName = typeChecker.typeToString(nodeType);
-                            if (typeName === name) {
-                                log(`Found type %s in source file %s`, typeName, sourceFile.fileName);
-                                return nodeType;
-                            }
-                            break;
+function findType(name: string, program: ts.Program, typeChecker: ts.TypeChecker): ts.Type {
+    for (const sourceFile of program.getSourceFiles()) {
+        if (sourceFile.fileName.startsWith(join(process.cwd(), 'src'))) {
+            function findRecursive(node: ts.Node): ts.Type | undefined {
+                switch (node.kind) {
+                    case ts.SyntaxKind.InterfaceDeclaration:
+                    case ts.SyntaxKind.TypeAliasDeclaration:
+                        const nodeType = typeChecker.getTypeAtLocation(node);
+                        const typeName = typeChecker.typeToString(nodeType);
+                        if (typeName === name) {
+                            log(`Found type %s in source file %s`, typeName, sourceFile.fileName);
+                            return nodeType;
+                        }
+                        break;
 
-                        default:
-                            for (const child of node.getChildren(sourceFile)) {
-                                const type = findRecursive(child);
-                                if (type != null) {
-                                    return type;
-                                }
+                    default:
+                        for (const child of node.getChildren(sourceFile)) {
+                            const type = findRecursive(child);
+                            if (type != null) {
+                                return type;
                             }
-                    }
-                }
-                const type = findRecursive(sourceFile);
-                if (type != null) {
-                    return type;
+                        }
                 }
             }
+            const type = findRecursive(sourceFile);
+            if (type != null) {
+                return type;
+            }
         }
-        throw new Error(`Type ${name} not found`);
-    };
+    }
+    throw new Error(`Type ${name} not found`);
+}
 
-    const entryNodeType = findType('EthloggerConfigSchema');
+function createConfigurationSchemaReference(): string {
+    const program = parsesTypescriptProgram();
+    const typeChecker = program.getTypeChecker();
+    const entryNodeType = findType('EthloggerConfigSchema', program, typeChecker);
     const sections: Section[] = [];
     const seenSections: Set<string> = new Set();
 
-    function appendSectionForType(entryNodeType: ts.Type) {
-        if (seenSections.has(entryNodeType.symbol.name)) {
+    function appendSectionForType(configSchemaType: ts.Type) {
+        if (seenSections.has(configSchemaType.symbol.name)) {
             return;
         }
-        seenSections.add(entryNodeType.symbol.name);
+        seenSections.add(configSchemaType.symbol.name);
 
         const fields: Field[] = [];
-        const docs = entryNodeType.symbol?.getDocumentationComment(typeChecker);
+        const docs = configSchemaType.symbol?.getDocumentationComment(typeChecker);
         const section: Section = {
-            name: entryNodeType.symbol?.name?.replace(/Schema$/, '').replace(/Config$/, ''),
+            name: configSchemaType.symbol?.name?.replace(/Schema$/, '').replace(/Config$/, ''),
             description: docs && docs.length ? ts.displayPartsToString(docs) : undefined,
             fields,
         };
-        log('Adding reference section for type %o -> %o', entryNodeType.symbol?.name, section.name);
+        log('Adding reference section for type %o -> %o', configSchemaType.symbol?.name, section.name);
         sections.push(section);
-        const members = entryNodeType.symbol.members?.values();
+        const members = configSchemaType.symbol.members?.values();
         if (members) {
             while (true) {
                 const { done, value: member } = members.next();
@@ -181,6 +189,18 @@ function createConfigurationSchemaReference(): string {
                     }
                     if (flags & ts.TypeFlags.Union) {
                         const unionType = type as ts.UnionType;
+                        const hasPrimitiveType = unionType.types.some(
+                            t =>
+                                t.flags & ts.TypeFlags.String ||
+                                t.flags & ts.TypeFlags.Boolean ||
+                                t.flags & ts.TypeFlags.Number
+                        );
+                        if (hasPrimitiveType && type.aliasSymbol) {
+                            return {
+                                type: 'object',
+                                name: type.aliasSymbol.name.replace(/Schema$/, '').replace(/Config$/, ''),
+                            };
+                        }
                         return unionType.types.map(resolveType);
                     }
                     if (flags & ts.TypeFlags.Object) {
@@ -193,20 +213,29 @@ function createConfigurationSchemaReference(): string {
                         if (objectType.objectFlags & ts.ObjectFlags.Anonymous) {
                             return { type: 'primitive', name: 'object' };
                         } else {
-                            // TODO HACK - need to extract generic type parameter from Partial<HecConfigSchema>
-                            return { type: 'object', name: 'Hec' };
+                            if (
+                                type.aliasSymbol &&
+                                type.aliasSymbol.name === 'Partial' &&
+                                type.aliasTypeArguments?.length === 1
+                            ) {
+                                return resolveType(type.aliasTypeArguments[0]);
+                            }
+
+                            return { type: 'unknown' };
                         }
                     }
                     return { type: 'unknown' };
                 };
                 const docs = member.getDocumentationComment(typeChecker).filter(d => d.kind === 'text');
                 const example = member.getJsDocTags().find(t => t.name === 'example')?.text;
+                const see = member.getJsDocTags().find(t => t.name === 'see')?.text;
                 const defaultValue = member.getJsDocTags().find(t => t.name === 'default')?.text;
                 section.fields.push({
                     name: member.name,
                     type: resolveType(memberType),
                     description: docs.length ? docs.map(d => d.text).join(' ') : undefined,
                     example,
+                    see,
                     default: defaultValue,
                 });
             }
@@ -238,6 +267,39 @@ function generateEnvReference(): string {
     return markdownTable(rows);
 }
 
+function generateMetaVariablesReference() {
+    const program = parsesTypescriptProgram();
+    const typeChecker = program.getTypeChecker();
+    const metaVariablesType = findType('MetadataVariables', program, typeChecker);
+
+    const members = metaVariablesType.symbol.members?.values();
+    if (members == null) {
+        throw new Error('Did not fnid members for MetadataVariables');
+    }
+
+    const table = [['Variable', 'Description']];
+
+    while (true) {
+        const { done, value: member } = members.next();
+        if (done) {
+            break;
+        }
+
+        table.push([
+            inlineCode(`$${member.name}`),
+            formatDescription(
+                member
+                    .getDocumentationComment(typeChecker)
+                    .filter(d => d.kind === 'text')
+                    .map(d => d.text)
+                    .join(' ')
+            ),
+        ]);
+    }
+
+    return markdownTable(table);
+}
+
 function replaceContent(originalContent: string, anchorName: string, replacement: string): string {
     const startAnchor = `<!-- ${anchorName} -->`;
     const endAnchor = `<!-- ${anchorName}-END -->`;
@@ -264,9 +326,13 @@ async function main() {
     const exampleCodeBlock = '\n```yaml\n' + exampleContent + '\n```\n';
 
     const updatedContent = replaceContent(
-        replaceContent(configDocsContent, 'REFERENCE', configSchemaReference),
-        'EXAMPLE',
-        exampleCodeBlock
+        replaceContent(
+            replaceContent(configDocsContent, 'REFERENCE', configSchemaReference),
+            'EXAMPLE',
+            exampleCodeBlock
+        ),
+        'METAVARIABLES',
+        generateMetaVariablesReference()
     );
     log(`Writing updated ${configurationDocsPath}`);
     await writeFile(configurationDocsPath, updatedContent, { encoding: 'utf-8' });

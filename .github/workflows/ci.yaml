@@ -16,6 +16,20 @@ jobs:
                   npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn build
+    docker-image:
+        runs-on: self-hosted
+        steps:
+            - uses: actions/checkout@v1
+            - name: Build docker image
+              run: docker build -t ethlogger .
+            - name: Login to docker registry
+              run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+              env:
+                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+            - name: Publish docker image
+              run: |
+                  docker tag ethlogger docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
+                  docker push docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
     unit-tests:
         runs-on: self-hosted
         steps:

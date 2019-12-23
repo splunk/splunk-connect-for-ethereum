@@ -39,6 +39,7 @@ export type OutputMessage =
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
     flushStats(): Stats;
+    waitUntilAvailable?(maxTime: number): Promise<void>;
 }
 
 export class HecOutput implements Output, ManagedResource {
@@ -74,6 +75,16 @@ export class HecOutput implements Output, ManagedResource {
             default:
                 throw new Error(`Unrecognized output message: ${msg}`);
         }
+    }
+
+    public waitUntilAvailable(maxTime: number): Promise<void> {
+        if (this.eventsHec === this.metricsHec || this.eventsHec.config.url === this.metricsHec.config.url) {
+            return this.eventsHec.waitUntilAvailable(maxTime);
+        }
+        return Promise.all([
+            this.eventsHec.waitUntilAvailable(maxTime),
+            this.metricsHec.waitUntilAvailable(maxTime),
+        ]).then(() => Promise.resolve());
     }
 
     public flushStats() {
@@ -138,11 +149,19 @@ export class DevNullOutput implements Output {
     }
 }
 
-export function createOutput(config: EthloggerConfig, baseHecClient: HecClient): Output {
+export async function createOutput(config: EthloggerConfig, baseHecClient: HecClient): Promise<Output> {
     if (config.output.type === 'hec') {
         const eventsHec = config.hec.events ? baseHecClient.clone(config.hec.events) : baseHecClient;
         const metricsHec = config.hec.metrics ? baseHecClient.clone(config.hec.metrics) : baseHecClient;
-        return new HecOutput(eventsHec, metricsHec, config.output);
+        const hecOutput = new HecOutput(eventsHec, metricsHec, config.output);
+        const maxWaitTime = Math.max(
+            eventsHec.config.waitForAvailability ?? 0,
+            metricsHec.config.waitForAvailability ?? 0
+        );
+        if (maxWaitTime > 0) {
+            await hecOutput.waitUntilAvailable(maxWaitTime);
+        }
+        return hecOutput;
     } else if (config.output.type === 'console') {
         return new ConsoleOutput();
     } else if (config.output.type === 'file') {

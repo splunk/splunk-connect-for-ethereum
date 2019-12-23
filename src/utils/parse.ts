@@ -60,7 +60,7 @@ export function durationStringToMs(dur: string): number {
             millis += n * 1_000;
             i += 1;
         } else if (unitStr[0] === 'm') {
-            millis += n * 60_0000;
+            millis += n * 60_000;
             i += 1;
         } else if (unitStr[0] === 'h') {
             millis += n * 360_000;

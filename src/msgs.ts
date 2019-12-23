@@ -244,15 +244,25 @@ export interface QuorumProtocolMessage {
 }
 
 export interface NodeMetrics {
+    /** The current price per gas in wei */
     gasPrice?: number;
+    /** The number of hashes per second that the node is mining with */
     hashRate?: number;
+    /** The number of peers currently connected to the client */
     peerCount?: number;
+    /** The number of transactions currently pending */
     pendingTransactionCount?: number;
+    /** If the node is syncing: the current block, same as eth_blockNumber */
     'syncing.currentBlock'?: number;
+    /** If the node is syncing: the block at which the import started (will only be reset, after the sync reached his head) */
     'syncing.startingBlock'?: number;
+    /** If the node is syncing: estimated highest block */
     'syncing.highestBlock'?: number;
+    /** Only for geth nodes: Number of pending transaactions in txpool */
     'geth.txpool.pending'?: number;
+    /** Only for geth nodes: Number of queued transaactions in txpool */
     'geth.txpool.queued'?: number;
+    /** Other, platform-specific metrics */
     [name: string]: number | undefined;
 }
 

@@ -1,7 +1,7 @@
 import { EthereumClient } from './eth/client';
 import { Output } from './output';
 import { NodePlatformAdapter } from './platforms';
-import { ABORT, AbortManager } from './utils/abort';
+import { ABORT, AbortHandle } from './utils/abort';
 import { alwaysResolve, sleep } from './utils/async';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
@@ -21,7 +21,7 @@ const initialCounters = {
 };
 
 export class NodeStatsCollector implements ManagedResource {
-    private abort = new AbortManager();
+    private abort = new AbortHandle();
     private donePromise: Promise<any> | null = null;
     private metricsRetryWaitTime: WaitTime;
     private infoRetryWaitTime: WaitTime;
