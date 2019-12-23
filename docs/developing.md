@@ -4,8 +4,9 @@
 
 **Prerequisites**
 
--   Node.js 12
--   Yarn
+-   [Node.js](https://nodejs.org/) 12
+-   [Yarn package manager](https://yarnpkg.com/) (recent/latest version)
+-   [Docker](https://www.docker.com/) to build docker images
 
 1. Clone the respository
 2. Install dependencies
@@ -18,6 +19,18 @@ $ yarn install
 
 ```sh-session
 $ ./bin/run --help
+```
+
+### Build ethlogger
+
+```sh-session
+$ yarn build
+```
+
+### Build ethlogger docker image
+
+```sh-session
+$ docker build -t ethlogger .
 ```
 
 ## Debugging
@@ -34,7 +47,7 @@ $ ./bin/run --trace ...
 
 > Note that `--trace` is very verbose
 
-Under the hood, ethlogger uses the [debug](https://yarnpkg.com/en/package/debug) utility, which is also used by other third-party libraries used within ethloger. Ethloggers own logger name all start with `ethlogger:`. To enable debugging for other libraries you can set the `DEBUG` environment variable appropriately, for example:
+Under the hood, ethlogger uses the [debug](https://yarnpkg.com/en/package/debug) utility, which is also used by other third-party libraries used within ethlogger. Ethloggers own logger name all start with `ethlogger:`. To enable debugging for other libraries you can set the `DEBUG` environment variable appropriately, for example:
 
 ```sh-session
 $ DEBUG=@oclif* ./bin/run...

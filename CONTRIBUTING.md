@@ -35,11 +35,15 @@ Please make sure to read and observe our [Code of Conduct](CODE_OF_CONDUCT.md). 
 
 ##### Setup Development Environment
 
-Check out the [developing documentation](./docs/developing.md)
+Check out the [developer documentation](./docs/developing.md)
 
 ##### Code Style
 
-See [code style guidance](./docs/developing.md#code-style) in the developing documentation.
+See [code style guidance](./docs/developing.md#code-style) in the developer documentation.
+
+##### Testing
+
+See [testing section](./docs/developing.md#run-tests) in the developer docs.
 
 ## Contribution Workflow
 
@@ -51,8 +55,7 @@ Have ideas on improvements? See something that needs work? While the community e
 
 If you are reporting a bug, please include:
 
--   Your operating system name and version
--   Any details about your local setup that might be helpful in troubleshooting (ex. Python interpreter version, Ansible version, etc.)
+-   Any details about your local setup that might be helpful in troubleshooting
 -   Detailed steps to reproduce the bug
 
 We'd also like to hear about your propositions and suggestions. Feel free to submit them as issues and:
@@ -96,32 +99,7 @@ When reviewing PRs from others [The Gentle Art of Patch Review](http://sage.thes
 -   Is the contribution architected correctly?
 -   Is the contribution polished?
 
-For this project, we require that at least 2 approvals are given and a build from our continuous integration system is successful off of your branch. Please note that any new changes made with your existing pull request during review will automatically unapprove and retrigger another build/round of tests.
-
-##### Testing
-
-Testing is the responsibility of all contributors. In general, we try to adhere to [Google's test sizing philosophy](https://testing.googleblog.com/2010/12/test-sizes.html) when structuring tests.
-
-There are multiple types of tests. The location of the test code varies with type, as do the specifics of the environment needed to successfully run the test.
-
-1. **Small:** Very fine-grained; exercises low-level logic at the scope of a function or a class; no external resources (except possibly a small data file or two, but preferably no file system dependencies whatsoever); very fast execution on the order of seconds
-
-    ```
-    $ make small-tests
-    ```
-
-2. **Medium:** Exercises interaction between discrete components; may have file system dependencies or run multiple processes; runs on the order of minutes
-
-    ```
-    $ make medium-tests
-    ```
-
-3. **Large:** Exercises the entire system, end-to-end; used to identify crucial performance and basic functionality that will be run for every code check-in and commit; may launch or interact with services in a datacenter, preferably with a staging environment to avoid affecting production
-    ```
-    $ make large-tests
-    ```
-
-Continuous integration will run all of these tests either as pre-submits on PRs, post-submits against master/release branches, or both.
+For this project, we require that at least 1 approval is given and a build from our continuous integration system is successful off of your branch. Please note that any new changes made with your existing pull request during review will automatically unapprove and retrigger another build/round of tests.
 
 ##### Documentation
 
