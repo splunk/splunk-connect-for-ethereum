@@ -80,12 +80,12 @@ export interface EthereumConfigSchema {
     /** URL of JSON RPC endpoint */
     url: string;
     /**
-     * Network name send as a field with every event and metric to HEC.
+     * Network name logged as a field with every event and metric.
      * Ethlogger will attempt to automatically determine if not specified
      * but there are only a handful of known public networkIds associated
      * with particular networks (ethereum mainnet, ropsten, ...). This value
-     * will allow consumers of data to distinguis between different networks
-     * in case multiple ethloggers are sending events from different networks.
+     * will allow consumers of data to distinguish between different networks
+     * in case multiple networks are being logged to one place.
      */
     network?: string;
     /** HTTP tansport configuration */
@@ -119,14 +119,14 @@ export interface CheckpointConfig extends CheckpointConfigSchema {
 
 /**
  * The ABI repository is used to decode ABI information from smart contract calls and event logs.
- * It generates and adds some additinal information in transaction and events, including smart contract
+ * It generates and adds some additional information in transactions and events, including smart contract
  * method call parameter names, values and data types, as well as smart contract names associated with a
  * particular contract address.
  */
 export interface AbiRepositoryConfigSchema {
     /** If specified, the ABI repository will recursively search this directory for ABI files */
     directory?: string;
-    /**  */
+    /** Currently set to `.json` as the file extension for ABIs. */
     fileExtension?: string;
     /**
      * If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI
@@ -205,8 +205,7 @@ export interface NodeInfoConfig extends Omit<NodeInfoConfigSchema, 'retryWaitTim
 }
 
 /**
- * Ethlogger-internal metrics allow for visibilty into the operation of ethlogger itself,
- * detect and troubleshoot bottlenecks and improve configuration.
+ * Ethlogger-internal metrics allow for visibility into the operation of ethlogger itself.
  */
 export interface InternalMetricsConfigSchema {
     /** Specify `false` to disable internal metrics collection */
@@ -338,7 +337,9 @@ export interface HecConfigSchema {
     validateCertificate?: boolean;
     /** Maximum number of sockets HEC will use (per host) */
     maxSockets?: number;
-    /** User-agent header sent to HEC */
+    /** User-agent header sent to HEC
+     *  @default `ethlogger-hec-client/<version>`
+     */
     userAgent?: string;
     /** Wait time before retrying to send a (batch of) HEC messages after an error */
     retryWaitTime?: WaitTimeConfig;
