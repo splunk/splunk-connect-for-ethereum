@@ -137,7 +137,7 @@ export interface AddressInfo {
 export interface FunctionCall {
     /** Function name */
     name: string;
-    /** Function signature, defined as the first 4 bytes of the keccak256 hash of the function name and parameter types.*/
+    /** Function signature (name and parameter types) */
     signature: string;
     /** List of decoded parameters */
     params: Array<{
@@ -207,7 +207,7 @@ export interface LogEventMessage {
 }
 
 export interface NodeInfo {
-    /** Detected node platform via introspection of nodeInfo */
+    /** Detected node platform via introspection of web3_clientVersion */
     platform: string;
     /** Full client version string retrieved from the node */
     clientVersion: string;
