@@ -159,18 +159,11 @@ export type ContractInfoConfig = ContractInfoConfigSchema;
 export interface BlockWatcherConfigSchema {
     /** Specify `false` to disable the block watcher */
     enabled: boolean;
-    /**
-     * Interval in which to look for the latest block number (if not busy processing the backlog)
-     * @see [Configuring durations](#Durations)
-     */
+    /** Interval in which to look for the latest block number (if not busy processing the backlog) */
     pollInterval: DurationConfig;
     /** Max. number of blocks to fetch at once */
     blocksMaxChunkSize: number;
-    /**
-     * If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.
-     * Specify a positive integer for an absolute block number or a negative integer to start at n blocks
-     * before the latest one. You can also specify "genesis" (block 0) or "latest" (currently latest block).
-     */
+    /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
     startAt: StartBlock;
     /** Wait time before retrying to fetch and process blocks after failure */
     retryWaitTime: WaitTimeConfig;
@@ -196,7 +189,7 @@ export interface NodeMetricsConfig extends Omit<NodeMetricsConfigSchema, 'retryW
     retryWaitTime: WaitTime;
 }
 
-/** Platfrom specific node information is collection on regular interval */
+/** Platform specific node information is collection on regular interval */
 export interface NodeInfoConfigSchema {
     /** Specify `false` to disable node info collection */
     enabled: boolean;
@@ -265,6 +258,7 @@ export interface HecOutputConfig {
     metricsPrefix?: string;
 }
 
+/** Configurable set of `sourcetype` field values emitted by ethlogger */
 export interface SourcetypesSchema {
     /** @default "ethereum:block" */
     block?: string;
@@ -311,14 +305,20 @@ export interface HecConfigSchema {
     url?: string;
     /** The HEC token used to authenticate HTTP requests */
     token?: string;
-    /** Defaults for host, source, sourcetype and index. Can be overriden for each message */
+    /**
+     * Defaults for host, source, sourcetype and index. Can be overriden for each message
+     * @see [Use variables in metadata](#metadata-variables)
+     */
     defaultMetadata?: {
         host?: string;
         source?: string;
         sourcetype?: string;
         index?: string;
     };
-    /** Default set of fields to apply to all events and metrics sent with this HEC client */
+    /**
+     * Default set of fields to apply to all events and metrics sent with this HEC client
+     * @see [Use variables in metadata](#metadata-variables)
+     */
     defaultFields?: { [k: string]: any };
     /** Maximum number of entries in the HEC message queue before flushing it */
     maxQueueEntries?: number;

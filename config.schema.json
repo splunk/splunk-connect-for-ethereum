@@ -57,7 +57,7 @@
                             "type": "number"
                         }
                     ],
-                    "description": "If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.\nSpecify a positive integer for an absolute block number or a negative integer to start at n blocks\nbefore the latest one. You can also specify \"genesis\" (block 0) or \"latest\" (currently latest block)."
+                    "description": "If no checkpoint exists (yet), this specifies which block should be chosen as the starting point."
                 }
             },
             "type": "object"
@@ -371,7 +371,7 @@
             "type": "object"
         },
         "NodeInfoConfigSchema": {
-            "description": "Platfrom specific node information is collection on regular interval",
+            "description": "Platform specific node information is collection on regular interval",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node info",
@@ -525,6 +525,7 @@
             "type": "object"
         },
         "SourcetypesSchema": {
+            "description": "Configurable set of `sourcetype` field values emitted by ethlogger",
             "properties": {
                 "block": {
                     "default": "ethereum:block",

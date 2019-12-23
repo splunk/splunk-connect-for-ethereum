@@ -23,6 +23,7 @@ interface Field {
     description?: string;
     example?: string;
     default?: string;
+    see?: string;
 }
 
 const inlineCode = (s: string) => '`' + s + '`';
@@ -60,6 +61,8 @@ interface Section {
 
 const formatExample = (example?: string) => (example != null ? `Example: ${inlineCode(example)}` : undefined);
 
+const formatSeeAlso = (see?: string) => (see != null ? `See ${see}` : undefined);
+
 function formatSection({ name, description, fields }: Section): string {
     let out = `### ${name}\n\n`;
     if (description) {
@@ -71,7 +74,11 @@ function formatSection({ name, description, fields }: Section): string {
         inlineCode(field.name),
         formatTypeInfo(field.type),
         ...(hasDescription
-            ? [[formatDescription(field.description), formatExample(field.example)].filter(s => !!s).join('<br><br>')]
+            ? [
+                  [formatDescription(field.description), formatExample(field.example), formatSeeAlso(field.see)]
+                      .filter(s => !!s)
+                      .join('<br><br>'),
+              ]
             : []),
         ...(hasDefault ? [field.default ? inlineCode(field.default) : undefined] : []),
     ]);
@@ -180,6 +187,18 @@ function createConfigurationSchemaReference(): string {
                     }
                     if (flags & ts.TypeFlags.Union) {
                         const unionType = type as ts.UnionType;
+                        const hasPrimitiveType = unionType.types.some(
+                            t =>
+                                t.flags & ts.TypeFlags.String ||
+                                t.flags & ts.TypeFlags.Boolean ||
+                                t.flags & ts.TypeFlags.Number
+                        );
+                        if (hasPrimitiveType && type.aliasSymbol) {
+                            return {
+                                type: 'object',
+                                name: type.aliasSymbol.name.replace(/Schema$/, '').replace(/Config$/, ''),
+                            };
+                        }
                         return unionType.types.map(resolveType);
                     }
                     if (flags & ts.TypeFlags.Object) {
@@ -192,20 +211,29 @@ function createConfigurationSchemaReference(): string {
                         if (objectType.objectFlags & ts.ObjectFlags.Anonymous) {
                             return { type: 'primitive', name: 'object' };
                         } else {
-                            // TODO HACK - need to extract generic type parameter from Partial<HecConfigSchema>
-                            return { type: 'object', name: 'Hec' };
+                            if (
+                                type.aliasSymbol &&
+                                type.aliasSymbol.name === 'Partial' &&
+                                type.aliasTypeArguments?.length === 1
+                            ) {
+                                return resolveType(type.aliasTypeArguments[0]);
+                            }
+
+                            return { type: 'unknown' };
                         }
                     }
                     return { type: 'unknown' };
                 };
                 const docs = member.getDocumentationComment(typeChecker).filter(d => d.kind === 'text');
                 const example = member.getJsDocTags().find(t => t.name === 'example')?.text;
+                const see = member.getJsDocTags().find(t => t.name === 'see')?.text;
                 const defaultValue = member.getJsDocTags().find(t => t.name === 'default')?.text;
                 section.fields.push({
                     name: member.name,
                     type: resolveType(memberType),
                     description: docs.length ? docs.map(d => d.text).join(' ') : undefined,
                     example,
+                    see,
                     default: defaultValue,
                 });
             }
