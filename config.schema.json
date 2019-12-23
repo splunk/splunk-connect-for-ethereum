@@ -2,13 +2,14 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "definitions": {
         "AbiRepositoryConfigSchema": {
-            "description": "The ABI repository is used to decode ABI information from smart contract calls and event logs.\nIt generates and adds some additinal information in transaction and events, including smart contract\nmethod call parameter names, values and data types, as well as smart contract names associated with a\nparticular contract address.",
+            "description": "The ABI repository is used to decode ABI information from smart contract calls and event logs.\nIt generates and adds some additional information in transactions and events, including smart contract\nmethod call parameter names, values and data types, as well as smart contract names associated with a\nparticular contract address.",
             "properties": {
                 "directory": {
                     "description": "If specified, the ABI repository will recursively search this directory for ABI files",
                     "type": "string"
                 },
                 "fileExtension": {
+                    "description": "Currently set to `.json` as the file extension for ABIs.",
                     "type": "string"
                 },
                 "fingerprintContracts": {
@@ -133,7 +134,7 @@
                     "description": "HTTP tansport configuration"
                 },
                 "network": {
-                    "description": "Network name send as a field with every event and metric to HEC.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public networkIds associated\nwith particular networks (ethereum mainnet, ropsten, ...). This value\nwill allow consumers of data to distinguis between different networks\nin case multiple ethloggers are sending events from different networks.",
+                    "description": "Network name logged as a field with every event and metric.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public networkIds associated\nwith particular networks (ethereum mainnet, ropsten, ...). This value\nwill allow consumers of data to distinguish between different networks\nin case multiple networks are being logged to one place.",
                     "type": "string"
                 },
                 "url": {
@@ -281,6 +282,7 @@
                     "type": "string"
                 },
                 "userAgent": {
+                    "default": "`ethlogger-hec-client/<version>`",
                     "description": "User-agent header sent to HEC",
                     "type": "string"
                 },
@@ -331,7 +333,7 @@
             "type": "object"
         },
         "InternalMetricsConfigSchema": {
-            "description": "Ethlogger-internal metrics allow for visibilty into the operation of ethlogger itself,\ndetect and troubleshoot bottlenecks and improve configuration.",
+            "description": "Ethlogger-internal metrics allow for visibility into the operation of ethlogger itself.",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect internal metrics",
@@ -367,7 +369,7 @@
             "type": "object"
         },
         "NodeInfoConfigSchema": {
-            "description": "Platfrom specific node information is collection on regular interval",
+            "description": "Platform specific node information is collection on regular interval",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node info",
@@ -506,6 +508,7 @@
                     "type": "string"
                 },
                 "userAgent": {
+                    "default": "`ethlogger-hec-client/<version>`",
                     "description": "User-agent header sent to HEC",
                     "type": "string"
                 },
