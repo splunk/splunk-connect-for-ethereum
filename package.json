@@ -1,12 +1,12 @@
 {
-    "name": "@splunk/ethlogger",
-    "description": "Ethereum and Quorum Logger for Splunk",
+    "name": "@splunk/splunk-connect-for-ethereum",
+    "description": "Splunk Connect for Ethereum",
     "version": "1.0.0",
     "author": "Splunk",
     "bin": {
         "ethlogger": "./bin/run"
     },
-    "bugs": "https://github.com/splunk/ethlogger/issues",
+    "bugs": "https://github.com/splunk/splunk-connect-for-ethereum/issues",
     "dependencies": {
         "@oclif/command": "^1",
         "@oclif/config": "^1",
@@ -25,6 +25,9 @@
         "web3-utils": "^1.2.4"
     },
     "devDependencies": {
+        "@commitlint/cli": "^8.2.0",
+        "@commitlint/config-conventional": "^8.2.0",
+        "@semantic-release/git": "^7.0.18",
         "@types/bl": "^2.1.0",
         "@types/bn.js": "^4.11.5",
         "@types/debug": "^4.1.5",
@@ -43,6 +46,7 @@
         "markdown-table": "^1.1.3",
         "prettier": "^1.19.1",
         "pretty-quick": "^2.0.1",
+        "semantic-release": "^15.14.0",
         "ts-jest": "^24.2.0",
         "ts-node": "^8.5.4",
         "typescript": "^3.7.3",
@@ -55,7 +59,7 @@
         "/bin",
         "/lib"
     ],
-    "homepage": "https://github.com/splunk/ethlogger",
+    "homepage": "https://github.com/splunk/splunk-connect-for-ethereum",
     "keywords": [
         "splunk",
         "ethereum",
@@ -67,10 +71,11 @@
     "oclif": {
         "bin": "ethlogger"
     },
-    "repository": "splunk/ethlogger",
+    "repository": "splunk/splunk-connect-for-ethereum",
     "husky": {
         "hooks": {
-            "pre-commit": "pretty-quick --staged"
+            "pre-commit": "pretty-quick --staged",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
         }
     },
     "scripts": {
@@ -83,7 +88,8 @@
         "format:verify": "git ls-files | grep -E \"\\.(jsx?|tsx?|css|md|ya?ml|json)$\" | xargs prettier --list-different",
         "generate:configschema": "typescript-json-schema ./tsconfig.json EthloggerConfigSchema > config.schema.json && prettier --write config.schema.json",
         "generate:docs": "ts-node scripts/gendocs.ts",
-        "generate:all": "yarn generate:configschema && yarn generate:docs"
+        "generate:all": "yarn generate:configschema && yarn generate:docs",
+        "semantic-release": "semantic-release"
     },
     "types": "lib/index.d.ts"
 }
