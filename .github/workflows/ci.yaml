@@ -79,7 +79,6 @@ jobs:
                   CI: true
     release:
         runs-on: self-hosted
-        # if: github.ref == 'sigi/semantic-release'
         needs:
             - build
             - docker-image
@@ -99,3 +98,4 @@ jobs:
                   yarn semantic-release
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
