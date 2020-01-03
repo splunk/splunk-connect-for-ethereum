@@ -57,7 +57,7 @@ export function computeContractFingerprint(
     if (functions.length === 0 && events.length === 0) {
         return;
     }
-    const fingerprint = sha3(`${functions.join(',')}|${events.join(',')}`).slice(2); // TODO hash
+    const fingerprint = sha3(`${functions.join(',')}|${events.join(',')}`).slice(2);
     return fingerprint;
 }
 

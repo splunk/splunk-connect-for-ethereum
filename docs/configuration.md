@@ -316,7 +316,7 @@ Linear increasing wait time
 **Example**
 
 ```json
-{ "type": "linear", "min": 0, "step": "30s", "max": "5m" }
+{ "type": "linear-backoff", "min": 0, "step": "30s", "max": "5m" }
 ```
 
 ### StartBlock

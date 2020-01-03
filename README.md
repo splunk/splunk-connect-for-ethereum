@@ -22,11 +22,11 @@ If you want to learn more about [Splunk's](https://www.splunk.com) efforts to ma
 $ ethlogger [...options]
 ```
 
-Details about ethlogger's command-line usage in the [CLI docs](./docs/cli.md)
+Details about ethlogger's command-line usage in the [CLI docs](https://github.com/splunk/splunk-connect-for-ethereum/docs/cli.md)
 
 ## Configuration
 
-Find out how to configure ethlogger in the [configuration docs](./docs/configuration.md).
+Find out how to configure ethlogger in the [configuration docs](https://github.com/splunk/splunk-connect-for-ethereum/docs/configuration.md).
 
 ## Docker
 
@@ -44,7 +44,7 @@ $ docker run -it docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlog
     --hec-metrics-index=metrics
 ```
 
-There is also an example on how to run [ethlogger in docker-compose](./examples/docker-compose-basic).
+There is also an example on how to run [ethlogger in docker-compose](https://github.com/splunk/splunk-connect-for-ethereum/examples/docker-compose-basic).
 
 ## Troubleshooting
 
