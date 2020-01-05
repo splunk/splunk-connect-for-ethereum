@@ -6,20 +6,22 @@ import { parse as parseSemver, rcompare } from 'semver';
 const DOCKER_IMAGE = 'docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlogger';
 const NPM_PACKAGE = '@splunk/splunk-connect-for-ethereum';
 
-async function pullDockerImage(commitSHA: string) {
+async function obtainCurrentDockerImage(commitSHA: string, allowBuild: boolean = false) {
     const img = `${DOCKER_IMAGE}:${commitSHA}`;
-    console.log('Pulling', img);
-    for (let attempt = 1; attempt < 25; attempt++) {
-        try {
-            await execa('docker', ['pull', img], { stdio: 'inherit' });
-            return;
-        } catch (e) {
-            console.error(`Failed to pull docker image: ${e}`);
-            await new Promise(resolve => setTimeout(resolve, 10000));
-        }
-    }
 
-    throw new Error(`Failed to pull docker image ${img}`);
+    try {
+        await execa('docker', ['pull', img]);
+        console.log(`Successfully pulled image ${img} from docker registry, skipping build`);
+        return;
+    } catch (e) {
+        // ignore
+    }
+    if (!allowBuild) {
+        throw new Error(`Unable to obtain docker image for commit SHA ${commitSHA}`);
+    }
+    console.log('Building', img);
+    await execa('docker', ['build', '-t', img, '.'], { stdio: 'inherit' });
+    await execa('docker', ['push', img], { stdio: 'inherit' });
 }
 
 async function tagAndPushDockerImage(commitSHA: string, tag: string) {
@@ -29,21 +31,31 @@ async function tagAndPushDockerImage(commitSHA: string, tag: string) {
     await execa('docker', ['push', `${DOCKER_IMAGE}:${tag}`]);
 }
 
-export async function main() {
-    const tags = (await execa('git', ['tag', '-l', '--points-at', 'HEAD'])).stdout
-        .split('\n')
-        .filter(t => t.startsWith('v'));
+function latestVersion(tags: string[]): string {
+    const sorted = [...tags].sort(rcompare);
+    return sorted[0];
+}
 
-    if (tags.length === 0) {
-        console.log('HEAD is not tagged with a new version. Skipping post-release.');
-        return;
+export async function main(args: string[]) {
+    let tagIsHead = false;
+    let tag = args[0];
+    if (tag == null) {
+        const tags = (await execa('git', ['tag', '-l', '--points-at', 'HEAD'])).stdout
+            .split('\n')
+            .filter(t => t.startsWith('v'));
+
+        if (tags.length === 0) {
+            console.log('HEAD is not tagged with a new version. Skipping post-release.');
+            return;
+        }
+
+        if (tags.length > 1) {
+            console.log('WARNING: HEAD was tagged with multiple v* tags. Using first one.');
+        }
+
+        tag = latestVersion(tags);
+        tagIsHead = true;
     }
-
-    if (tags.length > 1) {
-        console.log('WARNING: HEAD was tagged with multiple v* tags. Using first one.');
-    }
-
-    const tag = tags[0];
 
     if (tag == null || !(tag[0] == 'v')) {
         throw new Error(`Invalid tag ${tag}`);
@@ -58,14 +70,13 @@ export async function main() {
     const commitSHA = (await execa('git', ['rev-parse', tag])).stdout;
     console.log(`Performing post-release steps for tag ${tag}\nVersion: ${semver.version}\nCommit SHA: ${commitSHA})`);
 
-    await pullDockerImage(commitSHA);
+    await obtainCurrentDockerImage(commitSHA, tagIsHead);
     await tagAndPushDockerImage(commitSHA, semver.version);
     if (!semver.prerelease?.length) {
         await tagAndPushDockerImage(commitSHA, `${semver.major}.${semver.minor}`);
         await tagAndPushDockerImage(commitSHA, String(semver.major));
         const allTags = (await execa('git', ['tag', '--list', 'v*'])).stdout.split('\n');
-        allTags.sort(rcompare);
-        if (tag === allTags[0]) {
+        if (tag === latestVersion(allTags)) {
             console.log(`${tag} is the latest release`);
             await tagAndPushDockerImage(commitSHA, 'latest');
         }
@@ -125,7 +136,7 @@ export async function main() {
     });
 }
 
-main().catch(e => {
+main(process.argv.slice(2)).catch(e => {
     console.error(e);
     process.exit(1);
 });
