@@ -29,16 +29,21 @@ async function tagAndPushDockerImage(commitSHA: string, tag: string) {
     await execa('docker', ['push', `${DOCKER_IMAGE}:${tag}`]);
 }
 
-export async function main(args: string[]) {
-    let tag = args[0];
+export async function main() {
+    const tags = (await execa('git', ['tag', '-l', '--points-at', 'HEAD'])).stdout
+        .split('\n')
+        .filter(t => t.startsWith('v'));
 
-    if (tag == null) {
-        throw new Error('Missing tag from argument list');
+    if (tags.length === 0) {
+        console.log('HEAD is not tagged with a new version. Skipping post-release.');
+        return;
     }
 
-    if (tag.startsWith('refs/tags/')) {
-        tag = tag.slice('refs/tags/'.length);
+    if (tags.length > 1) {
+        console.log('WARNING: HEAD was tagged with multiple v* tags. Using first one.');
     }
+
+    const tag = tags[0];
 
     if (tag == null || !(tag[0] == 'v')) {
         throw new Error(`Invalid tag ${tag}`);
@@ -51,7 +56,7 @@ export async function main(args: string[]) {
     }
 
     const commitSHA = (await execa('git', ['rev-parse', tag])).stdout;
-    console.log(`Resolved tag ${tag} to commit SHA ${commitSHA}`);
+    console.log(`Performing post-release steps for tag ${tag}\nVersion: ${semver.version}\nCommit SHA: ${commitSHA})`);
 
     await pullDockerImage(commitSHA);
     await tagAndPushDockerImage(commitSHA, semver.version);
@@ -120,7 +125,7 @@ export async function main(args: string[]) {
     });
 }
 
-main(process.argv.slice(2)).catch(e => {
+main().catch(e => {
     console.error(e);
     process.exit(1);
 });
