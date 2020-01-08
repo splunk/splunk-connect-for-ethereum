@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.0.1...v1.0.2) (2020-01-08)
+
+### Bug Fixes
+
+-   revert change to run ethlogger as unprivileged user for now ([cdea011](https://github.com/splunk/splunk-connect-for-ethereum/commit/cdea011ae3316bab6fb80d33c74ba96c0e6c9865))
+
 ## [1.0.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.0.0...v1.0.1) (2020-01-05)
 
 ### Bug Fixes
