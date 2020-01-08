@@ -23,9 +23,6 @@ COPY --from=builder /ethlogger/lib /ethlogger/lib
 WORKDIR /app
 VOLUME /app
 
-RUN addgroup -S ethlogger && adduser -H -h /app -S ethlogger -G ethlogger && chown -R ethlogger:ethlogger ./
-USER ethlogger
-
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD ethlogger --health-check
 
 ENV NODE_ENV production
