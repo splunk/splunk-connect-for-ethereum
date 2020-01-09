@@ -708,7 +708,11 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
         },
         blockWatcher: {
-            enabled: flags['collect-blocks'] ?? defaults.blockWatcher?.enabled ?? true,
+            enabled:
+                flags['collect-blocks'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-blocks'].env) ??
+                defaults.blockWatcher?.enabled ??
+                true,
             blocksMaxChunkSize: defaults.blockWatcher?.blocksMaxChunkSize ?? 25,
             pollInterval: parseDuration(defaults.blockWatcher?.pollInterval) ?? 500,
             startAt: parseStartAt(flags['start-at-block'] ?? defaults.blockWatcher?.startAt) ?? 'genesis',
@@ -724,6 +728,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         internalMetrics: {
             enabled:
                 flags['collect-internal-metrics'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-internal-metrics'].env) ??
                 defaults.internalMetrics?.enabled ??
                 (() => {
                     if (
@@ -742,12 +747,20 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             collectInterval: parseDuration(defaults.internalMetrics?.collectInterval) ?? 1000,
         },
         nodeInfo: {
-            enabled: flags['collect-node-info'] ?? defaults.nodeInfo?.enabled ?? true,
+            enabled:
+                flags['collect-node-info'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-node-info'].env) ??
+                defaults.nodeInfo?.enabled ??
+                true,
             collectInterval: parseDuration(defaults.nodeInfo?.collectInterval) ?? 60000,
             retryWaitTime: waitTimeFromConfig(defaults.nodeInfo?.retryWaitTime) ?? 60000,
         },
         nodeMetrics: {
-            enabled: flags['collect-node-metrics'] ?? defaults.nodeMetrics?.enabled ?? true,
+            enabled:
+                flags['collect-node-metrics'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-node-metrics'].env) ??
+                defaults.nodeMetrics?.enabled ??
+                true,
             collectInterval: parseDuration(defaults.nodeMetrics?.collectInterval) ?? 60000,
             retryWaitTime: waitTimeFromConfig(defaults.nodeMetrics?.retryWaitTime) ?? 60000,
         },

@@ -155,24 +155,30 @@ class Ethlogger extends Command {
         addResource(nodeStatsCollector);
         internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
 
-        const blockWatcher = new BlockWatcher({
-            checkpoints,
-            ethClient: client,
-            output,
-            abiRepo: abiRepo,
-            startAt: config.blockWatcher.startAt,
-            contractInfoCache,
-            chunkSize: config.blockWatcher.blocksMaxChunkSize,
-            pollInterval: config.blockWatcher.pollInterval,
-        });
-        addResource(blockWatcher);
-        internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
+        let blockWatcher: BlockWatcher | null = null;
+
+        if (config.blockWatcher.enabled) {
+            blockWatcher = new BlockWatcher({
+                checkpoints,
+                ethClient: client,
+                output,
+                abiRepo: abiRepo,
+                startAt: config.blockWatcher.startAt,
+                contractInfoCache,
+                chunkSize: config.blockWatcher.blocksMaxChunkSize,
+                pollInterval: config.blockWatcher.pollInterval,
+            });
+            addResource(blockWatcher);
+            internalStatsCollector.addSource(blockWatcher, 'blockWatcher');
+        } else {
+            debug('Block watcher is disabled');
+        }
 
         internalStatsCollector.start();
 
         return Promise.all(
-            [blockWatcher.start(), nodeStatsCollector.start()].map(p =>
-                p.catch(e => {
+            [blockWatcher?.start(), nodeStatsCollector.start()].map(p =>
+                p?.catch(e => {
                     if (e !== ABORT) {
                         error('Error in ethlogger task:', e);
                         return Promise.reject(e);
