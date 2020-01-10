@@ -33,21 +33,26 @@ export const CLI_FLAGS = {
 
     'collect-blocks': flags.boolean({
         allowNo: true,
+        env: 'COLLECT_BLOCKS',
         description:
-            'Enables ethereum block watcher (enabled by default unless specified otherwise in the config file)',
+            'Enables ethereum block watcher, ingesting blocks, transactions, event logs ' +
+            'and ABI-decoded information from method calls and event logs',
     }),
     'collect-node-metrics': flags.boolean({
         allowNo: true,
+        env: 'COLLECT_NODE_METRICS',
         description:
             'Enables collection of node metrics (enabled by default unless specified otherwise in the config file)',
     }),
     'collect-node-info': flags.boolean({
         allowNo: true,
+        env: 'COLLECT_NODE_INFO',
         description:
             'Enables collection of node info events (enabled by default unless specified otherwise in the config file)',
     }),
     'collect-internal-metrics': flags.boolean({
         allowNo: true,
+        env: 'COLLECT_INTERNAL_METRICS',
         description:
             'Enables collection of ethlogger-internal metrics (enabled by default unless specified otherwise in the config file)',
     }),

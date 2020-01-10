@@ -28,8 +28,8 @@ OPTIONS
       Directory containing ABI
 
   --[no-]collect-blocks
-      Enables ethereum block watcher (enabled by default unless specified
-      otherwise in the config file)
+      Enables ethereum block watcher, ingesting blocks, transactions, event logs
+      and ABI-decoded information from method calls and event logs
 
   --[no-]collect-internal-metrics
       Enables collection of ethlogger-internal metrics (enabled by default unless
@@ -119,6 +119,10 @@ OPTIONS
 
 | Environment Variable              | Type      | Description                                                                                                                                                                               |
 | --------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `COLLECT_BLOCKS`                  | `boolean` | Enables ethereum block watcher, ingesting blocks, transactions, event logs and ABI-decoded information from method calls and event logs                                                   |
+| `COLLECT_NODE_METRICS`            | `boolean` | Enables collection of node metrics (enabled by default unless specified otherwise in the config file)                                                                                     |
+| `COLLECT_NODE_INFO`               | `boolean` | Enables collection of node info events (enabled by default unless specified otherwise in the config file)                                                                                 |
+| `COLLECT_INTERNAL_METRICS`        | `boolean` | Enables collection of ethlogger-internal metrics (enabled by default unless specified otherwise in the config file)                                                                       |
 | `SPLUNK_HEC_URL`                  | `string`  | URL to connect to Splunk HTTP Event Collector. You can either specify just the base URL (without path) and the default path will automatically appended or a full URL.                    |
 | `SPLUNK_HEC_TOKEN`                | `string`  | Token to authenticate against Splunk HTTP Event Collector                                                                                                                                 |
 | `SPLUNK_HEC_REJECT_INVALID_CERTS` | `boolean` | Disable to allow HEC client to connect to HTTPS without rejecting invalid (self-signed) certificates                                                                                      |
