@@ -16,12 +16,12 @@ export const CLI_FLAGS = {
 
     'print-config': flags.boolean({
         description:
-            'Causes ethlogger to simply print the configuration merged from config file and CLI flags and exit',
+            'Causes ethlogger to simply print the configuration merged from config file and CLI flags and exit.',
     }),
     'health-check': flags.boolean({
         hidden: true,
         description:
-            'Performs health check for a running ethlogger process by examining the state file created by that process.',
+            'Performs health check for a running ethlogger process by examining the state file created by that process',
     }),
 
     'config-file': flags.string({
@@ -41,20 +41,17 @@ export const CLI_FLAGS = {
     'collect-node-metrics': flags.boolean({
         allowNo: true,
         env: 'COLLECT_NODE_METRICS',
-        description:
-            'Enables collection of node metrics (enabled by default unless specified otherwise in the config file)',
+        description: 'Enables collection of node metrics',
     }),
     'collect-node-info': flags.boolean({
         allowNo: true,
         env: 'COLLECT_NODE_INFO',
-        description:
-            'Enables collection of node info events (enabled by default unless specified otherwise in the config file)',
+        description: 'Enables collection of node info events',
     }),
     'collect-internal-metrics': flags.boolean({
         allowNo: true,
         env: 'COLLECT_INTERNAL_METRICS',
-        description:
-            'Enables collection of ethlogger-internal metrics (enabled by default unless specified otherwise in the config file)',
+        description: 'Enables collection of ethlogger-internal metrics',
     }),
 
     'hec-url': flags.string({
@@ -62,7 +59,7 @@ export const CLI_FLAGS = {
         description:
             'URL to connect to Splunk HTTP Event Collector. ' +
             'You can either specify just the base URL (without path) ' +
-            'and the default path will automatically appended or a full URL.',
+            'and the default path will automatically appended or a full URL',
     }),
     'hec-token': flags.string({
         env: 'SPLUNK_HEC_TOKEN',
@@ -77,40 +74,38 @@ export const CLI_FLAGS = {
     'hec-events-index': flags.string({
         env: 'SPLUNK_EVENTS_INDEX',
         description:
-            'Splunk index to send events to. You can alternatively use separate HEC tokens to correctly route your data.',
+            'Splunk index to send events to. You can alternatively use separate HEC tokens to correctly route your data',
     }),
     'hec-metrics-index': flags.string({
         env: 'SPLUNK_METRICS_INDEX',
         description:
-            'Splunk index to send metrics to. You can alternatively use separate HEC tokens to correctly route your data.',
+            'Splunk index to send metrics to. You can alternatively use separate HEC tokens to correctly route your data',
     }),
     'hec-internal-index': flags.string({
         env: 'SPLUNK_INTERNAL_INDEX',
         description:
-            'Splunk index to send internal metrics to. You can alternatively use separate HEC tokens to correctly route your data.',
+            'Splunk index to send internal metrics to. You can alternatively use separate HEC tokens to correctly route your data',
     }),
 
     'hec-events-token': flags.string({
         env: 'SPLUNK_EVENTS_HEC_TOKEN',
         description:
-            'HEC token to use for sending events. You can alternatively configure different indexes to correctly route your data.',
+            'HEC token to use for sending events. You can alternatively configure different indexes to correctly route your data',
     }),
     'hec-metrics-token': flags.string({
         env: 'SPLUNK_METRICS_HEC_TOKEN',
         description:
-            'HEC token to use for sending metrics. You can alternatively configure different indexes to correctly route your data.',
+            'HEC token to use for sending metrics. You can alternatively configure different indexes to correctly route your data',
     }),
     'hec-internal-token': flags.string({
         env: 'SPLUNK_INTERNAL_HEC_TOKEN',
         description:
-            'HEC token to use for sending internal metrics. You can alternatively configure different indexes to correctly route your data.',
+            'HEC token to use for sending internal metrics. You can alternatively configure different indexes to correctly route your data',
     }),
 
     'eth-rpc-url': flags.string({
         env: 'ETH_RPC_URL',
         description: 'URL to reach the target ethereum node. Supported format is currently only HTTP(s) for JSON RPC',
-        // and WS(s) for websocket connections.
-        // 'Other arguments are interpreted as IPC and refer to a local path in the filesystem.',
     }),
     'eth-reject-invalid-certs': flags.boolean({
         allowNo: true,
@@ -121,7 +116,7 @@ export const CLI_FLAGS = {
 
     'abi-dir': flags.string({
         env: 'ABI_DIR',
-        description: 'Directory containing ABI ',
+        description: 'Directory containing ABI definitions (JSON files). This directory will be searched recursively',
     }),
 
     'start-at-block': flags.option<StartBlock>({
@@ -131,7 +126,7 @@ export const CLI_FLAGS = {
         description:
             'First block to start ingesting from. ' +
             'Possible values are "genesis", "latest", an absolute block number ' +
-            'or a negative number describing how many blocks before the latest one to start at.',
+            'or a negative number describing how many blocks before the latest one to start at',
         parse: s => {
             if (s === 'genesis' || s === 'latest') {
                 return s;
@@ -158,9 +153,4 @@ export const CLI_FLAGS = {
         env: 'NETWORK_NAME',
         description: 'The network name will be attached to all events sent to Splunk',
     }),
-
-    // 'quorum-support': flags.boolean({
-    //     env: 'QUORUM',
-    //     description: 'Enable quorum compatibility',
-    // }),
 };
