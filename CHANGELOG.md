@@ -1,3 +1,9 @@
+## [1.1.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.1.0...v1.1.1) (2020-01-10)
+
+### Bug Fixes
+
+-   allow variables in HEC user-agent ([dcb5cb8](https://github.com/splunk/splunk-connect-for-ethereum/commit/dcb5cb830dbdfb03570511d55aed29f5b8c0a622))
+
 # [1.1.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.0.2...v1.1.0) (2020-01-10)
 
 ### Bug Fixes

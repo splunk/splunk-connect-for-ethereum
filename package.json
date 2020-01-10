@@ -1,7 +1,7 @@
 {
     "name": "@splunk/splunk-connect-for-ethereum",
     "description": "Splunk Connect for Ethereum",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "author": "Splunk",
     "bin": {
         "ethlogger": "./bin/run"
