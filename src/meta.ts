@@ -3,7 +3,8 @@ import { EthloggerConfig } from './config';
 import { KNOWN_NETOWORK_NAMES } from './eth/networks';
 import { NodePlatformAdapter } from './platforms';
 import { createModuleDebug } from './utils/debug';
-import { removeEmtpyValues, subsituteVariables } from './utils/obj';
+import { removeEmtpyValues } from './utils/obj';
+import { subsituteVariablesInValues, subsituteVariables } from './utils/vars';
 
 const { debug } = createModuleDebug('meta');
 
@@ -38,7 +39,7 @@ export interface MetadataVariables {
     ETH_NODE_HOSTNAME: string;
 }
 
-export function substituteVariablesInHecMetadata(
+export function substituteVariablesInHecConfig(
     config: EthloggerConfig,
     {
         platformAdapter,
@@ -73,15 +74,19 @@ export function substituteVariablesInHecMetadata(
 
     Object.entries(config.hec).forEach(([name, cfg]) => {
         debug('Replacing metadata variables in HEC config %s', name);
-        if (cfg && cfg.defaultFields != null) {
-            cfg.defaultFields = subsituteVariables(cfg.defaultFields, resolvedVariables);
+        if (cfg?.defaultFields != null) {
+            cfg.defaultFields = subsituteVariablesInValues(cfg.defaultFields, resolvedVariables);
         }
-        if (cfg && cfg.defaultMetadata != null) {
-            cfg.defaultMetadata = subsituteVariables(cfg.defaultMetadata, resolvedVariables);
+        if (cfg?.defaultMetadata != null) {
+            cfg.defaultMetadata = subsituteVariablesInValues(cfg.defaultMetadata, resolvedVariables);
+        }
+        if (cfg?.userAgent) {
+            cfg.userAgent = subsituteVariables(cfg.userAgent, resolvedVariables);
         }
         debug('Replaced metadata variables in HEC config: %O', {
             defaultFields: cfg?.defaultFields,
             defaultMetadata: cfg?.defaultMetadata,
+            userAgent: cfg?.userAgent,
         });
     });
 }

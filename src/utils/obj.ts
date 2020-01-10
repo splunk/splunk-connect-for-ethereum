@@ -30,20 +30,6 @@ export function deepMerge<T extends { [k: string]: any }>(a: T, b: T): T {
     ]);
 }
 
-const replaceAll = (s: string, search: string, repl: string) => s.split(search).join(repl);
-
-export function subsituteVariables<T = { [k: string]: string }>(obj: T, variables: { [name: string]: string }): T {
-    const varEntries = Object.entries(variables).map(([k, v]) => [`$${k}`, v]);
-    if (varEntries.length === 0) {
-        return obj;
-    }
-    return Object.fromEntries(
-        Object.entries(obj)
-            .filter(([, v]) => v != null)
-            .map(([k, v]) => [k, varEntries.reduce((cur, [variable, repl]) => replaceAll(cur, variable, repl), v)])
-    );
-}
-
 export function isEmpty(obj: object): boolean {
     return obj == null || Object.values(obj).filter(v => v != null).length === 0;
 }
