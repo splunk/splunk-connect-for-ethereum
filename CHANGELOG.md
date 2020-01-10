@@ -1,3 +1,13 @@
+# [1.1.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.0.2...v1.1.0) (2020-01-10)
+
+### Bug Fixes
+
+-   🐛 cleanup of CLI help information ([029b16d](https://github.com/splunk/splunk-connect-for-ethereum/commit/029b16d85417f90386bb5da167b8f89ef1eaa249))
+
+### Features
+
+-   🎸 allow for not collecting block information ([1e44dd5](https://github.com/splunk/splunk-connect-for-ethereum/commit/1e44dd52b4fce7e4f4749cd82f398eef8e8c31b5))
+
 ## [1.0.2](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.0.1...v1.0.2) (2020-01-08)
 
 ### Bug Fixes
