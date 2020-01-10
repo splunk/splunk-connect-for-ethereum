@@ -90,7 +90,11 @@ export async function main(args: string[]) {
                 Accept: 'application/vnd.github.everest-preview+json',
             },
         }
-    ).then(res => res.json());
+    ).then(res =>
+        res.status > 299
+            ? Promise.reject(new Error(`Failed to fetch release info: HTTP status ${res.status}`))
+            : res.json()
+    );
 
     const packageInfoMd = [
         '### Packages',

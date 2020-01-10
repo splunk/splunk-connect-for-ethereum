@@ -18,7 +18,7 @@ hec:
         requestKeepAlive: true
         validateCertificate: true
         maxSockets: 128
-        userAgent: ethlogger-hec-client/1.0
+        userAgent: ethlogger-hec-client/$VERSION
         multipleMetricFormatEnabled: false
         waitForAvailability: 1m
         retryWaitTime:

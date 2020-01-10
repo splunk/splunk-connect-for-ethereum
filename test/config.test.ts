@@ -66,7 +66,7 @@ test('defaults', async () => {
                       "timeout": 30000,
                       "token": undefined,
                       "url": undefined,
-                      "userAgent": "ethlogger-hec-client/1.0",
+                      "userAgent": "ethlogger-hec-client/$VERSION",
                       "validateCertificate": true,
                       "waitForAvailability": 60000,
                     },

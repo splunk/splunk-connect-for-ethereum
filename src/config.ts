@@ -338,7 +338,8 @@ export interface HecConfigSchema {
     /** Maximum number of sockets HEC will use (per host) */
     maxSockets?: number;
     /** User-agent header sent to HEC
-     *  @default `ethlogger-hec-client/<version>`
+     * @default `ethlogger-hec-client/<version>`
+     * @see [Use variables in metadata](#metadata-variables)
      */
     userAgent?: string;
     /** Wait time before retrying to send a (batch of) HEC messages after an error */

@@ -11,7 +11,7 @@ import { BatchedEthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
 import { introspectTargetNodePlatform } from './introspect';
-import { substituteVariablesInHecMetadata } from './meta';
+import { substituteVariablesInHecConfig } from './meta';
 import { NodeStatsCollector } from './nodestats';
 import { createOutput } from './output';
 import { ABORT } from './utils/abort';
@@ -101,7 +101,7 @@ class Ethlogger extends Command {
             platformAdapter.protocolVersion
         );
 
-        substituteVariablesInHecMetadata(config, {
+        substituteVariablesInHecConfig(config, {
             ethloggerVersion: this.config.version,
             platformAdapter,
             transportOriginHost: transport.originHost,
