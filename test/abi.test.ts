@@ -4,7 +4,7 @@ import { join } from 'path';
 test('AbiRepository#decodeMethod', async () => {
     const abiRepo = new AbiRepository();
 
-    await expect(abiRepo.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
+    await expect(abiRepo.loadAbiDir(join(__dirname, 'abi'))).resolves.toMatchInlineSnapshot(`3`);
 
     expect(abiRepo.signatureCount).toMatchInlineSnapshot(`30`);
 
@@ -70,7 +70,7 @@ test('AbiRepository#decodeMethod', async () => {
 
 test('AbiRepository#decodeLogEvent', async () => {
     const abiRepo = new AbiRepository();
-    await expect(abiRepo.loadAbiDir(join(__dirname, 'abi'))).resolves.toBeUndefined();
+    await expect(abiRepo.loadAbiDir(join(__dirname, 'abi'))).resolves.toMatchInlineSnapshot(`3`);
 
     expect(
         abiRepo.decodeLogEvent(

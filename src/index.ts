@@ -132,7 +132,8 @@ class Ethlogger extends Command {
         const abiRepo = new AbiRepository();
         addResource(abiRepo);
         if (config.abi.directory != null) {
-            await abiRepo.loadAbiDir(config.abi.directory!);
+            const abiCount = await abiRepo.loadAbiDir(config.abi.directory!);
+            info('Loaded %d ABIs from directory %s', abiCount, config.abi.directory);
         }
 
         const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({

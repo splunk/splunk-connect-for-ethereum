@@ -3,12 +3,12 @@ import { basename, join } from 'path';
 import { AbiCoder } from 'web3-eth-abi';
 import { AbiInput, AbiItem, sha3, toChecksumAddress } from 'web3-utils';
 import { computeContractFingerprint } from './contract';
-import { createModuleDebug } from './utils/debug';
+import { createModuleDebug, TRACE_ENABLED } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { RawLogResponse } from './eth/responses';
 import { parseBigInt } from './utils/bn';
 
-const { debug, warn } = createModuleDebug('abi');
+const { debug, warn, trace } = createModuleDebug('abi');
 
 export type ScalarValue = string | number | boolean;
 export type Value = ScalarValue | ScalarValue[];
@@ -141,10 +141,13 @@ export class AbiRepository implements ManagedResource {
     public async loadAbiDir(
         dir: string,
         { recursive = true, fileNameSuffix = '.json' }: { recursive?: boolean; fileNameSuffix?: string } = {}
-    ) {
+    ): Promise<number> {
         debug('Searching for ABI files in %s', dir);
-        const dirContents = await readdir(dir);
+        const dirContents = await readdir(dir).catch(e =>
+            Promise.reject(new Error(`Failed to load ABIs from directory ${dir}: ${e}`))
+        );
         const subdirs = [];
+        let loaded = 0;
         for (const f of dirContents) {
             const full = join(dir, f);
             const s = await stat(full);
@@ -152,9 +155,11 @@ export class AbiRepository implements ManagedResource {
                 subdirs.push(join(dir, f));
             } else if (s.isFile() && f.endsWith(fileNameSuffix)) {
                 await this.loadAbiFile(full);
+                loaded++;
             }
         }
-        await Promise.all(subdirs.map(sub => this.loadAbiDir(sub, { recursive, fileNameSuffix })));
+        const counts = await Promise.all(subdirs.map(sub => this.loadAbiDir(sub, { recursive, fileNameSuffix })));
+        return loaded + counts.reduce((a, b) => a + b, 0);
     }
 
     public async loadAbiFile(path: string) {
@@ -164,6 +169,7 @@ export class AbiRepository implements ManagedResource {
     }
 
     public loadAbi(abiData: any, fileName: string) {
+        debug('Loading ABI %s', fileName);
         let abis: AbiItem[];
         let contractName: string;
         if (isTruffleBuildFile(abiData)) {
@@ -201,6 +207,7 @@ export class AbiRepository implements ManagedResource {
         for (const i of items) {
             const { sigName, item } = i;
             const sigHash = computeSignatureHash(sigName, item.type as 'function' | 'event');
+            debug('Signature for %s %s => %s', item.type, sigName, sigHash);
             let match: AbiMatch | undefined = this.signatures.get(sigHash);
             if (match == null) {
                 match = {
@@ -226,6 +233,7 @@ export class AbiRepository implements ManagedResource {
         }
 
         if (contractFingerprint != null) {
+            debug('Computed contract fingerprint %s for contract signature %s', contractFingerprint, contractName);
             this.contracts.set(contractFingerprint, {
                 contractName,
                 fileName,
@@ -260,11 +268,10 @@ export class AbiRepository implements ManagedResource {
         );
         if (abi != null) {
             debug(
-                'Found ABI %s matching fingerprint %s from contract %s (%s)',
+                'Found ABI %s matching fingerprint %s from contract %s',
                 match.name,
                 contractFingerprint,
-                abi.contractName,
-                abi.fileName
+                abi.contractName
             );
             const inputs = abi.inputs ?? [];
             const decodedParams = this.abiCoder.decodeParameters(
@@ -294,6 +301,13 @@ export class AbiRepository implements ManagedResource {
                 params,
                 args,
             };
+        } else if (TRACE_ENABLED) {
+            trace(
+                'No matching contract found for method signature %s hash %s and contract fingerprint %s',
+                match.name,
+                sigHash,
+                contractFingerprint
+            );
         }
         return;
     }
@@ -304,6 +318,7 @@ export class AbiRepository implements ManagedResource {
         if (match != null) {
             const abi = match.candidates.find(c => c.contractFingerprint === contractFingerprint);
             if (abi != null) {
+                debug('Found ABI %s matching fingerprint from contract %s', abi.name, abi.contractName);
                 const { data, topics } = logEvent;
                 const nonIndexedTypes = abi.inputs.filter(i => !i.indexed).map(i => i.type);
                 const decodedData = this.abiCoder.decodeParameters(nonIndexedTypes, data.slice(2));
@@ -344,6 +359,13 @@ export class AbiRepository implements ManagedResource {
                     params,
                     args,
                 };
+            } else if (TRACE_ENABLED) {
+                trace(
+                    'No matching contract found for log event signature %s (hash %s) and contract fingerprint %s',
+                    match.name,
+                    sigHash,
+                    contractFingerprint
+                );
             }
         }
         return;

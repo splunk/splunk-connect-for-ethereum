@@ -4,7 +4,7 @@ import { getCode } from './eth/requests';
 import { sha3 } from 'web3-utils';
 import { createModuleDebug } from './utils/debug';
 
-const { debug } = createModuleDebug('contract');
+const { debug, trace } = createModuleDebug('contract');
 
 export interface ContractInfo {
     /** True if the corresponding account is a smart contract, otherwise false */
@@ -58,6 +58,7 @@ export function computeContractFingerprint(
         return;
     }
     const fingerprint = sha3(`${functions.join(',')}|${events.join(',')}`).slice(2);
+    trace('Computed contract fingerprint %o for contract functions %o and events %o', fingerprint, functions, events);
     return fingerprint;
 }
 
@@ -79,9 +80,8 @@ export async function getContractInfo(
     if (signatureMatcher == null) {
         return { isContract: true };
     }
-    const fingerprint = computeContractFingerprint(
-        extractFunctionsAndEvents(code, (fingerprint: string) => signatureMatcher(fingerprint, address))
-    );
+    const fnsEvts = extractFunctionsAndEvents(code, (fingerprint: string) => signatureMatcher(fingerprint, address));
+    const fingerprint = computeContractFingerprint(fnsEvts);
     const contractName =
         fingerprint != null && contractNameLookup != null ? contractNameLookup(address, fingerprint) : undefined;
     return {
