@@ -109,7 +109,6 @@ test('defaults', async () => {
                       "nodeInfo": "ethereum:node:info",
                       "nodeMetrics": "ethereum:node:metrics",
                       "pendingtx": "ethereum:transaction:pending",
-                      "quorumProtocol": "ethereum:quorum:protocol",
                       "transaction": "ethereum:transaction",
                     },
                     "type": "hec",

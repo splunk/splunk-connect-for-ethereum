@@ -7,7 +7,6 @@ import {
     NodeInfoMessage,
     NodeMetricsMessage,
     PendingTransactionMessage,
-    QuorumProtocolMessage,
     TransactionMessage,
 } from './msgs';
 import { createDebug } from './utils/debug';
@@ -22,7 +21,6 @@ export const defaultSourcetypes = {
     pendingtx: 'ethereum:transaction:pending',
     nodeInfo: 'ethereum:node:info',
     nodeMetrics: 'ethereum:node:metrics',
-    quorumProtocol: 'ethereum:quorum:protocol',
     gethPeer: 'ethereum:geth:peer',
 };
 
@@ -33,7 +31,6 @@ export type OutputMessage =
     | LogEventMessage
     | NodeInfoMessage
     | NodeMetricsMessage
-    | QuorumProtocolMessage
     | GethPeerMessage;
 
 export interface Output extends ManagedResource {
@@ -52,7 +49,6 @@ export class HecOutput implements Output, ManagedResource {
             case 'event':
             case 'pendingtx':
             case 'nodeInfo':
-            case 'quorumProtocol':
             case 'gethPeer':
                 this.eventsHec.pushEvent({
                     time: msg.time,

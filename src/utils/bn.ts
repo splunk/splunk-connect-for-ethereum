@@ -19,7 +19,7 @@ export function parseBigInt(input: number | string): number | string {
  * If the value exeeds the safe bounds of integers in JS it will throw an error.
  * @param input "0x"-prefixed hex string, base 10 number string or number
  */
-export function bigIntToNumber(input: number | string): number {
+export function bigIntToNumber(input: number | string | BigInt): number {
     const n = BigInt(input);
     if (n > MAX_NUMBER || n < MIN_NUMBER) {
         throw new Error(`BigInt overflow for "${input}" - cannot convert to number`);
