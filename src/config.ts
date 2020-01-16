@@ -271,8 +271,6 @@ export interface SourcetypesSchema {
     nodeInfo?: string;
     /** @default "ethereum:node:metrics" */
     nodeMetrics?: string;
-    /** @default "ethereum:quorum:protocol" */
-    quorumProtocol?: string;
     /** @default "ethereum:geth:peer" */
     gethPeer?: string;
 }

@@ -1,57 +1,45 @@
+import { EthereumClient } from '../eth/client';
+import {
+    quorumIstanbulCandidates,
+    quorumRaftCluster,
+    quorumRaftLeader,
+    quorumRaftRole,
+    quroumIstanbulSnapshot,
+} from '../eth/requests';
+import { QuorumProtocolInfo } from '../msgs';
 import { createModuleDebug } from '../utils/debug';
 import { GethAdapter } from './geth';
-import { EthereumClient } from '../eth/client';
-import { OutputMessage } from '../output';
-import {
-    quroumIstanbulSnapshot,
-    quorumIstanbulCandidates,
-    quorumRaftRole,
-    quorumRaftLeader,
-    quorumRaftCluster,
-} from '../eth/requests';
 
 const { debug, warn } = createModuleDebug('platforms:quorum');
 
 export type QUORUM_CONSENSUS = 'istanbul' | 'raft';
 
-export async function captureIstanbulData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+export async function captureIstanbulData(ethClient: EthereumClient): Promise<QuorumProtocolInfo> {
     debug('Capturing istanbul data from quorum node');
     const [snapshot, candidates] = await Promise.all([
         ethClient.request(quroumIstanbulSnapshot()),
         ethClient.request(quorumIstanbulCandidates()),
     ]);
-    return [
-        {
-            type: 'quorumProtocol',
-            time: captureTime,
-            body: {
-                consensusMechanism: 'istanbul',
-                snapshot,
-                candidates,
-            },
-        },
-    ];
+    return {
+        consensusMechanism: 'istanbul',
+        snapshot,
+        candidates,
+    };
 }
 
-export async function captureRaftData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+export async function captureRaftData(ethClient: EthereumClient): Promise<QuorumProtocolInfo> {
     debug('Capturing raft data from quorum node');
     const [role, leader, cluster] = await Promise.all([
         ethClient.request(quorumRaftRole()),
         ethClient.request(quorumRaftLeader()),
         ethClient.request(quorumRaftCluster()),
     ]);
-    return [
-        {
-            type: 'quorumProtocol',
-            time: captureTime,
-            body: {
-                consensusMechanism: 'raft',
-                role,
-                leader,
-                cluster,
-            },
-        },
-    ];
+    return {
+        consensusMechanism: 'raft',
+        role,
+        leader,
+        cluster,
+    };
 }
 
 export class QuorumAdapter extends GethAdapter {
@@ -62,38 +50,35 @@ export class QuorumAdapter extends GethAdapter {
         if ('istanbul' in (this.nodeInfo?.gethInfo?.protocols ?? {})) {
             this.consensus = 'istanbul';
         } else {
-            // TODO check for raft
-            warn(
-                'Unable to determine quorum consensus mechanism by inspecting nodeInfo protocols: %o',
-                this.gethNodeInfo?.protocols
-            );
+            try {
+                const raftInfo = await captureRaftData(ethClient);
+                debug('Successfully retrieved raft data from node: %o, assuming consensus mechanism is raft', raftInfo);
+                this.consensus = 'raft';
+            } catch (e) {
+                warn(
+                    'Unable to determine quorum consensus mechanism by inspecting nodeInfo protocols: %o',
+                    this.gethNodeInfo?.protocols
+                );
+            }
         }
     }
 
     public async captureNodeInfo(ethClient: EthereumClient) {
         const gethResult = await super.captureNodeInfo(ethClient);
+        const quorumProtocol =
+            this.consensus === 'istanbul'
+                ? await captureIstanbulData(ethClient)
+                : this.consensus === 'raft'
+                ? await captureRaftData(ethClient)
+                : undefined;
         return {
             ...gethResult,
             name: this.name,
-            quorum: {
-                consensus: this.consensus ?? null,
-            },
+            quorumProtocol,
         };
     }
 
     public get name() {
         return this.consensus == null ? 'quorum' : `quorum:${this.consensus}`;
-    }
-
-    public async captureNodeStats(ethClient: EthereumClient, captureTime: number) {
-        const [baseGethMsgs, quorumProtocolMsgs] = await Promise.all([
-            super.captureNodeStats(ethClient, captureTime),
-            this.consensus === 'istanbul'
-                ? captureIstanbulData(ethClient, captureTime)
-                : this.consensus === 'raft'
-                ? captureRaftData(ethClient, captureTime)
-                : [],
-        ]);
-        return [...baseGethMsgs, ...quorumProtocolMsgs];
     }
 }

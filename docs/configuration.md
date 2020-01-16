@@ -128,16 +128,15 @@ Etherem client settings - configure batching multiple JSON RPC method calls into
 
 Configurable set of `sourcetype` field values emitted by ethlogger
 
-| Name             | Type     | Default                          |
-| ---------------- | -------- | -------------------------------- |
-| `block`          | `string` | `"ethereum:block"`               |
-| `transaction`    | `string` | `"ethereum:transaction"`         |
-| `event`          | `string` | `"ethereum:transaction:event"`   |
-| `pendingtx`      | `string` | `"ethereum:transaction:pending"` |
-| `nodeInfo`       | `string` | `"ethereum:node:info"`           |
-| `nodeMetrics`    | `string` | `"ethereum:node:metrics"`        |
-| `quorumProtocol` | `string` | `"ethereum:quorum:protocol"`     |
-| `gethPeer`       | `string` | `"ethereum:geth:peer"`           |
+| Name          | Type     | Default                          |
+| ------------- | -------- | -------------------------------- |
+| `block`       | `string` | `"ethereum:block"`               |
+| `transaction` | `string` | `"ethereum:transaction"`         |
+| `event`       | `string` | `"ethereum:transaction:event"`   |
+| `pendingtx`   | `string` | `"ethereum:transaction:pending"` |
+| `nodeInfo`    | `string` | `"ethereum:node:info"`           |
+| `nodeMetrics` | `string` | `"ethereum:node:metrics"`        |
+| `gethPeer`    | `string` | `"ethereum:geth:peer"`           |
 
 ### ConsoleOutput
 

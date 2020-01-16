@@ -15,6 +15,7 @@ import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
+import { bigIntToNumber } from './utils/bn';
 
 const { debug, info, warn, error, trace } = createModuleDebug('blockwatcher');
 
@@ -32,7 +33,13 @@ export function parseBlockTime(timestamp: number | string): number {
     if (typeof timestamp === 'number') {
         return timestamp * 1000;
     }
-    // TODO: handle quorum/raft timestamps
+
+    if (typeof timestamp === 'string') {
+        // Timestamp on Quorum/Raft nodes are emitted as nanoseconds since unix epoch
+        // so translate it to milliseconds
+        const ms = BigInt(timestamp) / BigInt(1_000_000);
+        return bigIntToNumber(ms);
+    }
     throw new Error(`Unable to parse block timestamp "${timestamp}"`);
 }
 

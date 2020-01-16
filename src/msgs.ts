@@ -222,6 +222,9 @@ export interface NodeInfo {
     /** Describes transport used to access node information (jsonprc+URL)  */
     transport: string;
 
+    /** Detailed information from the quorum consensus mechanism */
+    quorumProtocol?: QuorumProtocolInfo;
+
     [k: string]: any;
 }
 
@@ -237,10 +240,9 @@ export interface GethPeerMessage {
     body: GethPeer;
 }
 
-export interface QuorumProtocolMessage {
-    type: 'quorumProtocol';
-    time: number;
-    body: { consensusMechanism: 'istanbul' | 'raft'; [k: string]: any };
+export interface QuorumProtocolInfo {
+    consensusMechanism: 'istanbul' | 'raft';
+    [k: string]: any;
 }
 
 export interface NodeMetrics {

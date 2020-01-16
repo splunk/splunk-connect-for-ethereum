@@ -53,7 +53,6 @@ output:
         pendingtx: 'ethereum:transaction:pending'
         nodeInfo: 'ethereum:node:info'
         nodeMetrics: 'ethereum:node:metrics'
-        quorumProtocol: 'ethereum:quorum:protocol'
         gethPeer: 'ethereum:geth:peer'
 checkpoint:
     filename: checkpoints.json
