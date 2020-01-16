@@ -93,9 +93,13 @@ var simple = simpleContract.new(42, { from: web3.eth.accounts[0], data: bytecode
             );
         } else {
             console.log('Contract mined! Address: ' + contract.address);
-            console.log(contract);
         }
     }
 });
 
-admin.sleepBlocks(3);
+// Raft does not continue to mine blocks so this will lock up if you try to wait more.
+if (admin.nodeInfo.name.match('raft')) {
+    admin.sleepBlocks(1);
+} else {
+    admin.sleepBlocks(3);
+}
