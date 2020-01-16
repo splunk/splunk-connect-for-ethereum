@@ -9,3 +9,6 @@ node_modules
 .vscode
 /checkpoints.json
 /.ethlogger-state.json
+nohup.out
+.private-contract
+.public-contract

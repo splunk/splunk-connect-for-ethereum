@@ -52,5 +52,6 @@ There's a lot of information available via RPC on Ethereum nodes, but they need 
 
 -   [Geth and Quorum Docs](https://github.com/ethereum/go-ethereum/wiki/Management-APIs) or you can turn it all on: `--rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3`
 -   Quorum Specific Endpoints: `--rpcapi quorum,istanbul,raft` (note: only one of `istanbul` or `raft` is active depending on the consensus method)
+-   Geth and Quorum: ensure that the host `ethlogger` is running on is whitelisted in the `--rpcvhosts` cli setting.
 -   [Parity Endpoints](https://wiki.parity.io/JSONRPC): note that the command line flag is `--jsonrpc-apis APIs`
 -   [Besu Endpoints](https://besu.hyperledger.org/en/stable/HowTo/Interact/APIs/Using-JSON-RPC-API/)
