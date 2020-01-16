@@ -1,3 +1,13 @@
+# [1.2.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.1.1...v1.2.0) (2020-01-16)
+
+### Bug Fixes
+
+-   🐛 improved debug logging for ABI repository ([1948fcb](https://github.com/splunk/splunk-connect-for-ethereum/commit/1948fcbe00ccead37578f4c7e7a978879680f8e1))
+
+### Features
+
+-   🎸 support for quorum nodes with raft consensus ([e2186e2](https://github.com/splunk/splunk-connect-for-ethereum/commit/e2186e28985f25a19469219ea97423119faa16ef))
+
 ## [1.1.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.1.0...v1.1.1) (2020-01-10)
 
 ### Bug Fixes
