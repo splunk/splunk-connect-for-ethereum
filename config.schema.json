@@ -554,10 +554,6 @@
                     "default": "ethereum:transaction:pending",
                     "type": "string"
                 },
-                "quorumProtocol": {
-                    "default": "ethereum:quorum:protocol",
-                    "type": "string"
-                },
                 "transaction": {
                     "default": "ethereum:transaction",
                     "type": "string"
