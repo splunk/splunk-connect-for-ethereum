@@ -1,13 +1,14 @@
 import { NodePlatformAdapter } from '.';
 import { EthereumClient } from '../eth/client';
+import { KNOWN_NETOWORK_NAMES } from '../eth/networks';
 import { clientVersion, gethMemStats, gethMetrics, gethNodeInfo, gethPeers, gethTxpool } from '../eth/requests';
 import { GethMemStats, GethMetrics, GethNodeInfoResponse, GethPeer } from '../eth/responses';
 import { formatPendingTransaction } from '../format';
 import { NodeInfo, PendingTransactionMessage } from '../msgs';
 import { OutputMessage } from '../output';
 import { createModuleDebug } from '../utils/debug';
+import { durationStringToMs, parseAbbreviatedNumber } from '../utils/parse';
 import { captureDefaultMetrics, fetchDefaultNodeInfo } from './generic';
-import { parseAbbreviatedNumber, durationStringToMs } from '../utils/parse';
 
 const { debug, error } = createModuleDebug('platforms:geth');
 
@@ -184,6 +185,10 @@ export class GethAdapter implements NodePlatformAdapter {
 
     public get protocolVersion(): number | null {
         return this.nodeInfo?.protocolVersion ?? null;
+    }
+
+    public get networkName(): string | null {
+        return this.network ?? (this.networkId != null ? KNOWN_NETOWORK_NAMES[this.networkId] : null) ?? null;
     }
 
     public async captureNodeStats(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {

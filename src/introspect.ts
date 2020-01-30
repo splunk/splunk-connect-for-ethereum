@@ -46,13 +46,24 @@ export async function introspectTargetNodePlatform(
     });
     info('Retrieved ethereum node version: %s', version);
 
-    const adapter = createNodeAdapter(version, network);
+    let adapter = createNodeAdapter(version, network);
     if (typeof adapter.initialize === 'function') {
         debug('Initializing node platform adatper: %s', adapter.name);
         try {
             await adapter.initialize(eth);
         } catch (e) {
             error('Failed to initialize node platform adapter:', e);
+
+            try {
+                adapter = new GenericNodeAdapter(version, network);
+                info('Attempting to use generic node platform adapter: %s', adapter.name);
+                if (typeof adapter.initialize === 'function') {
+                    await adapter.initialize(eth);
+                }
+                return adapter;
+            } catch (e) {
+                error('Failed to initialize generic node platform adapter:', e);
+            }
             throw new Error(`Failed initialize node platform adapter ${adapter.name}`);
         }
     }

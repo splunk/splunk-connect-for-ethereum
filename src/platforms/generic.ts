@@ -1,7 +1,10 @@
 import { NodePlatformAdapter } from '.';
 import { EthereumClient } from '../eth/client';
+import { JsonRpcError } from '../eth/jsonrpc';
+import { KNOWN_NETOWORK_NAMES } from '../eth/networks';
 import {
     blockNumber,
+    clientVersion,
     gasPrice,
     hashRate,
     netVersion,
@@ -9,15 +12,13 @@ import {
     pendingTransactions,
     protocolVersion,
     syncing,
-    clientVersion,
 } from '../eth/requests';
 import { formatPendingTransaction } from '../format';
-import { PendingTransactionMessage, NodeInfo } from '../msgs';
+import { NodeInfo, PendingTransactionMessage } from '../msgs';
 import { OutputMessage } from '../output';
 import { bigIntToNumber } from '../utils/bn';
 import { createModuleDebug } from '../utils/debug';
 import { prefixKeys } from '../utils/obj';
-import { JsonRpcError } from '../eth/jsonrpc';
 
 const { debug, warn, error } = createModuleDebug('platforms:generic');
 
@@ -87,16 +88,17 @@ export async function checkPendingTransactionsMethodSupport(ethClient: EthereumC
     try {
         debug('Checking if generic node supports pendingTranscations RPC method');
         await ethClient.request(pendingTransactions());
-        debug('Pending transactions');
+        debug('Pending transactions seem to be supported');
+        return true;
     } catch (e) {
-        if (e instanceof JsonRpcError && e.message === 'Method not found') {
-            warn('Generic node does not seem to support the eth_pendingTransactions RPC method');
+        if (e instanceof JsonRpcError) {
+            warn('Generic node does not seem to support the eth_pendingTransactions RPC method', e);
             return false;
         } else {
             error('Encountered unexpected error while checking for pendingTransaction method support', e);
+            return false;
         }
     }
-    return true;
 }
 
 export class GenericNodeAdapter implements NodePlatformAdapter {
@@ -126,7 +128,7 @@ export class GenericNodeAdapter implements NodePlatformAdapter {
             protocolVersion: defaultInfo.protocolVersion ?? null,
             clientVersion: version,
             platform: `generic:${name}`,
-            network: this.network ?? null,
+            network: this.networkName,
         };
         return this.nodeInfo;
     }
@@ -145,6 +147,10 @@ export class GenericNodeAdapter implements NodePlatformAdapter {
 
     public get networkId(): number | null {
         return this.nodeInfo?.networkId ?? null;
+    }
+
+    public get networkName(): string | null {
+        return this.network ?? (this.networkId != null ? KNOWN_NETOWORK_NAMES[this.networkId] : null) ?? null;
     }
 
     public get protocolVersion(): number | null {

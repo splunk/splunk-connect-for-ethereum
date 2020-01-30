@@ -115,6 +115,7 @@ export class BatchedEthereumClient extends EthereumClient {
                 callback: (e, result) => {
                     if (e) {
                         reject(e);
+                        return;
                     }
                     try {
                         checkError(result);
