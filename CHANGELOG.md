@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.2.0...v1.2.1) (2020-01-30)
+
+### Bug Fixes
+
+-   🐛 error decoding log events with no topics ([2dad7dc](https://github.com/splunk/splunk-connect-for-ethereum/commit/2dad7dcc9e22ce62082cd4c292019541ba54ab19))
+-   🐛 geth node introspection if nodeInfo method is disabled ([e3f04a0](https://github.com/splunk/splunk-connect-for-ethereum/commit/e3f04a00b333576f320996428f874b24851e6b82))
+
 # [1.2.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.1.1...v1.2.0) (2020-01-16)
 
 ### Bug Fixes
