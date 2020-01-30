@@ -41,8 +41,8 @@ export class JsonRpcError extends Error {
     }
 }
 
-export function checkError(msg: JsonRpcResponse) {
-    if (msg.error) {
+export function checkError(msg?: JsonRpcResponse) {
+    if (msg?.error) {
         throw new JsonRpcError(msg.error.message, msg.error.code, msg.error.data);
     }
 }

@@ -5,6 +5,7 @@ import { createModuleDebug } from '../utils/debug';
 import { NodeInfo } from '../msgs';
 import { fetchDefaultNodeInfo, captureDefaultMetrics } from './generic';
 import { ParityMode, ParityNodeKind } from '../eth/responses';
+import { KNOWN_NETOWORK_NAMES } from '../eth/networks';
 
 const { debug } = createModuleDebug('platforms:parity');
 
@@ -65,6 +66,10 @@ export class ParityAdapter implements NodePlatformAdapter {
 
     public get protocolVersion(): number | null {
         return this.nodeInfo?.protocolVersion ?? null;
+    }
+
+    public get networkName(): string | null {
+        return this.network ?? (this.networkId != null ? KNOWN_NETOWORK_NAMES[this.networkId] : null) ?? null;
     }
 
     public async captureNodeStats(eth: EthereumClient, captureTime: number) {

@@ -2,7 +2,7 @@ import { default as HttpAgent, HttpOptions, HttpsAgent } from 'agentkeepalive';
 import fetch from 'node-fetch';
 import { createModuleDebug } from '../utils/debug';
 import { isHttps } from '../utils/httputils';
-import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
+import { isValidJsonRpcResponse, JsonRpcRequest, JsonRpcResponse, checkError } from './jsonrpc';
 import { EthereumTransport } from './transport';
 import { httpClientStats, AggregateMetric } from '../utils/stats';
 import { HttpTransportConfig } from '../config';
@@ -99,6 +99,16 @@ export class HttpTransport implements EthereumTransport {
             }
             this.aggregates.requestDuration.push(Date.now() - startTime);
             debug('Completed JSON RPC request in %d ms', Date.now() - startTime);
+
+            if (Array.isArray(request) !== Array.isArray(data)) {
+                checkError(Array.isArray(data) ? data[0] : data);
+                throw new Error(
+                    Array.isArray(request)
+                        ? 'JSON RPC returned single message, was expecting batch'
+                        : 'JSON RPC returned batch, was expecting single message'
+                );
+            }
+
             return data as JsonRpcResponse | JsonRpcResponse[];
         } catch (e) {
             this.counters.errors++;

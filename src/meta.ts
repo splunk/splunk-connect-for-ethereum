@@ -1,10 +1,9 @@
 import { hostname } from 'os';
 import { EthloggerConfig } from './config';
-import { KNOWN_NETOWORK_NAMES } from './eth/networks';
 import { NodePlatformAdapter } from './platforms';
 import { createModuleDebug } from './utils/debug';
 import { removeEmtpyValues } from './utils/obj';
-import { subsituteVariablesInValues, subsituteVariables } from './utils/vars';
+import { subsituteVariables, subsituteVariablesInValues } from './utils/vars';
 
 const { debug } = createModuleDebug('meta');
 
@@ -63,7 +62,7 @@ export function substituteVariablesInHecConfig(
         ENODE: platformAdapter.enode ?? undefined,
         PLATFORM: platformAdapter.name,
         NETWORK_ID: networkId != null ? String(networkId) : undefined,
-        NETWORK: config.eth.network ?? (networkId != null ? KNOWN_NETOWORK_NAMES[networkId] : undefined),
+        NETWORK: platformAdapter.networkName ?? undefined,
         PID: String(pid),
         VERSION: ethloggerVersion,
         NODE_VERSION: nodeVersion,

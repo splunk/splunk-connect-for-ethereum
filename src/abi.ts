@@ -313,6 +313,14 @@ export class AbiRepository implements ManagedResource {
     }
 
     public decodeLogEvent(logEvent: RawLogResponse, contractFingerprint?: string): DecodedLogEvent | undefined {
+        if (!Array.isArray(logEvent.topics) || logEvent.topics.length === 0) {
+            debug(
+                'No topics in log event tx=%s idx=%s - nothing to decode',
+                logEvent.transactionHash,
+                logEvent.logIndex
+            );
+            return;
+        }
         const sigHash = logEvent.topics[0].slice(2);
         const match = this.signatures.get(sigHash);
         if (match != null) {
