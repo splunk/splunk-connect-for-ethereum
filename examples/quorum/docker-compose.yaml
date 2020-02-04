@@ -1,11 +1,11 @@
 # The following environment variables are substituted if present
 # * QUORUM_CONSENSUS: default to istanbul
-# * QUORUM_DOCKER_IMAGE: default to quorumengineering/quorum:2.2.3
-# * QUORUM_TX_MANAGER_DOCKER_IMAGE: default to quorumengineering/tessera:0.9
+# * QUORUM_DOCKER_IMAGE: default to quorumengineering/quorum:2.4.0
+# * QUORUM_TX_MANAGER_DOCKER_IMAGE: default to quorumengineering/tessera:0.10.2
 # * QUORUM_GETH_ARGS: extra geth arguments to be included when running geth
 # To use Constellation, set QUORUM_TX_MANAGER_DOCKER_IMAGE to Constellation docker image,
 # e.g.: QUORUM_TX_MANAGER_DOCKER_IMAGE=quorumengineering/constellation:0.3.2 docker-compose up -d
-# To use Remix, set QUORUM_GETH_ARGS="--rpccorsdomain https://remix.ethereum.org
+# To use Remix, set QUORUM_GETH_ARGS="--rpccorsdomain https://remix.ethereum.org"
 
 version: '3.6'
 
@@ -21,7 +21,7 @@ x-log-opts: &log-opts
 
 x-quorum-def: &quorum-def
     restart: 'on-failure'
-    image: '${QUORUM_DOCKER_IMAGE:-quorumengineering/quorum:2.2.3}'
+    image: '${QUORUM_DOCKER_IMAGE:-quorumengineering/quorum:2.4.0}'
     expose:
         - '21000'
         - '50400'
@@ -38,6 +38,7 @@ x-quorum-def: &quorum-def
         - -c
         - |
             UDS_WAIT=10
+            if [ "$${PRIVATE_CONFIG}" != "ignore" ]; then
             for i in $$(seq 1 100)
             do
               set -e
@@ -49,12 +50,14 @@ x-quorum-def: &quorum-def
                 sleep $${UDS_WAIT}
               fi
             done
+            fi
             DDIR=/qdata/dd
             rm -rf $${DDIR}
             mkdir -p $${DDIR}/keystore
             mkdir -p $${DDIR}/geth
             cp /config/nodekey$${NODE_ID} $${DDIR}/geth/nodekey
             cp /config/key$${NODE_ID} $${DDIR}/keystore/
+            cp /config/disallowed-nodes.json $${DDIR}/
             cat /config/permissioned-nodes.json | sed 's/^\(.*\)@.*\?\(.*\)raftport=5040\([0-9]\)\(.*\)$$/\1@172.16.239.1\3:21000?discport=0\&raftport=50400\4/g' > $${DDIR}/static-nodes.json
             cp $${DDIR}/static-nodes.json $${DDIR}/permissioned-nodes.json
             cat $${DDIR}/static-nodes.json
@@ -74,21 +77,23 @@ x-quorum-def: &quorum-def
               --verbosity 5 \
               --networkid $${NETWORK_ID} \
               --rpc \
+              --rpccorsdomain "*" \
+              --rpcvhosts "*" \
               --rpcaddr 0.0.0.0 \
               --rpcport 8545 \
+              --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
               --rpcvhosts "*" \
               --ws \
               --wsaddr 0.0.0.0 \
               --wsorigins "*" \
               --metrics \
-              --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
               --wsapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum,${QUORUM_CONSENSUS:-istanbul} \
               --port 21000 \
               --unlock 0 \
               --password /config/passwords.txt \
               ${QUORUM_GETH_ARGS:-} $${GETH_ARGS_${QUORUM_CONSENSUS:-istanbul}}
 x-tx-manager-def: &tx-manager-def
-    image: '${QUORUM_TX_MANAGER_DOCKER_IMAGE:-quorumengineering/tessera:0.9}'
+    image: '${QUORUM_TX_MANAGER_DOCKER_IMAGE:-quorumengineering/tessera:0.10.2}'
     expose:
         - '9000'
         - '9080'
@@ -103,10 +108,14 @@ x-tx-manager-def: &tx-manager-def
         - /bin/sh
         - -c
         - |
+            if [ "$${PRIVATE_CONFIG}" == "ignore" ]; then
+              /bin/true
+              exit 0
+            fi
             DDIR=/qdata/tm
             rm -rf $${DDIR}
             mkdir -p $${DDIR}
-            DOCKER_IMAGE="${QUORUM_TX_MANAGER_DOCKER_IMAGE:-quorumengineering/tessera:0.9}"
+            DOCKER_IMAGE="${QUORUM_TX_MANAGER_DOCKER_IMAGE:-quorumengineering/tessera:0.10.2}"
             TX_MANAGER=$$(echo $${DOCKER_IMAGE} | sed 's/^.*\/\(.*\):.*$$/\1/g')
             echo "TxManager: $${TX_MANAGER}"
             case $${TX_MANAGER}
@@ -120,147 +129,16 @@ x-tx-manager-def: &tx-manager-def
                 # sorting versions to target correct configuration
                 V08=$$(echo -e "0.8\n$${TESSERA_VERSION}" | sort -n -r -t '.' -k 1,1 -k 2,2 | head -n1)
                 V09AndAbove=$$(echo -e "0.9\n$${TESSERA_VERSION}" | sort -n -r -t '.' -k 1,1 -k 2,2 | head -n1)
-                TESSERA_CONFIG_TYPE=
+                TESSERA_CONFIG_TYPE="-09"
                 case "$${TESSERA_VERSION}" in
                     "$${V09AndAbove}")
                         TESSERA_CONFIG_TYPE="-09"
-                        ;;
-                    "$${V08}")
-                        TESSERA_CONFIG_TYPE="-enhanced"
                         ;;
                 esac
 
                 echo Config type $${TESSERA_CONFIG_TYPE}
 
                 #generating the two config flavors
-                cat <<EOF > $${DDIR}/tessera-config.json
-                {
-                    "useWhiteList": false,
-                    "jdbc": {
-                        "username": "sa",
-                        "password": "",
-                        "url": "jdbc:h2:./$${DDIR}/db;MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=0",
-                        "autoCreateTables": true
-                    },
-                    "server": {
-                        "port": 9000,
-                        "hostName": "http://$$(hostname -i)",
-                        "sslConfig": {
-                            "tls": "OFF",
-                            "generateKeyStoreIfNotExisted": true,
-                            "serverKeyStore": "$${DDIR}/server-keystore",
-                            "serverKeyStorePassword": "quorum",
-                            "serverTrustStore": "$${DDIR}/server-truststore",
-                            "serverTrustStorePassword": "quorum",
-                            "serverTrustMode": "TOFU",
-                            "knownClientsFile": "$${DDIR}/knownClients",
-                            "clientKeyStore": "$${DDIR}/client-keystore",
-                            "clientKeyStorePassword": "quorum",
-                            "clientTrustStore": "$${DDIR}/client-truststore",
-                            "clientTrustStorePassword": "quorum",
-                            "clientTrustMode": "TOFU",
-                            "knownServersFile": "$${DDIR}/knownServers"
-                        }
-                    },
-                    "peer": [
-                        {
-                            "url": "http://txmanager1:9000"
-                        },
-                        {
-                            "url": "http://txmanager2:9000"
-                        }
-                    ],
-                    "keys": {
-                        "passwords": [],
-                        "keyData": [
-                            {
-                                "config": $$(cat $${DDIR}/tm.key),
-                                "publicKey": "$$(cat $${DDIR}/tm.pub)"
-                            }
-                        ]
-                    },
-                    "alwaysSendTo": [],
-                    "unixSocketFile": "$${DDIR}/tm.ipc"
-                }
-            EOF
-
-                cat <<EOF > $${DDIR}/tessera-config-enhanced.json
-                {
-                  "useWhiteList": false,
-                  "jdbc": {
-                    "username": "sa",
-                    "password": "",
-                    "url": "jdbc:h2:./$${DDIR}/db;MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=0",
-                    "autoCreateTables": true
-                  },
-                  "serverConfigs":[
-                  {
-                    "app":"ThirdParty",
-                    "enabled": true,
-                    "serverSocket":{
-                      "type":"INET",
-                      "port": 9080,
-                      "hostName": "http://$$(hostname -i)"
-                    },
-                    "communicationType" : "REST"
-                  },
-                  {
-                    "app":"Q2T",
-                    "enabled": true,
-                    "serverSocket":{
-                      "type":"UNIX",
-                      "path":"$${DDIR}/tm.ipc"
-                    },
-                    "communicationType" : "UNIX_SOCKET"
-                  },
-                  {
-                    "app":"P2P",
-                    "enabled": true,
-                    "serverSocket":{
-                      "type":"INET",
-                      "port": 9000,
-                      "hostName": "http://$$(hostname -i)"
-                    },
-                    "sslConfig": {
-                      "tls": "OFF",
-                      "generateKeyStoreIfNotExisted": true,
-                      "serverKeyStore": "$${DDIR}/server-keystore",
-                      "serverKeyStorePassword": "quorum",
-                      "serverTrustStore": "$${DDIR}/server-truststore",
-                      "serverTrustStorePassword": "quorum",
-                      "serverTrustMode": "TOFU",
-                      "knownClientsFile": "$${DDIR}/knownClients",
-                      "clientKeyStore": "$${DDIR}/client-keystore",
-                      "clientKeyStorePassword": "quorum",
-                      "clientTrustStore": "$${DDIR}/client-truststore",
-                      "clientTrustStorePassword": "quorum",
-                      "clientTrustMode": "TOFU",
-                      "knownServersFile": "$${DDIR}/knownServers"
-                    },
-                    "communicationType" : "REST"
-                  }
-                  ],
-                  "peer": [
-                     {
-                         "url": "http://txmanager1:9000"
-                     },
-                     {
-                         "url": "http://txmanager2:9000"
-                     }
-                  ],
-                  "keys": {
-                    "passwords": [],
-                    "keyData": [
-                      {
-                        "config": $$(cat $${DDIR}/tm.key),
-                        "publicKey": "$$(cat $${DDIR}/tm.pub)"
-                      }
-                    ]
-                  },
-                  "alwaysSendTo": []
-                }
-            EOF
-
                 cat <<EOF > $${DDIR}/tessera-config-09.json
                 {
                   "useWhiteList": false,
@@ -288,20 +166,7 @@ x-tx-manager-def: &tx-manager-def
                     "enabled": true,
                     "serverAddress": "http://$$(hostname -i):9000",
                     "sslConfig": {
-                      "tls": "OFF",
-                      "generateKeyStoreIfNotExisted": true,
-                      "serverKeyStore": "$${DDIR}/server-keystore",
-                      "serverKeyStorePassword": "quorum",
-                      "serverTrustStore": "$${DDIR}/server-truststore",
-                      "serverTrustStorePassword": "quorum",
-                      "serverTrustMode": "TOFU",
-                      "knownClientsFile": "$${DDIR}/knownClients",
-                      "clientKeyStore": "$${DDIR}/client-keystore",
-                      "clientKeyStorePassword": "quorum",
-                      "clientTrustStore": "$${DDIR}/client-truststore",
-                      "clientTrustStorePassword": "quorum",
-                      "clientTrustMode": "TOFU",
-                      "knownServersFile": "$${DDIR}/knownServers"
+                      "tls": "OFF"
                     },
                     "communicationType" : "REST"
                   }
@@ -328,6 +193,18 @@ x-tx-manager-def: &tx-manager-def
             EOF
                 cat $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
                 java -Xms128M -Xmx128M -jar /tessera/tessera-app.jar -configfile $${DDIR}/tessera-config$${TESSERA_CONFIG_TYPE}.json
+                ;;
+              constellation)
+                echo "socket=\"$${DDIR}/tm.ipc\"\npublickeys=[\"/examples/keys/tm$${NODE_ID}.pub\"]\n" > $${DDIR}/tm.conf
+                constellation-node \
+                  --url=http://$$(hostname -i):9000/ \
+                  --port=9000 \
+                  --socket=$${DDIR}/tm.ipc \
+                  --othernodes=http://172.16.239.101:9000/,http://172.16.239.102:9000/,http://172.16.239.103:9000/,http://172.16.239.104:9000/,http://172.16.239.105:9000/ \
+                  --publickeys=/examples/keys/tm$${NODE_ID}.pub \
+                  --privatekeys=/examples/keys/tm$${NODE_ID}.key \
+                  --storage=$${DDIR} \
+                  --verbosity=4
                 ;;
               *)
                 echo "Invalid Transaction Manager"
