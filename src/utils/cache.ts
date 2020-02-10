@@ -16,6 +16,26 @@ export function cached<K, V>(key: K, cache: Cache<K, V>, producer: (k: K) => V):
     return newValue;
 }
 
+export async function cachedAsync<K, V>(
+    key: K,
+    cache: Cache<K, Promise<V>>,
+    producer: (k: K) => Promise<V>
+): Promise<V> {
+    const p = cache.get(key);
+    if (p != null) {
+        return p;
+    }
+
+    const newValue = producer(key);
+    cache.set(key, newValue);
+    try {
+        return await newValue;
+    } catch (e) {
+        cache.unset(key);
+        throw e;
+    }
+}
+
 export class NoopCache<K, V> implements Cache<K, V> {
     has() {
         return false;

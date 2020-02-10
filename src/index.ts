@@ -1,13 +1,13 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
 import { inspect } from 'util';
-import { AbiRepository } from './abi';
+import { AbiRepository } from './abi/repo';
 import { BlockWatcher } from './blockwatcher';
 import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
 import { ConfigError, loadEthloggerConfig, EthloggerConfig } from './config';
-import { ContractInfo } from './contract';
-import { BatchedEthereumClient } from './eth/client';
+import { ContractInfo } from './abi/contract';
+import { BatchedEthereumClient, EthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { HecClient } from './hec';
 import { introspectTargetNodePlatform } from './introspect';
@@ -138,12 +138,9 @@ class Ethlogger extends Command {
         );
         await checkpoints.initialize();
 
-        const abiRepo = new AbiRepository();
+        const abiRepo = new AbiRepository(config.abi);
         addResource(abiRepo);
-        if (config.abi.directory != null) {
-            const abiCount = await abiRepo.loadAbiDir(config.abi.directory!);
-            info('Loaded %d ABIs from directory %s', abiCount, config.abi.directory);
-        }
+        await abiRepo.initialize();
 
         const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({
             maxSize: config.contractInfo.maxCacheEntries,
@@ -153,14 +150,10 @@ class Ethlogger extends Command {
         const nodeStatsCollector = new NodeStatsCollector({
             ethClient: client,
             platformAdapter,
-            abiRepo,
-            contractInfoCache,
             output,
-            metricsEnabled: config.nodeMetrics.enabled,
-            metricsInterval: config.nodeMetrics.collectInterval,
-            infoEnabled: config.nodeInfo.enabled,
-            infoInterval: config.nodeInfo.collectInterval,
-            metricsRetryWaitTime: config.nodeInfo.retryWaitTime,
+            nodeMetrics: config.nodeMetrics,
+            nodeInfo: config.nodeInfo,
+            pendingTx: config.pendingTx,
         });
         addResource(nodeStatsCollector);
         internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');
@@ -176,6 +169,7 @@ class Ethlogger extends Command {
                 startAt: config.blockWatcher.startAt,
                 contractInfoCache,
                 chunkSize: config.blockWatcher.blocksMaxChunkSize,
+                maxParallelChunks: config.blockWatcher.maxParallelChunks,
                 pollInterval: config.blockWatcher.pollInterval,
             });
             addResource(blockWatcher);

@@ -12,3 +12,6 @@ node_modules
 nohup.out
 .private-contract
 .public-contract
+data/*.abisigs*
+/coverage
+.env

@@ -3,7 +3,6 @@ import { createModuleDebug } from './debug';
 const { debug, error } = createModuleDebug('utils:resource');
 
 export interface ManagedResource {
-    initialize?: () => Promise<void>;
     shutdown(maxTime?: number): Promise<void>;
 }
 

@@ -141,15 +141,18 @@ export interface FunctionCall {
     signature: string;
     /** List of decoded parameters */
     params: Array<{
-        /** Paramter name */
-        name: string;
+        /** Paramter name - omitted if the function call was decoded anonymously */
+        name?: string;
         /** Data type */
         type: string;
         /** Decoded value */
         value: Value;
     }>;
-    /** A map of parameter names and their decoded value */
-    args: { [name: string]: Value };
+    /**
+     * A map of parameter names and their decoded value.
+     * Omitted if the function call was decoded anonymously
+     */
+    args?: { [name: string]: Value };
 }
 
 export interface TransactionMessage {
@@ -195,9 +198,16 @@ export interface EventData {
     /** Event signature (name and parameter types) */
     signature: string;
     /** List of decoded parameters */
-    params: Array<{ name: string; type: string; value: Value }>;
-    /** A map of parameter names and their decoded value */
-    args: { [name: string]: Value };
+    params: Array<{
+        /** Paramter name - omitted if the event call was decoded anonymously */
+        name?: string;
+        /** Data type */
+        type: string;
+        /** Decoded value */
+        value: Value;
+    }>;
+    /** A map of parameter names and their decoded value. Omitted if decoded anonymously */
+    args?: { [name: string]: Value };
 }
 
 export interface LogEventMessage {

@@ -1,7 +1,7 @@
-import { AbiRepository } from './abi';
+import { ContractInfo, getContractInfo } from './abi/contract';
+import { AbiRepository } from './abi/repo';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { Checkpoint } from './checkpoint';
-import { ContractInfo, getContractInfo } from './contract';
 import { EthereumClient } from './eth/client';
 import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
 import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/responses';
@@ -10,12 +10,12 @@ import { Address, AddressInfo, FormattedBlock, LogEventMessage } from './msgs';
 import { Output, OutputMessage } from './output';
 import { ABORT, AbortHandle } from './utils/abort';
 import { parallel, sleep } from './utils/async';
-import { Cache, cached, NoopCache } from './utils/cache';
+import { bigIntToNumber } from './utils/bn';
+import { Cache, cachedAsync, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
-import { bigIntToNumber } from './utils/bn';
 
 const { debug, info, warn, error, trace } = createModuleDebug('blockwatcher');
 
@@ -63,6 +63,7 @@ export class BlockWatcher implements ManagedResource {
     private abiRepo?: AbiRepository;
     private startAt: StartBlock;
     private chunkSize: number = 25;
+    private maxParallelChunks: number = 3;
     private pollInterval: number = 500;
     private abortHandle = new AbortHandle();
     private endCallbacks: Array<() => void> = [];
@@ -86,6 +87,7 @@ export class BlockWatcher implements ManagedResource {
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
         chunkSize = 25,
+        maxParallelChunks = 3,
         pollInterval = 500,
     }: {
         ethClient: EthereumClient;
@@ -97,6 +99,7 @@ export class BlockWatcher implements ManagedResource {
         chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
         chunkSize: number;
+        maxParallelChunks: number;
         pollInterval: number;
     }) {
         this.ethClient = ethClient;
@@ -106,6 +109,7 @@ export class BlockWatcher implements ManagedResource {
         this.startAt = startAt;
         this.waitAfterFailure = waitAfterFailure;
         this.chunkSize = chunkSize;
+        this.maxParallelChunks = maxParallelChunks;
         this.pollInterval = pollInterval;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
         if (contractInfoCache) {
@@ -178,7 +182,7 @@ export class BlockWatcher implements ManagedResource {
                                     ),
                             });
                         }),
-                        { maxConcurrent: 3, abortHandle: this.abortHandle }
+                        { maxConcurrent: this.maxParallelChunks, abortHandle: this.abortHandle }
                     );
                     failures = 0;
                 }
@@ -298,7 +302,10 @@ export class BlockWatcher implements ManagedResource {
 
         let callInfo;
         if (this.abiRepo && toInfo && toInfo.isContract) {
-            callInfo = this.abiRepo.decodeMethod(rawTx.input, toInfo.fingerprint);
+            callInfo = this.abiRepo.decodeFunctionCall(rawTx.input, {
+                contractAddress: rawTx.to ?? undefined,
+                contractFingerprint: toInfo.fingerprint,
+            });
         }
 
         this.counters.transactionsProcessed++;
@@ -324,7 +331,10 @@ export class BlockWatcher implements ManagedResource {
     private async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
         const startTime = Date.now();
         const contractInfo = await this.lookupContractInfo(evt.address);
-        const decodedEventData = this.abiRepo?.decodeLogEvent(evt, contractInfo?.fingerprint);
+        const decodedEventData = this.abiRepo?.decodeLogEvent(evt, {
+            contractAddress: evt.address,
+            contractFingerprint: contractInfo?.fingerprint,
+        });
         this.aggregates.eventProcessTime.push(Date.now() - startTime);
         this.counters.transactionLogEventsProcessed++;
         return {
@@ -339,12 +349,14 @@ export class BlockWatcher implements ManagedResource {
         if (abiRepo == null) {
             return;
         }
-        const result = await cached(address, this.contractInfoCache, (addr: Address) =>
+        const result = await cachedAsync(address, this.contractInfoCache, (addr: Address) =>
             getContractInfo(
                 addr,
                 this.ethClient,
                 (sig: string) => abiRepo.getMatchingSignatureName(sig),
-                (_address: string, fingerprint: string) => abiRepo.getContractByFingerprint(fingerprint)?.contractName
+                (address: string, fingerprint: string) =>
+                    abiRepo.getContractByAddress(address)?.contractName ??
+                    abiRepo.getContractByFingerprint(fingerprint)?.contractName
             )
         );
         return result;

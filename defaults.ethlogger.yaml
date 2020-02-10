@@ -60,13 +60,17 @@ checkpoint:
     filename: checkpoints.json
     saveInterval: 250
 abi:
+    abiFileExtension: .json
+    searchRecursive: true
     fingerprintContracts: true
+    decodeAnonymous: true
 contractInfo:
     maxCacheEntries: 25000
 blockWatcher:
     enabled: true
     pollInterval: 500ms
     blocksMaxChunkSize: 25
+    maxParallelChunks: 3
     startAt: genesis
     retryWaitTime:
         type: linear-backoff

@@ -42,6 +42,7 @@ jobs:
               run: |
                   npm i -g yarn
                   yarn install --frozen-lockfile
+                  yarn build
                   yarn test --verbose
               env:
                   CI: true

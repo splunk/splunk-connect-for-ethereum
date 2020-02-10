@@ -139,16 +139,21 @@ export interface CheckpointConfig extends CheckpointConfigSchema {
 export interface AbiRepositoryConfigSchema {
     /** If specified, the ABI repository will recursively search this directory for ABI files */
     directory?: string;
-    /** Currently set to `.json` as the file extension for ABIs. */
-    fileExtension?: string;
+    /** `true` to search ABI directory recursively for ABI files */
+    searchRecursive?: boolean;
+    /** Set to `.json` by default as the file extension for ABIs */
+    abiFileExtension?: string;
     /**
      * If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI
      * (the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts
      * we encounter.
-     *
-     * NOTE: disabling it is currently being ignored since non-fingerprint matching hasn't been implemented
      */
-    fingerprintContracts: boolean; // TODO
+    fingerprintContracts: boolean;
+    /**
+     * If enabled, ethlogger will attempt to decode function calls and event logs using a set of
+     * common signatures as a fallback if no match against any supplied ABI definition was found.
+     */
+    decodeAnonymous: boolean;
 }
 
 export type AbiRepositoryConfig = AbiRepositoryConfigSchema;
@@ -176,6 +181,8 @@ export interface BlockWatcherConfigSchema {
     pollInterval: DurationConfig;
     /** Max. number of blocks to fetch at once */
     blocksMaxChunkSize: number;
+    /** Max. number of chunks to process in parallel */
+    maxParallelChunks: number;
     /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
     startAt: StartBlock;
     /** Wait time before retrying to fetch and process blocks after failure */
@@ -438,6 +445,8 @@ export function waitTimeFromConfig(config?: WaitTimeConfig | DeepPartial<WaitTim
     }
     if (typeof config === 'number') {
         return config;
+    } else if (typeof config === 'string') {
+        return parseDuration(config);
     } else if (typeof config === 'object' && 'type' in config) {
         if (config.type === 'exponential-backoff') {
             const args = { min: parseDuration(config.min) ?? 0, max: parseDuration(config.max) };
@@ -733,7 +742,9 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         output: parseOutput(defaults.output),
         abi: {
             directory: flags['abi-dir'] ?? defaults.abi?.directory,
+            abiFileExtension: defaults.abi?.abiFileExtension,
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
+            decodeAnonymous: defaults.abi?.decodeAnonymous ?? true,
         },
         blockWatcher: {
             enabled:
@@ -742,6 +753,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 defaults.blockWatcher?.enabled ??
                 true,
             blocksMaxChunkSize: defaults.blockWatcher?.blocksMaxChunkSize ?? 25,
+            maxParallelChunks: defaults.blockWatcher?.maxParallelChunks ?? 3,
             pollInterval: parseDuration(defaults.blockWatcher?.pollInterval) ?? 500,
             startAt: parseStartAt(flags['start-at-block'] ?? defaults.blockWatcher?.startAt) ?? 'genesis',
             retryWaitTime: waitTimeFromConfig(defaults.blockWatcher?.retryWaitTime) ?? 60000,
