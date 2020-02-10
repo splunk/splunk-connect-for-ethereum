@@ -10,28 +10,29 @@ import { retry, linearBackoff } from './utils/retry';
 
 const { debug, info, error } = createModuleDebug('introspect');
 
-export function createNodeAdapter(version: string, network?: string): NodePlatformAdapter {
+export function createNodeAdapter(version: string, chain?: string, network?: string): NodePlatformAdapter {
     if (version.startsWith('Geth/')) {
         debug('Detected geth node');
         if (version.includes('quorum')) {
             debug('Found "quorum" in version string - using Quroum adapter');
-            const adapter = new QuorumAdapter(version, network);
+            const adapter = new QuorumAdapter(version, chain, network);
             return adapter;
         } else {
-            const adapter = new GethAdapter(version, network);
+            const adapter = new GethAdapter(version, chain, network);
             return adapter;
         }
     }
     if (version.startsWith('Parity//') || version.startsWith('Parity-Ethereum//')) {
         debug('Detected parity node');
-        return new ParityAdapter(version, network);
+        return new ParityAdapter(version, chain, network);
     }
     debug('No specific support for given node type, falling bakc to generic adapter');
-    return new GenericNodeAdapter(version, network);
+    return new GenericNodeAdapter(version, chain, network);
 }
 
 export async function introspectTargetNodePlatform(
     eth: EthereumClient,
+    chain?: string,
     network?: string
 ): Promise<NodePlatformAdapter> {
     info(`Introspecting target ethereum node at %s`, eth.transport.source);
@@ -46,7 +47,7 @@ export async function introspectTargetNodePlatform(
     });
     info('Retrieved ethereum node version: %s', version);
 
-    let adapter = createNodeAdapter(version, network);
+    let adapter = createNodeAdapter(version, chain, network);
     if (typeof adapter.initialize === 'function') {
         debug('Initializing node platform adatper: %s', adapter.name);
         try {
@@ -55,7 +56,7 @@ export async function introspectTargetNodePlatform(
             error('Failed to initialize node platform adapter:', e);
 
             try {
-                adapter = new GenericNodeAdapter(version, network);
+                adapter = new GenericNodeAdapter(version, chain, network);
                 info('Attempting to use generic node platform adapter: %s', adapter.name);
                 if (typeof adapter.initialize === 'function') {
                     await adapter.initialize(eth);

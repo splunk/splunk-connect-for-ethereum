@@ -11,12 +11,15 @@ test('defaults', async () => {
     await expect(loadEthloggerConfig({} as CliFlags, true)).resolves.toMatchInlineSnapshot(`
                 Object {
                   "abi": Object {
+                    "abiFileExtension": ".json",
+                    "decodeAnonymous": true,
                     "directory": undefined,
                     "fingerprintContracts": true,
                   },
                   "blockWatcher": Object {
                     "blocksMaxChunkSize": 25,
                     "enabled": true,
+                    "maxParallelChunks": 3,
                     "pollInterval": 500,
                     "retryWaitTime": [Function],
                     "startAt": "genesis",
@@ -29,6 +32,7 @@ test('defaults', async () => {
                     "maxCacheEntries": 25000,
                   },
                   "eth": Object {
+                    "chain": undefined,
                     "client": Object {
                       "maxBatchSize": 100,
                       "maxBatchTime": 0,
@@ -45,6 +49,8 @@ test('defaults', async () => {
                   "hec": Object {
                     "default": Object {
                       "defaultFields": Object {
+                        "chain": "$CHAIN",
+                        "chainId": "$CHAIN_ID",
                         "enode": "$ENODE",
                         "network": "$NETWORK",
                         "networkId": "$NETWORK_ID",
@@ -113,6 +119,11 @@ test('defaults', async () => {
                     },
                     "type": "hec",
                   },
+                  "pendingTx": Object {
+                    "collectInterval": 10000,
+                    "enabled": false,
+                    "retryWaitTime": 10000,
+                  },
                 }
             `);
 });
@@ -123,6 +134,7 @@ test('cli flags overrides', async () => {
         Object {
           "blocksMaxChunkSize": 25,
           "enabled": true,
+          "maxParallelChunks": 3,
           "pollInterval": 500,
           "retryWaitTime": [Function],
           "startAt": -1000,

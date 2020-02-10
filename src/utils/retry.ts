@@ -72,7 +72,7 @@ export async function retry<R>(
                 debug('[%s] Retry loop aborted', taskName);
                 throw RETRY_ABORT;
             }
-            (warnOnError ? warn : debug)('Task %s failed: ', taskName, e);
+            (warnOnError ? warn : debug)('Task %s failed: %s', taskName, e.toString());
             if (abortHandle.aborted) {
                 throw RETRY_ABORT;
             }

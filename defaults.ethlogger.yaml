@@ -33,6 +33,8 @@ hec:
             networkId: $NETWORK_ID
             network: $NETWORK
             platform: $PLATFORM
+            chainId: $CHAIN_ID
+            chain: $CHAIN
     internal:
         flushTime: 5s
         defaultMetadata:
@@ -87,5 +89,9 @@ nodeInfo:
         min: 0
         step: 2.5s
         max: 2m
+pendingTx:
+    enabled: false
+    collectInterval: 10s
+    retryWaitTime: 10s
 internalMetrics:
     collectInterval: 1s

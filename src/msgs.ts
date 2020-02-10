@@ -215,6 +215,8 @@ export interface NodeInfo {
     enode: string | null;
     /** Network ID retrieved from the node */
     networkId: number | null;
+    /** Chain ID is the currently configured CHAIN_ID value used for signing replay-protected transactions, introduced via EIP-155 */
+    chainId: number | null;
     /** Name of the network (if supplied or auto-detected) */
     network: string | null;
     /** Ethereum protocol version */

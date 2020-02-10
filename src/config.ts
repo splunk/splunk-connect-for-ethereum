@@ -86,11 +86,21 @@ export interface EthereumConfigSchema {
      * Network name logged as a field with every event and metric.
      * Ethlogger will attempt to automatically determine if not specified
      * but there are only a handful of known public networkIds associated
-     * with particular networks (ethereum mainnet, ropsten, ...). This value
-     * will allow consumers of data to distinguish between different networks
-     * in case multiple networks are being logged to one place.
+     * with particular networks (ethereum mainnet, ropsten, ...). Typical
+     * values of the network name are `"mainnet"` or `"testnet"`.
      */
     network?: string;
+    /**
+     * Chain name logged as a field with every event and metric.
+     * Ethlogger will attempt to automatically determine if not specified
+     * but there are only a handful of known public chainIds associated
+     * with particular ethereum-based chains. This value will allow
+     * consumers of data to distinguish between different chains
+     * in case multiple chains are being logged to one place.
+     *
+     * @see [https://chainid.network](https://chainid.network)
+     */
+    chain?: string;
     /** HTTP tansport configuration */
     http: HttpTransportConfigSchema;
     /** Ethereum client configuration */
@@ -674,6 +684,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         eth: {
             url: required('eth-rpc-url', defaults.eth?.url),
             network: flags['network-name'] ?? defaults.eth?.network,
+            chain: flags['chain-name'],
             client: {
                 maxBatchSize: defaults.eth?.client?.maxBatchSize ?? 0,
                 maxBatchTime: parseDuration(defaults.eth?.client?.maxBatchTime!) ?? 0,

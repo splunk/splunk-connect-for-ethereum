@@ -156,6 +156,11 @@ export const CLI_FLAGS = {
 
     'network-name': flags.string({
         env: 'NETWORK_NAME',
-        description: 'The network name will be attached to all events sent to Splunk',
+        description:
+            'The network name will be attached to all events sent to Splunk. This is typically either "mainnet" or "testnet".',
+    }),
+    'chain-name': flags.string({
+        env: 'CHAIN_NAME',
+        description: 'The name of the chain that will be attached to all events sent to Splunk',
     }),
 };

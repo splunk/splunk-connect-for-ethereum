@@ -1,0 +1,19 @@
+[
+{"req":{"method":"web3_clientVersion","params":[]},"res":{"result":"Geth/v1.9.9-omnibus-e320ae4c-20191206/linux-amd64/go1.13.4"}},
+{"req":{"method":"net_version","params":[]},"res":{"result":"1"}},
+{"req":{"method":"eth_chainId","params":[]},"res":{"result":"0x1"}},
+{"req":{"method":"eth_protocolVersion","params":[]},"res":{"result":"0x40"}},
+{"req":{"method":"web3_clientVersion","params":[]},"res":{"result":"Geth/v1.9.9-omnibus-e320ae4c-20191206/linux-amd64/go1.13.4"}},
+{"req":{"method":"eth_pendingTransactions","params":[]},"res":{"error":{"code":-32601,"message":"The method eth_pendingTransactions does not exist/is not available"}}},
+{"req":{"method":"eth_hashrate","params":[]},"res":{"result":"0x0"}},
+{"req":{"method":"net_peerCount","params":[]},"res":{"result":"0x64"}},
+{"req":{"method":"net_version","params":[]},"res":{"result":"1"}},
+{"req":{"method":"eth_chainId","params":[]},"res":{"result":"0x1"}},
+{"req":{"method":"eth_protocolVersion","params":[]},"res":{"result":"0x40"}},
+{"req":{"method":"web3_clientVersion","params":[]},"res":{"result":"Geth/v1.9.9-omnibus-e320ae4c-20191206/linux-amd64/go1.13.4"}},
+{"req":{"method":"eth_blockNumber","params":[]},"res":{"result":"0x9026e7"}},
+{"req":{"method":"eth_hashrate","params":[]},"res":{"result":"0x0"}},
+{"req":{"method":"net_peerCount","params":[]},"res":{"result":"0x64"}},
+{"req":{"method":"eth_gasPrice","params":[]},"res":{"result":"0x12a05f200"}},
+{"req":{"method":"eth_syncing","params":[]},"res":{"result":false}}
+]

@@ -1,0 +1,14 @@
+[
+{"req":{"method":"web3_clientVersion","params":[]},"res":{"result":"Parity-Ethereum//v2.7.2-stable-2662d19-20200206/x86_64-unknown-linux-gnu/rustc1.41.0"}},
+{"req":{"method":"net_version","params":[]},"res":{"result":"1"}},
+{"req":{"method":"eth_chainId","params":[]},"res":{"result":"0x1"}},
+{"req":{"method":"eth_protocolVersion","params":[]},"res":{"result":"63"}},
+{"req":{"method":"web3_clientVersion","params":[]},"res":{"result":"Parity-Ethereum//v2.7.2-stable-2662d19-20200206/x86_64-unknown-linux-gnu/rustc1.41.0"}},
+{"req":{"method":"net_version","params":[]},"res":{"result":"1"}},
+{"req":{"method":"eth_chainId","params":[]},"res":{"result":"0x1"}},
+{"req":{"method":"eth_protocolVersion","params":[]},"res":{"result":"63"}},
+{"req":{"method":"web3_clientVersion","params":[]},"res":{"result":"Parity-Ethereum//v2.7.2-stable-2662d19-20200206/x86_64-unknown-linux-gnu/rustc1.41.0"}},
+{"req":{"method":"eth_blockNumber","params":[]},"res":{"result":"0x902707"}},
+{"req":{"method":"eth_gasPrice","params":[]},"res":{"result":"0x165a0bc00"}},
+{"req":{"method":"eth_syncing","params":[]},"res":{"result":false}}
+]
