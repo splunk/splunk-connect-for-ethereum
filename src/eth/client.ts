@@ -45,7 +45,8 @@ export async function executeBatchRequest(batch: BatchReq[], transport: Ethereum
 export class EthereumClient {
     constructor(public readonly transport: EthereumTransport) {}
 
-    async request<P extends any[], R>(req: EthRequest<P, R>): Promise<R> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async request<P extends any[], R>(req: EthRequest<P, R>, options?: { immediate?: boolean }): Promise<R> {
         const payload = createJsonRpcPayload(req.method, req.params);
         const res = await this.transport.send(payload);
         if (payload.id !== res.id) {

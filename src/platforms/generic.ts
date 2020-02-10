@@ -22,11 +22,27 @@ import { prefixKeys } from '../utils/obj';
 
 const { debug, warn, error } = createModuleDebug('platforms:generic');
 
-export async function captureDefaultMetrics(eth: EthereumClient, captureTime: number): Promise<OutputMessage> {
+export async function checkRpcMethodSupport(eth: EthereumClient, req: EthRequest<[], any>): Promise<boolean> {
+    try {
+        debug('Checking if RPC method %s is supported by ethereum node', req.method);
+        await eth.request(req, { immediate: true });
+        debug('Ethereum node seems to support RPC method %s', req.method);
+        return true;
+    } catch (e) {
+        warn('RPC method %s is not supported by ethereum node: %s', req.method, e.message);
+        return false;
+    }
+}
+
+export async function captureDefaultMetrics(
+    eth: EthereumClient,
+    captureTime: number,
+    supports: { hashRate?: boolean; peerCount?: boolean } = {}
+): Promise<NodeMetricsMessage> {
     const [blockNumberResult, hashRateResult, peerCountResult, gasPriceResult, syncStatus] = await Promise.all([
         eth.request(blockNumber()),
-        eth.request(hashRate()),
-        eth.request(peerCount()),
+        supports.hashRate === false ? undefined : eth.request(hashRate()),
+        supports.peerCount === false ? undefined : eth.request(peerCount()),
         eth
             .request(gasPrice())
             .then(value => bigIntToNumber(value))
