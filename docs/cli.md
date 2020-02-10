@@ -28,6 +28,9 @@ OPTIONS
       Directory containing ABI definitions (JSON files). This directory will be
       searched recursively
 
+  --chain-name=chain-name
+      The name of the chain that will be attached to all events sent to Splunk
+
   --[no-]collect-blocks
       Enables ethereum block watcher, ingesting blocks, transactions, event logs
       and ABI-decoded information from method calls and event logs
@@ -40,6 +43,9 @@ OPTIONS
 
   --[no-]collect-node-metrics
       Enables collection of node metrics
+
+  --[no-]collect-pending-transactions
+      Enables collection of pending transactions
 
   --debug
       Enable debug log output
@@ -89,7 +95,8 @@ OPTIONS
       or a full URL
 
   --network-name=network-name
-      The network name will be attached to all events sent to Splunk
+      The network name will be attached to all events sent to Splunk. This is
+      typically either "mainnet" or "testnet".
 
   --print-config
       Causes ethlogger to simply print the configuration merged from config file
@@ -120,6 +127,7 @@ OPTIONS
 | `COLLECT_BLOCKS`                  | `boolean` | Enables ethereum block watcher, ingesting blocks, transactions, event logs and ABI-decoded information from method calls and event logs                                                  |
 | `COLLECT_NODE_METRICS`            | `boolean` | Enables collection of node metrics                                                                                                                                                       |
 | `COLLECT_NODE_INFO`               | `boolean` | Enables collection of node info events                                                                                                                                                   |
+| `COLLECT_PENDING_TX`              | `boolean` | Enables collection of pending transactions                                                                                                                                               |
 | `COLLECT_INTERNAL_METRICS`        | `boolean` | Enables collection of ethlogger-internal metrics                                                                                                                                         |
 | `SPLUNK_HEC_URL`                  | `string`  | URL to connect to Splunk HTTP Event Collector. You can either specify just the base URL (without path) and the default path will automatically appended or a full URL                    |
 | `SPLUNK_HEC_TOKEN`                | `string`  | Token to authenticate against Splunk HTTP Event Collector                                                                                                                                |
@@ -135,6 +143,7 @@ OPTIONS
 | `ABI_DIR`                         | `string`  | Directory containing ABI definitions (JSON files). This directory will be searched recursively                                                                                           |
 | `START_AT_BLOCK`                  | `string`  | First block to start ingesting from. Possible values are "genesis", "latest", an absolute block number or a negative number describing how many blocks before the latest one to start at |
 | `REJECT_INVALID_CERTS`            | `boolean` | Disable to allow all HTTP clients (HEC and ETH) to connect to HTTPS without rejecting invalid (self-signed) certificates                                                                 |
-| `NETWORK_NAME`                    | `string`  | The network name will be attached to all events sent to Splunk                                                                                                                           |
+| `NETWORK_NAME`                    | `string`  | The network name will be attached to all events sent to Splunk. This is typically either "mainnet" or "testnet".                                                                         |
+| `CHAIN_NAME`                      | `string`  | The name of the chain that will be attached to all events sent to Splunk                                                                                                                 |
 
 <!-- ENVREF-END -->

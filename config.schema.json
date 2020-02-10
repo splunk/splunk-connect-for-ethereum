@@ -4,16 +4,24 @@
         "AbiRepositoryConfigSchema": {
             "description": "The ABI repository is used to decode ABI information from smart contract calls and event logs.\nIt generates and adds some additional information in transactions and events, including smart contract\nmethod call parameter names, values and data types, as well as smart contract names associated with a\nparticular contract address.",
             "properties": {
+                "abiFileExtension": {
+                    "description": "Set to `.json` by default as the file extension for ABIs",
+                    "type": "string"
+                },
+                "decodeAnonymous": {
+                    "description": "If enabled, ethlogger will attempt to decode function calls and event logs using a set of\ncommon signatures as a fallback if no match against any supplied ABI definition was found.",
+                    "type": "boolean"
+                },
                 "directory": {
                     "description": "If specified, the ABI repository will recursively search this directory for ABI files",
                     "type": "string"
                 },
-                "fileExtension": {
-                    "description": "Currently set to `.json` as the file extension for ABIs.",
-                    "type": "string"
-                },
                 "fingerprintContracts": {
-                    "description": "If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.\n\nNOTE: disabling it is currently being ignored since non-fingerprint matching hasn't been implemented",
+                    "description": "If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.",
+                    "type": "boolean"
+                },
+                "searchRecursive": {
+                    "description": "`true` to search ABI directory recursively for ABI files",
                     "type": "boolean"
                 }
             },
@@ -29,6 +37,10 @@
                 "enabled": {
                     "description": "Specify `false` to disable the block watcher",
                     "type": "boolean"
+                },
+                "maxParallelChunks": {
+                    "description": "Max. number of chunks to process in parallel",
+                    "type": "number"
                 },
                 "pollInterval": {
                     "description": "Interval in which to look for the latest block number (if not busy processing the backlog)",
@@ -125,6 +137,10 @@
         "EthereumConfigSchema": {
             "description": "General Ethereum configuration including client and transport, defining how ethlogger talks to the ethereum node",
             "properties": {
+                "chain": {
+                    "description": "Chain name logged as a field with every event and metric.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public chainIds associated\nwith particular ethereum-based chains. This value will allow\nconsumers of data to distinguish between different chains\nin case multiple chains are being logged to one place.",
+                    "type": "string"
+                },
                 "client": {
                     "$ref": "#/definitions/EthereumClientConfigSchema",
                     "description": "Ethereum client configuration"
@@ -134,7 +150,7 @@
                     "description": "HTTP tansport configuration"
                 },
                 "network": {
-                    "description": "Network name logged as a field with every event and metric.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public networkIds associated\nwith particular networks (ethereum mainnet, ropsten, ...). This value\nwill allow consumers of data to distinguish between different networks\nin case multiple networks are being logged to one place.",
+                    "description": "Network name logged as a field with every event and metric.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public networkIds associated\nwith particular networks (ethereum mainnet, ropsten, ...). Typical\nvalues of the network name are `\"mainnet\"` or `\"testnet\"`.",
                     "type": "string"
                 },
                 "url": {
@@ -527,6 +543,34 @@
             },
             "type": "object"
         },
+        "PendingTxConfigSchema": {
+            "description": "Periodic collection of pending transactions",
+            "properties": {
+                "collectInterval": {
+                    "description": "Interval in which to collect pending transactions",
+                    "type": ["string", "number"]
+                },
+                "enabled": {
+                    "description": "Enable or disable collection of pending transactions",
+                    "type": "boolean"
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": ["string", "number"]
+                        }
+                    ],
+                    "description": "Wait time before retrying to collect pending transactions after failure"
+                }
+            },
+            "type": "object"
+        },
         "SourcetypesSchema": {
             "description": "Configurable set of `sourcetype` field values emitted by ethlogger",
             "properties": {
@@ -616,6 +660,10 @@
                 }
             ],
             "description": "In the output configuration you can specify where ethlogger will send generated\nmetrics and events to. By default it will send all information to Splunk HEC,\nbut you can instead send it to console output or a file."
+        },
+        "pendingTx": {
+            "$ref": "#/definitions/PendingTxConfigSchema",
+            "description": "Settings for collecting pending transactions from node"
         }
     },
     "type": "object"
