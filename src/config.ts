@@ -37,6 +37,8 @@ export interface EthloggerConfigSchema {
     nodeMetrics: NodeMetricsConfigSchema;
     /** Settings for the node info collector */
     nodeInfo: NodeInfoConfigSchema;
+    /** Settings for collecting pending transactions from node */
+    pendingTx: PendingTxConfigSchema;
     /** Settings for internal metrics collection */
     internalMetrics: InternalMetricsConfigSchema;
 }
@@ -57,6 +59,7 @@ export interface EthloggerConfig {
     blockWatcher: BlockWatcherConfig;
     nodeMetrics: NodeMetricsConfig;
     nodeInfo: NodeInfoConfig;
+    pendingTx: PendingTxConfig;
     internalMetrics: InternalMetricsConfig;
 }
 
@@ -200,6 +203,21 @@ export interface NodeInfoConfigSchema {
 }
 
 export interface NodeInfoConfig extends Omit<NodeInfoConfigSchema, 'retryWaitTime'> {
+    collectInterval: Duration;
+    retryWaitTime: WaitTime;
+}
+
+/** Periodic collection of pending transactions */
+export interface PendingTxConfigSchema {
+    /** Enable or disable collection of pending transactions */
+    enabled: boolean;
+    /** Interval in which to collect pending transactions */
+    collectInterval: DurationConfig;
+    /** Wait time before retrying to collect pending transactions after failure */
+    retryWaitTime: WaitTimeConfig;
+}
+
+export interface PendingTxConfig extends Omit<PendingTxConfigSchema, 'retryWaitTime'> {
     collectInterval: Duration;
     retryWaitTime: WaitTime;
 }
@@ -760,8 +778,17 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 parseBooleanEnvVar(CLI_FLAGS['collect-node-metrics'].env) ??
                 defaults.nodeMetrics?.enabled ??
                 true,
-            collectInterval: parseDuration(defaults.nodeMetrics?.collectInterval) ?? 60000,
-            retryWaitTime: waitTimeFromConfig(defaults.nodeMetrics?.retryWaitTime) ?? 60000,
+            collectInterval: parseDuration(defaults.nodeMetrics?.collectInterval) ?? 10000,
+            retryWaitTime: waitTimeFromConfig(defaults.nodeMetrics?.retryWaitTime) ?? 10000,
+        },
+        pendingTx: {
+            enabled:
+                flags['collect-pending-transactions'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-pending-transactions'].env) ??
+                defaults.pendingTx?.enabled ??
+                false,
+            collectInterval: parseDuration(defaults.pendingTx?.collectInterval) ?? 30000,
+            retryWaitTime: waitTimeFromConfig(defaults.pendingTx?.retryWaitTime) ?? 30000,
         },
     };
 

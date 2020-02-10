@@ -48,6 +48,11 @@ export const CLI_FLAGS = {
         env: 'COLLECT_NODE_INFO',
         description: 'Enables collection of node info events',
     }),
+    'collect-pending-transactions': flags.boolean({
+        allowNo: true,
+        env: 'COLLECT_PENDING_TX',
+        description: 'Enables collection of pending transactions',
+    }),
     'collect-internal-metrics': flags.boolean({
         allowNo: true,
         env: 'COLLECT_INTERNAL_METRICS',
