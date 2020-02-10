@@ -6,6 +6,7 @@ import {
     parseBlockRange,
     serializeBlockRange,
     blockRangeSize,
+    blockRangeIncludes,
 } from './blockrange';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
@@ -76,6 +77,10 @@ export class Checkpoint implements ManagedResource {
         this.completed = compactRanges([...this.completed, range]);
         this.pendingVersion++;
         this.scheduleSave();
+    }
+
+    public isIncomplete(block: number): boolean {
+        return !this.completed.some(range => blockRangeIncludes(range, block));
     }
 
     public getIncompleteRanges(latestBlock?: number): BlockRange[] {

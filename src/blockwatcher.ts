@@ -212,15 +212,21 @@ export class BlockWatcher implements ManagedResource {
         info('Block watcher stopped');
     }
 
-    private async processChunk(chunk: BlockRange) {
+    async processChunk(chunk: BlockRange) {
         const startTime = Date.now();
         info('Processing chunk %s', serializeBlockRange(chunk));
 
         debug('Requesting block range', chunk);
         const blockRequestStart = Date.now();
-        const blocks = await this.ethClient.requestBatch(
-            blockRangeToArray(chunk).map(blockNumber => getBlock(blockNumber))
-        );
+        const blocks = await this.ethClient
+            .requestBatch(
+                blockRangeToArray(chunk)
+                    .filter(blockNumber => this.checkpoints.isIncomplete(blockNumber))
+                    .map(blockNumber => getBlock(blockNumber))
+            )
+            .catch(e =>
+                Promise.reject(new Error(`Failed to request batch of blocks ${serializeBlockRange(chunk)}: ${e}`))
+            );
         debug('Received %d blocks in %d ms', blocks.length, Date.now() - blockRequestStart);
         for (const block of blocks) {
             await this.processBlock(block);
@@ -234,6 +240,10 @@ export class BlockWatcher implements ManagedResource {
     }
 
     private async processBlock(block: RawBlockResponse) {
+        if (block.number != null && !this.checkpoints.isIncomplete(bigIntToNumber(block.number))) {
+            warn('Skipping processing of block %d since it is marked complete in our checkpoint');
+            return;
+        }
         const startTime = Date.now();
         const outputMessages: OutputMessage[] = [];
         const formattedBlock = formatBlock(block);
