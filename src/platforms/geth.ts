@@ -1,14 +1,12 @@
-import { NodePlatformAdapter } from '.';
 import { EthereumClient } from '../eth/client';
-import { KNOWN_NETOWORK_NAMES } from '../eth/networks';
 import { clientVersion, gethMemStats, gethMetrics, gethNodeInfo, gethPeers, gethTxpool } from '../eth/requests';
 import { GethMemStats, GethMetrics, GethNodeInfoResponse, GethPeer } from '../eth/responses';
 import { formatPendingTransaction } from '../format';
-import { NodeInfo, PendingTransactionMessage } from '../msgs';
+import { NodeInfo, PendingTransactionMessage, NodeMetricsMessage } from '../msgs';
 import { OutputMessage } from '../output';
 import { createModuleDebug } from '../utils/debug';
 import { durationStringToMs, parseAbbreviatedNumber } from '../utils/parse';
-import { captureDefaultMetrics, fetchDefaultNodeInfo } from './generic';
+import { captureDefaultMetrics, GenericNodeAdapter } from './generic';
 
 const { debug, error } = createModuleDebug('platforms:geth');
 
@@ -69,18 +67,16 @@ export function formatGethMemStats(memStats: GethMemStats): [string, number | un
         );
 }
 
-export async function captureGethMetrics(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+export async function captureGethMetrics(ethClient: EthereumClient, captureTime: number): Promise<NodeMetricsMessage> {
     const [metricsResults, memStatsResults] = await Promise.all([
         ethClient.request(gethMetrics(true)),
         ethClient.request(gethMemStats()),
     ]);
-    return [
-        {
-            type: 'nodeMetrics',
-            time: captureTime,
-            metrics: Object.fromEntries([...formatGethMetrics(metricsResults), ...formatGethMemStats(memStatsResults)]),
-        },
-    ];
+    return {
+        type: 'nodeMetrics',
+        time: captureTime,
+        metrics: Object.fromEntries([...formatGethMetrics(metricsResults), ...formatGethMemStats(memStatsResults)]),
+    };
 }
 
 export async function captureTxpoolData(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
@@ -134,41 +130,24 @@ export interface GethNodeInfo extends NodeInfo {
     gethInfo: GethNodeInfoResponse;
 }
 
-export class GethAdapter implements NodePlatformAdapter {
+export class GethAdapter extends GenericNodeAdapter {
     protected gethNodeInfo?: GethNodeInfoResponse;
-    protected nodeInfo?: GethNodeInfo;
-
-    constructor(protected clientVersion: string, private network?: string) {}
-
-    public async initialize(ethClient: EthereumClient) {
-        await this.captureNodeInfo(ethClient);
-    }
 
     public async captureNodeInfo(ethClient: EthereumClient): Promise<NodeInfo> {
         debug('Retrieving nodeInfo from geth node');
-        const [nodeInfo, defaultNodeInfo, clientVersionRes] = await Promise.all([
+        const [baseNodeInfo, gethNodeInfoRes, clientVersionRes] = await Promise.all([
+            super.captureNodeInfo(ethClient),
             ethClient.request(gethNodeInfo()),
-            fetchDefaultNodeInfo(ethClient),
             ethClient.request(clientVersion()),
         ]);
-        debug('Retrieved node info: %O', nodeInfo);
-        debug('Retrieved generic node info: %O', defaultNodeInfo);
-
-        this.nodeInfo = {
-            enode: nodeInfo.enode,
+        return {
+            ...baseNodeInfo,
+            enode: gethNodeInfoRes.enode,
             clientVersion: clientVersionRes,
             network: this.network ?? null,
-            networkId: defaultNodeInfo.networkId ?? null,
             platform: this.name,
-            protocolVersion: defaultNodeInfo.protocolVersion ?? null,
-            transport: ethClient.transport.source,
-            gethInfo: nodeInfo,
+            gethInfo: gethNodeInfoRes,
         };
-        return this.nodeInfo;
-    }
-
-    public get fullVersion(): string {
-        return this.nodeInfo?.clientVersion ?? this.clientVersion;
     }
 
     public get name(): string {
@@ -179,25 +158,16 @@ export class GethAdapter implements NodePlatformAdapter {
         return this.nodeInfo?.enode ?? null;
     }
 
-    public get networkId(): number | null {
-        return this.nodeInfo?.networkId ?? null;
-    }
-
-    public get protocolVersion(): number | null {
-        return this.nodeInfo?.protocolVersion ?? null;
-    }
-
-    public get networkName(): string | null {
-        return this.network ?? (this.networkId != null ? KNOWN_NETOWORK_NAMES[this.networkId] : null) ?? null;
-    }
-
-    public async captureNodeStats(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
-        const [defaultMetrics, getMetrics, txpoolData] = await Promise.all([
+    public async captureNodeMetrics(ethClient: EthereumClient, captureTime: number): Promise<NodeMetricsMessage[]> {
+        const [defaultMetrics, gethMetrics] = await Promise.all([
             captureDefaultMetrics(ethClient, captureTime),
             captureGethMetrics(ethClient, captureTime),
-            captureTxpoolData(ethClient, captureTime),
             capturePeers(ethClient, captureTime),
         ]);
-        return [defaultMetrics, ...getMetrics, ...txpoolData];
+        return [defaultMetrics, gethMetrics];
+    }
+
+    public async capturePendingTransactions(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+        return await captureTxpoolData(ethClient, captureTime);
     }
 }

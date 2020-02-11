@@ -83,18 +83,20 @@ Root configuration schema for ethlogger
 | `blockWatcher`    | [`BlockWatcher`](#BlockWatcher)                                                                                                    | Block watcher settings, configure how blocks, transactions, event logs are ingested                                                                                                                                    |
 | `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                                                                                                                                                                |
 | `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                                                                                                                                                   |
+| `pendingTx`       | [`PendingTx`](#PendingTx)                                                                                                          | Settings for collecting pending transactions from node                                                                                                                                                                 |
 | `internalMetrics` | [`InternalMetrics`](#InternalMetrics)                                                                                              | Settings for internal metrics collection                                                                                                                                                                               |
 
 ### Ethereum
 
 General Ethereum configuration including client and transport, defining how ethlogger talks to the ethereum node
 
-| Name      | Type                                | Description                                                                                                                                                                                                                                                                                                                                                                                             |
-| --------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `url`     | `string`                            | URL of JSON RPC endpoint                                                                                                                                                                                                                                                                                                                                                                                |
-| `network` | `string`                            | Network name logged as a field with every event and metric. Ethlogger will attempt to automatically determine if not specified but there are only a handful of known public networkIds associated with particular networks (ethereum mainnet, ropsten, ...). This value will allow consumers of data to distinguish between different networks in case multiple networks are being logged to one place. |
-| `http`    | [`HttpTransport`](#HttpTransport)   | HTTP tansport configuration                                                                                                                                                                                                                                                                                                                                                                             |
-| `client`  | [`EthereumClient`](#EthereumClient) | Ethereum client configuration                                                                                                                                                                                                                                                                                                                                                                           |
+| Name      | Type                                | Description                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`     | `string`                            | URL of JSON RPC endpoint                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `network` | `string`                            | Network name logged as a field with every event and metric. Ethlogger will attempt to automatically determine if not specified but there are only a handful of known public networkIds associated with particular networks (ethereum mainnet, ropsten, ...). Typical values of the network name are `"mainnet"` or `"testnet"`.                                                                                                           |
+| `chain`   | `string`                            | Chain name logged as a field with every event and metric. Ethlogger will attempt to automatically determine if not specified but there are only a handful of known public chainIds associated with particular ethereum-based chains. This value will allow consumers of data to distinguish between different chains in case multiple chains are being logged to one place.<br><br>See [https://chainid.network](https://chainid.network) |
+| `http`    | [`HttpTransport`](#HttpTransport)   | HTTP tansport configuration                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `client`  | [`EthereumClient`](#EthereumClient) | Ethereum client configuration                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ### HttpTransport
 
@@ -209,11 +211,13 @@ The checkpoint is where ethlogger keeps track of its state, which blocks have al
 
 The ABI repository is used to decode ABI information from smart contract calls and event logs. It generates and adds some additional information in transactions and events, including smart contract method call parameter names, values and data types, as well as smart contract names associated with a particular contract address.
 
-| Name                   | Type      | Description                                                                                                                                                                                                                                                                                                                       |
-| ---------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `directory`            | `string`  | If specified, the ABI repository will recursively search this directory for ABI files                                                                                                                                                                                                                                             |
-| `fileExtension`        | `string`  | Currently set to `.json` as the file extension for ABIs.                                                                                                                                                                                                                                                                          |
-| `fingerprintContracts` | `boolean` | If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI (the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts we encounter.<br><br>NOTE: disabling it is currently being ignored since non-fingerprint matching hasn't been implemented |
+| Name                   | Type      | Description                                                                                                                                                                                                           |
+| ---------------------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `directory`            | `string`  | If specified, the ABI repository will recursively search this directory for ABI files                                                                                                                                 |
+| `searchRecursive`      | `boolean` | `true` to search ABI directory recursively for ABI files                                                                                                                                                              |
+| `abiFileExtension`     | `string`  | Set to `.json` by default as the file extension for ABIs                                                                                                                                                              |
+| `fingerprintContracts` | `boolean` | If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI (the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts we encounter. |
+| `decodeAnonymous`      | `boolean` | If enabled, ethlogger will attempt to decode function calls and event logs using a set of common signatures as a fallback if no match against any supplied ABI definition was found.                                  |
 
 ### ContractInfo
 
@@ -232,6 +236,7 @@ Block watcher is the component that retrieves blocks, transactions, event logs f
 | `enabled`            | `boolean`                   | Specify `false` to disable the block watcher                                                      |
 | `pollInterval`       | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)        |
 | `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
+| `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
 | `startAt`            | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. |
 | `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
 
@@ -254,6 +259,16 @@ Platform specific node information is collection on regular interval
 | `enabled`         | `boolean`               | Specify `false` to disable node info collection              |
 | `collectInterval` | [`Duration`](#Duration) | Interval in which to collect node info                       |
 | `retryWaitTime`   | [`WaitTime`](#WaitTime) | Wait time before retrying to collect node info after failure |
+
+### PendingTx
+
+Periodic collection of pending transactions
+
+| Name              | Type                    | Description                                                             |
+| ----------------- | ----------------------- | ----------------------------------------------------------------------- |
+| `enabled`         | `boolean`               | Enable or disable collection of pending transactions                    |
+| `collectInterval` | [`Duration`](#Duration) | Interval in which to collect pending transactions                       |
+| `retryWaitTime`   | [`WaitTime`](#WaitTime) | Wait time before retrying to collect pending transactions after failure |
 
 ### InternalMetrics
 
@@ -335,16 +350,18 @@ Ethlogger supports a set of variables you can use in metadata sent to Splunk (ho
 
 <!-- METAVARIABLES -->
 
-| Variable             | Description                                                                                                                           |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `$HOSTNAME`          | Hostname of the machine ethlogger is running on                                                                                       |
-| `$ENODE`             | Enode retrieved from the node via platform-specific APIs                                                                              |
-| `$PLATFORM`          | The name of the ethereum node platform (geth, quorum, parity) or "generic" if the platform couldn't be determined.                    |
-| `$NETWORK_ID`        | The numberic ID of the ethereum network                                                                                               |
-| `$NETWORK`           | The network name supplied via ethlogger config or auto-detected for known networks from the network ID                                |
-| `$PID`               | The ethlogger PID                                                                                                                     |
-| `$VERSION`           | Ethlogger version                                                                                                                     |
-| `$NODE_VERSION`      | The node.js version ethlogger is running on                                                                                           |
-| `$ETH_NODE_HOSTNAME` | Hostname (or IP) of the ethereum node from the transport used. For HTTP transport the host portion of the URL (without port) is used. |
+| Variable             | Description                                                                                                                                           |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$HOSTNAME`          | Hostname of the machine ethlogger is running on                                                                                                       |
+| `$ENODE`             | Enode retrieved from the node via platform-specific APIs                                                                                              |
+| `$PLATFORM`          | The name of the ethereum node platform (geth, quorum, parity) or "generic" if the platform couldn't be determined.                                    |
+| `$NETWORK_ID`        | The numberic ID of the ethereum network                                                                                                               |
+| `$NETWORK`           | The network name supplied via ethlogger config or auto-detected for known networks from the network ID. Typical values are `"mainnet"` or `"testnet"` |
+| `$CHAIN_ID`          | Chain ID is the currently configured CHAIN_ID value used for signing replay-protected transactions, introduced via EIP-155                            |
+| `$CHAIN`             | The chain name supplied via ethlogger config or auto-detected for known networks from the chain ID and network ID                                     |
+| `$PID`               | The ethlogger PID                                                                                                                                     |
+| `$VERSION`           | Ethlogger version                                                                                                                                     |
+| `$NODE_VERSION`      | The node.js version ethlogger is running on                                                                                                           |
+| `$ETH_NODE_HOSTNAME` | Hostname (or IP) of the ethereum node from the transport used. For HTTP transport the host portion of the URL (without port) is used.                 |
 
 <!-- METAVARIABLES-END -->

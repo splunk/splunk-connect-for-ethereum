@@ -21,5 +21,6 @@ export function subsituteVariablesInValues<T = { [k: string]: string }>(
         Object.entries(obj)
             .filter(([, v]) => v != null)
             .map(([k, v]) => [k, varEntries.reduce((cur, [variable, repl]) => replaceAll(cur, variable, repl), v)])
+            .filter(([, v]) => !!v)
     );
 }

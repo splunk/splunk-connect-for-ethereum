@@ -37,6 +37,8 @@ export interface EthloggerConfigSchema {
     nodeMetrics: NodeMetricsConfigSchema;
     /** Settings for the node info collector */
     nodeInfo: NodeInfoConfigSchema;
+    /** Settings for collecting pending transactions from node */
+    pendingTx: PendingTxConfigSchema;
     /** Settings for internal metrics collection */
     internalMetrics: InternalMetricsConfigSchema;
 }
@@ -57,6 +59,7 @@ export interface EthloggerConfig {
     blockWatcher: BlockWatcherConfig;
     nodeMetrics: NodeMetricsConfig;
     nodeInfo: NodeInfoConfig;
+    pendingTx: PendingTxConfig;
     internalMetrics: InternalMetricsConfig;
 }
 
@@ -83,11 +86,21 @@ export interface EthereumConfigSchema {
      * Network name logged as a field with every event and metric.
      * Ethlogger will attempt to automatically determine if not specified
      * but there are only a handful of known public networkIds associated
-     * with particular networks (ethereum mainnet, ropsten, ...). This value
-     * will allow consumers of data to distinguish between different networks
-     * in case multiple networks are being logged to one place.
+     * with particular networks (ethereum mainnet, ropsten, ...). Typical
+     * values of the network name are `"mainnet"` or `"testnet"`.
      */
     network?: string;
+    /**
+     * Chain name logged as a field with every event and metric.
+     * Ethlogger will attempt to automatically determine if not specified
+     * but there are only a handful of known public chainIds associated
+     * with particular ethereum-based chains. This value will allow
+     * consumers of data to distinguish between different chains
+     * in case multiple chains are being logged to one place.
+     *
+     * @see [https://chainid.network](https://chainid.network)
+     */
+    chain?: string;
     /** HTTP tansport configuration */
     http: HttpTransportConfigSchema;
     /** Ethereum client configuration */
@@ -126,16 +139,21 @@ export interface CheckpointConfig extends CheckpointConfigSchema {
 export interface AbiRepositoryConfigSchema {
     /** If specified, the ABI repository will recursively search this directory for ABI files */
     directory?: string;
-    /** Currently set to `.json` as the file extension for ABIs. */
-    fileExtension?: string;
+    /** `true` to search ABI directory recursively for ABI files */
+    searchRecursive?: boolean;
+    /** Set to `.json` by default as the file extension for ABIs */
+    abiFileExtension?: string;
     /**
      * If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI
      * (the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts
      * we encounter.
-     *
-     * NOTE: disabling it is currently being ignored since non-fingerprint matching hasn't been implemented
      */
-    fingerprintContracts: boolean; // TODO
+    fingerprintContracts: boolean;
+    /**
+     * If enabled, ethlogger will attempt to decode function calls and event logs using a set of
+     * common signatures as a fallback if no match against any supplied ABI definition was found.
+     */
+    decodeAnonymous: boolean;
 }
 
 export type AbiRepositoryConfig = AbiRepositoryConfigSchema;
@@ -163,6 +181,8 @@ export interface BlockWatcherConfigSchema {
     pollInterval: DurationConfig;
     /** Max. number of blocks to fetch at once */
     blocksMaxChunkSize: number;
+    /** Max. number of chunks to process in parallel */
+    maxParallelChunks: number;
     /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
     startAt: StartBlock;
     /** Wait time before retrying to fetch and process blocks after failure */
@@ -200,6 +220,21 @@ export interface NodeInfoConfigSchema {
 }
 
 export interface NodeInfoConfig extends Omit<NodeInfoConfigSchema, 'retryWaitTime'> {
+    collectInterval: Duration;
+    retryWaitTime: WaitTime;
+}
+
+/** Periodic collection of pending transactions */
+export interface PendingTxConfigSchema {
+    /** Enable or disable collection of pending transactions */
+    enabled: boolean;
+    /** Interval in which to collect pending transactions */
+    collectInterval: DurationConfig;
+    /** Wait time before retrying to collect pending transactions after failure */
+    retryWaitTime: WaitTimeConfig;
+}
+
+export interface PendingTxConfig extends Omit<PendingTxConfigSchema, 'retryWaitTime'> {
     collectInterval: Duration;
     retryWaitTime: WaitTime;
 }
@@ -410,6 +445,8 @@ export function waitTimeFromConfig(config?: WaitTimeConfig | DeepPartial<WaitTim
     }
     if (typeof config === 'number') {
         return config;
+    } else if (typeof config === 'string') {
+        return parseDuration(config);
     } else if (typeof config === 'object' && 'type' in config) {
         if (config.type === 'exponential-backoff') {
             const args = { min: parseDuration(config.min) ?? 0, max: parseDuration(config.max) };
@@ -656,6 +693,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         eth: {
             url: required('eth-rpc-url', defaults.eth?.url),
             network: flags['network-name'] ?? defaults.eth?.network,
+            chain: flags['chain-name'],
             client: {
                 maxBatchSize: defaults.eth?.client?.maxBatchSize ?? 0,
                 maxBatchTime: parseDuration(defaults.eth?.client?.maxBatchTime!) ?? 0,
@@ -704,7 +742,9 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         output: parseOutput(defaults.output),
         abi: {
             directory: flags['abi-dir'] ?? defaults.abi?.directory,
+            abiFileExtension: defaults.abi?.abiFileExtension,
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
+            decodeAnonymous: defaults.abi?.decodeAnonymous ?? true,
         },
         blockWatcher: {
             enabled:
@@ -713,6 +753,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 defaults.blockWatcher?.enabled ??
                 true,
             blocksMaxChunkSize: defaults.blockWatcher?.blocksMaxChunkSize ?? 25,
+            maxParallelChunks: defaults.blockWatcher?.maxParallelChunks ?? 3,
             pollInterval: parseDuration(defaults.blockWatcher?.pollInterval) ?? 500,
             startAt: parseStartAt(flags['start-at-block'] ?? defaults.blockWatcher?.startAt) ?? 'genesis',
             retryWaitTime: waitTimeFromConfig(defaults.blockWatcher?.retryWaitTime) ?? 60000,
@@ -760,8 +801,17 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 parseBooleanEnvVar(CLI_FLAGS['collect-node-metrics'].env) ??
                 defaults.nodeMetrics?.enabled ??
                 true,
-            collectInterval: parseDuration(defaults.nodeMetrics?.collectInterval) ?? 60000,
-            retryWaitTime: waitTimeFromConfig(defaults.nodeMetrics?.retryWaitTime) ?? 60000,
+            collectInterval: parseDuration(defaults.nodeMetrics?.collectInterval) ?? 10000,
+            retryWaitTime: waitTimeFromConfig(defaults.nodeMetrics?.retryWaitTime) ?? 10000,
+        },
+        pendingTx: {
+            enabled:
+                flags['collect-pending-transactions'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-pending-transactions'].env) ??
+                defaults.pendingTx?.enabled ??
+                false,
+            collectInterval: parseDuration(defaults.pendingTx?.collectInterval) ?? 30000,
+            retryWaitTime: waitTimeFromConfig(defaults.pendingTx?.retryWaitTime) ?? 30000,
         },
     };
 

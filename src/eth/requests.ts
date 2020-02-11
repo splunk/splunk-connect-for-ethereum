@@ -60,6 +60,12 @@ export const netVersion = (): EthRequest<[], number> => ({
     response: r => bigIntToNumber(r.result),
 });
 
+/** Returns the chain ID - see https://github.com/ethereum/EIPs/blob/master/EIPS/eip-695.md */
+export const chainId = (): EthRequest<[], number> => ({
+    method: 'eth_chainId',
+    response: r => bigIntToNumber(r.result),
+});
+
 /** Returns the current ethereum protocol version */
 export const protocolVersion = (): EthRequest<[], number> => ({
     method: 'eth_protocolVersion',

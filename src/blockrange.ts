@@ -104,3 +104,6 @@ export function getInverseBlockRanges(
     }
     return compactRanges(result);
 }
+
+export const blockRangeIncludes = (range: BlockRange, block: number): boolean =>
+    block >= range.from && block <= range.to;

@@ -24,3 +24,21 @@ export const createModuleDebug = (name: string) => {
 export function enableTraceLogging() {
     TRACE_ENABLED = true;
 }
+
+// disable debug logging for tests
+export function suppressDebugLogging() {
+    const logs: any[][] = [];
+    create.log = (...args: any[]) => {
+        /* noop */
+        logs.push(args);
+    };
+
+    return {
+        logs,
+        restore: (): any[][] => {
+            // eslint-disable-next-line no-console
+            create.log = console.error.bind(console);
+            return logs;
+        },
+    };
+}

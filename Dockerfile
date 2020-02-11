@@ -19,6 +19,7 @@ RUN yarn install --production --frozen-lockfile && yarn link
 
 COPY --from=builder /ethlogger/bin /ethlogger/bin
 COPY --from=builder /ethlogger/lib /ethlogger/lib
+COPY --from=builder /ethlogger/data /ethlogger/data
 
 WORKDIR /app
 VOLUME /app

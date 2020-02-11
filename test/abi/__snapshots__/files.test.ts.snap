@@ -1,0 +1,607 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadAbiFile loads raw ABI file 1`] = `
+Object {
+  "contractAddress": undefined,
+  "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+  "contractName": "BCB",
+  "entries": Array [
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "name",
+        "type": "function",
+      },
+      "sig": "name()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "spender",
+            "type": "address",
+          },
+          Object {
+            "name": "value",
+            "type": "uint256",
+          },
+        ],
+        "name": "approve",
+        "type": "function",
+      },
+      "sig": "approve(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "totalSupply",
+        "type": "function",
+      },
+      "sig": "totalSupply()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "sender",
+            "type": "address",
+          },
+          Object {
+            "name": "recipient",
+            "type": "address",
+          },
+          Object {
+            "name": "amount",
+            "type": "uint256",
+          },
+        ],
+        "name": "transferFrom",
+        "type": "function",
+      },
+      "sig": "transferFrom(address,address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "decimals",
+        "type": "function",
+      },
+      "sig": "decimals()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "spender",
+            "type": "address",
+          },
+          Object {
+            "name": "addedValue",
+            "type": "uint256",
+          },
+        ],
+        "name": "increaseAllowance",
+        "type": "function",
+      },
+      "sig": "increaseAllowance(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "account",
+            "type": "address",
+          },
+        ],
+        "name": "balanceOf",
+        "type": "function",
+      },
+      "sig": "balanceOf(address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "renounceOwnership",
+        "type": "function",
+      },
+      "sig": "renounceOwnership()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "owner",
+        "type": "function",
+      },
+      "sig": "owner()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "isOwner",
+        "type": "function",
+      },
+      "sig": "isOwner()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [],
+        "name": "symbol",
+        "type": "function",
+      },
+      "sig": "symbol()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "spender",
+            "type": "address",
+          },
+          Object {
+            "name": "subtractedValue",
+            "type": "uint256",
+          },
+        ],
+        "name": "decreaseAllowance",
+        "type": "function",
+      },
+      "sig": "decreaseAllowance(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "recipient",
+            "type": "address",
+          },
+          Object {
+            "name": "amount",
+            "type": "uint256",
+          },
+        ],
+        "name": "transfer",
+        "type": "function",
+      },
+      "sig": "transfer(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "owner",
+            "type": "address",
+          },
+          Object {
+            "name": "spender",
+            "type": "address",
+          },
+        ],
+        "name": "allowance",
+        "type": "function",
+      },
+      "sig": "allowance(address,address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "newOwner",
+            "type": "address",
+          },
+        ],
+        "name": "transferOwnership",
+        "type": "function",
+      },
+      "sig": "transferOwnership(address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "indexed": true,
+            "name": "from",
+            "type": "address",
+          },
+          Object {
+            "indexed": true,
+            "name": "to",
+            "type": "address",
+          },
+          Object {
+            "indexed": false,
+            "name": "value",
+            "type": "uint256",
+          },
+          Object {
+            "indexed": false,
+            "name": "data",
+            "type": "bytes",
+          },
+        ],
+        "name": "TransferWithData",
+        "type": "event",
+      },
+      "sig": "TransferWithData(address,address,uint256,bytes)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "indexed": true,
+            "name": "previousOwner",
+            "type": "address",
+          },
+          Object {
+            "indexed": true,
+            "name": "newOwner",
+            "type": "address",
+          },
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event",
+      },
+      "sig": "OwnershipTransferred(address,address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "indexed": true,
+            "name": "from",
+            "type": "address",
+          },
+          Object {
+            "indexed": true,
+            "name": "to",
+            "type": "address",
+          },
+          Object {
+            "indexed": false,
+            "name": "value",
+            "type": "uint256",
+          },
+        ],
+        "name": "Transfer",
+        "type": "event",
+      },
+      "sig": "Transfer(address,address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "indexed": true,
+            "name": "owner",
+            "type": "address",
+          },
+          Object {
+            "indexed": true,
+            "name": "spender",
+            "type": "address",
+          },
+          Object {
+            "indexed": false,
+            "name": "value",
+            "type": "uint256",
+          },
+        ],
+        "name": "Approval",
+        "type": "event",
+      },
+      "sig": "Approval(address,address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "to",
+            "type": "address",
+          },
+          Object {
+            "name": "amount",
+            "type": "uint256",
+          },
+        ],
+        "name": "mint",
+        "type": "function",
+      },
+      "sig": "mint(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "from",
+            "type": "address",
+          },
+          Object {
+            "name": "value",
+            "type": "uint256",
+          },
+        ],
+        "name": "burn",
+        "type": "function",
+      },
+      "sig": "burn(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "30f0d1068a77a3aaa446f680f4aa961c9e981bff9aba4a0962230867d0f3ddf9",
+        "contractName": "BCB",
+        "inputs": Array [
+          Object {
+            "name": "to",
+            "type": "address",
+          },
+          Object {
+            "name": "value",
+            "type": "uint256",
+          },
+          Object {
+            "name": "data",
+            "type": "bytes",
+          },
+        ],
+        "name": "transferWithData",
+        "type": "function",
+      },
+      "sig": "transferWithData(address,uint256,bytes)",
+    },
+  ],
+}
+`;
+
+exports[`loadAbiFile loads truffle build file 1`] = `
+Object {
+  "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+  "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+  "contractName": "Airdropper",
+  "entries": Array [
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [],
+        "name": "renounceOwnership",
+        "type": "function",
+      },
+      "sig": "renounceOwnership()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [],
+        "name": "owner",
+        "type": "function",
+      },
+      "sig": "owner()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [],
+        "name": "isOwner",
+        "type": "function",
+      },
+      "sig": "isOwner()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [
+          Object {
+            "name": "newOwner",
+            "type": "address",
+          },
+        ],
+        "name": "transferOwnership",
+        "type": "function",
+      },
+      "sig": "transferOwnership(address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [
+          Object {
+            "indexed": false,
+            "name": "total",
+            "type": "uint256",
+          },
+          Object {
+            "indexed": false,
+            "name": "tokenAddress",
+            "type": "address",
+          },
+        ],
+        "name": "MultiSended",
+        "type": "event",
+      },
+      "sig": "MultiSended(uint256,address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [
+          Object {
+            "indexed": true,
+            "name": "previousOwner",
+            "type": "address",
+          },
+          Object {
+            "indexed": true,
+            "name": "newOwner",
+            "type": "address",
+          },
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event",
+      },
+      "sig": "OwnershipTransferred(address,address)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [
+          Object {
+            "name": "value",
+            "type": "uint256",
+          },
+        ],
+        "name": "withdraw",
+        "type": "function",
+      },
+      "sig": "withdraw(uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [
+          Object {
+            "name": "token",
+            "type": "address",
+          },
+          Object {
+            "name": "_contributors",
+            "type": "address[]",
+          },
+          Object {
+            "name": "_balances",
+            "type": "uint256[]",
+          },
+          Object {
+            "name": "fuel",
+            "type": "uint256",
+          },
+          Object {
+            "name": "low_limit",
+            "type": "uint256",
+          },
+        ],
+        "name": "multiSendToken",
+        "type": "function",
+      },
+      "sig": "multiSendToken(address,address[],uint256[],uint256,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": "0xf5e4553d3dcb14523aa8776f67a89bbf7b842327",
+        "contractFingerprint": "bc0c577dd0a92316b90fc8f8e37c8e6d0e129ecba3e00a6277bfb0a88b927039",
+        "contractName": "Airdropper",
+        "inputs": Array [
+          Object {
+            "name": "badgeToken",
+            "type": "address",
+          },
+          Object {
+            "name": "token",
+            "type": "address",
+          },
+          Object {
+            "name": "_contributors",
+            "type": "address[]",
+          },
+          Object {
+            "name": "_balances",
+            "type": "uint256[]",
+          },
+          Object {
+            "name": "_url",
+            "type": "string[]",
+          },
+          Object {
+            "name": "fuel",
+            "type": "uint256",
+          },
+          Object {
+            "name": "low_limit",
+            "type": "uint256",
+          },
+        ],
+        "name": "multiSendBadge",
+        "type": "function",
+      },
+      "sig": "multiSendBadge(address,address,address[],uint256[],string[],uint256,uint256)",
+    },
+  ],
+}
+`;

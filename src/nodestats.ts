@@ -1,148 +1,201 @@
+import { NodeInfoConfig, NodeMetricsConfig, PendingTxConfig } from './config';
 import { EthereumClient } from './eth/client';
-import { Output } from './output';
+import { Output, OutputMessage } from './output';
 import { NodePlatformAdapter } from './platforms';
 import { ABORT, AbortHandle } from './utils/abort';
 import { alwaysResolve, sleep } from './utils/async';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
-import { linearBackoff, resolveWaitTime, WaitTime } from './utils/retry';
+import { resolveWaitTime, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
-import { AbiRepository } from './abi';
-import { ContractInfo } from './contract';
-import { Cache } from './utils/cache';
 
-const { debug, info, error } = createModuleDebug('nodestats');
+const { debug, info, warn, error } = createModuleDebug('nodestats');
 
 const initialCounters = {
     infoCollectCount: 0,
     infoErrorCount: 0,
-    collectCount: 0,
-    errorCount: 0,
+    metricsCollectCount: 0,
+    metricsErrorCount: 0,
+    pendingTxCollectCount: 0,
+    pendingTxErrorCount: 0,
 };
 
 export class NodeStatsCollector implements ManagedResource {
     private abort = new AbortHandle();
     private donePromise: Promise<any> | null = null;
-    private metricsRetryWaitTime: WaitTime;
-    private infoRetryWaitTime: WaitTime;
     private counters = { ...initialCounters };
     private aggregates = {
         infoCollectDuration: new AggregateMetric(),
-        collectDuration: new AggregateMetric(),
+        metricsCollectDuration: new AggregateMetric(),
+        pendingtxCollectDuration: new AggregateMetric(),
     };
     constructor(
         private config: {
             platformAdapter: NodePlatformAdapter;
             ethClient: EthereumClient;
             output: Output;
-            abiRepo?: AbiRepository;
-            contractInfoCache?: Cache<string, Promise<ContractInfo>>;
-            metricsEnabled: boolean;
-            metricsInterval: number;
-            infoEnabled: boolean;
-            infoInterval: number;
-            metricsRetryWaitTime?: WaitTime;
-            infoRetryWaitTime?: WaitTime;
+            nodeInfo: NodeInfoConfig;
+            nodeMetrics: NodeMetricsConfig;
+            pendingTx: PendingTxConfig;
         }
-    ) {
-        this.metricsRetryWaitTime = config.metricsRetryWaitTime ?? linearBackoff({ min: 0, step: 2500, max: 120_000 });
-        this.infoRetryWaitTime = config.infoRetryWaitTime ?? linearBackoff({ min: 0, step: 2500, max: 120_000 });
-    }
+    ) {}
 
     public async start() {
         debug('Starting node stats collector');
-        const p = Promise.all([this.startCollectingNodeInfo(), this.startCollectingNodeMetrics()]);
-        this.donePromise = p;
-        await p;
+        try {
+            const p = Promise.all([
+                this.startCollectingNodeInfo(),
+                this.startCollectingNodeMetrics(),
+                this.startCollectingPendingTransactions(),
+            ]);
+            this.donePromise = p;
+            await p;
+        } catch (e) {
+            if (e !== ABORT) {
+                error('Node stats collector stopped with error', e);
+            }
+        }
         debug('Node stats collector completed');
     }
 
-    private async startCollectingNodeInfo() {
-        if (!this.config.infoEnabled) {
-            debug('Node info collection is disabled');
-            return;
-        }
-        debug('Starting node info collection every %d ms', this.config.infoInterval);
-        const { platformAdapter, ethClient, output, infoInterval } = this.config;
+    private async periodicallyCollect(
+        task: (abortHandle: AbortHandle, startTime: number) => Promise<OutputMessage[]>,
+        taskName: string,
+        interval: number,
+        retryWaitTime: WaitTime,
+        aggregateMetric?: AggregateMetric,
+        counter?: keyof typeof initialCounters,
+        errorCounter?: keyof typeof initialCounters
+    ) {
+        debug('Starting collection of %s every %d ms', taskName, interval);
+
         const abort = this.abort;
         let failed = 0;
         while (!abort.aborted) {
             const startTime = Date.now();
             try {
-                this.counters.infoCollectCount++;
+                if (counter != null) {
+                    this.counters[counter]++;
+                }
+                const msgs = await task(abort, startTime);
 
-                const nodeInfo = await abort.race(platformAdapter.captureNodeInfo(ethClient));
-                output.write({
-                    type: 'nodeInfo',
-                    time: Date.now(),
-                    body: nodeInfo,
-                });
+                if (!abort.aborted) {
+                    for (const msg of msgs) {
+                        this.config.output.write(msg);
+                    }
+                }
 
-                this.aggregates.infoCollectDuration.push(Date.now() - startTime);
-                info('Collected node info in %d ms', Date.now() - startTime);
+                info('Collected %s in %d ms', taskName, Date.now() - startTime);
+                aggregateMetric?.push(Date.now() - startTime);
                 failed = 0;
             } catch (e) {
                 if (e === ABORT) {
+                    info('Collection of %s aborted', taskName);
                     break;
                 }
-                this.counters.infoErrorCount++;
                 failed++;
-                error('Failed to collect node info (%d consecutive failures):', failed, e);
-                const waitAfterFailure = resolveWaitTime(this.infoRetryWaitTime, failed);
+                if (errorCounter != null) {
+                    this.counters[errorCounter]++;
+                }
+                error('Failed to collect %s (%d consecutive failures):', taskName, failed, e);
+                const waitAfterFailure = resolveWaitTime(retryWaitTime, failed);
                 debug('Waiting for %d ms after failure #%d', waitAfterFailure, failed);
                 await abort.race(sleep(waitAfterFailure));
             }
-            const waitForNext = Math.max(0, infoInterval - (Date.now() - startTime));
-            debug('Waiting for %d ms before collecting node info again', waitForNext);
+
+            const waitForNext = Math.max(0, interval - (Date.now() - startTime));
+            debug('Waiting for %d ms before collecting %s again', waitForNext, taskName);
             await abort.race(sleep(waitForNext));
         }
     }
 
-    private async startCollectingNodeMetrics() {
-        if (!this.config.metricsEnabled) {
+    collectNodeInfo = async (abort: AbortHandle): Promise<OutputMessage[]> => {
+        const { platformAdapter, ethClient } = this.config;
+        const nodeInfo = await abort.race(platformAdapter.captureNodeInfo(ethClient));
+        return [
+            {
+                type: 'nodeInfo',
+                time: Date.now(),
+                body: nodeInfo,
+            },
+        ];
+    };
+
+    collectNodeMetrics = async (abort: AbortHandle, time: number): Promise<OutputMessage[]> => {
+        const { platformAdapter, ethClient } = this.config;
+        const metrics = await abort.race(platformAdapter.captureNodeMetrics(ethClient, time));
+        return Array.isArray(metrics) ? metrics : [metrics];
+    };
+
+    collectPendingTransactions = async (abort: AbortHandle, time: number): Promise<OutputMessage[]> => {
+        const { platformAdapter, ethClient } = this.config;
+        return await abort.race(platformAdapter.capturePendingTransactions(ethClient, time));
+    };
+
+    private async startCollectingNodeInfo() {
+        if (!this.config.nodeInfo.enabled) {
+            debug('Node info collection is disabled');
             return;
         }
-        debug('Starting node metrics collection every %d ms', this.config.metricsInterval);
-        let failed = 0;
-        while (!this.abort.aborted) {
-            const startTime = Date.now();
-            try {
-                this.counters.collectCount++;
-                const results = await this.collectNodeStats();
-                this.aggregates.collectDuration.push(Date.now() - startTime);
-                info('Collected %d node metrics messages in %d ms', results, Date.now() - startTime);
-                failed = 0;
-            } catch (e) {
-                if (e === ABORT) {
-                    break;
-                }
-                this.counters.errorCount++;
-                failed++;
-                error('Failed to collect node metrics (%d consecutive failures):', failed, e);
-                const waitAfterFailure = resolveWaitTime(this.metricsRetryWaitTime, failed);
-                debug('Waiting for %d ms after failure #%d', waitAfterFailure, failed);
-                await this.abort.race(sleep(waitAfterFailure));
-            } finally {
-                this.donePromise = null;
-            }
-
-            const waitForNext = Math.max(0, this.config.metricsInterval - (Date.now() - startTime));
-            debug('Waiting for %d ms before collecting node stats again', waitForNext);
-            await this.abort.race(sleep(waitForNext));
-        }
+        await this.periodicallyCollect(
+            this.collectNodeInfo,
+            'node info',
+            this.config.nodeInfo.collectInterval,
+            this.config.nodeInfo.retryWaitTime,
+            this.aggregates.infoCollectDuration,
+            'infoCollectCount',
+            'infoErrorCount'
+        );
     }
 
-    private async collectNodeStats(): Promise<number> {
-        const { platformAdapter, ethClient, output } = this.config;
-        const msgs = await this.abort.race(platformAdapter.captureNodeStats(ethClient, Date.now()));
-        if (!this.abort.aborted) {
-            msgs.forEach(msg => output.write(msg));
+    private async startCollectingNodeMetrics() {
+        if (!this.config.nodeMetrics.enabled) {
+            debug('Node metrics collection is disabled');
+            return;
         }
-        return msgs.length;
+        await this.periodicallyCollect(
+            this.collectNodeMetrics,
+            'node metrics',
+            this.config.nodeMetrics.collectInterval,
+            this.config.nodeMetrics.retryWaitTime,
+            this.aggregates.metricsCollectDuration,
+            'metricsCollectCount',
+            'metricsErrorCount'
+        );
+    }
+
+    private async startCollectingPendingTransactions() {
+        if (!this.config.pendingTx.enabled) {
+            debug('Pending transaction collection is disabled');
+            return;
+        }
+
+        const { platformAdapter, ethClient } = this.config;
+        const pendingTxSupported = await platformAdapter.supportsPendingTransactions(ethClient);
+        if (!pendingTxSupported) {
+            warn(
+                'Collection of pending transactions is not supported by the ethereum node %s (platform %s)',
+                ethClient.transport.source,
+                platformAdapter.name
+            );
+        }
+
+        await this.periodicallyCollect(
+            this.collectPendingTransactions,
+            'pending txs',
+            this.config.pendingTx.collectInterval,
+            this.config.pendingTx.retryWaitTime,
+            this.aggregates.pendingtxCollectDuration,
+            'pendingTxCollectCount',
+            'pendingTxErrorCount'
+        );
     }
 
     public flushStats() {
-        const stats = { ...this.counters, ...this.aggregates.collectDuration.flush('collectDuration') };
+        const stats = {
+            ...this.counters,
+            ...Object.fromEntries(Object.entries(this.aggregates).map(([name, agg]) => [name, agg.flush(name)])),
+        };
         this.counters = { ...initialCounters };
         return stats;
     }

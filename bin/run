@@ -7,6 +7,7 @@ const dev = process.env.NODE_ENV !== 'production' && fs.existsSync(project);
 
 if (dev) {
     require('ts-node').register({ project });
+    require('dotenv').config();
 }
 
 require(`../${dev ? 'src' : 'lib'}`)

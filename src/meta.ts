@@ -21,9 +21,20 @@ export interface MetadataVariables {
     NETWORK_ID?: string;
     /**
      * The network name supplied via ethlogger config or auto-detected
-     * for known networks from the network ID
+     * for known networks from the network ID. Typical values are
+     * `"mainnet"` or `"testnet"`
      */
     NETWORK?: string;
+    /**
+     * Chain ID is the currently configured CHAIN_ID value used for
+     * signing replay-protected transactions, introduced via EIP-155
+     */
+    CHAIN_ID?: string;
+    /**
+     * The chain name supplied via ethlogger config or auto-detected
+     * for known networks from the chain ID and network ID
+     */
+    CHAIN?: string;
     /** The ethlogger PID */
     PID: string;
     /** Ethlogger version */
@@ -57,16 +68,19 @@ export function substituteVariablesInHecConfig(
     }
 ) {
     const networkId = platformAdapter.networkId;
+    const chainId = platformAdapter.chainId;
     const metaVariables: MetadataVariables = {
         HOSTNAME: host,
-        ENODE: platformAdapter.enode ?? undefined,
+        ENODE: platformAdapter.enode ?? '',
         PLATFORM: platformAdapter.name,
-        NETWORK_ID: networkId != null ? String(networkId) : undefined,
-        NETWORK: platformAdapter.networkName ?? undefined,
+        NETWORK_ID: networkId != null ? String(networkId) : '',
+        NETWORK: platformAdapter.networkName ?? '',
         PID: String(pid),
         VERSION: ethloggerVersion,
         NODE_VERSION: nodeVersion,
         ETH_NODE_HOSTNAME: transportOriginHost,
+        CHAIN_ID: chainId != null ? String(chainId) : '',
+        CHAIN: platformAdapter.chainName ?? '',
     };
 
     const resolvedVariables = removeEmtpyValues(metaVariables);
