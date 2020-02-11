@@ -327,6 +327,8 @@ services:
             retries: 20
         volumes:
             - ./config/splunk.yml:/tmp/defaults/default.yml
+            - /opt/splunk/var
+            - /opt/splunk/etc
 
     ethlogger1:
         image: docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlogger:latest
