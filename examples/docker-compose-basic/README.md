@@ -21,7 +21,8 @@ $ docker-compose up -d
 ## Note
 
 > This example is not meant to be used in a production setup.
-> Splunk and ethlogger persist data using local volumes.  If you would like to start clean run the following.
+> Splunk and ethlogger persist data using local volumes. If you would like to start clean run the following.
+
 ```sh-session
 $ docker-compose down
 $ docker volume prune
