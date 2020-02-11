@@ -1,3 +1,21 @@
+# [2.0.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.2.1...v2.0.0) (2020-02-11)
+
+### Bug Fixes
+
+-   🐛 ethlogger crashes when certain rpc methods are disabled ([ee56c01](https://github.com/splunk/splunk-connect-for-ethereum/commit/ee56c01caf8294d1992eaa3e501a0b15e71dc97b))
+-   🐛 possible duplicate output of blocks ([80bb0da](https://github.com/splunk/splunk-connect-for-ethereum/commit/80bb0daabd4e7434c609dd362e047b888f0c049d))
+-   🐛 too many pending transactions emitted ([7a01bb4](https://github.com/splunk/splunk-connect-for-ethereum/commit/7a01bb4ecc0caee2ef41053cf36f5f0027e9f33d))
+
+### Features
+
+-   🎸 anonymous ABI decoding ([e6eb3d9](https://github.com/splunk/splunk-connect-for-ethereum/commit/e6eb3d98fd7c2cc22af818b2966d7eac40a995a5)), closes [#20](https://github.com/splunk/splunk-connect-for-ethereum/issues/20)
+-   🎸 support for CHAIN_ID (EIP-155) and common name lookup ([0dfff09](https://github.com/splunk/splunk-connect-for-ethereum/commit/0dfff09ef7ff95faf43084159e6cee34bdc52983))
+
+### BREAKING CHANGES
+
+-   🧨 Anonymous ABI decoding is enabled by default
+-   🧨 Pending transaction collection is now disabled by default
+
 ## [1.2.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.2.0...v1.2.1) (2020-01-30)
 
 ### Bug Fixes
