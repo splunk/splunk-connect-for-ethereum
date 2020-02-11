@@ -20,7 +20,7 @@ Each ABI file corresponds to a smart contract and contains all function and even
 Matching ABI defintions to transactions follows the following priority order:
 
 -   Contract address (if contract address from ABI file matches address from transaction)
--   Contract fingerprint (contract fingerprint matches fingerprint derived from contract code)
+-   Contract fingerprint (if contract fingerprint matches fingerprint derived from contract code)
 -   Anonymous signature
 
 ### File formats
@@ -68,7 +68,7 @@ ABI files may contain an array of ABI items. In this case the contract name is d
 
 #### Truffle build files
 
-Truffle build files can have information about which network and contract address a contract has been deployed to. This information is used by ethlogger to fast-track matching an address it encounters on the blockchain to the ABI definition. Furthermore truffle build files can specify a contract name - if not present, the file name will be used as contract name. Files are expected to have a property `abi` containing an array of ABI items, all other information is optional.
+Truffle build files can have information about which network and contract address a contract has been deployed to. This information is used by ethlogger to fast-track matching an address it encounters on the blockchain to the ABI definition. Furthermore, truffle build files can specify a contract name; if not present the file name will be used as contract name. Files are expected to have a property `abi` containing an array of ABI items, all other information is optional.
 
 ```jsonc
 {
@@ -96,7 +96,7 @@ Fingerprinting is enabled by default and can be disabled in the [ethlogger confi
 
 ## Anonymous ABI decoding
 
-For cases where we can find a match with beweteen a deployed contract and a supplied ABI definition, but do have a match for the function or event signature hash, we can emit the reduced amount of information we can derive from the signature alone (the function/evnet name, the parameter data types and values, but not the parameter names or the contract name).
+For cases where we can find a match with beweteen a deployed contract and a supplied ABI definition, but do have a match for the function or event signature hash, we can emit the reduced amount of information we can derive from the signature alone (the function/event name, the parameter data types and values, but not the parameter names or the contract name).
 
 If anonymous ABI encoding is enabled (which it is by default), then this reduced amount of informataion is emitted. In addition to the ABIs supplied by the user, ethlogger ships with a standard set of function and event signatures that are compliled from from external sources:
 
