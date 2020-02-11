@@ -2,17 +2,17 @@
 
 [![](https://github.com/splunk/splunk-connect-for-ethereum/workflows/CI/badge.svg)](https://github.com/splunk/splunk-connect-for-ethereum/actions?query=workflow%3ACI+branch%3Amaster)
 
-Splunk Connect for Ethereum (aka `ethlogger`) makes it easy to ingest data about Ethereum ledgers, node information, and node metrics into another system for analysis. Currently, it can log to the Splunk HTTP Event Collector and stdout. It can also deserialize transactions and events if given a contract ABI. Some benefits include:
+Splunk Connect for Ethereum (aka `ethlogger`) makes it easy to ingest data about Ethereum ledgers, node information, and node metrics into another system for analysis. Currently, it can log to the Splunk HTTP Event Collector and stdout. It can also [deserialize transactions and events if given a contract ABI](./docs/abi.md). Some benefits include:
 
 -   Support for any Ethereum 1.0 JSON-RPC compatible blockchain or sidechain, including Quorum 🦄.
 -   Reliably saves state between restarts so you never have missing or duplicated events 🧘‍.
 -   Highly performant batching and compression algorithm 🚄.
 -   Extracts a rich set of node information and metrics in order to gain deep insight into your node 🙉.
 -   Introspects your node platform (i.e. geth, parity, besu or quorum) in order to ensure maximum data extraction 🎂.
--   Contract fingerprinting in order to match ABIs with function signatures (i.e. we can decode the parameter names too!) 🔎.
+-   [Contract fingerprinting](./docs/abi.md#contract-fingerprinting) in order to match ABIs with function signatures (i.e. we can decode the parameter names too!) 🔎.
 -   Enables awesome dashboards (keepin' it 200) 💯💯.
 
-If you want to learn more about [Splunk's](https://www.splunk.com) efforts to make blockchains stable, secure, and scalable raise an issue here or email us at blockchain at splunk dot com.
+If you want to learn more about [Splunk's](https://www.splunk.com) efforts to make blockchains stable, secure, and scalable raise an issue here or email us at [blockchain@splunk.com](mailto:blockchain@splunk.com).
 
 <!-- toc -->
 
@@ -22,11 +22,11 @@ If you want to learn more about [Splunk's](https://www.splunk.com) efforts to ma
 $ ethlogger [...options]
 ```
 
-Details about ethlogger's command-line usage in the [CLI docs](https://github.com/splunk/splunk-connect-for-ethereum/tree/master/docs/cli.md)
+Details about ethlogger's command-line usage in the [CLI docs](./docs/cli.md)
 
 ## Configuration
 
-Find out how to configure ethlogger in the [configuration docs](https://github.com/splunk/splunk-connect-for-ethereum/tree/master/docs/configuration.md).
+Find out how to configure ethlogger in the [configuration docs](./docs/configuration.md).
 
 ## Docker
 
@@ -44,7 +44,7 @@ $ docker run -it docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlog
     --hec-metrics-index=metrics
 ```
 
-There is also an example on how to run [ethlogger in docker-compose](https://github.com/splunk/splunk-connect-for-ethereum/tree/master/examples/docker-compose-basic).
+There is also an example on how to run [ethlogger in docker-compose](./examples/docker-compose-basic).
 
 ## Troubleshooting
 
@@ -55,3 +55,7 @@ There's a lot of information available via RPC on Ethereum nodes, but they need 
 -   Geth and Quorum: ensure that the host `ethlogger` is running on is whitelisted in the `--rpcvhosts` cli setting.
 -   [Parity Endpoints](https://wiki.parity.io/JSONRPC): note that the command line flag is `--jsonrpc-apis APIs`
 -   [Besu Endpoints](https://besu.hyperledger.org/en/stable/HowTo/Interact/APIs/Using-JSON-RPC-API/)
+
+## Contributing
+
+Thank you for considering to contribute to Splunk Connect for Ethereum! Please read the [contribution guidelines](./CONTRIBUTING.md) to get started.
