@@ -178,6 +178,7 @@ export class NodeStatsCollector implements ManagedResource {
                 ethClient.transport.source,
                 platformAdapter.name
             );
+            return;
         }
 
         await this.periodicallyCollect(
