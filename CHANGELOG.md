@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.0...v2.0.1) (2020-02-12)
+
+### Bug Fixes
+
+-   🐛 avoid collecting pending transactions if not supported ([56863bd](https://github.com/splunk/splunk-connect-for-ethereum/commit/56863bdb2f458c97a9479585d8b21fe029024eed))
+
 # [2.0.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v1.2.1...v2.0.0) (2020-02-11)
 
 ### Bug Fixes
