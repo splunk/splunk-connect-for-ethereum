@@ -106,8 +106,4 @@ jobs:
                   yarn ts-node scripts/postrelease.ts
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            # - name: Trigger release workflow
-            #   run: |
-            #       curl -v -H "Accept: application/vnd.github.everest-preview+json" -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/splunk/splunk-connect-for-ethereum/dispatches -d '{ "event_type": "semantic-release" }'
-            #   env:
-            #       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                  DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
