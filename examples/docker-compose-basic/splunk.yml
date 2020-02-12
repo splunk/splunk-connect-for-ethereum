@@ -1,34 +1,4 @@
 splunk:
-    app_paths:
-        default: /opt/splunk/etc/apps
-        httpinput: /opt/splunk/etc/apps/splunk_httpinput
-        idxc: /opt/splunk/etc/master-apps
-        shc: /opt/splunk/etc/shcluster/apps
-    enable_service: false
-    exec: /opt/splunk/bin/splunk
-    group: splunk
-    hec_disabled: 0
-    hec_enableSSL: 1
-    hec_port: 8088
-    hec_token: 11111111-1111-1111-1111-111111111112
-    home: /opt/splunk
-    http_port: 8000
-    idxc:
-        enable: false
-    opt: /opt
-    password: changeme
-    pid: /opt/splunk/var/run/splunk/splunkd.pid
-    s2s_port: 9997
-    secret: null
-    shc:
-        enable: false
-        label: shc_label
-        replication_factor: 3
-        replication_port: 4001
-        secret: lS5aoPDHdganlLBWJP/1DwK0wcHpaJaD
-    smartstore: null
-    svc_port: 8089
-    user: splunk
     conf:
         indexes:
             directory: /opt/splunk/etc/apps/search/local
