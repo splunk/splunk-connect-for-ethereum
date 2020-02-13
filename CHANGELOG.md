@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.1...v2.0.2) (2020-02-13)
+
+### Bug Fixes
+
+-   🐛 extended peer information now with dedicated config ([54bdfd9](https://github.com/splunk/splunk-connect-for-ethereum/commit/54bdfd990716db40d1109172cbdd9f3e0e08b362))
+
 ## [2.0.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.0...v2.0.1) (2020-02-12)
 
 ### Bug Fixes
