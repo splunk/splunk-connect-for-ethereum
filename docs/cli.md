@@ -44,6 +44,9 @@ OPTIONS
   --[no-]collect-node-metrics
       Enables collection of node metrics
 
+  --[no-]collect-peer-info
+      Enables collection of detailed peer information
+
   --[no-]collect-pending-transactions
       Enables collection of pending transactions
 
@@ -128,6 +131,7 @@ OPTIONS
 | `COLLECT_NODE_METRICS`            | `boolean` | Enables collection of node metrics                                                                                                                                                       |
 | `COLLECT_NODE_INFO`               | `boolean` | Enables collection of node info events                                                                                                                                                   |
 | `COLLECT_PENDING_TX`              | `boolean` | Enables collection of pending transactions                                                                                                                                               |
+| `COLLECT_PEER_INFO`               | `boolean` | Enables collection of detailed peer information                                                                                                                                          |
 | `COLLECT_INTERNAL_METRICS`        | `boolean` | Enables collection of ethlogger-internal metrics                                                                                                                                         |
 | `SPLUNK_HEC_URL`                  | `string`  | URL to connect to Splunk HTTP Event Collector. You can either specify just the base URL (without path) and the default path will automatically appended or a full URL                    |
 | `SPLUNK_HEC_TOKEN`                | `string`  | Token to authenticate against Splunk HTTP Event Collector                                                                                                                                |

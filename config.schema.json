@@ -543,6 +543,34 @@
             },
             "type": "object"
         },
+        "PeerInfoConfigSchema": {
+            "description": "Periodic collection of detailed peer information.\nNote that this is only possible with certain types of ethereum nodes (geth atm)",
+            "properties": {
+                "collectInterval": {
+                    "description": "Interval in which to collect peer information",
+                    "type": ["string", "number"]
+                },
+                "enabled": {
+                    "description": "Enable or disable collection of peer informataion",
+                    "type": "boolean"
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": ["string", "number"]
+                        }
+                    ],
+                    "description": "Wait time before retrying to collect peer information after failure"
+                }
+            },
+            "type": "object"
+        },
         "PendingTxConfigSchema": {
             "description": "Periodic collection of pending transactions",
             "properties": {
@@ -660,6 +688,10 @@
                 }
             ],
             "description": "In the output configuration you can specify where ethlogger will send generated\nmetrics and events to. By default it will send all information to Splunk HEC,\nbut you can instead send it to console output or a file."
+        },
+        "peerInfo": {
+            "$ref": "#/definitions/PeerInfoConfigSchema",
+            "description": "Settings for collecting peer informataion from the node"
         },
         "pendingTx": {
             "$ref": "#/definitions/PendingTxConfigSchema",
