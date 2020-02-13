@@ -1,14 +1,15 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
 import { inspect } from 'util';
+import { ContractInfo } from './abi/contract';
 import { AbiRepository } from './abi/repo';
 import { BlockWatcher } from './blockwatcher';
 import { Checkpoint } from './checkpoint';
 import { CLI_FLAGS } from './cliflags';
-import { ConfigError, loadEthloggerConfig, EthloggerConfig } from './config';
-import { ContractInfo } from './abi/contract';
+import { ConfigError, EthloggerConfig, loadEthloggerConfig } from './config';
 import { BatchedEthereumClient, EthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
+import { checkHealthState, HealthStateMonitor } from './health';
 import { HecClient } from './hec';
 import { introspectTargetNodePlatform } from './introspect';
 import { substituteVariablesInHecConfig } from './meta';
@@ -20,7 +21,6 @@ import LRUCache from './utils/lru';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
-import { checkHealthState, HealthStateMonitor } from './health';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -154,6 +154,7 @@ class Ethlogger extends Command {
             nodeMetrics: config.nodeMetrics,
             nodeInfo: config.nodeInfo,
             pendingTx: config.pendingTx,
+            peerInfo: config.peerInfo,
         });
         addResource(nodeStatsCollector);
         internalStatsCollector.addSource(nodeStatsCollector, 'nodeStatsCollector');

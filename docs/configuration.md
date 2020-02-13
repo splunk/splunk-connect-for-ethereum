@@ -84,6 +84,7 @@ Root configuration schema for ethlogger
 | `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                                                                                                                                                                |
 | `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                                                                                                                                                   |
 | `pendingTx`       | [`PendingTx`](#PendingTx)                                                                                                          | Settings for collecting pending transactions from node                                                                                                                                                                 |
+| `peerInfo`        | [`PeerInfo`](#PeerInfo)                                                                                                            | Settings for collecting peer informataion from the node                                                                                                                                                                |
 | `internalMetrics` | [`InternalMetrics`](#InternalMetrics)                                                                                              | Settings for internal metrics collection                                                                                                                                                                               |
 
 ### Ethereum
@@ -269,6 +270,16 @@ Periodic collection of pending transactions
 | `enabled`         | `boolean`               | Enable or disable collection of pending transactions                    |
 | `collectInterval` | [`Duration`](#Duration) | Interval in which to collect pending transactions                       |
 | `retryWaitTime`   | [`WaitTime`](#WaitTime) | Wait time before retrying to collect pending transactions after failure |
+
+### PeerInfo
+
+Periodic collection of detailed peer information. Note that this is only possible with certain types of ethereum nodes (geth atm)
+
+| Name              | Type                    | Description                                                         |
+| ----------------- | ----------------------- | ------------------------------------------------------------------- |
+| `enabled`         | `boolean`               | Enable or disable collection of peer informataion                   |
+| `collectInterval` | [`Duration`](#Duration) | Interval in which to collect peer information                       |
+| `retryWaitTime`   | [`WaitTime`](#WaitTime) | Wait time before retrying to collect peer information after failure |
 
 ### InternalMetrics
 

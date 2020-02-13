@@ -53,6 +53,11 @@ export const CLI_FLAGS = {
         env: 'COLLECT_PENDING_TX',
         description: 'Enables collection of pending transactions',
     }),
+    'collect-peer-info': flags.boolean({
+        allowNo: true,
+        env: 'COLLECT_PEER_INFO',
+        description: 'Enables collection of detailed peer information',
+    }),
     'collect-internal-metrics': flags.boolean({
         allowNo: true,
         env: 'COLLECT_INTERNAL_METRICS',

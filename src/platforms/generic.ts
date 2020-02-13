@@ -224,7 +224,13 @@ export class GenericNodeAdapter implements NodePlatformAdapter {
         return fetchPendingTransactions(ethClient, captureTime);
     }
 
-    public async supportsPendingTransactions(): Promise<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async supportsPendingTransactions(_: EthereumClient): Promise<boolean> {
         return this.supports?.pendingTransactions ?? false;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    public async supportsPeerInfo(_: EthereumClient): Promise<boolean> {
+        return false;
     }
 }

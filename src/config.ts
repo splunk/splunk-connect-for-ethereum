@@ -39,6 +39,8 @@ export interface EthloggerConfigSchema {
     nodeInfo: NodeInfoConfigSchema;
     /** Settings for collecting pending transactions from node */
     pendingTx: PendingTxConfigSchema;
+    /** Settings for collecting peer informataion from the node */
+    peerInfo: PeerInfoConfigSchema;
     /** Settings for internal metrics collection */
     internalMetrics: InternalMetricsConfigSchema;
 }
@@ -60,6 +62,7 @@ export interface EthloggerConfig {
     nodeMetrics: NodeMetricsConfig;
     nodeInfo: NodeInfoConfig;
     pendingTx: PendingTxConfig;
+    peerInfo: PeerInfoConfig;
     internalMetrics: InternalMetricsConfig;
 }
 
@@ -235,6 +238,24 @@ export interface PendingTxConfigSchema {
 }
 
 export interface PendingTxConfig extends Omit<PendingTxConfigSchema, 'retryWaitTime'> {
+    collectInterval: Duration;
+    retryWaitTime: WaitTime;
+}
+
+/**
+ * Periodic collection of detailed peer information.
+ * Note that this is only possible with certain types of ethereum nodes (geth atm)
+ */
+export interface PeerInfoConfigSchema {
+    /** Enable or disable collection of peer informataion */
+    enabled: boolean;
+    /** Interval in which to collect peer information */
+    collectInterval: DurationConfig;
+    /** Wait time before retrying to collect peer information after failure */
+    retryWaitTime: WaitTimeConfig;
+}
+
+export interface PeerInfoConfig extends Omit<PeerInfoConfigSchema, 'retryWaitTime'> {
     collectInterval: Duration;
     retryWaitTime: WaitTime;
 }
@@ -812,6 +833,15 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 false,
             collectInterval: parseDuration(defaults.pendingTx?.collectInterval) ?? 30000,
             retryWaitTime: waitTimeFromConfig(defaults.pendingTx?.retryWaitTime) ?? 30000,
+        },
+        peerInfo: {
+            enabled:
+                flags['collect-peer-info'] ??
+                parseBooleanEnvVar(CLI_FLAGS['collect-peer-info'].env) ??
+                defaults.peerInfo?.enabled ??
+                false,
+            collectInterval: parseDuration(defaults.peerInfo?.collectInterval) ?? 10000,
+            retryWaitTime: waitTimeFromConfig(defaults.peerInfo?.retryWaitTime) ?? 10000,
         },
     };
 
