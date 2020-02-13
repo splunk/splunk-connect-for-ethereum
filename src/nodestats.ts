@@ -1,4 +1,4 @@
-import { NodeInfoConfig, NodeMetricsConfig, PendingTxConfig } from './config';
+import { NodeInfoConfig, NodeMetricsConfig, PendingTxConfig, PeerInfoConfig } from './config';
 import { EthereumClient } from './eth/client';
 import { Output, OutputMessage } from './output';
 import { NodePlatformAdapter } from './platforms';
@@ -18,6 +18,8 @@ const initialCounters = {
     metricsErrorCount: 0,
     pendingTxCollectCount: 0,
     pendingTxErrorCount: 0,
+    peerInfoCollectCount: 0,
+    peerInfoErrorCount: 0,
 };
 
 export class NodeStatsCollector implements ManagedResource {
@@ -28,6 +30,7 @@ export class NodeStatsCollector implements ManagedResource {
         infoCollectDuration: new AggregateMetric(),
         metricsCollectDuration: new AggregateMetric(),
         pendingtxCollectDuration: new AggregateMetric(),
+        peerInfoCollectDuration: new AggregateMetric(),
     };
     constructor(
         private config: {
@@ -37,6 +40,7 @@ export class NodeStatsCollector implements ManagedResource {
             nodeInfo: NodeInfoConfig;
             nodeMetrics: NodeMetricsConfig;
             pendingTx: PendingTxConfig;
+            peerInfo: PeerInfoConfig;
         }
     ) {}
 
@@ -47,6 +51,7 @@ export class NodeStatsCollector implements ManagedResource {
                 this.startCollectingNodeInfo(),
                 this.startCollectingNodeMetrics(),
                 this.startCollectingPendingTransactions(),
+                this.startCollectingPeerInfo(),
             ]);
             this.donePromise = p;
             await p;
@@ -132,6 +137,11 @@ export class NodeStatsCollector implements ManagedResource {
         return await abort.race(platformAdapter.capturePendingTransactions(ethClient, time));
     };
 
+    collectPeerInfo = async (abort: AbortHandle, time: number): Promise<OutputMessage[]> => {
+        const { platformAdapter, ethClient } = this.config;
+        return await abort.race(platformAdapter.capturePeerInfo!(ethClient, time));
+    };
+
     private async startCollectingNodeInfo() {
         if (!this.config.nodeInfo.enabled) {
             debug('Node info collection is disabled');
@@ -189,6 +199,34 @@ export class NodeStatsCollector implements ManagedResource {
             this.aggregates.pendingtxCollectDuration,
             'pendingTxCollectCount',
             'pendingTxErrorCount'
+        );
+    }
+
+    private async startCollectingPeerInfo() {
+        if (!this.config.peerInfo.enabled) {
+            debug('Peer info collection is disabled');
+            return;
+        }
+
+        const { platformAdapter, ethClient } = this.config;
+        const peerInfoSupported = await platformAdapter.supportsPeerInfo(ethClient);
+        if (!peerInfoSupported) {
+            warn(
+                'Collection of peer information is not supported by the ethereum node %s (platform %s)',
+                ethClient.transport.source,
+                platformAdapter.name
+            );
+            return;
+        }
+
+        await this.periodicallyCollect(
+            this.collectPeerInfo,
+            'peer info',
+            this.config.peerInfo.collectInterval,
+            this.config.peerInfo.retryWaitTime,
+            this.aggregates.peerInfoCollectDuration,
+            'peerInfoCollectCount',
+            'peerInfoErrorCount'
         );
     }
 

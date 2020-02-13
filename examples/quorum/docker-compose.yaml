@@ -344,6 +344,8 @@ services:
             - SPLUNK_INTERNAL_INDEX=metrics
             - SPLUNK_HEC_REJECT_INVALID_CERTS=false
             - ABI_DIR=/abi
+            - COLLECT_PENDING_TX=true
+            - COLLECT_PEER_INFO=true
             - DEBUG=ethlogger:abi:*
         volumes:
             - ./abi:/abi
@@ -370,6 +372,8 @@ services:
             - SPLUNK_HEC_REJECT_INVALID_CERTS=false
             - COLLECT_BLOCKS=false
             - ABI_DIR=/abi
+            - COLLECT_PENDING_TX=true
+            - COLLECT_PEER_INFO=true
             - DEBUG=ethlogger:abi:*
         volumes:
             - ./abi:/abi

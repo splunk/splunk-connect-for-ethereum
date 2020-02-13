@@ -119,6 +119,11 @@ test('defaults', async () => {
                     },
                     "type": "hec",
                   },
+                  "peerInfo": Object {
+                    "collectInterval": 10000,
+                    "enabled": false,
+                    "retryWaitTime": 10000,
+                  },
                   "pendingTx": Object {
                     "collectInterval": 10000,
                     "enabled": false,

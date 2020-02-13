@@ -20,4 +20,6 @@ export interface NodePlatformAdapter {
     captureNodeInfo(ethClient: EthereumClient): Promise<NodeInfo>;
     capturePendingTransactions(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]>;
     supportsPendingTransactions(ethClient: EthereumClient): Promise<boolean>;
+    capturePeerInfo?(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]>;
+    supportsPeerInfo(ethClient: EthereumClient): Promise<boolean>;
 }

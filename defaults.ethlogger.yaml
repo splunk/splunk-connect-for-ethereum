@@ -97,5 +97,9 @@ pendingTx:
     enabled: false
     collectInterval: 10s
     retryWaitTime: 10s
+peerInfo:
+    enabled: false
+    collectInterval: 10s
+    retryWaitTime: 10s
 internalMetrics:
     collectInterval: 1s

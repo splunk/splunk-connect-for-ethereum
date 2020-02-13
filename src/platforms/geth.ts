@@ -6,7 +6,7 @@ import { NodeInfo, PendingTransactionMessage, NodeMetricsMessage } from '../msgs
 import { OutputMessage } from '../output';
 import { createModuleDebug } from '../utils/debug';
 import { durationStringToMs, parseAbbreviatedNumber } from '../utils/parse';
-import { captureDefaultMetrics, GenericNodeAdapter } from './generic';
+import { captureDefaultMetrics, GenericNodeAdapter, checkRpcMethodSupport } from './generic';
 
 const { debug, error } = createModuleDebug('platforms:geth');
 
@@ -162,12 +162,23 @@ export class GethAdapter extends GenericNodeAdapter {
         const [defaultMetrics, gethMetrics] = await Promise.all([
             captureDefaultMetrics(ethClient, captureTime),
             captureGethMetrics(ethClient, captureTime),
-            capturePeers(ethClient, captureTime),
         ]);
         return [defaultMetrics, gethMetrics];
     }
 
+    public async supportsPendingTransactions(ethClient: EthereumClient): Promise<boolean> {
+        return await checkRpcMethodSupport(ethClient, gethTxpool());
+    }
+
     public async capturePendingTransactions(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
         return await captureTxpoolData(ethClient, captureTime);
+    }
+
+    public async supportsPeerInfo(ethClient: EthereumClient) {
+        return await checkRpcMethodSupport(ethClient, gethPeers());
+    }
+
+    public async capturePeerInfo?(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]> {
+        return await capturePeers(ethClient, captureTime);
     }
 }
