@@ -1,8 +1,12 @@
 import { AbiCoder } from 'web3-eth-abi';
 import { toChecksumAddress } from 'web3-utils';
 import { parseBigInt } from '../utils/bn';
+import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
+import { DataSize, elementType, getDataSize, intBits, isArrayType } from './datatypes';
 import { AbiItemDefinition } from './item';
-import { elementType, intBits, isArrayType } from './datatypes';
+import { computeSignature } from './signature';
+
+const { trace } = createModuleDebug('abi:decode');
 
 export type ScalarValue = string | number | boolean;
 export type Value = ScalarValue | ScalarValue[];
@@ -27,6 +31,7 @@ export interface DecodedLogEvent {
     args?: { [name: string]: Value };
 }
 
+/** Translates decoded value (by abicoder) to the form we want to emit to the output */
 export function parseParameterValue(value: string | number | boolean, type: string): ScalarValue {
     if (type === 'bool') {
         if (typeof value === 'boolean') {
@@ -67,6 +72,19 @@ export function parseParameterValue(value: string | number | boolean, type: stri
     return value;
 }
 
+export function getInputSize(abi: AbiItemDefinition): DataSize {
+    try {
+        return abi.inputs
+            .map(input => getDataSize(input.type))
+            .reduce((total, cur) => ({ length: total.length + cur.length, exact: total.exact && cur.exact }), {
+                length: 0,
+                exact: true,
+            });
+    } catch (e) {
+        throw new Error(`Failed to determine input size for ${computeSignature(abi)}: ${e.message}`);
+    }
+}
+
 export function decodeFunctionCall(
     data: string,
     abi: AbiItemDefinition,
@@ -102,6 +120,66 @@ export function decodeFunctionCall(
         params,
         args: anonymous ? undefined : args,
     };
+}
+
+export function decodeBestMatchingFunctionCall(
+    data: string,
+    abis: AbiItemDefinition[],
+    abiCoder: AbiCoder,
+    anonymous: boolean
+): DecodedFunctionCall {
+    if (abis.length === 1) {
+        // short-circut most common case
+        return decodeFunctionCall(data, abis[0], computeSignature(abis[0]), abiCoder, anonymous);
+    }
+    const abisWithSize = abis.map(abi => [abi, getInputSize(abi)] as const);
+    const dataLength = (data.length - 10) / 2;
+    let lastError: Error | undefined;
+    // Attempt to find function signature with exact match of input data length
+    for (const [abi, { length, exact }] of abisWithSize) {
+        if (dataLength === length && exact) {
+            try {
+                return decodeFunctionCall(data, abi, computeSignature(abi), abiCoder, anonymous);
+            } catch (e) {
+                lastError = e;
+                if (TRACE_ENABLED) {
+                    trace(
+                        'Failed to decode function call using signature %s with exact size match of %d bytes',
+                        computeSignature(abi),
+                        length
+                    );
+                }
+            }
+        }
+    }
+    // Consider dynamaic data types
+    for (const [abi, { length, exact }] of abisWithSize) {
+        if (dataLength >= length && !exact) {
+            try {
+                return decodeFunctionCall(data, abi, computeSignature(abi), abiCoder, anonymous);
+            } catch (e) {
+                lastError = e;
+                if (TRACE_ENABLED) {
+                    trace(
+                        'Failed to decode function call using signature %s with size match of %d bytes (min size %d bytes)',
+                        computeSignature(abi),
+                        dataLength,
+                        length
+                    );
+                }
+            }
+        }
+    }
+    // Brute-force try all ABI signatures, use the first one that doesn't throw on decode
+    for (const abi of abis) {
+        try {
+            return decodeFunctionCall(data, abi, computeSignature(abi), abiCoder, anonymous);
+        } catch (e) {
+            lastError = e;
+        }
+    }
+
+    throw lastError ?? new Error('Unable to decode');
 }
 
 export function decodeLogEvent(
@@ -151,4 +229,27 @@ export function decodeLogEvent(
         params,
         args: anonymous ? undefined : args,
     };
+}
+
+export function decodeBestMatchingLogEvent(
+    data: string,
+    topics: string[],
+    abis: AbiItemDefinition[],
+    abiCoder: AbiCoder,
+    anonymous: boolean
+): DecodedFunctionCall {
+    // No need to prioritize and check event logs for hash collisions since with the longer hash
+    // collisions are very unlikely
+    let lastError: Error | undefined;
+    for (const abi of abis) {
+        try {
+            return decodeLogEvent(data, topics, abi, computeSignature(abi), abiCoder, anonymous);
+        } catch (e) {
+            lastError = e;
+            if (TRACE_ENABLED) {
+                trace('Failed to decode log event', e);
+            }
+        }
+    }
+    throw lastError ?? new Error('Unable to decode log event');
 }

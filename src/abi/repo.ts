@@ -4,12 +4,17 @@ import { AbiRepositoryConfig } from '../config';
 import { RawLogResponse } from '../eth/responses';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 import { ManagedResource } from '../utils/resource';
+import {
+    decodeBestMatchingFunctionCall,
+    decodeBestMatchingLogEvent,
+    DecodedFunctionCall,
+    DecodedLogEvent,
+} from './decode';
+import { loadAbiFile, loadSignatureFile, searchAbiFiles } from './files';
 import { AbiItemDefinition } from './item';
-import { DecodedFunctionCall, DecodedLogEvent, decodeFunctionCall, decodeLogEvent } from './decode';
-import { loadAbiFile, searchAbiFiles, loadSignatureFile } from './files';
 import { computeSignature, computeSignatureHash } from './signature';
 
-const { debug, info, trace } = createModuleDebug('abi:repo');
+const { warn, debug, info, trace } = createModuleDebug('abi:repo');
 
 interface AbiMatch {
     anonymous: boolean;
@@ -25,6 +30,37 @@ export interface ContractAbi {
     contractName: string;
 }
 
+/** Sort abi defintions in consistent priority order */
+export function sortAbis(abis: AbiItemDefinition[]): AbiItemDefinition[] {
+    if (abis.length > 1) {
+        const sortedAbis = [...abis];
+        sortedAbis.sort((a, b) => {
+            // Always prefer user-supplied abis with an contract address attached
+            const aHasAddress = a.contractAddress != null;
+            const bHasAddress = b.contractAddress != null;
+            if (aHasAddress !== bHasAddress) {
+                return aHasAddress ? -1 : 1;
+            }
+            // Prefer user-supplied abi
+            const aHasFingerprint = a.contractFingerprint != null;
+            const bHasFingerprint = b.contractFingerprint != null;
+            if (aHasFingerprint !== bHasFingerprint) {
+                return aHasFingerprint ? -1 : 1;
+            }
+            return (
+                // Prefer abis with shorter function name as longer ones
+                // are sometimes used to deliberately produce signature hash
+                // collisions
+                a.name.length - b.name.length ||
+                // Sort the rest by name
+                a.name.localeCompare(b.name)
+            );
+        });
+        return sortedAbis;
+    }
+    return abis;
+}
+
 export class AbiRepository implements ManagedResource {
     private signatures: Map<string, AbiItemDefinition[]> = new Map();
     private contractsByFingerprint: Map<string, ContractAbi> = new Map();
@@ -32,6 +68,11 @@ export class AbiRepository implements ManagedResource {
     private abiCoder: AbiCoder = require('web3-eth-abi');
 
     constructor(private config: AbiRepositoryConfig) {}
+
+    private addToSignatures(sig: string, abis: AbiItemDefinition[]) {
+        const match = this.signatures.get(sig);
+        this.signatures.set(sig, sortAbis(match == null ? abis : [...match, ...abis]));
+    }
 
     public async initialize() {
         const config = this.config;
@@ -52,14 +93,7 @@ export class AbiRepository implements ManagedResource {
         let count = 0;
         const { entries } = await loadSignatureFile(file);
         for (const [sig, abis] of entries) {
-            const match = this.signatures.get(sig);
-            if (match == null) {
-                this.signatures.set(sig, abis);
-            } else {
-                for (const abi of abis) {
-                    match.push(abi);
-                }
-            }
+            this.addToSignatures(sig, abis);
             count++;
         }
         return count;
@@ -88,13 +122,7 @@ export class AbiRepository implements ManagedResource {
 
         for (const { sig, abi } of abiFileContents.entries) {
             const signatureHash = computeSignatureHash(sig, abi.type);
-            let match = this.signatures.get(signatureHash);
-            if (match == null) {
-                match = [abi];
-                this.signatures.set(signatureHash, match);
-            } else {
-                match.push(abi);
-            }
+            this.addToSignatures(signatureHash, [abi]);
         }
     }
 
@@ -157,7 +185,7 @@ export class AbiRepository implements ManagedResource {
     private abiDecode<T>(
         sigHash: string,
         matchParams: AbiMatchParams,
-        decodeFn: (abi: AbiItemDefinition, signature: string, anonymous: boolean) => T
+        decodeFn: (abis: AbiItemDefinition[], anonymous: boolean) => T
     ): T | undefined {
         const matchingAbis = this.findMatchingAbis(sigHash, matchParams);
         trace('Found %d matching ABIs for signature %s', matchingAbis?.candidates?.length ?? 0, sigHash);
@@ -166,22 +194,22 @@ export class AbiRepository implements ManagedResource {
             if (matchingAbis.anonymous && !this.config.decodeAnonymous) {
                 return;
             }
-            for (const abi of matchingAbis.candidates) {
-                const signature = computeSignature(abi);
-                debug('Found ABI %s matching %o from contract %s', signature, matchParams, abi.contractName);
-                try {
-                    return decodeFn(abi, signature, matchingAbis!.anonymous);
-                } catch (e) {
-                    debug('Failed to decode function call');
-                }
+            if (matchingAbis.candidates.length === 0) {
+                trace('No matching ABI found for signature hash %s', sigHash);
+                return;
+            }
+            try {
+                return decodeFn(matchingAbis.candidates, matchingAbis!.anonymous);
+            } catch (e) {
+                warn('Failed to decode ABI', e);
             }
         }
     }
 
     public decodeFunctionCall(data: string, matchParams: AbiMatchParams): DecodedFunctionCall | undefined {
         const sigHash = data.slice(2, 10);
-        return this.abiDecode(sigHash, matchParams, (abi, sig, anon) =>
-            decodeFunctionCall(data, abi, sig, this.abiCoder, anon)
+        return this.abiDecode(sigHash, matchParams, (abi, anon) =>
+            decodeBestMatchingFunctionCall(data, abi, this.abiCoder, anon)
         );
     }
 
@@ -199,8 +227,8 @@ export class AbiRepository implements ManagedResource {
         const sigHash = logEvent.topics[0].slice(2);
         const { data, topics } = logEvent;
 
-        return this.abiDecode(sigHash, matchParams, (abi, sig, anon) =>
-            decodeLogEvent(data, topics, abi, sig, this.abiCoder, anon)
+        return this.abiDecode(sigHash, matchParams, (abi, anon) =>
+            decodeBestMatchingLogEvent(data, topics, abi, this.abiCoder, anon)
         );
     }
 

@@ -1,4 +1,5 @@
-import { sha3, AbiInput } from 'web3-utils';
+import { AbiInput, sha3 } from 'web3-utils';
+import { isValidAbiType } from './datatypes';
 import { AbiItemDefinition } from './item';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { parseSignature: parse } = require('ethers/utils/abi-coder');
@@ -31,7 +32,10 @@ export function parseSignature(signature: string, type: 'function' | 'event'): A
     if (!Array.isArray(res.inputs)) {
         err('Failed to decode signature');
     }
-    const inputs: AbiInput[] = res.inputs.map(normalizeInput);
+    let inputs: AbiInput[] = res.inputs.map(normalizeInput);
+    if (inputs.length === 1 && inputs[0].type === '') {
+        inputs = [];
+    }
     return {
         type,
         name,
@@ -46,6 +50,11 @@ export function computeSignatureHash(sigName: string, type: 'event' | 'function'
 
 export function validateSignature(signature: string) {
     const parsed = parseSignature(signature, 'function');
+    for (const input of parsed.inputs) {
+        if (!isValidAbiType(input.type)) {
+            throw new Error(`Invalid data type: ${input.type}`);
+        }
+    }
     const serialized = computeSignature(parsed);
     if (serialized !== signature) {
         throw new Error(`Serialized signature does not match original`);

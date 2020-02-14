@@ -1,8 +1,9 @@
 import { debug as createDebug } from 'debug';
 import { createWriteStream, readFile } from 'fs-extra';
 import { createGzip } from 'zlib';
-import { computeSignatureHash, validateSignature, parseSignature } from '../src/abi/signature';
+import { getInputSize } from '../src/abi/decode';
 import { AbiItemDefinition } from '../src/abi/item';
+import { computeSignatureHash, parseSignature, validateSignature } from '../src/abi/signature';
 
 const debug = createDebug('buildsigs');
 debug.enabled = true;
@@ -25,6 +26,7 @@ async function buildSignatureFile(sourceFile: string, destFile: string, type: 'f
     for (const sig of fns) {
         try {
             validateSignature(sig);
+            getInputSize(parseSignature(sig, 'function'));
         } catch (e) {
             debug('Ignoring invalid function signature %o (%s)', sig, e.message);
             continue;

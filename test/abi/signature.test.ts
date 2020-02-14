@@ -33,6 +33,13 @@ describe('parseSignature', () => {
           "type": "function",
         }
     `);
+    expect(parseSignature('helloWorld()', 'function')).toMatchInlineSnapshot(`
+        Object {
+          "inputs": Array [],
+          "name": "helloWorld",
+          "type": "function",
+        }
+    `);
 });
 
 test('computeSignature', () => {
