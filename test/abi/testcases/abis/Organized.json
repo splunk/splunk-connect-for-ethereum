@@ -1,0 +1,1476 @@
+{
+    "contractName": "Organized",
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "organization",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "name": "_organization",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"organization\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_organization\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{\"constructor\":{\"params\":{\"_organization\":\"A contract that manages worker keys.\"}}},\"title\":\"Organized contract.\"},\"userdoc\":{\"methods\":{\"constructor\":\"Sets the address of the organization contract.\"},\"notice\":\"The Organized contract facilitates integration of        organization administration keys with different contracts.\"}},\"settings\":{\"compilationTarget\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/Organized.sol\":\"Organized\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/OrganizationInterface.sol\":{\"keccak256\":\"0xac45d29a498c6531778e0a0cdb31c0d0c2fa6f090dfe9ff99e5ee056657e1962\",\"urls\":[\"bzzr://7b434f06b0e2d92cbe8cea9629f4981ec2058e4114c542b195d2f2240181019f\"]},\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/Organized.sol\":{\"keccak256\":\"0x16d60f305a592f262b1603bb0b3b50596a91910bf1ea7de4f9642f01dce01356\",\"urls\":[\"bzzr://1445d782fd87bc7191e97a4c165ec62617db7daf555ccafe110a3adda566376e\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b506040516020806101c48339810180604052602081101561003057600080fd5b5051600160a060020a03811615156100cf57604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602f60248201527f4f7267616e697a6174696f6e20636f6e74726163742061646472657373206d7560448201527f7374206e6f74206265207a65726f2e0000000000000000000000000000000000606482015290519081900360840190fd5b60008054600160a060020a03909216600160a060020a031990921691909117905560c6806100fe6000396000f3fe608060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166323bd4d7a81146043575b600080fd5b348015604e57600080fd5b506055607e565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60005473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a72305820bf74c97718b904f386bc9a9bfb7a10faba9ae2a0c01be0aced52d45571787fee0029",
+    "deployedBytecode": "0x608060405260043610603e5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166323bd4d7a81146043575b600080fd5b348015604e57600080fd5b506055607e565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60005473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a72305820bf74c97718b904f386bc9a9bfb7a10faba9ae2a0c01be0aced52d45571787fee0029",
+    "sourceMap": "1024:1022:6:-;;;1801:242;8:9:-1;5:2;;;30:1;27;20:12;5:2;1801:242:6;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1801:242:6;-1:-1:-1;;;;;1888:36:6;;;;1867:130;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2008:12;:28;;-1:-1:-1;;;;;2008:28:6;;;-1:-1:-1;;;;;;2008:28:6;;;;;;;;;1024:1022;;;;;;",
+    "deployedSourceMap": "1024:1022:6:-;;;;;;;;;;;;;;;;;;;;;;;1153:41;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1153:41:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+    "source": "pragma solidity ^0.5.0;\n\n// Copyright 2019 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n//\n// ----------------------------------------------------------------------------\n//\n// http://www.simpletoken.org/\n//\n// ----------------------------------------------------------------------------\n\nimport \"./OrganizationInterface.sol\";\n\n/**\n * @title Organized contract.\n *\n * @notice The Organized contract facilitates integration of\n *         organization administration keys with different contracts.\n */\ncontract Organized {\n\n\n    /* Storage */\n\n    /** Organization which holds all the keys needed to administer the economy. */\n    OrganizationInterface public organization;\n\n\n    /* Modifiers */\n\n    modifier onlyOrganization()\n    {\n        require(\n            organization.isOrganization(msg.sender),\n            \"Only the organization is allowed to call this method.\"\n        );\n\n        _;\n    }\n\n    modifier onlyWorker()\n    {\n        require(\n            organization.isWorker(msg.sender),\n            \"Only whitelisted workers are allowed to call this method.\"\n        );\n\n        _;\n    }\n\n\n    /* Constructor */\n\n    /**\n     * @notice Sets the address of the organization contract.\n     *\n     * @param _organization A contract that manages worker keys.\n     */\n    constructor(OrganizationInterface _organization) public {\n        require(\n            address(_organization) != address(0),\n            \"Organization contract address must not be zero.\"\n        );\n\n        organization = _organization;\n    }\n\n}\n",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/Organized.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/Organized.sol",
+        "exportedSymbols": {
+            "Organized": [1134]
+        },
+        "id": 1135,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1083,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:6"
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/OrganizationInterface.sol",
+                "file": "./OrganizationInterface.sol",
+                "id": 1084,
+                "nodeType": "ImportDirective",
+                "scope": 1135,
+                "sourceUnit": 1082,
+                "src": "813:37:6",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": "@title Organized contract.\n * @notice The Organized contract facilitates integration of\n        organization administration keys with different contracts.",
+                "fullyImplemented": true,
+                "id": 1134,
+                "linearizedBaseContracts": [1134],
+                "name": "Organized",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 1086,
+                        "name": "organization",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 1134,
+                        "src": "1153:41:6",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                            "typeString": "contract OrganizationInterface"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 1085,
+                            "name": "OrganizationInterface",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 1081,
+                            "src": "1153:21:6",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                "typeString": "contract OrganizationInterface"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 1098,
+                            "nodeType": "Block",
+                            "src": "1255:168:6",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "expression": {
+                                                            "argumentTypes": null,
+                                                            "id": 1091,
+                                                            "name": "msg",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 4046,
+                                                            "src": "1314:3:6",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_magic_message",
+                                                                "typeString": "msg"
+                                                            }
+                                                        },
+                                                        "id": 1092,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberName": "sender",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": null,
+                                                        "src": "1314:10:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 1089,
+                                                        "name": "organization",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 1086,
+                                                        "src": "1286:12:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                            "typeString": "contract OrganizationInterface"
+                                                        }
+                                                    },
+                                                    "id": 1090,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "isOrganization",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 1073,
+                                                    "src": "1286:27:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_bool_$",
+                                                        "typeString": "function (address) view external returns (bool)"
+                                                    }
+                                                },
+                                                "id": 1093,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "1286:39:6",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4f6e6c7920746865206f7267616e697a6174696f6e20697320616c6c6f77656420746f2063616c6c2074686973206d6574686f642e",
+                                                "id": 1094,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1339:55:6",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_4cf5358577e5ee7bbf0dc2cdc83d2bb214b3701aeb5e8e14d44a838150736a31",
+                                                    "typeString": "literal_string \"Only the organization is allowed to call this method.\""
+                                                },
+                                                "value": "Only the organization is allowed to call this method."
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_4cf5358577e5ee7bbf0dc2cdc83d2bb214b3701aeb5e8e14d44a838150736a31",
+                                                    "typeString": "literal_string \"Only the organization is allowed to call this method.\""
+                                                }
+                                            ],
+                                            "id": 1088,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1265:7:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 1095,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1265:139:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 1096,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1265:139:6"
+                                },
+                                {
+                                    "id": 1097,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1415:1:6"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 1099,
+                        "name": "onlyOrganization",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 1087,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1248:2:6"
+                        },
+                        "src": "1223:200:6",
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 1111,
+                            "nodeType": "Block",
+                            "src": "1455:166:6",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "expression": {
+                                                            "argumentTypes": null,
+                                                            "id": 1104,
+                                                            "name": "msg",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 4046,
+                                                            "src": "1508:3:6",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_magic_message",
+                                                                "typeString": "msg"
+                                                            }
+                                                        },
+                                                        "id": 1105,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberName": "sender",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": null,
+                                                        "src": "1508:10:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 1102,
+                                                        "name": "organization",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 1086,
+                                                        "src": "1486:12:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                            "typeString": "contract OrganizationInterface"
+                                                        }
+                                                    },
+                                                    "id": 1103,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "isWorker",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 1080,
+                                                    "src": "1486:21:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_bool_$",
+                                                        "typeString": "function (address) view external returns (bool)"
+                                                    }
+                                                },
+                                                "id": 1106,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "1486:33:6",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4f6e6c792077686974656c697374656420776f726b6572732061726520616c6c6f77656420746f2063616c6c2074686973206d6574686f642e",
+                                                "id": 1107,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1533:59:6",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_e68b9359072170d35eb9c67753e77edbf80807e49b7623733dd81b5216c5f7c8",
+                                                    "typeString": "literal_string \"Only whitelisted workers are allowed to call this method.\""
+                                                },
+                                                "value": "Only whitelisted workers are allowed to call this method."
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_e68b9359072170d35eb9c67753e77edbf80807e49b7623733dd81b5216c5f7c8",
+                                                    "typeString": "literal_string \"Only whitelisted workers are allowed to call this method.\""
+                                                }
+                                            ],
+                                            "id": 1101,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1465:7:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 1108,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1465:137:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 1109,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1465:137:6"
+                                },
+                                {
+                                    "id": 1110,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1613:1:6"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 1112,
+                        "name": "onlyWorker",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 1100,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1448:2:6"
+                        },
+                        "src": "1429:192:6",
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 1132,
+                            "nodeType": "Block",
+                            "src": "1857:186:6",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                },
+                                                "id": 1124,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "arguments": [
+                                                        {
+                                                            "argumentTypes": null,
+                                                            "id": 1119,
+                                                            "name": "_organization",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 1114,
+                                                            "src": "1896:13:6",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                                "typeString": "contract OrganizationInterface"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                                "typeString": "contract OrganizationInterface"
+                                                            }
+                                                        ],
+                                                        "id": 1118,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "lValueRequested": false,
+                                                        "nodeType": "ElementaryTypeNameExpression",
+                                                        "src": "1888:7:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_type$_t_address_$",
+                                                            "typeString": "type(address)"
+                                                        },
+                                                        "typeName": "address"
+                                                    },
+                                                    "id": 1120,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "kind": "typeConversion",
+                                                    "lValueRequested": false,
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1888:22:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "!=",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "arguments": [
+                                                        {
+                                                            "argumentTypes": null,
+                                                            "hexValue": "30",
+                                                            "id": 1122,
+                                                            "isConstant": false,
+                                                            "isLValue": false,
+                                                            "isPure": true,
+                                                            "kind": "number",
+                                                            "lValueRequested": false,
+                                                            "nodeType": "Literal",
+                                                            "src": "1922:1:6",
+                                                            "subdenomination": null,
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_rational_0_by_1",
+                                                                "typeString": "int_const 0"
+                                                            },
+                                                            "value": "0"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_rational_0_by_1",
+                                                                "typeString": "int_const 0"
+                                                            }
+                                                        ],
+                                                        "id": 1121,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "lValueRequested": false,
+                                                        "nodeType": "ElementaryTypeNameExpression",
+                                                        "src": "1914:7:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_type$_t_address_$",
+                                                            "typeString": "type(address)"
+                                                        },
+                                                        "typeName": "address"
+                                                    },
+                                                    "id": 1123,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "typeConversion",
+                                                    "lValueRequested": false,
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1914:10:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address_payable",
+                                                        "typeString": "address payable"
+                                                    }
+                                                },
+                                                "src": "1888:36:6",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4f7267616e697a6174696f6e20636f6e74726163742061646472657373206d757374206e6f74206265207a65726f2e",
+                                                "id": 1125,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1938:49:6",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_17bd77171e2fcc00bb986f1d9371f9aba7eee7190c6d139234ed9c8ce4ab794f",
+                                                    "typeString": "literal_string \"Organization contract address must not be zero.\""
+                                                },
+                                                "value": "Organization contract address must not be zero."
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_17bd77171e2fcc00bb986f1d9371f9aba7eee7190c6d139234ed9c8ce4ab794f",
+                                                    "typeString": "literal_string \"Organization contract address must not be zero.\""
+                                                }
+                                            ],
+                                            "id": 1117,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1867:7:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 1126,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1867:130:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 1127,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1867:130:6"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 1130,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1128,
+                                            "name": "organization",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1086,
+                                            "src": "2008:12:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                "typeString": "contract OrganizationInterface"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1129,
+                                            "name": "_organization",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1114,
+                                            "src": "2023:13:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                "typeString": "contract OrganizationInterface"
+                                            }
+                                        },
+                                        "src": "2008:28:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                            "typeString": "contract OrganizationInterface"
+                                        }
+                                    },
+                                    "id": 1131,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "2008:28:6"
+                                }
+                            ]
+                        },
+                        "documentation": "@notice Sets the address of the organization contract.\n     * @param _organization A contract that manages worker keys.",
+                        "id": 1133,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1115,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1114,
+                                    "name": "_organization",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1133,
+                                    "src": "1813:35:6",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                        "typeString": "contract OrganizationInterface"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 1113,
+                                        "name": "OrganizationInterface",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 1081,
+                                        "src": "1813:21:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                            "typeString": "contract OrganizationInterface"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1812:37:6"
+                        },
+                        "returnParameters": {
+                            "id": 1116,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1857:0:6"
+                        },
+                        "scope": 1134,
+                        "src": "1801:242:6",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "public"
+                    }
+                ],
+                "scope": 1135,
+                "src": "1024:1022:6"
+            }
+        ],
+        "src": "0:2047:6"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/Organized.sol",
+        "exportedSymbols": {
+            "Organized": [1134]
+        },
+        "id": 1135,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1083,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:6"
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/organization/OrganizationInterface.sol",
+                "file": "./OrganizationInterface.sol",
+                "id": 1084,
+                "nodeType": "ImportDirective",
+                "scope": 1135,
+                "sourceUnit": 1082,
+                "src": "813:37:6",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": "@title Organized contract.\n * @notice The Organized contract facilitates integration of\n        organization administration keys with different contracts.",
+                "fullyImplemented": true,
+                "id": 1134,
+                "linearizedBaseContracts": [1134],
+                "name": "Organized",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 1086,
+                        "name": "organization",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 1134,
+                        "src": "1153:41:6",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                            "typeString": "contract OrganizationInterface"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 1085,
+                            "name": "OrganizationInterface",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 1081,
+                            "src": "1153:21:6",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                "typeString": "contract OrganizationInterface"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 1098,
+                            "nodeType": "Block",
+                            "src": "1255:168:6",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "expression": {
+                                                            "argumentTypes": null,
+                                                            "id": 1091,
+                                                            "name": "msg",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 4046,
+                                                            "src": "1314:3:6",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_magic_message",
+                                                                "typeString": "msg"
+                                                            }
+                                                        },
+                                                        "id": 1092,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberName": "sender",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": null,
+                                                        "src": "1314:10:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 1089,
+                                                        "name": "organization",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 1086,
+                                                        "src": "1286:12:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                            "typeString": "contract OrganizationInterface"
+                                                        }
+                                                    },
+                                                    "id": 1090,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "isOrganization",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 1073,
+                                                    "src": "1286:27:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_bool_$",
+                                                        "typeString": "function (address) view external returns (bool)"
+                                                    }
+                                                },
+                                                "id": 1093,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "1286:39:6",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4f6e6c7920746865206f7267616e697a6174696f6e20697320616c6c6f77656420746f2063616c6c2074686973206d6574686f642e",
+                                                "id": 1094,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1339:55:6",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_4cf5358577e5ee7bbf0dc2cdc83d2bb214b3701aeb5e8e14d44a838150736a31",
+                                                    "typeString": "literal_string \"Only the organization is allowed to call this method.\""
+                                                },
+                                                "value": "Only the organization is allowed to call this method."
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_4cf5358577e5ee7bbf0dc2cdc83d2bb214b3701aeb5e8e14d44a838150736a31",
+                                                    "typeString": "literal_string \"Only the organization is allowed to call this method.\""
+                                                }
+                                            ],
+                                            "id": 1088,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1265:7:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 1095,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1265:139:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 1096,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1265:139:6"
+                                },
+                                {
+                                    "id": 1097,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1415:1:6"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 1099,
+                        "name": "onlyOrganization",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 1087,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1248:2:6"
+                        },
+                        "src": "1223:200:6",
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 1111,
+                            "nodeType": "Block",
+                            "src": "1455:166:6",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "expression": {
+                                                            "argumentTypes": null,
+                                                            "id": 1104,
+                                                            "name": "msg",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 4046,
+                                                            "src": "1508:3:6",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_magic_message",
+                                                                "typeString": "msg"
+                                                            }
+                                                        },
+                                                        "id": 1105,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberName": "sender",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": null,
+                                                        "src": "1508:10:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 1102,
+                                                        "name": "organization",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 1086,
+                                                        "src": "1486:12:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                            "typeString": "contract OrganizationInterface"
+                                                        }
+                                                    },
+                                                    "id": 1103,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "isWorker",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 1080,
+                                                    "src": "1486:21:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_bool_$",
+                                                        "typeString": "function (address) view external returns (bool)"
+                                                    }
+                                                },
+                                                "id": 1106,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "1486:33:6",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4f6e6c792077686974656c697374656420776f726b6572732061726520616c6c6f77656420746f2063616c6c2074686973206d6574686f642e",
+                                                "id": 1107,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1533:59:6",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_e68b9359072170d35eb9c67753e77edbf80807e49b7623733dd81b5216c5f7c8",
+                                                    "typeString": "literal_string \"Only whitelisted workers are allowed to call this method.\""
+                                                },
+                                                "value": "Only whitelisted workers are allowed to call this method."
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_e68b9359072170d35eb9c67753e77edbf80807e49b7623733dd81b5216c5f7c8",
+                                                    "typeString": "literal_string \"Only whitelisted workers are allowed to call this method.\""
+                                                }
+                                            ],
+                                            "id": 1101,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1465:7:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 1108,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1465:137:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 1109,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1465:137:6"
+                                },
+                                {
+                                    "id": 1110,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1613:1:6"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 1112,
+                        "name": "onlyWorker",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 1100,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1448:2:6"
+                        },
+                        "src": "1429:192:6",
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 1132,
+                            "nodeType": "Block",
+                            "src": "1857:186:6",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                },
+                                                "id": 1124,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "arguments": [
+                                                        {
+                                                            "argumentTypes": null,
+                                                            "id": 1119,
+                                                            "name": "_organization",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 1114,
+                                                            "src": "1896:13:6",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                                "typeString": "contract OrganizationInterface"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                                "typeString": "contract OrganizationInterface"
+                                                            }
+                                                        ],
+                                                        "id": 1118,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "lValueRequested": false,
+                                                        "nodeType": "ElementaryTypeNameExpression",
+                                                        "src": "1888:7:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_type$_t_address_$",
+                                                            "typeString": "type(address)"
+                                                        },
+                                                        "typeName": "address"
+                                                    },
+                                                    "id": 1120,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "kind": "typeConversion",
+                                                    "lValueRequested": false,
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1888:22:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "!=",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "arguments": [
+                                                        {
+                                                            "argumentTypes": null,
+                                                            "hexValue": "30",
+                                                            "id": 1122,
+                                                            "isConstant": false,
+                                                            "isLValue": false,
+                                                            "isPure": true,
+                                                            "kind": "number",
+                                                            "lValueRequested": false,
+                                                            "nodeType": "Literal",
+                                                            "src": "1922:1:6",
+                                                            "subdenomination": null,
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_rational_0_by_1",
+                                                                "typeString": "int_const 0"
+                                                            },
+                                                            "value": "0"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_rational_0_by_1",
+                                                                "typeString": "int_const 0"
+                                                            }
+                                                        ],
+                                                        "id": 1121,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "lValueRequested": false,
+                                                        "nodeType": "ElementaryTypeNameExpression",
+                                                        "src": "1914:7:6",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_type$_t_address_$",
+                                                            "typeString": "type(address)"
+                                                        },
+                                                        "typeName": "address"
+                                                    },
+                                                    "id": 1123,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": true,
+                                                    "kind": "typeConversion",
+                                                    "lValueRequested": false,
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1914:10:6",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address_payable",
+                                                        "typeString": "address payable"
+                                                    }
+                                                },
+                                                "src": "1888:36:6",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4f7267616e697a6174696f6e20636f6e74726163742061646472657373206d757374206e6f74206265207a65726f2e",
+                                                "id": 1125,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1938:49:6",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_17bd77171e2fcc00bb986f1d9371f9aba7eee7190c6d139234ed9c8ce4ab794f",
+                                                    "typeString": "literal_string \"Organization contract address must not be zero.\""
+                                                },
+                                                "value": "Organization contract address must not be zero."
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_17bd77171e2fcc00bb986f1d9371f9aba7eee7190c6d139234ed9c8ce4ab794f",
+                                                    "typeString": "literal_string \"Organization contract address must not be zero.\""
+                                                }
+                                            ],
+                                            "id": 1117,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1867:7:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 1126,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1867:130:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 1127,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1867:130:6"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 1130,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1128,
+                                            "name": "organization",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1086,
+                                            "src": "2008:12:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                "typeString": "contract OrganizationInterface"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 1129,
+                                            "name": "_organization",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 1114,
+                                            "src": "2023:13:6",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                                "typeString": "contract OrganizationInterface"
+                                            }
+                                        },
+                                        "src": "2008:28:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                            "typeString": "contract OrganizationInterface"
+                                        }
+                                    },
+                                    "id": 1131,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "2008:28:6"
+                                }
+                            ]
+                        },
+                        "documentation": "@notice Sets the address of the organization contract.\n     * @param _organization A contract that manages worker keys.",
+                        "id": 1133,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1115,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1114,
+                                    "name": "_organization",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1133,
+                                    "src": "1813:35:6",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                        "typeString": "contract OrganizationInterface"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 1113,
+                                        "name": "OrganizationInterface",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 1081,
+                                        "src": "1813:21:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_OrganizationInterface_$1081",
+                                            "typeString": "contract OrganizationInterface"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1812:37:6"
+                        },
+                        "returnParameters": {
+                            "id": 1116,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1857:0:6"
+                        },
+                        "scope": 1134,
+                        "src": "1801:242:6",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "public"
+                    }
+                ],
+                "scope": 1135,
+                "src": "1024:1022:6"
+            }
+        ],
+        "src": "0:2047:6"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.434Z",
+    "devdoc": {
+        "methods": {
+            "constructor": {
+                "params": {
+                    "_organization": "A contract that manages worker keys."
+                }
+            }
+        },
+        "title": "Organized contract."
+    },
+    "userdoc": {
+        "methods": {
+            "constructor": "Sets the address of the organization contract."
+        },
+        "notice": "The Organized contract facilitates integration of        organization administration keys with different contracts."
+    }
+}

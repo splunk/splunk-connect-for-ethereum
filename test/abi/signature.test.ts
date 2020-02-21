@@ -40,6 +40,29 @@ describe('parseSignature', () => {
           "type": "function",
         }
     `);
+    expect(parseSignature('Hello(address indexed, string, int indexed)', 'event')).toMatchInlineSnapshot(`
+        Object {
+          "inputs": Array [
+            Object {
+              "components": undefined,
+              "indexed": true,
+              "type": "address",
+            },
+            Object {
+              "components": undefined,
+              "indexed": false,
+              "type": "string",
+            },
+            Object {
+              "components": undefined,
+              "indexed": true,
+              "type": "int256",
+            },
+          ],
+          "name": "Hello",
+          "type": "event",
+        }
+    `);
 });
 
 test('computeSignature', () => {

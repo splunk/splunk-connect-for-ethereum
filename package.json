@@ -87,7 +87,8 @@
     },
     "scripts": {
         "lint": "eslint . --ext .ts --config .eslintrc",
-        "build": "rm -rf lib && tsc -b && yarn build:signatures",
+        "build": "yarn build:wasm && rm -rf lib && tsc -b && yarn build:signatures",
+        "build:wasm": "wasm-pack build --target nodejs --release wasm/ethabi",
         "build:signatures": "ts-node scripts/buildsigs.ts",
         "test": "jest --config jest.config.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",

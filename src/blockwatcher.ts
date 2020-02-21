@@ -243,7 +243,7 @@ export class BlockWatcher implements ManagedResource {
         );
     }
 
-    private async processBlock(block: RawBlockResponse) {
+    async processBlock(block: RawBlockResponse) {
         if (block.number != null && !this.checkpoints.isIncomplete(bigIntToNumber(block.number))) {
             warn('Skipping processing of block %d since it is marked complete in our checkpoint');
             return;
@@ -274,7 +274,7 @@ export class BlockWatcher implements ManagedResource {
         this.aggregates.blockProcessTime.push(Date.now() - startTime);
     }
 
-    private async processTransaction(
+    async processTransaction(
         rawTx: RawTransactionResponse | string,
         blockTime: number,
         formattedBlock: FormattedBlock
@@ -328,7 +328,7 @@ export class BlockWatcher implements ManagedResource {
         ];
     }
 
-    private async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
+    async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
         const startTime = Date.now();
         const contractInfo = await this.lookupContractInfo(evt.address);
         const decodedEventData = this.abiRepo?.decodeLogEvent(evt, {
@@ -344,7 +344,7 @@ export class BlockWatcher implements ManagedResource {
         };
     }
 
-    private async lookupContractInfo(address: Address): Promise<ContractInfo | undefined> {
+    async lookupContractInfo(address: Address): Promise<ContractInfo | undefined> {
         const abiRepo = this.abiRepo;
         if (abiRepo == null) {
             return;

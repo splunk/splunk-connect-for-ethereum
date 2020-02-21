@@ -1,5 +1,4 @@
 import { join as joinPath } from 'path';
-import { AbiCoder } from 'web3-eth-abi';
 import { AbiRepositoryConfig } from '../config';
 import { RawLogResponse } from '../eth/responses';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
@@ -28,6 +27,7 @@ interface AbiMatchParams {
 
 export interface ContractAbi {
     contractName: string;
+    fileName?: string;
 }
 
 /** Sort abi defintions in consistent priority order */
@@ -52,8 +52,12 @@ export function sortAbis(abis: AbiItemDefinition[]): AbiItemDefinition[] {
                 // are sometimes used to deliberately produce signature hash
                 // collisions
                 a.name.length - b.name.length ||
+                // Prefer abis with fewer parameters
+                a.inputs.length - b.inputs.length ||
                 // Sort the rest by name
-                a.name.localeCompare(b.name)
+                a.name.localeCompare(b.name) ||
+                // Last restort is to string compare the full signature
+                computeSignature(a).localeCompare(computeSignature(b))
             );
         });
         return sortedAbis;
@@ -65,7 +69,6 @@ export class AbiRepository implements ManagedResource {
     private signatures: Map<string, AbiItemDefinition[]> = new Map();
     private contractsByFingerprint: Map<string, ContractAbi> = new Map();
     private contractsByAddress: Map<string, ContractAbi> = new Map();
-    private abiCoder: AbiCoder = require('web3-eth-abi');
 
     constructor(private config: AbiRepositoryConfig) {}
 
@@ -112,12 +115,21 @@ export class AbiRepository implements ManagedResource {
         const abiFileContents = await loadAbiFile(path, config);
         const contractInfo: ContractAbi = {
             contractName: abiFileContents.contractName,
+            fileName: abiFileContents.fileName,
         };
         if (abiFileContents.contractAddress != null) {
             this.contractsByAddress.set(abiFileContents.contractAddress.toLowerCase(), contractInfo);
         }
         if (abiFileContents.contractFingerprint != null) {
-            this.contractsByFingerprint.set(abiFileContents.contractFingerprint, contractInfo);
+            if (this.contractsByFingerprint.has(abiFileContents.contractFingerprint)) {
+                warn(
+                    'Duplicate contract fingerprint for contracts %o and %o',
+                    contractInfo,
+                    this.contractsByFingerprint.get(abiFileContents.contractFingerprint)
+                );
+            } else {
+                this.contractsByFingerprint.set(abiFileContents.contractFingerprint, contractInfo);
+            }
         }
 
         for (const { sig, abi } of abiFileContents.entries) {
@@ -137,8 +149,22 @@ export class AbiRepository implements ManagedResource {
 
     public getMatchingSignatureName(signatureHash: string): string | undefined {
         const candidates = this.signatures.get(signatureHash);
+        trace(
+            'getMatchingSignatureName(%o) --> ',
+            signatureHash,
+            candidates?.map(c => computeSignature(c))
+        );
         if (candidates != null) {
-            return computeSignature(candidates[0]);
+            // We only want to consider signatures from contracts in our repo
+            // that already have a fingerprint
+            const filtered = candidates.filter(c => c.contractFingerprint != null);
+            const signatures = new Set<string>(filtered.map(c => computeSignature(c)));
+            if (signatures.size > 1) {
+                throw new Error(`Multiple signatures (${[...signatures].join(', ')}) for sig hash ${signatureHash}`);
+            }
+            if (filtered.length > 0) {
+                return computeSignature(filtered[0]);
+            }
         }
     }
 
@@ -156,6 +182,17 @@ export class AbiRepository implements ManagedResource {
     ): AbiMatch | undefined {
         const match = this.signatures.get(sigHash);
         if (match != null) {
+            trace(
+                'Looking for contract match %o for signature hash %s; candidates: %O',
+                { contractAddress, contractFingerprint },
+                sigHash,
+                match.map(item => ({
+                    name: item.contractName,
+                    signature: computeSignature(item),
+                    address: item.contractAddress,
+                    fingerprint: item.contractFingerprint,
+                }))
+            );
             if (contractAddress != null) {
                 const addressMatch = match.find(c => c.contractAddress === contractAddress.toLowerCase());
                 if (addressMatch != null) {
@@ -208,9 +245,7 @@ export class AbiRepository implements ManagedResource {
 
     public decodeFunctionCall(data: string, matchParams: AbiMatchParams): DecodedFunctionCall | undefined {
         const sigHash = data.slice(2, 10);
-        return this.abiDecode(sigHash, matchParams, (abi, anon) =>
-            decodeBestMatchingFunctionCall(data, abi, this.abiCoder, anon)
-        );
+        return this.abiDecode(sigHash, matchParams, (abi, anon) => decodeBestMatchingFunctionCall(data, abi, anon));
     }
 
     public decodeLogEvent(logEvent: RawLogResponse, matchParams: AbiMatchParams): DecodedLogEvent | undefined {
@@ -227,9 +262,7 @@ export class AbiRepository implements ManagedResource {
         const sigHash = logEvent.topics[0].slice(2);
         const { data, topics } = logEvent;
 
-        return this.abiDecode(sigHash, matchParams, (abi, anon) =>
-            decodeBestMatchingLogEvent(data, topics, abi, this.abiCoder, anon)
-        );
+        return this.abiDecode(sigHash, matchParams, (abi, anon) => decodeBestMatchingLogEvent(data, topics, abi, anon));
     }
 
     public async shutdown() {

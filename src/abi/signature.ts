@@ -20,11 +20,27 @@ export function computeSignature(abi: AbiItemDefinition) {
     return `${abi.name}(${(abi.inputs ?? []).map(encodeParam).join(',')})`;
 }
 
+export const encodeParamWithIndexedFlag = (input: AbiInput): string =>
+    input.indexed ? `${encodeParam(input)} indexed` : encodeParam(input);
+
+export function serializeEventSignature(abi: AbiItemDefinition): string {
+    if (abi.name == null) {
+        throw new Error('Cannot add ABI item without name');
+    }
+    return `${abi.name}(${(abi.inputs ?? []).map(encodeParamWithIndexedFlag).join(',')})`;
+}
+
 const normalizeInput = (input: any): AbiInput =>
     ({
         type: input.type ?? err('Failed to decode signature'),
         components: Array.isArray(input.components) ? input.components.map(normalizeInput) : undefined,
     } as AbiInput);
+
+const normalizeEventInput = (input: any): AbiInput => {
+    const res = normalizeInput(input);
+    res.indexed = input.name === 'indexed';
+    return res;
+};
 
 export function parseSignature(signature: string, type: 'function' | 'event'): AbiItemDefinition {
     const res = parse(signature) as any;
@@ -32,7 +48,7 @@ export function parseSignature(signature: string, type: 'function' | 'event'): A
     if (!Array.isArray(res.inputs)) {
         err('Failed to decode signature');
     }
-    let inputs: AbiInput[] = res.inputs.map(normalizeInput);
+    let inputs: AbiInput[] = res.inputs.map(type === 'function' ? normalizeInput : normalizeEventInput);
     if (inputs.length === 1 && inputs[0].type === '') {
         inputs = [];
     }
@@ -48,15 +64,15 @@ export function computeSignatureHash(sigName: string, type: 'event' | 'function'
     return type === 'event' ? hash.slice(2) : hash.slice(2, 10);
 }
 
-export function validateSignature(signature: string) {
-    const parsed = parseSignature(signature, 'function');
+export function validateSignature(signature: string, type: 'event' | 'function') {
+    const parsed = parseSignature(signature, 'event');
     for (const input of parsed.inputs) {
         if (!isValidAbiType(input.type)) {
             throw new Error(`Invalid data type: ${input.type}`);
         }
     }
-    const serialized = computeSignature(parsed);
-    if (serialized !== signature) {
-        throw new Error(`Serialized signature does not match original`);
-    }
+    computeSignature(parsed);
+    // if (serialized !== signature) {
+    //     throw new Error(`Serialized signature does not match original`);
+    // }
 }

@@ -1,0 +1,697 @@
+{
+    "contractName": "PriceOracleInterface",
+    "abi": [
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": false,
+                    "name": "_price",
+                    "type": "uint256"
+                }
+            ],
+            "name": "PriceUpdated",
+            "type": "event"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "baseCurrency",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "bytes3"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "quoteCurrency",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "bytes3"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint8"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "getPrice",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "pragma solidity ^0.5.0;\n\n// Copyright 2019 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\ninterface PriceOracleInterface {\n\n    /* Events */\n\n    event PriceUpdated(\n        uint256 _price\n    );\n\n\n    /* External Functions */\n\n    /**\n     * @notice Returns base currency code.\n     *\n     * @dev Base currency code is not according to ISO 4217 or other standard.\n     */\n    function baseCurrency()\n        external\n        view\n        returns (bytes3);\n\n    /**\n     * @notice Returns quote currency code.\n     *\n     * @dev Quote currency code is not according to ISO 4217 or other standard.\n     */\n    function quoteCurrency()\n        external\n        view\n        returns (bytes3);\n\n    /**\n     * @notice Returns quote currency decimals.\n     */\n    function decimals()\n        external\n        view\n        returns (uint8);\n\n    /**\n     * @notice Returns an amount of the quote currency (see decimals()) needed\n     *         to purchase one unit of the base currency.\n     *\n     * @dev Function throws an exception if the price is invalid, for example,\n     *      was not set, or became outdated, etc.\n     *\n     * @return An amount of the quote currency needed to purchase one unit of\n     *         the base base currency.\n     */\n    function getPrice()\n        external\n        view\n        returns (uint256);\n}",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/rules/PriceOracleInterface.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/rules/PriceOracleInterface.sol",
+        "exportedSymbols": {
+            "PriceOracleInterface": [1340]
+        },
+        "id": 1341,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1315,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:11"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 1340,
+                "linearizedBaseContracts": [1340],
+                "name": "PriceOracleInterface",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "anonymous": false,
+                        "documentation": null,
+                        "id": 1319,
+                        "name": "PriceUpdated",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 1318,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1317,
+                                    "indexed": false,
+                                    "name": "_price",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1319,
+                                    "src": "697:14:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 1316,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "697:7:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "687:30:11"
+                        },
+                        "src": "669:49:11"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns base currency code.\n     * @dev Base currency code is not according to ISO 4217 or other standard.",
+                        "id": 1324,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "baseCurrency",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1320,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "921:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1323,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1322,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1324,
+                                    "src": "971:6:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes3",
+                                        "typeString": "bytes3"
+                                    },
+                                    "typeName": {
+                                        "id": 1321,
+                                        "name": "bytes3",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "971:6:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes3",
+                                            "typeString": "bytes3"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "970:8:11"
+                        },
+                        "scope": 1340,
+                        "src": "900:79:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns quote currency code.\n     * @dev Quote currency code is not according to ISO 4217 or other standard.",
+                        "id": 1329,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "quoteCurrency",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1325,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1154:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1328,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1327,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1329,
+                                    "src": "1204:6:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes3",
+                                        "typeString": "bytes3"
+                                    },
+                                    "typeName": {
+                                        "id": 1326,
+                                        "name": "bytes3",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1204:6:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes3",
+                                            "typeString": "bytes3"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1203:8:11"
+                        },
+                        "scope": 1340,
+                        "src": "1132:80:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns quote currency decimals.",
+                        "id": 1334,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "decimals",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1330,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1299:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1333,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1332,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1334,
+                                    "src": "1349:5:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint8",
+                                        "typeString": "uint8"
+                                    },
+                                    "typeName": {
+                                        "id": 1331,
+                                        "name": "uint8",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1349:5:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint8",
+                                            "typeString": "uint8"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1348:7:11"
+                        },
+                        "scope": 1340,
+                        "src": "1282:74:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns an amount of the quote currency (see decimals()) needed\n        to purchase one unit of the base currency.\n     * @dev Function throws an exception if the price is invalid, for example,\n     was not set, or became outdated, etc.\n     * @return An amount of the quote currency needed to purchase one unit of\n        the base base currency.",
+                        "id": 1339,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getPrice",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1335,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1792:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1338,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1337,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1339,
+                                    "src": "1842:7:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 1336,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1842:7:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1841:9:11"
+                        },
+                        "scope": 1340,
+                        "src": "1775:76:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1341,
+                "src": "613:1240:11"
+            }
+        ],
+        "src": "0:1853:11"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/rules/PriceOracleInterface.sol",
+        "exportedSymbols": {
+            "PriceOracleInterface": [1340]
+        },
+        "id": 1341,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1315,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:11"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 1340,
+                "linearizedBaseContracts": [1340],
+                "name": "PriceOracleInterface",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "anonymous": false,
+                        "documentation": null,
+                        "id": 1319,
+                        "name": "PriceUpdated",
+                        "nodeType": "EventDefinition",
+                        "parameters": {
+                            "id": 1318,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1317,
+                                    "indexed": false,
+                                    "name": "_price",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1319,
+                                    "src": "697:14:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 1316,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "697:7:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "687:30:11"
+                        },
+                        "src": "669:49:11"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns base currency code.\n     * @dev Base currency code is not according to ISO 4217 or other standard.",
+                        "id": 1324,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "baseCurrency",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1320,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "921:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1323,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1322,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1324,
+                                    "src": "971:6:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes3",
+                                        "typeString": "bytes3"
+                                    },
+                                    "typeName": {
+                                        "id": 1321,
+                                        "name": "bytes3",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "971:6:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes3",
+                                            "typeString": "bytes3"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "970:8:11"
+                        },
+                        "scope": 1340,
+                        "src": "900:79:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns quote currency code.\n     * @dev Quote currency code is not according to ISO 4217 or other standard.",
+                        "id": 1329,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "quoteCurrency",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1325,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1154:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1328,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1327,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1329,
+                                    "src": "1204:6:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes3",
+                                        "typeString": "bytes3"
+                                    },
+                                    "typeName": {
+                                        "id": 1326,
+                                        "name": "bytes3",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1204:6:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes3",
+                                            "typeString": "bytes3"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1203:8:11"
+                        },
+                        "scope": 1340,
+                        "src": "1132:80:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns quote currency decimals.",
+                        "id": 1334,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "decimals",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1330,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1299:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1333,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1332,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1334,
+                                    "src": "1349:5:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint8",
+                                        "typeString": "uint8"
+                                    },
+                                    "typeName": {
+                                        "id": 1331,
+                                        "name": "uint8",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1349:5:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint8",
+                                            "typeString": "uint8"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1348:7:11"
+                        },
+                        "scope": 1340,
+                        "src": "1282:74:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns an amount of the quote currency (see decimals()) needed\n        to purchase one unit of the base currency.\n     * @dev Function throws an exception if the price is invalid, for example,\n     was not set, or became outdated, etc.\n     * @return An amount of the quote currency needed to purchase one unit of\n        the base base currency.",
+                        "id": 1339,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "getPrice",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1335,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1792:2:11"
+                        },
+                        "returnParameters": {
+                            "id": 1338,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1337,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1339,
+                                    "src": "1842:7:11",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 1336,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1842:7:11",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1841:9:11"
+                        },
+                        "scope": 1340,
+                        "src": "1775:76:11",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1341,
+                "src": "613:1240:11"
+            }
+        ],
+        "src": "0:1853:11"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.436Z",
+    "devdoc": {
+        "methods": {
+            "baseCurrency()": {
+                "details": "Base currency code is not according to ISO 4217 or other standard."
+            },
+            "getPrice()": {
+                "details": "Function throws an exception if the price is invalid, for example,     was not set, or became outdated, etc.",
+                "return": "An amount of the quote currency needed to purchase one unit of        the base base currency."
+            },
+            "quoteCurrency()": {
+                "details": "Quote currency code is not according to ISO 4217 or other standard."
+            }
+        }
+    },
+    "userdoc": {
+        "methods": {
+            "baseCurrency()": {
+                "notice": "Returns base currency code."
+            },
+            "decimals()": {
+                "notice": "Returns quote currency decimals."
+            },
+            "getPrice()": {
+                "notice": "Returns an amount of the quote currency (see decimals()) needed        to purchase one unit of the base currency."
+            },
+            "quoteCurrency()": {
+                "notice": "Returns quote currency code."
+            }
+        }
+    }
+}

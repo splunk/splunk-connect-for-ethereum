@@ -8,3 +8,6 @@
 /.vscode
 /checkpoints.json
 /.ethlogger-state.json
+/wasm/*/pkg
+/wasm/*/target
+/wasm/*/bin

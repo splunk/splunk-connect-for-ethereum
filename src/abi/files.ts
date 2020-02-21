@@ -3,14 +3,14 @@ import { basename, join as joinPath } from 'path';
 import { AbiItem } from 'web3-utils';
 import { AbiRepositoryConfig } from '../config';
 import { Address } from '../msgs';
-import { createModuleDebug } from '../utils/debug';
+import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 import { AbiItemDefinition } from './item';
 import { computeContractFingerprint } from './contract';
 import { computeSignature } from './signature';
 import { createGunzip } from 'zlib';
 import BufferList from 'bl';
 
-const { debug, warn } = createModuleDebug('abi:files');
+const { debug, warn, trace } = createModuleDebug('abi:files');
 
 interface TruffleBuild {
     contractName: string;
@@ -71,6 +71,7 @@ export interface AbiFileContents {
         abi: AbiItemDefinition;
         sig: string;
     }>;
+    fileName?: string;
 }
 
 export function parseAbiFileContents(
@@ -124,7 +125,16 @@ export function parseAbiFileContents(
             .sort();
 
         contractFingerprint = computeContractFingerprint({ functions, events });
-        debug('Computed contract fingerprint %s for contract signature %s', contractFingerprint, contractName);
+        if (TRACE_ENABLED) {
+            trace(
+                'Computed contract fingerprint %s for contract signature %s contents %O',
+                contractFingerprint,
+                contractName,
+                { functions, events }
+            );
+        } else {
+            debug('Computed contract fingerprint %s for contract signature %s', contractFingerprint, contractName);
+        }
     }
 
     return {
@@ -142,6 +152,7 @@ export function parseAbiFileContents(
                 contractAddress,
             },
         })),
+        fileName,
     };
 }
 

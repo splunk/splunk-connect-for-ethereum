@@ -1,0 +1,283 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`blockwatcher 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "difficulty": "340282366920938463463374607431768211454",
+      "extraData": "0xde830206088f5061726974792d457468657265756d86312e34302e30826c69",
+      "gasLimit": 10000000,
+      "gasUsed": 223842,
+      "hash": "0x05a82978c95cf9e30045e0eb9b9cb48d5639b3ab9b8007b2f8d371dc99ed0afd",
+      "logsBloom": "0x04000000000000000000000000000000000000000000000000000000000000000000000010000000000008000000000010000010000000000000000000000040000000002040000000000018000000000000000000001000042000000000000000000000000000000400000000000000000000400000000000000010000000000000000000000000000000000000000000100000020000000000000000000000000000000100000000000000000000000000000000400000000000000000000040000022000000002000000000000000000000008000000000002000000000000010000000000000000000000000200000004000000000000000000000000000",
+      "miner": "0xA13D45301207711B7C0328c6b2b64862abFe9b7a",
+      "nonce": undefined,
+      "number": 8394957,
+      "parentHash": "0x25a7c22beedc516f2f3a6e8c78589417664e4f278f8fe8875397edd03e590287",
+      "receiptsRoot": "0xd1363c7ade1bc9c1b5fb95d1c29c1b153b1ceae9cef5d432d1036e4d2dfbe0fd",
+      "sha3Uncles": "0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347",
+      "size": 1696,
+      "stateRoot": "0x7dc259f4d32d7f39126fdebbcacac79fa2aad890e7b5bead633030c5d5c19ebe",
+      "timestamp": 1581720675,
+      "totalDifficulty": "2856655838159500800421100904281574568815419372",
+      "transactionCount": 1,
+      "transactionsRoot": "0x4e7ad1168e367757b722a0df0568d5660811891576e7ea92bba91c169304e140",
+      "uncles": Array [],
+    },
+    "time": 1581720675000,
+    "type": "block",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0x05a82978c95cf9e30045e0eb9b9cb48d5639b3ab9b8007b2f8d371dc99ed0afd",
+      "blockNumber": 8394957,
+      "call": Object {
+        "args": undefined,
+        "name": "relayCall",
+        "params": Array [
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x150042AAe387E5c002dfaF7844b3110828094ACA",
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x6C85E15838034B7BbA6C63bAdD8839fd4c5BE606",
+          },
+          Object {
+            "name": undefined,
+            "type": "bytes",
+            "value": "0xd80106b900000000000000000000000047643fd12a9464ba6cbadd6d5afc095756640d0b000000000000000000000000bb2692ec9976975a8cb80b52832a94273fbfb43800000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000000849bd9bbc60000000000000000000000000f5ef980513ca22faf70243959c92cf5ee1e531b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041fbd8c79438ff87e7cef097e14e5e820f83c637d5a963c470751916afed65148f635c56ba621c554725bf67eca7a06f600641b8fc3e2385671a15810b194baae31b00000000000000000000000000000000000000000000000000000000000000",
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 70,
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 1000000000,
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 1536276,
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 1,
+          },
+          Object {
+            "name": undefined,
+            "type": "bytes",
+            "value": "0x6fb1c4d50445a989e871840ec68d891a257af43d64d59e29a2ffb4b5a0a1d41d7f79914ef0b8b6697ca3df44ca1e490c1aa3c43f345962858ef34f7c186ce5321c",
+          },
+          Object {
+            "name": undefined,
+            "type": "bytes",
+            "value": null,
+          },
+        ],
+        "signature": "relayCall(address,address,bytes,uint256,uint256,uint256,uint256,bytes,bytes)",
+      },
+      "contractAddress": null,
+      "contractAddressInfo": undefined,
+      "cumulativeGasUsed": 223842,
+      "from": "0x9718A022941447fa2aF776eCbde7007bBA5A7edd",
+      "fromInfo": Object {
+        "contractName": undefined,
+        "isContract": false,
+      },
+      "gas": 1945312,
+      "gasPrice": 1000000000,
+      "gasUsed": 223842,
+      "hash": "0xff36619285cf23ef7f812ea3600a369b52ebd392e682deeb77dd758b4462f38f",
+      "input": "0x405cec67000000000000000000000000150042aae387e5c002dfaf7844b3110828094aca0000000000000000000000006c85e15838034b7bba6c63badd8839fd4c5be60600000000000000000000000000000000000000000000000000000000000001200000000000000000000000000000000000000000000000000000000000000046000000000000000000000000000000000000000000000000000000003b9aca0000000000000000000000000000000000000000000000000000000000001771140000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000034000000000000000000000000000000000000000000000000000000000000003c000000000000000000000000000000000000000000000000000000000000001e4d80106b900000000000000000000000047643fd12a9464ba6cbadd6d5afc095756640d0b000000000000000000000000bb2692ec9976975a8cb80b52832a94273fbfb43800000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000000000000000849bd9bbc60000000000000000000000000f5ef980513ca22faf70243959c92cf5ee1e531b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041fbd8c79438ff87e7cef097e14e5e820f83c637d5a963c470751916afed65148f635c56ba621c554725bf67eca7a06f600641b8fc3e2385671a15810b194baae31b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000416fb1c4d50445a989e871840ec68d891a257af43d64d59e29a2ffb4b5a0a1d41d7f79914ef0b8b6697ca3df44ca1e490c1aa3c43f345962858ef34f7c186ce5321c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "nonce": 556,
+      "r": "0x7843ec8bc029c4f623ece12111abd8d361a96aed84a3851def9bccbec6456ae",
+      "s": "0x42e19d62c96d87683833bb0a02150c12580e61c5d69f6c17753cab8e3c726208",
+      "status": "success",
+      "to": "0xD216153c06E857cD7f72665E0aF1d7D82172F494",
+      "toInfo": Object {
+        "contractName": undefined,
+        "isContract": true,
+      },
+      "transactionIndex": 0,
+      "v": "0x1c",
+      "value": 0,
+    },
+    "time": 1581720675000,
+    "type": "transaction",
+  },
+  Object {
+    "body": Object {
+      "address": "0xBb2692EC9976975A8cB80B52832A94273fBFB438",
+      "addressInfo": Object {
+        "contractName": undefined,
+        "isContract": true,
+      },
+      "blockHash": "0x05a82978c95cf9e30045e0eb9b9cb48d5639b3ab9b8007b2f8d371dc99ed0afd",
+      "blockNumber": 8394957,
+      "data": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "event": Object {
+        "args": undefined,
+        "name": "Sent",
+        "params": Array [
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0xBE7208Ede01673d0b7338fEf14cdd9218501ab81",
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0xBE7208Ede01673d0b7338fEf14cdd9218501ab81",
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x0f5eF980513cA22fAF70243959c92cf5eE1E531B",
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 0,
+          },
+          Object {
+            "name": undefined,
+            "type": "bytes",
+            "value": null,
+          },
+          Object {
+            "name": undefined,
+            "type": "bytes",
+            "value": null,
+          },
+        ],
+        "signature": "Sent(address,address,address,uint256,bytes,bytes)",
+      },
+      "logIndex": 0,
+      "removed": false,
+      "topics": Array [
+        "0x06b541ddaa720db2b10a4d0cdac39b8d360425fc073085fac19bc82614677987",
+        "0x000000000000000000000000be7208ede01673d0b7338fef14cdd9218501ab81",
+        "0x000000000000000000000000be7208ede01673d0b7338fef14cdd9218501ab81",
+        "0x0000000000000000000000000f5ef980513ca22faf70243959c92cf5ee1e531b",
+      ],
+      "transactionHash": "0xff36619285cf23ef7f812ea3600a369b52ebd392e682deeb77dd758b4462f38f",
+      "transactionIndex": 0,
+    },
+    "time": 1581720675000,
+    "type": "event",
+  },
+  Object {
+    "body": Object {
+      "address": "0xBb2692EC9976975A8cB80B52832A94273fBFB438",
+      "addressInfo": Object {
+        "contractName": undefined,
+        "isContract": true,
+      },
+      "blockHash": "0x05a82978c95cf9e30045e0eb9b9cb48d5639b3ab9b8007b2f8d371dc99ed0afd",
+      "blockNumber": 8394957,
+      "data": "0x0000000000000000000000000000000000000000000000000000000000000000",
+      "event": Object {
+        "args": undefined,
+        "name": "Transfer",
+        "params": Array [
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0xBE7208Ede01673d0b7338fEf14cdd9218501ab81",
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x0f5eF980513cA22fAF70243959c92cf5eE1E531B",
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 0,
+          },
+        ],
+        "signature": "Transfer(address,address,uint256)",
+      },
+      "logIndex": 1,
+      "removed": false,
+      "topics": Array [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000be7208ede01673d0b7338fef14cdd9218501ab81",
+        "0x0000000000000000000000000f5ef980513ca22faf70243959c92cf5ee1e531b",
+      ],
+      "transactionHash": "0xff36619285cf23ef7f812ea3600a369b52ebd392e682deeb77dd758b4462f38f",
+      "transactionIndex": 0,
+    },
+    "time": 1581720675000,
+    "type": "event",
+  },
+  Object {
+    "body": Object {
+      "address": "0xD216153c06E857cD7f72665E0aF1d7D82172F494",
+      "addressInfo": Object {
+        "contractName": undefined,
+        "isContract": true,
+      },
+      "blockHash": "0x05a82978c95cf9e30045e0eb9b9cb48d5639b3ab9b8007b2f8d371dc99ed0afd",
+      "blockNumber": 8394957,
+      "data": "0xd80106b900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000015ccba569c700",
+      "event": Object {
+        "args": undefined,
+        "name": "TransactionRelayed",
+        "params": Array [
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x9718A022941447fa2aF776eCbde7007bBA5A7edd",
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x150042AAe387E5c002dfaF7844b3110828094ACA",
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x6C85E15838034B7BbA6C63bAdD8839fd4c5BE606",
+          },
+          Object {
+            "name": undefined,
+            "type": "bytes4",
+            "value": "0xd80106b9",
+          },
+          Object {
+            "name": undefined,
+            "type": "uint8",
+            "value": 0,
+          },
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 383504700000000,
+          },
+        ],
+        "signature": "TransactionRelayed(address,address,address,bytes4,uint8,uint256)",
+      },
+      "logIndex": 2,
+      "removed": false,
+      "topics": Array [
+        "0xab74390d395916d9e0006298d47938a5def5d367054dcca78fa6ec84381f3f22",
+        "0x0000000000000000000000009718a022941447fa2af776ecbde7007bba5a7edd",
+        "0x000000000000000000000000150042aae387e5c002dfaf7844b3110828094aca",
+        "0x0000000000000000000000006c85e15838034b7bba6c63badd8839fd4c5be606",
+      ],
+      "transactionHash": "0xff36619285cf23ef7f812ea3600a369b52ebd392e682deeb77dd758b4462f38f",
+      "transactionIndex": 0,
+    },
+    "time": 1581720675000,
+    "type": "event",
+  },
+]
+`;

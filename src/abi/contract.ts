@@ -2,9 +2,9 @@ import { sha3 } from 'web3-utils';
 import { EthereumClient } from '../eth/client';
 import { getCode } from '../eth/requests';
 import { Address } from '../msgs';
-import { createModuleDebug } from '../utils/debug';
+import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 
-const { debug, trace } = createModuleDebug('contract');
+const { debug, info, trace } = createModuleDebug('abi:contract');
 
 export interface ContractInfo {
     /** True if the corresponding account is a smart contract, otherwise false */
@@ -61,7 +61,6 @@ export function computeContractFingerprint(
         return;
     }
     const fingerprint = sha3(`${functions.join(',')}|${events.join(',')}`).slice(2);
-    trace('Computed contract fingerprint %o for contract functions %o and events %o', fingerprint, functions, events);
     return fingerprint;
 }
 
@@ -85,6 +84,9 @@ export async function getContractInfo(
     }
     const fnsEvts = extractFunctionsAndEvents(code, (fingerprint: string) => signatureMatcher(fingerprint, address));
     const fingerprint = computeContractFingerprint(fnsEvts);
+    if (TRACE_ENABLED) {
+        trace('Computed fingerprint %s from contract code %O', fingerprint, fnsEvts);
+    }
     const contractName =
         fingerprint != null && contractNameLookup != null ? contractNameLookup(address, fingerprint) : undefined;
     return {

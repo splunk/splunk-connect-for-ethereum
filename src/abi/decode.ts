@@ -1,15 +1,12 @@
-import { AbiCoder } from 'web3-eth-abi';
 import { toChecksumAddress } from 'web3-utils';
 import { parseBigInt } from '../utils/bn';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 import { DataSize, elementType, getDataSize, intBits, isArrayType } from './datatypes';
 import { AbiItemDefinition } from './item';
 import { computeSignature } from './signature';
+import { Value, ScalarValue, abiDecodeParameters } from './wasm';
 
 const { trace } = createModuleDebug('abi:decode');
-
-export type ScalarValue = string | number | boolean;
-export type Value = ScalarValue | ScalarValue[];
 
 export interface DecodedParameter {
     name?: string;
@@ -89,13 +86,12 @@ export function decodeFunctionCall(
     data: string,
     abi: AbiItemDefinition,
     signature: string,
-    abiCoder: AbiCoder,
     anonymous: boolean
 ): DecodedFunctionCall {
     const inputs = abi.inputs ?? [];
-    const decodedParams = abiCoder.decodeParameters(
-        inputs.map(i => i.type),
-        data.slice(10)
+    const decodedParams = abiDecodeParameters(
+        data.slice(10),
+        inputs.map(i => i.type)
     );
     const params: DecodedParameter[] = [];
     const args: { [name: string]: string | number | boolean | Array<string | number | boolean> } = {};
@@ -105,7 +101,7 @@ export function decodeFunctionCall(
         const rawValue = decodedParams[i];
         const value = isArrayType(input.type)
             ? (rawValue as string[]).map(v => parseParameterValue(v, elementType(input.type)))
-            : parseParameterValue(rawValue, input.type);
+            : parseParameterValue(rawValue as ScalarValue, input.type);
         args[input.name!] = value;
         params.push({
             name: anonymous ? undefined : input.name,
@@ -125,12 +121,11 @@ export function decodeFunctionCall(
 export function decodeBestMatchingFunctionCall(
     data: string,
     abis: AbiItemDefinition[],
-    abiCoder: AbiCoder,
     anonymous: boolean
 ): DecodedFunctionCall {
     if (abis.length === 1) {
         // short-circut most common case
-        return decodeFunctionCall(data, abis[0], computeSignature(abis[0]), abiCoder, anonymous);
+        return decodeFunctionCall(data, abis[0], computeSignature(abis[0]), anonymous);
     }
     const abisWithSize = abis.map(abi => [abi, getInputSize(abi)] as const);
     const dataLength = (data.length - 10) / 2;
@@ -139,7 +134,7 @@ export function decodeBestMatchingFunctionCall(
     for (const [abi, { length, exact }] of abisWithSize) {
         if (dataLength === length && exact) {
             try {
-                return decodeFunctionCall(data, abi, computeSignature(abi), abiCoder, anonymous);
+                return decodeFunctionCall(data, abi, computeSignature(abi), anonymous);
             } catch (e) {
                 lastError = e;
                 if (TRACE_ENABLED) {
@@ -156,7 +151,7 @@ export function decodeBestMatchingFunctionCall(
     for (const [abi, { length, exact }] of abisWithSize) {
         if (dataLength >= length && !exact) {
             try {
-                return decodeFunctionCall(data, abi, computeSignature(abi), abiCoder, anonymous);
+                return decodeFunctionCall(data, abi, computeSignature(abi), anonymous);
             } catch (e) {
                 lastError = e;
                 if (TRACE_ENABLED) {
@@ -173,7 +168,7 @@ export function decodeBestMatchingFunctionCall(
     // Brute-force try all ABI signatures, use the first one that doesn't throw on decode
     for (const abi of abis) {
         try {
-            return decodeFunctionCall(data, abi, computeSignature(abi), abiCoder, anonymous);
+            return decodeFunctionCall(data, abi, computeSignature(abi), anonymous);
         } catch (e) {
             lastError = e;
         }
@@ -187,11 +182,10 @@ export function decodeLogEvent(
     topics: string[],
     abi: AbiItemDefinition,
     signature: string,
-    abiCoder: AbiCoder,
     anonymous: boolean
 ): DecodedLogEvent {
     const nonIndexedTypes = abi.inputs.filter(i => !i.indexed).map(i => i.type);
-    const decodedData = abiCoder.decodeParameters(nonIndexedTypes, data.slice(2));
+    const decodedData = abiDecodeParameters(data.slice(2), nonIndexedTypes);
     let topicIndex = 1;
     let dataIndex = 0;
     const args: { [k: string]: Value } = {};
@@ -213,7 +207,7 @@ export function decodeLogEvent(
             const rawValue = decodedData[dataIndex++];
             value = isArrayType(input.type)
                 ? (rawValue as string[]).map(v => parseParameterValue(v, elementType(input.type)))
-                : parseParameterValue(rawValue, input.type);
+                : parseParameterValue(rawValue as ScalarValue, input.type);
         }
 
         args[input.name] = value;
@@ -235,7 +229,6 @@ export function decodeBestMatchingLogEvent(
     data: string,
     topics: string[],
     abis: AbiItemDefinition[],
-    abiCoder: AbiCoder,
     anonymous: boolean
 ): DecodedFunctionCall {
     // No need to prioritize and check event logs for hash collisions since with the longer hash
@@ -243,7 +236,7 @@ export function decodeBestMatchingLogEvent(
     let lastError: Error | undefined;
     for (const abi of abis) {
         try {
-            return decodeLogEvent(data, topics, abi, computeSignature(abi), abiCoder, anonymous);
+            return decodeLogEvent(data, topics, abi, computeSignature(abi), anonymous);
         } catch (e) {
             lastError = e;
             if (TRACE_ENABLED) {

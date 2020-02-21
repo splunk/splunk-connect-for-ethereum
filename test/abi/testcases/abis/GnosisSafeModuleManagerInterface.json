@@ -1,0 +1,510 @@
+{
+    "contractName": "GnosisSafeModuleManagerInterface",
+    "abi": [
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                },
+                {
+                    "name": "_data",
+                    "type": "bytes"
+                },
+                {
+                    "name": "_operation",
+                    "type": "uint8"
+                }
+            ],
+            "name": "execTransactionFromModule",
+            "outputs": [
+                {
+                    "name": "success_",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "pragma solidity ^0.5.0;\n\n// Copyright 2019 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n/**\n * @title Contract contains the required, public interface by\n *        gnosis/safe-contracts/contracts/base/ModuleManager.sol\n *\n * @dev Instead of inheriting from\n *      gnosis/safe-contracts/contracts/base/ModuleManager.sol and pulling all\n *      needed contracts by Module.sol into openst-contracts building process,\n *      we define this contract, that contains only required, public interface\n *      of ModuleManager.sol.\n */\ninterface GnosisSafeModuleManagerInterface\n{\n\n    /* Enums */\n\n    /**\n     * @dev This enum mimics the \"Operation\" enum defined within:\n     *          gnosis/safe-contracts/contract/common/Enum.sol\n     */\n    enum Operation {\n        Call,\n        DelegateCall,\n        Create\n    }\n\n\n    /* External Functions */\n\n    /**\n     * @dev Allows a module to execute a Safe transaction without any\n     *      further confirmations.\n     *\n     * @param _to Destination address of module transaction.\n     * @param _value Ether value of module transaction.\n     * @param _data Data payload of module transaction.\n     * @param _operation Operation type of module transaction.\n     */\n    function execTransactionFromModule(\n        address _to,\n        uint256 _value,\n        bytes calldata _data,\n        Operation _operation\n    )\n        external\n        returns (bool success_);\n}",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModuleManagerInterface.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModuleManagerInterface.sol",
+        "exportedSymbols": {
+            "GnosisSafeModuleManagerInterface": [734]
+        },
+        "id": 735,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 716,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:3"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": "@title Contract contains the required, public interface by\n       gnosis/safe-contracts/contracts/base/ModuleManager.sol\n * @dev Instead of inheriting from\n     gnosis/safe-contracts/contracts/base/ModuleManager.sol and pulling all\n     needed contracts by Module.sol into openst-contracts building process,\n     we define this contract, that contains only required, public interface\n     of ModuleManager.sol.",
+                "fullyImplemented": false,
+                "id": 734,
+                "linearizedBaseContracts": [734],
+                "name": "GnosisSafeModuleManagerInterface",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "canonicalName": "GnosisSafeModuleManagerInterface.Operation",
+                        "id": 720,
+                        "members": [
+                            {
+                                "id": 717,
+                                "name": "Call",
+                                "nodeType": "EnumValue",
+                                "src": "1290:4:3"
+                            },
+                            {
+                                "id": 718,
+                                "name": "DelegateCall",
+                                "nodeType": "EnumValue",
+                                "src": "1304:12:3"
+                            },
+                            {
+                                "id": 719,
+                                "name": "Create",
+                                "nodeType": "EnumValue",
+                                "src": "1326:6:3"
+                            }
+                        ],
+                        "name": "Operation",
+                        "nodeType": "EnumDefinition",
+                        "src": "1265:73:3"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@dev Allows a module to execute a Safe transaction without any\n     further confirmations.\n     * @param _to Destination address of module transaction.\n@param _value Ether value of module transaction.\n@param _data Data payload of module transaction.\n@param _operation Operation type of module transaction.",
+                        "id": 733,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "execTransactionFromModule",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 729,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 722,
+                                    "name": "_to",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1783:11:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 721,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1783:7:3",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 724,
+                                    "name": "_value",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1804:14:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 723,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1804:7:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 726,
+                                    "name": "_data",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1828:20:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes_calldata_ptr",
+                                        "typeString": "bytes"
+                                    },
+                                    "typeName": {
+                                        "id": 725,
+                                        "name": "bytes",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1828:5:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes_storage_ptr",
+                                            "typeString": "bytes"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 728,
+                                    "name": "_operation",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1858:20:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_enum$_Operation_$720",
+                                        "typeString": "enum GnosisSafeModuleManagerInterface.Operation"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 727,
+                                        "name": "Operation",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 720,
+                                        "src": "1858:9:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_enum$_Operation_$720",
+                                            "typeString": "enum GnosisSafeModuleManagerInterface.Operation"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1773:111:3"
+                        },
+                        "returnParameters": {
+                            "id": 732,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 731,
+                                    "name": "success_",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1919:13:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 730,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1919:4:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1918:15:3"
+                        },
+                        "scope": 734,
+                        "src": "1739:195:3",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 735,
+                "src": "1053:883:3"
+            }
+        ],
+        "src": "0:1936:3"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModuleManagerInterface.sol",
+        "exportedSymbols": {
+            "GnosisSafeModuleManagerInterface": [734]
+        },
+        "id": 735,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 716,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:3"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": "@title Contract contains the required, public interface by\n       gnosis/safe-contracts/contracts/base/ModuleManager.sol\n * @dev Instead of inheriting from\n     gnosis/safe-contracts/contracts/base/ModuleManager.sol and pulling all\n     needed contracts by Module.sol into openst-contracts building process,\n     we define this contract, that contains only required, public interface\n     of ModuleManager.sol.",
+                "fullyImplemented": false,
+                "id": 734,
+                "linearizedBaseContracts": [734],
+                "name": "GnosisSafeModuleManagerInterface",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "canonicalName": "GnosisSafeModuleManagerInterface.Operation",
+                        "id": 720,
+                        "members": [
+                            {
+                                "id": 717,
+                                "name": "Call",
+                                "nodeType": "EnumValue",
+                                "src": "1290:4:3"
+                            },
+                            {
+                                "id": 718,
+                                "name": "DelegateCall",
+                                "nodeType": "EnumValue",
+                                "src": "1304:12:3"
+                            },
+                            {
+                                "id": 719,
+                                "name": "Create",
+                                "nodeType": "EnumValue",
+                                "src": "1326:6:3"
+                            }
+                        ],
+                        "name": "Operation",
+                        "nodeType": "EnumDefinition",
+                        "src": "1265:73:3"
+                    },
+                    {
+                        "body": null,
+                        "documentation": "@dev Allows a module to execute a Safe transaction without any\n     further confirmations.\n     * @param _to Destination address of module transaction.\n@param _value Ether value of module transaction.\n@param _data Data payload of module transaction.\n@param _operation Operation type of module transaction.",
+                        "id": 733,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "execTransactionFromModule",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 729,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 722,
+                                    "name": "_to",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1783:11:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 721,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1783:7:3",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 724,
+                                    "name": "_value",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1804:14:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 723,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1804:7:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 726,
+                                    "name": "_data",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1828:20:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bytes_calldata_ptr",
+                                        "typeString": "bytes"
+                                    },
+                                    "typeName": {
+                                        "id": 725,
+                                        "name": "bytes",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1828:5:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bytes_storage_ptr",
+                                            "typeString": "bytes"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 728,
+                                    "name": "_operation",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1858:20:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_enum$_Operation_$720",
+                                        "typeString": "enum GnosisSafeModuleManagerInterface.Operation"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 727,
+                                        "name": "Operation",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 720,
+                                        "src": "1858:9:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_enum$_Operation_$720",
+                                            "typeString": "enum GnosisSafeModuleManagerInterface.Operation"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1773:111:3"
+                        },
+                        "returnParameters": {
+                            "id": 732,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 731,
+                                    "name": "success_",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 733,
+                                    "src": "1919:13:3",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 730,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1919:4:3",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1918:15:3"
+                        },
+                        "scope": 734,
+                        "src": "1739:195:3",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 735,
+                "src": "1053:883:3"
+            }
+        ],
+        "src": "0:1936:3"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.430Z",
+    "devdoc": {
+        "details": "Instead of inheriting from     gnosis/safe-contracts/contracts/base/ModuleManager.sol and pulling all     needed contracts by Module.sol into openst-contracts building process,     we define this contract, that contains only required, public interface     of ModuleManager.sol.",
+        "methods": {
+            "execTransactionFromModule(address,uint256,bytes,uint8)": {
+                "details": "Allows a module to execute a Safe transaction without any     further confirmations.",
+                "params": {
+                    "_data": "Data payload of module transaction.",
+                    "_operation": "Operation type of module transaction.",
+                    "_to": "Destination address of module transaction.",
+                    "_value": "Ether value of module transaction."
+                }
+            }
+        },
+        "title": "Contract contains the required, public interface by       gnosis/safe-contracts/contracts/base/ModuleManager.sol"
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}

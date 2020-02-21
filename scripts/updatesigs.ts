@@ -2,6 +2,8 @@ import { debug as createDebug } from 'debug';
 import { readFile, writeFile } from 'fs-extra';
 import fetch from 'node-fetch';
 import { sleep } from '../src/utils/async';
+import { searchAbiFiles, loadAbiFile } from '../src/abi/files';
+import { serializeEventSignature } from '../src/abi/signature';
 
 const debug = createDebug('updatesigs');
 debug.enabled = true;
@@ -17,6 +19,21 @@ interface SignatureApiResponse {
         hex_signature: string;
         bytes_signature: string;
     }>;
+}
+
+interface UpdaterState {
+    fourByteCursor?: number;
+}
+
+const STATE_FILE = '.sigupdaterstate';
+
+async function loadUpdateState(): Promise<UpdaterState> {
+    const data = await readFile(STATE_FILE, { encoding: 'utf-8' });
+    return JSON.parse(data);
+}
+
+async function storeUpdaterState(state: UpdaterState) {
+    await writeFile(STATE_FILE, JSON.stringify(state, null, 4), { encoding: 'utf-8' });
 }
 
 async function readSignatureFile(file: string): Promise<Set<string>> {
@@ -49,7 +66,7 @@ const retry = async <T>(task: () => Promise<T>, attempts: number) => {
     throw new Error(`Task failed after ${attempts} attempts`);
 };
 
-async function* scrape4bytedirectory() {
+async function* scrape4bytedirectory(state: UpdaterState) {
     const nextUrl = (path: string): string => new URL(path, 'https://www.4byte.directory').href;
     let nextPath = '/api/v1/signatures/';
     let maxId = 0;
@@ -77,6 +94,11 @@ async function* scrape4bytedirectory() {
             }
 
             if (data.next) {
+                if (state.fourByteCursor != null && minId <= state.fourByteCursor) {
+                    debug('Passed cursor %d for 4byte.directory', state.fourByteCursor);
+                    break;
+                }
+                state.fourByteCursor = maxId;
                 nextPath = data.next;
             } else {
                 debug('No next link, seems we reached the end of the list');
@@ -88,10 +110,10 @@ async function* scrape4bytedirectory() {
         }
     }
     debug('Found %o signatures between IDs %o to %o', count, minId, maxId);
+    state.fourByteCursor = maxId;
 }
 
 function validateSignature(sig: string): boolean {
-    // todo
     if (!sig || !sig.trim()) {
         debug('Ignoring invalid signature %o', sig);
         return false;
@@ -99,7 +121,15 @@ function validateSignature(sig: string): boolean {
     return true;
 }
 
+const ABI_REPO_CONFIG = {
+    decodeAnonymous: true,
+    fingerprintContracts: false,
+    abiFileExtension: '.json',
+};
+
 async function main() {
+    debug('Updating function signatures...');
+    const state = await loadUpdateState();
     const fns = await readSignatureFile('data/function_signatures.txt');
     for (const prevSig of fns) {
         if (!validateSignature(prevSig)) {
@@ -117,29 +147,36 @@ async function main() {
     });
 
     let lastWrite = 0;
-    for await (const sig of scrape4bytedirectory()) {
+    for await (const sig of scrape4bytedirectory(state)) {
         if (!fns.has(sig) && validateSignature(sig)) {
             fns.add(sig);
             if (Date.now() - lastWrite > 30_000) {
                 await writeSignatureFile('data/function_signatures.txt', fns);
+                await storeUpdaterState(state);
                 lastWrite = Date.now();
             }
         }
     }
 
+    for await (const abiFile of searchAbiFiles('test/abis', ABI_REPO_CONFIG)) {
+        const contents = await loadAbiFile(abiFile, ABI_REPO_CONFIG);
+        for (const fn of contents.entries.filter(e => e.abi.type === 'function')) {
+            fns.add(fn.sig);
+        }
+    }
+
     await writeSignatureFile('data/function_signatures.txt', fns);
 
-    const evts = new Set<string>();
-    const evmEvtSigList: string[] = await fetch(
-        'https://raw.githubusercontent.com/MrLuit/evm/master/data/events.json'
-    ).then(r => r.json());
-    debug('Downloaded %o event signatures from github.com/MrLuit/evm repo', evmEvtSigList.length);
-    evmEvtSigList.forEach(sig => {
-        if (!evts.has(sig) && validateSignature(sig)) {
-            evts.add(sig);
+    debug('Updating event signatures...');
+    const evts = await readSignatureFile('data/event_signatures.txt');
+    for await (const abiFile of searchAbiFiles('test/abis', ABI_REPO_CONFIG)) {
+        const contents = await loadAbiFile(abiFile, ABI_REPO_CONFIG);
+        for (const evt of contents.entries.filter(e => e.abi.type === 'event')) {
+            evts.add(serializeEventSignature(evt.abi));
         }
-    });
+    }
     await writeSignatureFile('data/event_signatures.txt', evts);
+    await storeUpdaterState(state);
 }
 
 main().catch(e => {

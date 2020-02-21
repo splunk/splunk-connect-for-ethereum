@@ -33,7 +33,7 @@ class Ethlogger extends Command {
     async run() {
         const { flags } = this.parse(Ethlogger);
 
-        if (flags.debug || flags.trace) {
+        if (flags.debug) {
             debugModule.enable('ethlogger:*');
             debug('Enabled debug logging for ethlogger');
         }
