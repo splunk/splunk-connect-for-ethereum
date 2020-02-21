@@ -1,0 +1,14 @@
+name: Ethlogger build env
+description: Ethlogger build env
+author: Siegfried Puchbauer
+inputs:
+    rust-version:
+        description: 'The toolchain name, such as stable, nightly, or 1.8.0'
+        default: 'stable'
+        required: false
+runs:
+    using: 'node12'
+    main: 'dist/index.js'
+branding:
+    icon: 'download'
+    color: 'blue'

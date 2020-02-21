@@ -11,6 +11,10 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 12
+            - name: Use Rust 1.41.0
+              uses: ./.github/actions/buildenv
+              with:
+                  rust-version: 1.41.0
             - name: Build ethlogger CLI
               run: |
                   npm i -g yarn
@@ -38,6 +42,10 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 12
+            - name: Use Rust 1.41.0
+              uses: ./.github/actions/buildenv
+              with:
+                  rust-version: 1.41.0
             - name: Run unit tests and linter
               run: |
                   npm i -g yarn
@@ -69,10 +77,15 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 12
+            - name: Use Rust 1.41.0
+              uses: ./.github/actions/buildenv
+              with:
+                  rust-version: 1.41.0
             - name: Check if generated files are up-to-date
               run: |
                   npm i -g yarn
                   yarn install --frozen-lockfile
+                  yarn build:wasm
                   yarn generate:all
                   echo "Checking if generated files are up-to-date"
                   git diff --exit-code
