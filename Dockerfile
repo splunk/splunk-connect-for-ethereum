@@ -1,13 +1,6 @@
-FROM node:12.16 as builder
+FROM splunkdlt/scfe-ci@sha256:072ed178724f8a9a8350c271d4a00035c5be7dec0991f36e0a48e76a7cc96ed7 as builder
 
 WORKDIR /ethlogger
-
-ENV RUSTUP_HOME=/usr/local/rustup \
-    CARGO_HOME=/usr/local/cargo \
-    PATH=/usr/local/cargo/bin:$PATH \
-    RUST_VERSION=1.41.0
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
