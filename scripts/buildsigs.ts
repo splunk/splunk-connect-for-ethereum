@@ -65,7 +65,7 @@ async function buildSignatureFile(sourceFile: string, destFile: string, type: 'f
     });
     debug('Write %o signatures to %s', entries.length, destFile);
 
-    const collisions = entries.filter(([sig, items]) => items.length > 1);
+    const collisions = entries.filter(([, items]) => items.length > 1);
 
     if (collisions.length > 0) {
         debug('\nFound %d hash collisions:\n', collisions.length);

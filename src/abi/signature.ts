@@ -64,6 +64,7 @@ export function computeSignatureHash(sigName: string, type: 'event' | 'function'
     return type === 'event' ? hash.slice(2) : hash.slice(2, 10);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function validateSignature(signature: string, type: 'event' | 'function') {
     const parsed = parseSignature(signature, 'event');
     for (const input of parsed.inputs) {

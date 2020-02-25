@@ -4,7 +4,7 @@ import { getCode } from '../eth/requests';
 import { Address } from '../msgs';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 
-const { debug, info, trace } = createModuleDebug('abi:contract');
+const { debug, trace } = createModuleDebug('abi:contract');
 
 export interface ContractInfo {
     /** True if the corresponding account is a smart contract, otherwise false */

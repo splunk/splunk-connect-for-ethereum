@@ -48,6 +48,7 @@ export async function* searchAbiFiles(dir: string, config: AbiRepositoryConfig):
     const dirContents = await readdir(dir).catch(e =>
         Promise.reject(new Error(`Failed to load ABIs from directory ${dir}: ${e}`))
     );
+    dirContents.sort();
     const subdirs = [];
     for (const f of dirContents) {
         const full = joinPath(dir, f);
