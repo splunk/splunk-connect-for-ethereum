@@ -1,0 +1,154 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "votingToManageEmissionFunds",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "name": "_votingToManageEmissionFunds",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "fallback"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "receiver",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "caller",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "name": "FundsSentTo",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "caller",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "success",
+                "type": "bool"
+            }
+        ],
+        "name": "FundsBurnt",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "caller",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "FundsFrozen",
+        "type": "event"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_receiver",
+                "type": "address"
+            },
+            {
+                "name": "_amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "sendFundsTo",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "burnFunds",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "freezeFunds",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

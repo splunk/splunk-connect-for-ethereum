@@ -1,0 +1,571 @@
+[
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "canBeFinalizedNow",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "minBallotDuration",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "finalize",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "getQuorumState",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_votingKey",
+                "type": "address"
+            }
+        ],
+        "name": "isValidVote",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_index",
+                "type": "uint256"
+            }
+        ],
+        "name": "activeBallots",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "initDisabled",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getTime",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "activeBallotsLength",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "isActive",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "getIndex",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "maxBallotDuration",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "pure",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "migrateDisabled",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "migrateDisable",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "proxyStorage",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_choice",
+                "type": "uint256"
+            }
+        ],
+        "name": "vote",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            }
+        ],
+        "name": "getMinThresholdOfVoters",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_votingKey",
+                "type": "address"
+            }
+        ],
+        "name": "hasAlreadyVoted",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "areOldMiningKeysVoted",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "nextBallotId",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "validatorActiveBallots",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_prevVotingToChange",
+                "type": "address"
+            }
+        ],
+        "name": "migrateBasicAll",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "ballotType",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "creator",
+                "type": "address"
+            }
+        ],
+        "name": "BallotCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "voter",
+                "type": "address"
+            }
+        ],
+        "name": "BallotFinalized",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "id",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "decision",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "name": "voter",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "time",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "voterMiningKey",
+                "type": "address"
+            }
+        ],
+        "name": "Vote",
+        "type": "event"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_startTime",
+                "type": "uint256"
+            },
+            {
+                "name": "_endTime",
+                "type": "uint256"
+            },
+            {
+                "name": "_contractType",
+                "type": "uint256"
+            },
+            {
+                "name": "_memo",
+                "type": "string"
+            },
+            {
+                "name": "_proposedValue",
+                "type": "address"
+            }
+        ],
+        "name": "createBallot",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_votingKey",
+                "type": "address"
+            }
+        ],
+        "name": "getBallotInfo",
+        "outputs": [
+            {
+                "name": "startTime",
+                "type": "uint256"
+            },
+            {
+                "name": "endTime",
+                "type": "uint256"
+            },
+            {
+                "name": "totalVoters",
+                "type": "uint256"
+            },
+            {
+                "name": "progress",
+                "type": "int256"
+            },
+            {
+                "name": "isFinalized",
+                "type": "bool"
+            },
+            {
+                "name": "proposedValue",
+                "type": "address"
+            },
+            {
+                "name": "contractType",
+                "type": "uint256"
+            },
+            {
+                "name": "creator",
+                "type": "address"
+            },
+            {
+                "name": "memo",
+                "type": "string"
+            },
+            {
+                "name": "canBeFinalizedNow",
+                "type": "bool"
+            },
+            {
+                "name": "alreadyVoted",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_minBallotDuration",
+                "type": "uint256"
+            }
+        ],
+        "name": "init",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_id",
+                "type": "uint256"
+            },
+            {
+                "name": "_prevVotingToChange",
+                "type": "address"
+            },
+            {
+                "name": "_voters",
+                "type": "address[]"
+            }
+        ],
+        "name": "migrateBasicOne",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

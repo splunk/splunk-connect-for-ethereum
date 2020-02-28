@@ -15,4 +15,3 @@ nohup.out
 data/*.abisigs*
 /coverage
 .env
-/test/abis/*

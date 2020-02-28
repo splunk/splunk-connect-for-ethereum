@@ -1,0 +1,920 @@
+{
+    "contractName": "Admins",
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "admins",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "name": "_admins",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"admins\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_admins\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Admins.sol\":\"Admins\"},\"evmVersion\":\"constantinople\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Admins.sol\":{\"keccak256\":\"0x0448cd0028270e2222e36284f3b4c184aca18b6e39e42e814bed7d5d3ba22699\",\"urls\":[\"bzzr://52524d46e4fadb2d7db5123d8a5fa8d3385e0e3e4446a6fbf1bef9ff8839edf2\",\"dweb:/ipfs/QmXJN4zqyTf4SfaFy2bojaA2C3RfcM9V1ARKNRQ3Z4TdzU\"]},\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol\":{\"keccak256\":\"0x5a5be3fd938cc04d51bf4fb18ce6d50abac956f617fd6d94253b7241db035d4d\",\"urls\":[\"bzzr://7398689445cd7f4d2f75d482a2dd4c68d4354b838b03fe9708276aa125beca19\",\"dweb:/ipfs/QmbLLoY9J4ckM19He1M2AvRUvoRtAdqJtEGLTTRrWQMJu1\"]}},\"version\":1}",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "pragma solidity ^0.5.0;\n\nimport './IWhitelist.sol';\n\ncontract Admins {\n  IWhitelist public admins;\n\n  constructor(IWhitelist _admins) internal {\n    admins = _admins;\n  }\n\n  modifier onlyAdmins {\n    require(admins.isWhitelisted(msg.sender));\n    _;\n  }\n\n  function _setAdminList(IWhitelist newAdmins) internal {\n    admins = newAdmins;\n  }\n}",
+    "sourcePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Admins.sol",
+    "ast": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Admins.sol",
+        "exportedSymbols": {
+            "Admins": [37]
+        },
+        "id": 38,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:0"
+            },
+            {
+                "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol",
+                "file": "./IWhitelist.sol",
+                "id": 2,
+                "nodeType": "ImportDirective",
+                "scope": 38,
+                "sourceUnit": 1143,
+                "src": "25:26:0",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": true,
+                "id": 37,
+                "linearizedBaseContracts": [37],
+                "name": "Admins",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 4,
+                        "name": "admins",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 37,
+                        "src": "73:24:0",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                            "typeString": "contract IWhitelist"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 3,
+                            "name": "IWhitelist",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 1142,
+                            "src": "73:10:0",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                "typeString": "contract IWhitelist"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 13,
+                            "nodeType": "Block",
+                            "src": "143:27:0",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 11,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 9,
+                                            "name": "admins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 4,
+                                            "src": "149:6:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 10,
+                                            "name": "_admins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6,
+                                            "src": "158:7:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "src": "149:16:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "id": 12,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "149:16:0"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 14,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 7,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6,
+                                    "name": "_admins",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 14,
+                                    "src": "114:18:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                        "typeString": "contract IWhitelist"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 5,
+                                        "name": "IWhitelist",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 1142,
+                                        "src": "114:10:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "113:20:0"
+                        },
+                        "returnParameters": {
+                            "id": 8,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "143:0:0"
+                        },
+                        "scope": 37,
+                        "src": "102:68:0",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 25,
+                            "nodeType": "Block",
+                            "src": "194:59:0",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "expression": {
+                                                            "argumentTypes": null,
+                                                            "id": 19,
+                                                            "name": "msg",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 4570,
+                                                            "src": "229:3:0",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_magic_message",
+                                                                "typeString": "msg"
+                                                            }
+                                                        },
+                                                        "id": 20,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberName": "sender",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": null,
+                                                        "src": "229:10:0",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 17,
+                                                        "name": "admins",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 4,
+                                                        "src": "208:6:0",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                            "typeString": "contract IWhitelist"
+                                                        }
+                                                    },
+                                                    "id": 18,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "isWhitelisted",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 1141,
+                                                    "src": "208:20:0",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_bool_$",
+                                                        "typeString": "function (address) view external returns (bool)"
+                                                    }
+                                                },
+                                                "id": 21,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "208:32:0",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            ],
+                                            "id": 16,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4573, 4574],
+                                            "referencedDeclaration": 4573,
+                                            "src": "200:7:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                                                "typeString": "function (bool) pure"
+                                            }
+                                        },
+                                        "id": 22,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "200:41:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 23,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "200:41:0"
+                                },
+                                {
+                                    "id": 24,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "247:1:0"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 26,
+                        "name": "onlyAdmins",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 15,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "194:0:0"
+                        },
+                        "src": "174:79:0",
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 35,
+                            "nodeType": "Block",
+                            "src": "311:29:0",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 33,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 31,
+                                            "name": "admins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 4,
+                                            "src": "317:6:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 32,
+                                            "name": "newAdmins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 28,
+                                            "src": "326:9:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "src": "317:18:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "id": 34,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "317:18:0"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 36,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "_setAdminList",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 29,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 28,
+                                    "name": "newAdmins",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 36,
+                                    "src": "280:20:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                        "typeString": "contract IWhitelist"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 27,
+                                        "name": "IWhitelist",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 1142,
+                                        "src": "280:10:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "279:22:0"
+                        },
+                        "returnParameters": {
+                            "id": 30,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "311:0:0"
+                        },
+                        "scope": 37,
+                        "src": "257:83:0",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 38,
+                "src": "53:289:0"
+            }
+        ],
+        "src": "0:342:0"
+    },
+    "legacyAST": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Admins.sol",
+        "exportedSymbols": {
+            "Admins": [37]
+        },
+        "id": 38,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:0"
+            },
+            {
+                "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol",
+                "file": "./IWhitelist.sol",
+                "id": 2,
+                "nodeType": "ImportDirective",
+                "scope": 38,
+                "sourceUnit": 1143,
+                "src": "25:26:0",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": true,
+                "id": 37,
+                "linearizedBaseContracts": [37],
+                "name": "Admins",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 4,
+                        "name": "admins",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 37,
+                        "src": "73:24:0",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                            "typeString": "contract IWhitelist"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 3,
+                            "name": "IWhitelist",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 1142,
+                            "src": "73:10:0",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                "typeString": "contract IWhitelist"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 13,
+                            "nodeType": "Block",
+                            "src": "143:27:0",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 11,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 9,
+                                            "name": "admins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 4,
+                                            "src": "149:6:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 10,
+                                            "name": "_admins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 6,
+                                            "src": "158:7:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "src": "149:16:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "id": 12,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "149:16:0"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 14,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 7,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 6,
+                                    "name": "_admins",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 14,
+                                    "src": "114:18:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                        "typeString": "contract IWhitelist"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 5,
+                                        "name": "IWhitelist",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 1142,
+                                        "src": "114:10:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "113:20:0"
+                        },
+                        "returnParameters": {
+                            "id": 8,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "143:0:0"
+                        },
+                        "scope": 37,
+                        "src": "102:68:0",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 25,
+                            "nodeType": "Block",
+                            "src": "194:59:0",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "arguments": [
+                                                    {
+                                                        "argumentTypes": null,
+                                                        "expression": {
+                                                            "argumentTypes": null,
+                                                            "id": 19,
+                                                            "name": "msg",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 4570,
+                                                            "src": "229:3:0",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_magic_message",
+                                                                "typeString": "msg"
+                                                            }
+                                                        },
+                                                        "id": 20,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": false,
+                                                        "lValueRequested": false,
+                                                        "memberName": "sender",
+                                                        "nodeType": "MemberAccess",
+                                                        "referencedDeclaration": null,
+                                                        "src": "229:10:0",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    }
+                                                ],
+                                                "expression": {
+                                                    "argumentTypes": [
+                                                        {
+                                                            "typeIdentifier": "t_address_payable",
+                                                            "typeString": "address payable"
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 17,
+                                                        "name": "admins",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 4,
+                                                        "src": "208:6:0",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                            "typeString": "contract IWhitelist"
+                                                        }
+                                                    },
+                                                    "id": 18,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "isWhitelisted",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": 1141,
+                                                    "src": "208:20:0",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_function_external_view$_t_address_$returns$_t_bool_$",
+                                                        "typeString": "function (address) view external returns (bool)"
+                                                    }
+                                                },
+                                                "id": 21,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "kind": "functionCall",
+                                                "lValueRequested": false,
+                                                "names": [],
+                                                "nodeType": "FunctionCall",
+                                                "src": "208:32:0",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            ],
+                                            "id": 16,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4573, 4574],
+                                            "referencedDeclaration": 4573,
+                                            "src": "200:7:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                                                "typeString": "function (bool) pure"
+                                            }
+                                        },
+                                        "id": 22,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "200:41:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 23,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "200:41:0"
+                                },
+                                {
+                                    "id": 24,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "247:1:0"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 26,
+                        "name": "onlyAdmins",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 15,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "194:0:0"
+                        },
+                        "src": "174:79:0",
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 35,
+                            "nodeType": "Block",
+                            "src": "311:29:0",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 33,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 31,
+                                            "name": "admins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 4,
+                                            "src": "317:6:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 32,
+                                            "name": "newAdmins",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 28,
+                                            "src": "326:9:0",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                                "typeString": "contract IWhitelist"
+                                            }
+                                        },
+                                        "src": "317:18:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "id": 34,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "317:18:0"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 36,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "_setAdminList",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 29,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 28,
+                                    "name": "newAdmins",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 36,
+                                    "src": "280:20:0",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                        "typeString": "contract IWhitelist"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 27,
+                                        "name": "IWhitelist",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 1142,
+                                        "src": "280:10:0",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_IWhitelist_$1142",
+                                            "typeString": "contract IWhitelist"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "279:22:0"
+                        },
+                        "returnParameters": {
+                            "id": 30,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "311:0:0"
+                        },
+                        "scope": 37,
+                        "src": "257:83:0",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 38,
+                "src": "53:289:0"
+            }
+        ],
+        "src": "0:342:0"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.15",
+    "updatedAt": "2020-02-13T23:25:47.811Z",
+    "devdoc": {
+        "methods": {}
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}

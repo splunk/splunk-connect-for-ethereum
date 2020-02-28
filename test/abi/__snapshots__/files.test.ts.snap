@@ -412,7 +412,7 @@ Object {
       "sig": "transferWithData(address,uint256,bytes)",
     },
   ],
-  "fileName": "/Users/spuchbauer/dev/blockchain/ethlogger-ts/test/abis/BCB.json",
+  "fileName": "BCB.json",
 }
 `;
 
@@ -604,6 +604,6 @@ Object {
       "sig": "multiSendBadge(address,address,address[],uint256[],string[],uint256,uint256)",
     },
   ],
-  "fileName": "/Users/spuchbauer/dev/blockchain/ethlogger-ts/test/abis/Airdropper.json",
+  "fileName": "abis/Airdropper.json",
 }
 `;

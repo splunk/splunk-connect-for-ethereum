@@ -1,0 +1,299 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "keysManagerEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "votingToChangeKeysEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "votingToChangeMinThresholdEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "votingToChangeProxyEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "votingToManageEmissionFundsEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "ballotsStorageEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "validatorMetadataEternalStorage",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "rewardByBlockEternalStorage",
+                "type": "address"
+            }
+        ],
+        "name": "ProxyInitialized",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "name": "contractType",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "name": "contractAddress",
+                "type": "address"
+            }
+        ],
+        "name": "AddressSet",
+        "type": "event"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "initDisabled",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_poaConsensus",
+                "type": "address"
+            }
+        ],
+        "name": "init",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "mocInitialized",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getKeysManager",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getVotingToChangeKeys",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getVotingToChangeMinThreshold",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getVotingToChangeProxy",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getVotingToManageEmissionFunds",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getPoaConsensus",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getBallotsStorage",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getValidatorMetadata",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getRewardByBlock",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_keysManagerEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_votingToChangeKeysEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_votingToChangeMinThresholdEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_votingToChangeProxyEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_votingToManageEmissionFundsEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_ballotsStorageEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_validatorMetadataEternalStorage",
+                "type": "address"
+            },
+            {
+                "name": "_rewardByBlockEternalStorage",
+                "type": "address"
+            }
+        ],
+        "name": "initializeAddresses",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_contractType",
+                "type": "uint256"
+            },
+            {
+                "name": "_contractAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setContractAddress",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

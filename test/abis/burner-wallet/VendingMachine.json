@@ -1,0 +1,3245 @@
+{
+    "contractName": "VendingMachine",
+    "abi": [
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "recipients",
+                    "type": "address[]"
+                },
+                {
+                    "name": "values",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "distribute",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"recipients\",\"type\":\"address[]\"},{\"name\":\"values\",\"type\":\"uint256[]\"}],\"name\":\"distribute\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/TestAdapter.sol\":\"VendingMachine\"},\"evmVersion\":\"constantinople\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Admins.sol\":{\"keccak256\":\"0x0448cd0028270e2222e36284f3b4c184aca18b6e39e42e814bed7d5d3ba22699\",\"urls\":[\"bzzr://52524d46e4fadb2d7db5123d8a5fa8d3385e0e3e4446a6fbf1bef9ff8839edf2\",\"dweb:/ipfs/QmXJN4zqyTf4SfaFy2bojaA2C3RfcM9V1ARKNRQ3Z4TdzU\"]},\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Faucet.sol\":{\"keccak256\":\"0x4379050100af94d0cf4139cc5a1c9e0b85479f84241284fc3eaf4ba0f83d051c\",\"urls\":[\"bzzr://edefe6fe53972554309c896495a465b8e50faf059eac5a2404403c19d8902a6c\",\"dweb:/ipfs/QmQgvLB2wiVoNKZ9jAC2mAUZEVydCmRvJ5Ri6fYWqS1TD1\"]},\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/FreeGas.sol\":{\"keccak256\":\"0xfac4771ce9ce4e32188655cf3bd239c3e0a7d6960eb4f673012db1b9518904ef\",\"urls\":[\"bzzr://f406695216e7ec12a0fbc9c78abb733f3f75d6004269c3981f1545963ff6ade4\",\"dweb:/ipfs/QmdMpSdxzyXY7VfJotaSFkHZMnMWJy1Y3qAxF3yNBhGF2v\"]},\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IMintableToken.sol\":{\"keccak256\":\"0x9c2e973808ef1a462d444819ee7d306eb64affc398b298e781489aa694b0bae4\",\"urls\":[\"bzzr://a7016bc0c3ca41d931dc75795d220ddc055dd1cad4ac7206dc797e285bff93fd\",\"dweb:/ipfs/QmZh7hR21qMtXowJkMog1vXLbLZw85rQHfHVjoKorfBBcj\"]},\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol\":{\"keccak256\":\"0x5a5be3fd938cc04d51bf4fb18ce6d50abac956f617fd6d94253b7241db035d4d\",\"urls\":[\"bzzr://7398689445cd7f4d2f75d482a2dd4c68d4354b838b03fe9708276aa125beca19\",\"dweb:/ipfs/QmbLLoY9J4ckM19He1M2AvRUvoRtAdqJtEGLTTRrWQMJu1\"]},\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/TestAdapter.sol\":{\"keccak256\":\"0x19a729707cc04cb0ee47f46c5c7483bf38acaec8f9a92542a4d2e0ea6bced56a\",\"urls\":[\"bzzr://820906b380634a00cc877971014e2c2d9a9c720d8a05c4c283ee10b18f3356c3\",\"dweb:/ipfs/QmaZUD7Y7zphBcE9QQYJxGnQzpZvZyXpPtE7ugVEBKZYKd\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzzr://51482c01bddf23793bddee43b60ab9578a62948a4f2082def24ea792a553b055\",\"dweb:/ipfs/QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG\"]},\"openzeppelin-solidity/contracts/GSN/GSNRecipient.sol\":{\"keccak256\":\"0x9d9267b9b249d5040e706ae936fbbe8d80418a7eeb6286103ff85b57db0bea84\",\"urls\":[\"bzzr://28d484bf1546ced5b8ca80affac82d6eacdc13b90d22cc6c18829a0d7b7b2073\",\"dweb:/ipfs/QmdYcda4xspypcyKwJCSbT8Dq9cTcmpeNFLoyXmZgmW6WA\"]},\"openzeppelin-solidity/contracts/GSN/IRelayHub.sol\":{\"keccak256\":\"0xe40a4875c43518eb0507b19bc4a3a72c01774c73f15188e549ada1ecc8898baf\",\"urls\":[\"bzzr://e27702a48688a65514fa488b897327eec62a0619fa0f2bb9f0b4d3ab55e64b96\",\"dweb:/ipfs/QmTysxtzyvNF3wazXAzYMUeSgQZEpPaVV2L1tbhAtmsVod\"]},\"openzeppelin-solidity/contracts/GSN/IRelayRecipient.sol\":{\"keccak256\":\"0x88c5716536287306f923379dae33b5e5bdc21d70ec0c440109f866d7edab7ca3\",\"urls\":[\"bzzr://e06933e5ec170973c5ec22e4084f1bf6c3faa7a3fff699304e29149d2802bc87\",\"dweb:/ipfs/QmQGquucxTmw2isWEUf2JY25hFd5DR4U88zW7xhw5UgV3q\"]},\"openzeppelin-solidity/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x640b6dee7a4b830bdfd52b5031a07fc2b12209f5b2e29e5d364a7d37f69d8076\",\"urls\":[\"bzzr://292843005e754e752644f767477ec5ad7a1ffc91ddb18c38b8079c62f3993cad\",\"dweb:/ipfs/QmbZaJyXdpsYGykVhHH9qpVGQg9DGCxE2QufbCUy3daTgq\"]},\"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzzr://cf2d583b8dce38d0617fdcd65f2fd9f126fe17b7f683b5a515ea9d2762d8b062\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]},\"openzeppelin-solidity/contracts/token/ERC777/IERC777.sol\":{\"keccak256\":\"0x01d1e2116e2d3a45d066969cf500da0648cb4903b885589021eaeb89f325d70f\",\"urls\":[\"bzzr://b3196ad3f77c748eed8e6b9555ae63036c5400af5deaa25f719d47914e9671fa\",\"dweb:/ipfs/QmbDjeBQQguEsQWsfSd6WeKD5hGDhBdUFUX9KHMy3w5evz\"]}},\"version\":1}",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "pragma solidity ^0.5.0;\n\nimport './Faucet.sol';\n\ncontract VendingMachine {\n  function distribute(address[] calldata recipients, uint256[] calldata values) external;\n}\n\ncontract TestAdapter {\n  Faucet public faucet;\n  VendingMachine public vendingMachine;\n\n  uint256 faucetRate = 100000000000000;\n\n  constructor(Faucet _faucet, VendingMachine _machine) public {\n    faucet = _faucet;\n    vendingMachine = _machine;\n  }\n\n  function toggleFaucet(address user, bool isOn) external {\n    uint256 rate = 0;\n    if (isOn) {\n      rate = faucetRate;\n    }\n    address[] memory _user = new address[](1);\n    _user[0] = user;\n    faucet.setRate(rate, _user);\n  }\n\n  function setFaucetRate(uint256 newRate) external {\n    faucetRate = newRate;\n  }\n\n  function mintBuffidai(uint256 amount) external {\n    uint[] memory _amount = new uint[](1);\n    _amount[0] = amount;\n\n    address[] memory _sender = new address[](1);\n    _sender[0] = msg.sender;\n\n    vendingMachine.distribute(_sender, _amount);\n  }\n}\n",
+    "sourcePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/TestAdapter.sol",
+    "ast": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/TestAdapter.sol",
+        "exportedSymbols": {
+            "TestAdapter": [2548],
+            "VendingMachine": [2426]
+        },
+        "id": 2549,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 2415,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:10"
+            },
+            {
+                "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Faucet.sol",
+                "file": "./Faucet.sol",
+                "id": 2416,
+                "nodeType": "ImportDirective",
+                "scope": 2549,
+                "sourceUnit": 935,
+                "src": "25:22:10",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 2426,
+                "linearizedBaseContracts": [2426],
+                "name": "VendingMachine",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 2425,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "distribute",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2423,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2419,
+                                    "name": "recipients",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2425,
+                                    "src": "97:29:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                                        "typeString": "address[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 2417,
+                                            "name": "address",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "97:7:10",
+                                            "stateMutability": "nonpayable",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "id": 2418,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "97:9:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                            "typeString": "address[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2422,
+                                    "name": "values",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2425,
+                                    "src": "128:25:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                                        "typeString": "uint256[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 2420,
+                                            "name": "uint256",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "128:7:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "id": 2421,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "128:9:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                            "typeString": "uint256[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "96:58:10"
+                        },
+                        "returnParameters": {
+                            "id": 2424,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "163:0:10"
+                        },
+                        "scope": 2426,
+                        "src": "77:87:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 2549,
+                "src": "49:117:10"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": true,
+                "id": 2548,
+                "linearizedBaseContracts": [2548],
+                "name": "TestAdapter",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 2428,
+                        "name": "faucet",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2548,
+                        "src": "193:20:10",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_Faucet_$934",
+                            "typeString": "contract Faucet"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 2427,
+                            "name": "Faucet",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 934,
+                            "src": "193:6:10",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_Faucet_$934",
+                                "typeString": "contract Faucet"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "id": 2430,
+                        "name": "vendingMachine",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2548,
+                        "src": "217:36:10",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                            "typeString": "contract VendingMachine"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 2429,
+                            "name": "VendingMachine",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 2426,
+                            "src": "217:14:10",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                "typeString": "contract VendingMachine"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "id": 2433,
+                        "name": "faucetRate",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2548,
+                        "src": "258:36:10",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                        },
+                        "typeName": {
+                            "id": 2431,
+                            "name": "uint256",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "258:7:10",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                            }
+                        },
+                        "value": {
+                            "argumentTypes": null,
+                            "hexValue": "313030303030303030303030303030",
+                            "id": 2432,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "279:15:10",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_rational_100000000000000_by_1",
+                                "typeString": "int_const 100000000000000"
+                            },
+                            "value": "100000000000000"
+                        },
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 2448,
+                            "nodeType": "Block",
+                            "src": "359:58:10",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2442,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2440,
+                                            "name": "faucet",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2428,
+                                            "src": "365:6:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_Faucet_$934",
+                                                "typeString": "contract Faucet"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2441,
+                                            "name": "_faucet",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2435,
+                                            "src": "374:7:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_Faucet_$934",
+                                                "typeString": "contract Faucet"
+                                            }
+                                        },
+                                        "src": "365:16:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_Faucet_$934",
+                                            "typeString": "contract Faucet"
+                                        }
+                                    },
+                                    "id": 2443,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "365:16:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2446,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2444,
+                                            "name": "vendingMachine",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2430,
+                                            "src": "387:14:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                                "typeString": "contract VendingMachine"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2445,
+                                            "name": "_machine",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2437,
+                                            "src": "404:8:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                                "typeString": "contract VendingMachine"
+                                            }
+                                        },
+                                        "src": "387:25:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                            "typeString": "contract VendingMachine"
+                                        }
+                                    },
+                                    "id": 2447,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "387:25:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2449,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2438,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2435,
+                                    "name": "_faucet",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2449,
+                                    "src": "311:14:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_Faucet_$934",
+                                        "typeString": "contract Faucet"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 2434,
+                                        "name": "Faucet",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 934,
+                                        "src": "311:6:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_Faucet_$934",
+                                            "typeString": "contract Faucet"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2437,
+                                    "name": "_machine",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2449,
+                                    "src": "327:23:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                        "typeString": "contract VendingMachine"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 2436,
+                                        "name": "VendingMachine",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 2426,
+                                        "src": "327:14:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                            "typeString": "contract VendingMachine"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "310:41:10"
+                        },
+                        "returnParameters": {
+                            "id": 2439,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "359:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "299:118:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 2490,
+                            "nodeType": "Block",
+                            "src": "477:175:10",
+                            "statements": [
+                                {
+                                    "assignments": [2457],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2457,
+                                            "name": "rate",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2490,
+                                            "src": "483:12:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "default",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            },
+                                            "typeName": {
+                                                "id": 2456,
+                                                "name": "uint256",
+                                                "nodeType": "ElementaryTypeName",
+                                                "src": "483:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2459,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "hexValue": "30",
+                                        "id": 2458,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "number",
+                                        "lValueRequested": false,
+                                        "nodeType": "Literal",
+                                        "src": "498:1:10",
+                                        "subdenomination": null,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_rational_0_by_1",
+                                            "typeString": "int_const 0"
+                                        },
+                                        "value": "0"
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "483:16:10"
+                                },
+                                {
+                                    "condition": {
+                                        "argumentTypes": null,
+                                        "id": 2460,
+                                        "name": "isOn",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2453,
+                                        "src": "509:4:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "falseBody": null,
+                                    "id": 2466,
+                                    "nodeType": "IfStatement",
+                                    "src": "505:42:10",
+                                    "trueBody": {
+                                        "id": 2465,
+                                        "nodeType": "Block",
+                                        "src": "515:32:10",
+                                        "statements": [
+                                            {
+                                                "expression": {
+                                                    "argumentTypes": null,
+                                                    "id": 2463,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "leftHandSide": {
+                                                        "argumentTypes": null,
+                                                        "id": 2461,
+                                                        "name": "rate",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 2457,
+                                                        "src": "523:4:10",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_uint256",
+                                                            "typeString": "uint256"
+                                                        }
+                                                    },
+                                                    "nodeType": "Assignment",
+                                                    "operator": "=",
+                                                    "rightHandSide": {
+                                                        "argumentTypes": null,
+                                                        "id": 2462,
+                                                        "name": "faucetRate",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 2433,
+                                                        "src": "530:10:10",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_uint256",
+                                                            "typeString": "uint256"
+                                                        }
+                                                    },
+                                                    "src": "523:17:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "id": 2464,
+                                                "nodeType": "ExpressionStatement",
+                                                "src": "523:17:10"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "assignments": [2470],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2470,
+                                            "name": "_user",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2490,
+                                            "src": "552:22:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "memory",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                "typeString": "address[]"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2468,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "552:7:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2469,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "552:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2476,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "31",
+                                                "id": 2474,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "591:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                },
+                                                "value": "1"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                }
+                                            ],
+                                            "id": 2473,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "lValueRequested": false,
+                                            "nodeType": "NewExpression",
+                                            "src": "577:13:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_address_$dyn_memory_$",
+                                                "typeString": "function (uint256) pure returns (address[] memory)"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2471,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "581:7:10",
+                                                    "stateMutability": "nonpayable",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2472,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "581:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            }
+                                        },
+                                        "id": 2475,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "577:16:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_memory",
+                                            "typeString": "address[] memory"
+                                        }
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "552:41:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2481,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "baseExpression": {
+                                                "argumentTypes": null,
+                                                "id": 2477,
+                                                "name": "_user",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2470,
+                                                "src": "599:5:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            },
+                                            "id": 2479,
+                                            "indexExpression": {
+                                                "argumentTypes": null,
+                                                "hexValue": "30",
+                                                "id": 2478,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "605:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_0_by_1",
+                                                    "typeString": "int_const 0"
+                                                },
+                                                "value": "0"
+                                            },
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "nodeType": "IndexAccess",
+                                            "src": "599:8:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2480,
+                                            "name": "user",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2451,
+                                            "src": "610:4:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "599:15:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 2482,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "599:15:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2486,
+                                                "name": "rate",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2457,
+                                                "src": "635:4:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2487,
+                                                "name": "_user",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2470,
+                                                "src": "641:5:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 2483,
+                                                "name": "faucet",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2428,
+                                                "src": "620:6:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_Faucet_$934",
+                                                    "typeString": "contract Faucet"
+                                                }
+                                            },
+                                            "id": 2485,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "setRate",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 465,
+                                            "src": "620:14:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$_t_array$_t_address_$dyn_memory_ptr_$returns$__$",
+                                                "typeString": "function (uint256,address[] memory) external"
+                                            }
+                                        },
+                                        "id": 2488,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "620:27:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 2489,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "620:27:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2491,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "toggleFaucet",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2454,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2451,
+                                    "name": "user",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2491,
+                                    "src": "443:12:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 2450,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "443:7:10",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2453,
+                                    "name": "isOn",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2491,
+                                    "src": "457:9:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 2452,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "457:4:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "442:25:10"
+                        },
+                        "returnParameters": {
+                            "id": 2455,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "477:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "421:231:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": {
+                            "id": 2500,
+                            "nodeType": "Block",
+                            "src": "705:31:10",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2498,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2496,
+                                            "name": "faucetRate",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2433,
+                                            "src": "711:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2497,
+                                            "name": "newRate",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2493,
+                                            "src": "724:7:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "src": "711:20:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "id": 2499,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "711:20:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2501,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setFaucetRate",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2494,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2493,
+                                    "name": "newRate",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2501,
+                                    "src": "679:15:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 2492,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "679:7:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "678:17:10"
+                        },
+                        "returnParameters": {
+                            "id": 2495,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "705:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "656:80:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": {
+                            "id": 2546,
+                            "nodeType": "Block",
+                            "src": "787:202:10",
+                            "statements": [
+                                {
+                                    "assignments": [2509],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2509,
+                                            "name": "_amount",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2546,
+                                            "src": "793:21:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "memory",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                "typeString": "uint256[]"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2507,
+                                                    "name": "uint",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "793:4:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "id": 2508,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "793:6:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                                    "typeString": "uint256[]"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2515,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "31",
+                                                "id": 2513,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "828:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                },
+                                                "value": "1"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                }
+                                            ],
+                                            "id": 2512,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "lValueRequested": false,
+                                            "nodeType": "NewExpression",
+                                            "src": "817:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_uint256_$dyn_memory_$",
+                                                "typeString": "function (uint256) pure returns (uint256[] memory)"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2510,
+                                                    "name": "uint",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "821:4:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "id": 2511,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "821:6:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                                    "typeString": "uint256[]"
+                                                }
+                                            }
+                                        },
+                                        "id": 2514,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "817:13:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_memory",
+                                            "typeString": "uint256[] memory"
+                                        }
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "793:37:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2520,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "baseExpression": {
+                                                "argumentTypes": null,
+                                                "id": 2516,
+                                                "name": "_amount",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2509,
+                                                "src": "836:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                    "typeString": "uint256[] memory"
+                                                }
+                                            },
+                                            "id": 2518,
+                                            "indexExpression": {
+                                                "argumentTypes": null,
+                                                "hexValue": "30",
+                                                "id": 2517,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "844:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_0_by_1",
+                                                    "typeString": "int_const 0"
+                                                },
+                                                "value": "0"
+                                            },
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "nodeType": "IndexAccess",
+                                            "src": "836:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2519,
+                                            "name": "amount",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2503,
+                                            "src": "849:6:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "src": "836:19:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "id": 2521,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "836:19:10"
+                                },
+                                {
+                                    "assignments": [2525],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2525,
+                                            "name": "_sender",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2546,
+                                            "src": "862:24:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "memory",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                "typeString": "address[]"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2523,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "862:7:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2524,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "862:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2531,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "31",
+                                                "id": 2529,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "903:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                },
+                                                "value": "1"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                }
+                                            ],
+                                            "id": 2528,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "lValueRequested": false,
+                                            "nodeType": "NewExpression",
+                                            "src": "889:13:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_address_$dyn_memory_$",
+                                                "typeString": "function (uint256) pure returns (address[] memory)"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2526,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "893:7:10",
+                                                    "stateMutability": "nonpayable",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2527,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "893:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            }
+                                        },
+                                        "id": 2530,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "889:16:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_memory",
+                                            "typeString": "address[] memory"
+                                        }
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "862:43:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2537,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "baseExpression": {
+                                                "argumentTypes": null,
+                                                "id": 2532,
+                                                "name": "_sender",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2525,
+                                                "src": "911:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            },
+                                            "id": 2534,
+                                            "indexExpression": {
+                                                "argumentTypes": null,
+                                                "hexValue": "30",
+                                                "id": 2533,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "919:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_0_by_1",
+                                                    "typeString": "int_const 0"
+                                                },
+                                                "value": "0"
+                                            },
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "nodeType": "IndexAccess",
+                                            "src": "911:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 2535,
+                                                "name": "msg",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 4570,
+                                                "src": "924:3:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_magic_message",
+                                                    "typeString": "msg"
+                                                }
+                                            },
+                                            "id": 2536,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "sender",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": null,
+                                            "src": "924:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address_payable",
+                                                "typeString": "address payable"
+                                            }
+                                        },
+                                        "src": "911:23:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 2538,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "911:23:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2542,
+                                                "name": "_sender",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2525,
+                                                "src": "967:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2543,
+                                                "name": "_amount",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2509,
+                                                "src": "976:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                    "typeString": "uint256[] memory"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                    "typeString": "uint256[] memory"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 2539,
+                                                "name": "vendingMachine",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2430,
+                                                "src": "941:14:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                                    "typeString": "contract VendingMachine"
+                                                }
+                                            },
+                                            "id": 2541,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "distribute",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 2425,
+                                            "src": "941:25:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_address_$dyn_memory_ptr_$_t_array$_t_uint256_$dyn_memory_ptr_$returns$__$",
+                                                "typeString": "function (address[] memory,uint256[] memory) external"
+                                            }
+                                        },
+                                        "id": 2544,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "941:43:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 2545,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "941:43:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2547,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "mintBuffidai",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2504,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2503,
+                                    "name": "amount",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2547,
+                                    "src": "762:14:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 2502,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "762:7:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "761:16:10"
+                        },
+                        "returnParameters": {
+                            "id": 2505,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "787:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "740:249:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 2549,
+                "src": "168:823:10"
+            }
+        ],
+        "src": "0:992:10"
+    },
+    "legacyAST": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/TestAdapter.sol",
+        "exportedSymbols": {
+            "TestAdapter": [2548],
+            "VendingMachine": [2426]
+        },
+        "id": 2549,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 2415,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:10"
+            },
+            {
+                "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/Faucet.sol",
+                "file": "./Faucet.sol",
+                "id": 2416,
+                "nodeType": "ImportDirective",
+                "scope": 2549,
+                "sourceUnit": 935,
+                "src": "25:22:10",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 2426,
+                "linearizedBaseContracts": [2426],
+                "name": "VendingMachine",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 2425,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "distribute",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2423,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2419,
+                                    "name": "recipients",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2425,
+                                    "src": "97:29:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                                        "typeString": "address[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 2417,
+                                            "name": "address",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "97:7:10",
+                                            "stateMutability": "nonpayable",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "id": 2418,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "97:9:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                            "typeString": "address[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2422,
+                                    "name": "values",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2425,
+                                    "src": "128:25:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                                        "typeString": "uint256[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 2420,
+                                            "name": "uint256",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "128:7:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "id": 2421,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "128:9:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                            "typeString": "uint256[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "96:58:10"
+                        },
+                        "returnParameters": {
+                            "id": 2424,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "163:0:10"
+                        },
+                        "scope": 2426,
+                        "src": "77:87:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 2549,
+                "src": "49:117:10"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": true,
+                "id": 2548,
+                "linearizedBaseContracts": [2548],
+                "name": "TestAdapter",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 2428,
+                        "name": "faucet",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2548,
+                        "src": "193:20:10",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_Faucet_$934",
+                            "typeString": "contract Faucet"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 2427,
+                            "name": "Faucet",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 934,
+                            "src": "193:6:10",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_Faucet_$934",
+                                "typeString": "contract Faucet"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "id": 2430,
+                        "name": "vendingMachine",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2548,
+                        "src": "217:36:10",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                            "typeString": "contract VendingMachine"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 2429,
+                            "name": "VendingMachine",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 2426,
+                            "src": "217:14:10",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                "typeString": "contract VendingMachine"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "constant": false,
+                        "id": 2433,
+                        "name": "faucetRate",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2548,
+                        "src": "258:36:10",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                        },
+                        "typeName": {
+                            "id": 2431,
+                            "name": "uint256",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "258:7:10",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                            }
+                        },
+                        "value": {
+                            "argumentTypes": null,
+                            "hexValue": "313030303030303030303030303030",
+                            "id": 2432,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": true,
+                            "kind": "number",
+                            "lValueRequested": false,
+                            "nodeType": "Literal",
+                            "src": "279:15:10",
+                            "subdenomination": null,
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_rational_100000000000000_by_1",
+                                "typeString": "int_const 100000000000000"
+                            },
+                            "value": "100000000000000"
+                        },
+                        "visibility": "internal"
+                    },
+                    {
+                        "body": {
+                            "id": 2448,
+                            "nodeType": "Block",
+                            "src": "359:58:10",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2442,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2440,
+                                            "name": "faucet",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2428,
+                                            "src": "365:6:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_Faucet_$934",
+                                                "typeString": "contract Faucet"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2441,
+                                            "name": "_faucet",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2435,
+                                            "src": "374:7:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_Faucet_$934",
+                                                "typeString": "contract Faucet"
+                                            }
+                                        },
+                                        "src": "365:16:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_Faucet_$934",
+                                            "typeString": "contract Faucet"
+                                        }
+                                    },
+                                    "id": 2443,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "365:16:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2446,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2444,
+                                            "name": "vendingMachine",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2430,
+                                            "src": "387:14:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                                "typeString": "contract VendingMachine"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2445,
+                                            "name": "_machine",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2437,
+                                            "src": "404:8:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                                "typeString": "contract VendingMachine"
+                                            }
+                                        },
+                                        "src": "387:25:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                            "typeString": "contract VendingMachine"
+                                        }
+                                    },
+                                    "id": 2447,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "387:25:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2449,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2438,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2435,
+                                    "name": "_faucet",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2449,
+                                    "src": "311:14:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_Faucet_$934",
+                                        "typeString": "contract Faucet"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 2434,
+                                        "name": "Faucet",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 934,
+                                        "src": "311:6:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_Faucet_$934",
+                                            "typeString": "contract Faucet"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2437,
+                                    "name": "_machine",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2449,
+                                    "src": "327:23:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                        "typeString": "contract VendingMachine"
+                                    },
+                                    "typeName": {
+                                        "contractScope": null,
+                                        "id": 2436,
+                                        "name": "VendingMachine",
+                                        "nodeType": "UserDefinedTypeName",
+                                        "referencedDeclaration": 2426,
+                                        "src": "327:14:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                            "typeString": "contract VendingMachine"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "310:41:10"
+                        },
+                        "returnParameters": {
+                            "id": 2439,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "359:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "299:118:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 2490,
+                            "nodeType": "Block",
+                            "src": "477:175:10",
+                            "statements": [
+                                {
+                                    "assignments": [2457],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2457,
+                                            "name": "rate",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2490,
+                                            "src": "483:12:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "default",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            },
+                                            "typeName": {
+                                                "id": 2456,
+                                                "name": "uint256",
+                                                "nodeType": "ElementaryTypeName",
+                                                "src": "483:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2459,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "hexValue": "30",
+                                        "id": 2458,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "number",
+                                        "lValueRequested": false,
+                                        "nodeType": "Literal",
+                                        "src": "498:1:10",
+                                        "subdenomination": null,
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_rational_0_by_1",
+                                            "typeString": "int_const 0"
+                                        },
+                                        "value": "0"
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "483:16:10"
+                                },
+                                {
+                                    "condition": {
+                                        "argumentTypes": null,
+                                        "id": 2460,
+                                        "name": "isOn",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2453,
+                                        "src": "509:4:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "falseBody": null,
+                                    "id": 2466,
+                                    "nodeType": "IfStatement",
+                                    "src": "505:42:10",
+                                    "trueBody": {
+                                        "id": 2465,
+                                        "nodeType": "Block",
+                                        "src": "515:32:10",
+                                        "statements": [
+                                            {
+                                                "expression": {
+                                                    "argumentTypes": null,
+                                                    "id": 2463,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "leftHandSide": {
+                                                        "argumentTypes": null,
+                                                        "id": 2461,
+                                                        "name": "rate",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 2457,
+                                                        "src": "523:4:10",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_uint256",
+                                                            "typeString": "uint256"
+                                                        }
+                                                    },
+                                                    "nodeType": "Assignment",
+                                                    "operator": "=",
+                                                    "rightHandSide": {
+                                                        "argumentTypes": null,
+                                                        "id": 2462,
+                                                        "name": "faucetRate",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 2433,
+                                                        "src": "530:10:10",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_uint256",
+                                                            "typeString": "uint256"
+                                                        }
+                                                    },
+                                                    "src": "523:17:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "id": 2464,
+                                                "nodeType": "ExpressionStatement",
+                                                "src": "523:17:10"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "assignments": [2470],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2470,
+                                            "name": "_user",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2490,
+                                            "src": "552:22:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "memory",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                "typeString": "address[]"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2468,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "552:7:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2469,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "552:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2476,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "31",
+                                                "id": 2474,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "591:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                },
+                                                "value": "1"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                }
+                                            ],
+                                            "id": 2473,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "lValueRequested": false,
+                                            "nodeType": "NewExpression",
+                                            "src": "577:13:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_address_$dyn_memory_$",
+                                                "typeString": "function (uint256) pure returns (address[] memory)"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2471,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "581:7:10",
+                                                    "stateMutability": "nonpayable",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2472,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "581:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            }
+                                        },
+                                        "id": 2475,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "577:16:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_memory",
+                                            "typeString": "address[] memory"
+                                        }
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "552:41:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2481,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "baseExpression": {
+                                                "argumentTypes": null,
+                                                "id": 2477,
+                                                "name": "_user",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2470,
+                                                "src": "599:5:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            },
+                                            "id": 2479,
+                                            "indexExpression": {
+                                                "argumentTypes": null,
+                                                "hexValue": "30",
+                                                "id": 2478,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "605:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_0_by_1",
+                                                    "typeString": "int_const 0"
+                                                },
+                                                "value": "0"
+                                            },
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "nodeType": "IndexAccess",
+                                            "src": "599:8:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2480,
+                                            "name": "user",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2451,
+                                            "src": "610:4:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "599:15:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 2482,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "599:15:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2486,
+                                                "name": "rate",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2457,
+                                                "src": "635:4:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2487,
+                                                "name": "_user",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2470,
+                                                "src": "641:5:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_uint256",
+                                                    "typeString": "uint256"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 2483,
+                                                "name": "faucet",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2428,
+                                                "src": "620:6:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_Faucet_$934",
+                                                    "typeString": "contract Faucet"
+                                                }
+                                            },
+                                            "id": 2485,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "setRate",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 465,
+                                            "src": "620:14:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_uint256_$_t_array$_t_address_$dyn_memory_ptr_$returns$__$",
+                                                "typeString": "function (uint256,address[] memory) external"
+                                            }
+                                        },
+                                        "id": 2488,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "620:27:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 2489,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "620:27:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2491,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "toggleFaucet",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2454,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2451,
+                                    "name": "user",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2491,
+                                    "src": "443:12:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 2450,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "443:7:10",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2453,
+                                    "name": "isOn",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2491,
+                                    "src": "457:9:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 2452,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "457:4:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "442:25:10"
+                        },
+                        "returnParameters": {
+                            "id": 2455,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "477:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "421:231:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": {
+                            "id": 2500,
+                            "nodeType": "Block",
+                            "src": "705:31:10",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2498,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2496,
+                                            "name": "faucetRate",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2433,
+                                            "src": "711:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2497,
+                                            "name": "newRate",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2493,
+                                            "src": "724:7:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "src": "711:20:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "id": 2499,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "711:20:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2501,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setFaucetRate",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2494,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2493,
+                                    "name": "newRate",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2501,
+                                    "src": "679:15:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 2492,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "679:7:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "678:17:10"
+                        },
+                        "returnParameters": {
+                            "id": 2495,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "705:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "656:80:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": {
+                            "id": 2546,
+                            "nodeType": "Block",
+                            "src": "787:202:10",
+                            "statements": [
+                                {
+                                    "assignments": [2509],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2509,
+                                            "name": "_amount",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2546,
+                                            "src": "793:21:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "memory",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                "typeString": "uint256[]"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2507,
+                                                    "name": "uint",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "793:4:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "id": 2508,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "793:6:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                                    "typeString": "uint256[]"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2515,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "31",
+                                                "id": 2513,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "828:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                },
+                                                "value": "1"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                }
+                                            ],
+                                            "id": 2512,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "lValueRequested": false,
+                                            "nodeType": "NewExpression",
+                                            "src": "817:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_uint256_$dyn_memory_$",
+                                                "typeString": "function (uint256) pure returns (uint256[] memory)"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2510,
+                                                    "name": "uint",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "821:4:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_uint256",
+                                                        "typeString": "uint256"
+                                                    }
+                                                },
+                                                "id": 2511,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "821:6:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                                    "typeString": "uint256[]"
+                                                }
+                                            }
+                                        },
+                                        "id": 2514,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "817:13:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_memory",
+                                            "typeString": "uint256[] memory"
+                                        }
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "793:37:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2520,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "baseExpression": {
+                                                "argumentTypes": null,
+                                                "id": 2516,
+                                                "name": "_amount",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2509,
+                                                "src": "836:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                    "typeString": "uint256[] memory"
+                                                }
+                                            },
+                                            "id": 2518,
+                                            "indexExpression": {
+                                                "argumentTypes": null,
+                                                "hexValue": "30",
+                                                "id": 2517,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "844:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_0_by_1",
+                                                    "typeString": "int_const 0"
+                                                },
+                                                "value": "0"
+                                            },
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "nodeType": "IndexAccess",
+                                            "src": "836:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2519,
+                                            "name": "amount",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2503,
+                                            "src": "849:6:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "src": "836:19:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "id": 2521,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "836:19:10"
+                                },
+                                {
+                                    "assignments": [2525],
+                                    "declarations": [
+                                        {
+                                            "constant": false,
+                                            "id": 2525,
+                                            "name": "_sender",
+                                            "nodeType": "VariableDeclaration",
+                                            "scope": 2546,
+                                            "src": "862:24:10",
+                                            "stateVariable": false,
+                                            "storageLocation": "memory",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                "typeString": "address[]"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2523,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "862:7:10",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2524,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "862:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            },
+                                            "value": null,
+                                            "visibility": "internal"
+                                        }
+                                    ],
+                                    "id": 2531,
+                                    "initialValue": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "31",
+                                                "id": 2529,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "903:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                },
+                                                "value": "1"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_rational_1_by_1",
+                                                    "typeString": "int_const 1"
+                                                }
+                                            ],
+                                            "id": 2528,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": true,
+                                            "lValueRequested": false,
+                                            "nodeType": "NewExpression",
+                                            "src": "889:13:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_objectcreation_pure$_t_uint256_$returns$_t_array$_t_address_$dyn_memory_$",
+                                                "typeString": "function (uint256) pure returns (address[] memory)"
+                                            },
+                                            "typeName": {
+                                                "baseType": {
+                                                    "id": 2526,
+                                                    "name": "address",
+                                                    "nodeType": "ElementaryTypeName",
+                                                    "src": "893:7:10",
+                                                    "stateMutability": "nonpayable",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "id": 2527,
+                                                "length": null,
+                                                "nodeType": "ArrayTypeName",
+                                                "src": "893:9:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                                    "typeString": "address[]"
+                                                }
+                                            }
+                                        },
+                                        "id": 2530,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": true,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "889:16:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_memory",
+                                            "typeString": "address[] memory"
+                                        }
+                                    },
+                                    "nodeType": "VariableDeclarationStatement",
+                                    "src": "862:43:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2537,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "baseExpression": {
+                                                "argumentTypes": null,
+                                                "id": 2532,
+                                                "name": "_sender",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2525,
+                                                "src": "911:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            },
+                                            "id": 2534,
+                                            "indexExpression": {
+                                                "argumentTypes": null,
+                                                "hexValue": "30",
+                                                "id": 2533,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "number",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "919:1:10",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_rational_0_by_1",
+                                                    "typeString": "int_const 0"
+                                                },
+                                                "value": "0"
+                                            },
+                                            "isConstant": false,
+                                            "isLValue": true,
+                                            "isPure": false,
+                                            "lValueRequested": true,
+                                            "nodeType": "IndexAccess",
+                                            "src": "911:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 2535,
+                                                "name": "msg",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 4570,
+                                                "src": "924:3:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_magic_message",
+                                                    "typeString": "msg"
+                                                }
+                                            },
+                                            "id": 2536,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "sender",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": null,
+                                            "src": "924:10:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address_payable",
+                                                "typeString": "address payable"
+                                            }
+                                        },
+                                        "src": "911:23:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 2538,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "911:23:10"
+                                },
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2542,
+                                                "name": "_sender",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2525,
+                                                "src": "967:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "id": 2543,
+                                                "name": "_amount",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2509,
+                                                "src": "976:7:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                    "typeString": "uint256[] memory"
+                                                }
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_array$_t_address_$dyn_memory_ptr",
+                                                    "typeString": "address[] memory"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_array$_t_uint256_$dyn_memory_ptr",
+                                                    "typeString": "uint256[] memory"
+                                                }
+                                            ],
+                                            "expression": {
+                                                "argumentTypes": null,
+                                                "id": 2539,
+                                                "name": "vendingMachine",
+                                                "nodeType": "Identifier",
+                                                "overloadedDeclarations": [],
+                                                "referencedDeclaration": 2430,
+                                                "src": "941:14:10",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_contract$_VendingMachine_$2426",
+                                                    "typeString": "contract VendingMachine"
+                                                }
+                                            },
+                                            "id": 2541,
+                                            "isConstant": false,
+                                            "isLValue": false,
+                                            "isPure": false,
+                                            "lValueRequested": false,
+                                            "memberName": "distribute",
+                                            "nodeType": "MemberAccess",
+                                            "referencedDeclaration": 2425,
+                                            "src": "941:25:10",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_external_nonpayable$_t_array$_t_address_$dyn_memory_ptr_$_t_array$_t_uint256_$dyn_memory_ptr_$returns$__$",
+                                                "typeString": "function (address[] memory,uint256[] memory) external"
+                                            }
+                                        },
+                                        "id": 2544,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "941:43:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 2545,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "941:43:10"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 2547,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "mintBuffidai",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2504,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2503,
+                                    "name": "amount",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2547,
+                                    "src": "762:14:10",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint256",
+                                        "typeString": "uint256"
+                                    },
+                                    "typeName": {
+                                        "id": 2502,
+                                        "name": "uint256",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "762:7:10",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint256",
+                                            "typeString": "uint256"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "761:16:10"
+                        },
+                        "returnParameters": {
+                            "id": 2505,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "787:0:10"
+                        },
+                        "scope": 2548,
+                        "src": "740:249:10",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 2549,
+                "src": "168:823:10"
+            }
+        ],
+        "src": "0:992:10"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.15",
+    "updatedAt": "2020-02-13T23:25:47.831Z",
+    "devdoc": {
+        "methods": {}
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}
