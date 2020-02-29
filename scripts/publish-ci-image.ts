@@ -1,8 +1,23 @@
 /* eslint-disable no-console */
 import execa from 'execa';
 import { join } from 'path';
+import { readFile, writeFile } from 'fs-extra';
 
 const IMAGE = 'splunkdlt/scfe-ci';
+
+const getImageWithSha = async (img: string): Promise<string> => {
+    const { stdout } = await execa('docker', ['inspect', '--format={{index .RepoDigests 0}}', img]);
+    return stdout;
+};
+
+const replaceImageInFile = async (filePath: string, img: string) => {
+    const contents = await readFile(filePath, { encoding: 'utf-8' });
+    const updatedContents = contents.replace(/splunkdlt\/scfe-ci@sha256:\w+/g, img);
+    if (updatedContents !== contents) {
+        console.log(`Replaced docker image reference in file ${filePath}`);
+        await writeFile(filePath, updatedContents, { encoding: 'utf-8' });
+    }
+};
 
 async function main() {
     const img = `${IMAGE}:latest`;
@@ -14,6 +29,10 @@ async function main() {
 
     console.log('Pushing', img);
     await execa('docker', ['push', img], { stdio: 'inherit' });
+    const fqImage = await getImageWithSha(img);
+    console.log(`Latest image SHA is ${fqImage}`);
+    await replaceImageInFile(join(__dirname, '../Dockerfile'), fqImage);
+    await replaceImageInFile(join(__dirname, '../.github/workflows/ci.yaml'), fqImage);
 }
 
 main().catch(e => {

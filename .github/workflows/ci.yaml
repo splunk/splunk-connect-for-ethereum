@@ -6,12 +6,11 @@ jobs:
     build:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:072ed178724f8a9a8350c271d4a00035c5be7dec0991f36e0a48e76a7cc96ed7
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
             - uses: actions/checkout@v2
             - name: Build ethlogger CLI
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn build
     docker-image:
@@ -31,12 +30,11 @@ jobs:
     unit-tests:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:072ed178724f8a9a8350c271d4a00035c5be7dec0991f36e0a48e76a7cc96ed7
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
             - uses: actions/checkout@v2
             - name: Run unit tests and linter
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn build
                   yarn test --verbose
@@ -45,12 +43,11 @@ jobs:
     check-format:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:072ed178724f8a9a8350c271d4a00035c5be7dec0991f36e0a48e76a7cc96ed7
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
             - uses: actions/checkout@v2
             - name: Check code format
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn format:verify
               env:
@@ -58,14 +55,15 @@ jobs:
     check-generated-files:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:072ed178724f8a9a8350c271d4a00035c5be7dec0991f36e0a48e76a7cc96ed7
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
             - uses: actions/checkout@v2
             - name: Check if generated files are up-to-date
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
-                  yarn build:wasm
+                  git init
+                  git add .
+                  git commit -m 'baseline' --no-verify || echo noop
                   yarn generate:all
                   echo "Checking if generated files are up-to-date"
                   git diff --exit-code
@@ -74,7 +72,7 @@ jobs:
     trigger-release:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:072ed178724f8a9a8350c271d4a00035c5be7dec0991f36e0a48e76a7cc96ed7
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         needs:
             - build
             - docker-image
@@ -86,7 +84,6 @@ jobs:
             - uses: actions/checkout@v2
             - name: Semantic release
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn semantic-release
               env:
