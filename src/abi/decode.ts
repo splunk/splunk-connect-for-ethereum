@@ -1,10 +1,8 @@
-import { toChecksumAddress } from 'web3-utils';
-import { parseBigInt } from '../utils/bn';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
-import { DataSize, elementType, getDataSize, intBits, isArrayType } from './datatypes';
+import { DataSize, getDataSize, isArrayType } from './datatypes';
 import { AbiItemDefinition } from './item';
-import { computeSignature } from './signature';
-import { Value, ScalarValue, abiDecodeParameters } from './wasm';
+import { computeSignature, encodeParam } from './signature';
+import { abiDecodeParameters, Value } from './wasm';
 
 const { trace } = createModuleDebug('abi:decode');
 
@@ -28,51 +26,10 @@ export interface DecodedLogEvent {
     args?: { [name: string]: Value };
 }
 
-/** Translates decoded value (by abicoder) to the form we want to emit to the output */
-export function parseParameterValue(value: string | number | boolean, type: string): ScalarValue {
-    if (type === 'bool') {
-        if (typeof value === 'boolean') {
-            return value;
-        }
-        switch (value) {
-            case '1':
-                return true;
-            case '0':
-                return false;
-            default:
-                throw new Error(`Invalid boolean value: ${value}`);
-        }
-    }
-    if (type.startsWith('uint')) {
-        if (intBits(type, 'uint') <= 53) {
-            return parseInt(value as string, 10);
-        } else {
-            return parseBigInt(value as string);
-        }
-    }
-
-    if (type.startsWith('int')) {
-        if (typeof value === 'number') {
-            return value;
-        }
-        if (intBits(type, 'int') <= 53) {
-            return parseInt(value as string, 10);
-        } else {
-            return parseBigInt(value as string);
-        }
-    }
-
-    if (type === 'address') {
-        return toChecksumAddress(value as string);
-    }
-
-    return value;
-}
-
 export function getInputSize(abi: AbiItemDefinition): DataSize {
     try {
         return abi.inputs
-            .map(input => getDataSize(input.type))
+            .map(input => getDataSize(encodeParam(input)))
             .reduce((total, cur) => ({ length: total.length + cur.length, exact: total.exact && cur.exact }), {
                 length: 0,
                 exact: true,
@@ -98,11 +55,10 @@ export function decodeFunctionCall(
 
     for (let i = 0; i < inputs.length; i++) {
         const input = inputs[i];
-        const rawValue = decodedParams[i];
-        const value = isArrayType(input.type)
-            ? (rawValue as string[]).map(v => parseParameterValue(v, elementType(input.type)))
-            : parseParameterValue(rawValue as ScalarValue, input.type);
-        args[input.name!] = value;
+        const value = decodedParams[i];
+        if (input.name != null) {
+            args[input.name] = value;
+        }
         params.push({
             name: anonymous ? undefined : input.name,
             type: input.type,
@@ -197,17 +153,12 @@ export function decodeLogEvent(
                 // we can't decode arrays since there is only a hash the log
                 value = [] as string[];
             } else {
-                let rawValue = topics[topicIndex++];
-                if (input.type === 'address') {
-                    rawValue = '0x' + rawValue.slice(-40);
-                }
-                value = parseParameterValue(rawValue, input.type);
+                const rawValue = topics[topicIndex++];
+                const [decoded] = abiDecodeParameters(rawValue.slice(2), [input.type]);
+                value = decoded;
             }
         } else {
-            const rawValue = decodedData[dataIndex++];
-            value = isArrayType(input.type)
-                ? (rawValue as string[]).map(v => parseParameterValue(v, elementType(input.type)))
-                : parseParameterValue(rawValue as ScalarValue, input.type);
+            value = decodedData[dataIndex++];
         }
 
         args[input.name] = value;

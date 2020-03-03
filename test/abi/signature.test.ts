@@ -12,7 +12,6 @@ describe('parseSignature', () => {
         Object {
           "inputs": Array [
             Object {
-              "components": undefined,
               "type": "uint256",
             },
           ],
@@ -25,7 +24,6 @@ describe('parseSignature', () => {
         Object {
           "inputs": Array [
             Object {
-              "components": undefined,
               "type": "address[5]",
             },
           ],
@@ -38,29 +36,6 @@ describe('parseSignature', () => {
           "inputs": Array [],
           "name": "helloWorld",
           "type": "function",
-        }
-    `);
-    expect(parseSignature('Hello(address indexed, string, int indexed)', 'event')).toMatchInlineSnapshot(`
-        Object {
-          "inputs": Array [
-            Object {
-              "components": undefined,
-              "indexed": true,
-              "type": "address",
-            },
-            Object {
-              "components": undefined,
-              "indexed": false,
-              "type": "string",
-            },
-            Object {
-              "components": undefined,
-              "indexed": true,
-              "type": "int256",
-            },
-          ],
-          "name": "Hello",
-          "type": "event",
         }
     `);
 });

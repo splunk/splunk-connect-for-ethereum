@@ -1,8 +1,7 @@
 import { AbiInput, sha3 } from 'web3-utils';
 import { isValidAbiType } from './datatypes';
 import { AbiItemDefinition } from './item';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { parseSignature: parse } = require('ethers/utils/abi-coder');
+import { parseFunctionSignature, parseEventSignature } from './wasm';
 
 const err = (msg: string): never => {
     throw new Error(msg);
@@ -43,20 +42,20 @@ const normalizeEventInput = (input: any): AbiInput => {
 };
 
 export function parseSignature(signature: string, type: 'function' | 'event'): AbiItemDefinition {
-    const res = parse(signature) as any;
-    const name: string = res.name ?? err('Failed to decode signature');
-    if (!Array.isArray(res.inputs)) {
-        err('Failed to decode signature');
-    }
-    let inputs: AbiInput[] = res.inputs.map(type === 'function' ? normalizeInput : normalizeEventInput);
-    if (inputs.length === 1 && inputs[0].type === '') {
-        inputs = [];
-    }
-    return {
-        type,
-        name,
-        inputs,
-    };
+    return (type === 'event' ? parseEventSignature(signature) : parseFunctionSignature(signature)) as any;
+    // const name: string = res.name ?? err('Failed to decode signature');
+    // if (!Array.isArray(res.inputs)) {
+    //     err('Failed to decode signature');
+    // }
+    // let inputs: AbiInput[] = res.inputs.map(type === 'function' ? normalizeInput : normalizeEventInput);
+    // if (inputs.length === 1 && inputs[0].type === '') {
+    //     inputs = [];
+    // }
+    // return {
+    //     type,
+    //     name,
+    //     inputs,
+    // };
 }
 
 export function computeSignatureHash(sigName: string, type: 'event' | 'function'): string {

@@ -1,7 +1,8 @@
-use ethabi::token::Token;
-use ethabi::Uint;
+use ethabi::token::{Token};
+use ethabi::{Address, Uint};
 use primitive_types::U256;
 use std::char;
+use tiny_keccak;
 
 #[derive(Serialize, Debug)]
 #[serde(untagged)]
@@ -27,34 +28,34 @@ fn to_hex(bytes: &[u8], prefix: bool) -> String {
     res
 }
 
-// fn to_checksum(addr: &Address) -> String {
-//     let addr_string = to_hex(addr.as_bytes(), false);
-//     let hash_str = to_hex(&tiny_keccak::keccak256(addr_string.as_bytes()), false);
-//     let mut result = "0x".to_string();
-//     for (i, c) in addr_string.chars().enumerate() {
-//         let n = hash_str
-//             .chars()
-//             .nth(i)
-//             .expect("hash char not found")
-//             .to_digit(16)
-//             .expect("failed to convert hash char to i32");
-//         if n > 7 {
-//             let u = match c {
-//                 'a' => 'A',
-//                 'b' => 'B',
-//                 'c' => 'C',
-//                 'd' => 'D',
-//                 'e' => 'E',
-//                 'f' => 'F',
-//                 other => other,
-//             };
-//             result.push(u);
-//         } else {
-//             result.push(c);
-//         }
-//     }
-//     return result;
-// }
+fn to_checksum(addr: &Address) -> String {
+    let addr_string = to_hex(addr.as_bytes(), false);
+    let hash_str = to_hex(&tiny_keccak::keccak256(addr_string.as_bytes()), false);
+    let mut result = "0x".to_string();
+    for (i, c) in addr_string.chars().enumerate() {
+        let n = hash_str
+            .chars()
+            .nth(i)
+            .expect("hash char not found")
+            .to_digit(16)
+            .expect("failed to convert hash char to i32");
+        if n > 7 {
+            let u = match c {
+                'a' => 'A',
+                'b' => 'B',
+                'c' => 'C',
+                'd' => 'D',
+                'e' => 'E',
+                'f' => 'F',
+                other => other,
+            };
+            result.push(u);
+        } else {
+            result.push(c);
+        }
+    }
+    return result;
+}
 
 fn uint_to_value(n: &Uint) -> Value {
     if n > &MAX_SAFE_INT {
@@ -69,7 +70,7 @@ fn uint_to_value(n: &Uint) -> Value {
 
 pub fn token_to_value(t: &Token) -> Value {
     match t {
-        Token::Address(addr) => Value::STRING(to_hex(addr.as_bytes(), true)),
+        Token::Address(addr) => Value::STRING(to_checksum(addr)),
         Token::Bytes(b) => {
             if b.len() > 0 {
                 Value::STRING(to_hex(b, true))
