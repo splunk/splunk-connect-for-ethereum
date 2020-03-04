@@ -8,6 +8,7 @@ import {
     parse_event_signature,
     parse_function_signature,
     is_array_type,
+    sha3 as wasm_sha3,
 } from '../../wasm/ethabi/pkg';
 import { createModuleDebug } from '../utils/debug';
 import { AbiType } from './datatypes';
@@ -92,6 +93,18 @@ export function getDataSize(dataType: string): { length: number; exact: boolean 
     ensureInitialized();
     try {
         return get_data_size(dataType);
+    } catch (e) {
+        if (typeof e === 'string') {
+            throw new Error(e);
+        }
+        throw e;
+    }
+}
+
+export function sha3(str: string): string | null {
+    ensureInitialized();
+    try {
+        return wasm_sha3(str) ?? null;
     } catch (e) {
         if (typeof e === 'string') {
             throw new Error(e);

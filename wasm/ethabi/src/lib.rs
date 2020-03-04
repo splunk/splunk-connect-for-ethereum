@@ -138,6 +138,33 @@ pub fn get_data_size(type_str: String) -> Result<JsValue, JsValue> {
     }
 }
 
+// #[wasm_bindgen]
+// pub fn to_checksum_address(address_str: String) -> Result<String, JsValue> {
+//     let address: Address = address_str.into();
+
+//     Ok(format!(""))
+// }
+
+const NULL_SHA3: &'static str = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
+
+#[wasm_bindgen]
+pub fn sha3(s: String) -> Option<String> {
+    let hash = if s.starts_with("0x") {
+        match values::from_hex(&s) {
+            Ok(v) => tiny_keccak::keccak256(&v),
+            Err(_) => tiny_keccak::keccak256(s.as_bytes()),
+        }
+    } else {
+        tiny_keccak::keccak256(s.as_bytes())
+    };
+    let result = values::to_hex(&hash, true);
+    if result == NULL_SHA3 {
+        None
+    } else {
+        Some(result)
+    }
+}
+
 #[wasm_bindgen]
 pub fn init() {
     // When the `console_error_panic_hook` feature is enabled, we can call the

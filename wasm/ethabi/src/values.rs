@@ -1,4 +1,4 @@
-use ethabi::token::{Token};
+use ethabi::token::Token;
 use ethabi::{Address, Uint};
 use primitive_types::U256;
 use std::char;
@@ -16,7 +16,7 @@ pub enum Value {
 
 static MAX_SAFE_INT: Uint = U256([9007199254740991, 0, 0, 0]);
 
-fn to_hex(bytes: &[u8], prefix: bool) -> String {
+pub fn to_hex(bytes: &[u8], prefix: bool) -> String {
     let mut res = String::with_capacity((if prefix { 2 } else { 0 }) + bytes.len() * 2);
     if prefix {
         res.push_str("0x");
@@ -26,6 +26,24 @@ fn to_hex(bytes: &[u8], prefix: bool) -> String {
         res.push(char::from_digit((b & 0xF) as u32, 16).unwrap());
     }
     res
+}
+
+/// Decodes "0x"-prefixed hex string into u8 vector
+pub fn from_hex(hex_str: &String) -> Result<Vec<u8>, ()> {
+    if hex_str.len() % 2 != 0 {
+        return Err(());
+    }
+
+   let result: Result<Vec<_>, _> = (0..hex_str.len())
+        .step_by(2)
+        .skip(1)
+        .map(|i| u8::from_str_radix(&hex_str[i..i + 2], 16))
+        .collect();
+
+    match result {
+        Ok(v) => Ok(v),
+        Err(_) => Err(()),
+    }
 }
 
 fn to_checksum(addr: &Address) -> String {

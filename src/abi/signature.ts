@@ -1,7 +1,7 @@
-import { AbiInput, sha3 } from 'web3-utils';
+import { AbiInput } from 'web3-utils';
 import { isValidAbiType } from './datatypes';
 import { AbiItemDefinition } from './item';
-import { parseFunctionSignature, parseEventSignature } from './wasm';
+import { parseFunctionSignature, parseEventSignature, sha3 } from './wasm';
 
 const err = (msg: string): never => {
     throw new Error(msg);
@@ -33,8 +33,11 @@ export function parseSignature(signature: string, type: 'function' | 'event'): A
     return (type === 'event' ? parseEventSignature(signature) : parseFunctionSignature(signature)) as any;
 }
 
-export function computeSignatureHash(sigName: string, type: 'event' | 'function'): string {
-    const hash = sha3(sigName);
+export function computeSignatureHash(signature: string, type: 'event' | 'function'): string {
+    const hash = sha3(signature);
+    if (hash == null) {
+        throw new Error(`NULL signature hash for signature ${signature}`);
+    }
     return type === 'event' ? hash.slice(2) : hash.slice(2, 10);
 }
 
