@@ -88,6 +88,9 @@ test('parseSignature', () => {
     expect(() => parseFunctionSignature('test(uint27)')).toThrowErrorMatchingInlineSnapshot(
         `"Unable to parse signature: Invalid type: uint27"`
     );
+    expect(() => parseFunctionSignature('test(int,)')).toThrowErrorMatchingInlineSnapshot(
+        `"Unexpected end of argument list"`
+    );
 });
 
 test('isValidDataType', () => {
@@ -110,19 +113,19 @@ test('getDataSize', () => {
     expect(getDataSize('uint')).toMatchInlineSnapshot(`
         Object {
           "exact": true,
-          "size": 32,
+          "length": 32,
         }
     `);
     expect(getDataSize('int[]')).toMatchInlineSnapshot(`
         Object {
           "exact": false,
-          "size": 64,
+          "length": 64,
         }
     `);
     expect(getDataSize('(address,address,bytes32)')).toMatchInlineSnapshot(`
         Object {
           "exact": true,
-          "size": 96,
+          "length": 96,
         }
     `);
 });

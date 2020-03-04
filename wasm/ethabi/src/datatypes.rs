@@ -31,31 +31,6 @@ pub fn parse_param_type(type_str: &String) -> Result<ParamType, String> {
     }
 }
 
-// #[derive(Serialize, Debug)]
-// #[serde(rename_all = "camelCase")]
-// pub struct ArrayTypeInfo {
-//     element_type: String,
-//     dynamic: bool,
-//     size: usize,
-// }
-
-// pub fn parse_array_type(type_str: &String) -> Result<ArrayTypeInfo, String> {
-//     match parse_param_type(type_str) {
-//         Ok(ParamType::Array(el)) => Ok(ArrayTypeInfo {
-//             element_type: format!("{}", el),
-//             dynamic: true,
-//             size: 0,
-//         }),
-//         Ok(ParamType::FixedArray(el, n)) => Ok(ArrayTypeInfo {
-//             element_type: format!("{}", el),
-//             dynamic: false,
-//             size: n,
-//         }),
-//         Ok(_) => Err(format!("Param type {} is not an array type", type_str)),
-//         Err(e) => Err(e),
-//     }
-// }
-
 /// Get (minimum) size of encoded data for a given parameter type
 pub fn get_data_size(param: &ParamType) -> (usize, bool) {
     match param {

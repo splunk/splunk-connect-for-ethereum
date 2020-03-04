@@ -29,33 +29,8 @@ export function serializeEventSignature(abi: AbiItemDefinition): string {
     return `${abi.name}(${(abi.inputs ?? []).map(encodeParamWithIndexedFlag).join(',')})`;
 }
 
-const normalizeInput = (input: any): AbiInput =>
-    ({
-        type: input.type ?? err('Failed to decode signature'),
-        components: Array.isArray(input.components) ? input.components.map(normalizeInput) : undefined,
-    } as AbiInput);
-
-const normalizeEventInput = (input: any): AbiInput => {
-    const res = normalizeInput(input);
-    res.indexed = input.name === 'indexed';
-    return res;
-};
-
 export function parseSignature(signature: string, type: 'function' | 'event'): AbiItemDefinition {
     return (type === 'event' ? parseEventSignature(signature) : parseFunctionSignature(signature)) as any;
-    // const name: string = res.name ?? err('Failed to decode signature');
-    // if (!Array.isArray(res.inputs)) {
-    //     err('Failed to decode signature');
-    // }
-    // let inputs: AbiInput[] = res.inputs.map(type === 'function' ? normalizeInput : normalizeEventInput);
-    // if (inputs.length === 1 && inputs[0].type === '') {
-    //     inputs = [];
-    // }
-    // return {
-    //     type,
-    //     name,
-    //     inputs,
-    // };
 }
 
 export function computeSignatureHash(sigName: string, type: 'event' | 'function'): string {

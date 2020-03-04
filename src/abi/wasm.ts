@@ -88,7 +88,7 @@ export function getCanonicalDataType(dataType: string): string {
     }
 }
 
-export function getDataSize(dataType: string): { size: number; exact: boolean } {
+export function getDataSize(dataType: string): { length: number; exact: boolean } {
     ensureInitialized();
     try {
         return get_data_size(dataType);

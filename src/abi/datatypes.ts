@@ -20,6 +20,5 @@ export interface DataSize {
 }
 
 export function getDataSize(typeStr: AbiType): DataSize {
-    const res = wasmGetDataSize(typeStr);
-    return { length: res.size, exact: res.exact };
+    return wasmGetDataSize(typeStr) as any;
 }

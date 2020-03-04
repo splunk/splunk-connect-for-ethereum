@@ -121,7 +121,7 @@ pub fn is_array_type(data_type: String) -> Result<bool, JsValue> {
 
 #[derive(Serialize, Debug)]
 pub struct ParamDataSize {
-    size: usize,
+    length: usize,
     exact: bool,
 }
 
@@ -129,7 +129,7 @@ pub struct ParamDataSize {
 pub fn get_data_size(type_str: String) -> Result<JsValue, JsValue> {
     match datatypes::parse_param_type(&type_str) {
         Ok(t) => match datatypes::get_data_size(&t) {
-            (size, exact) => match JsValue::from_serde(&ParamDataSize{ size: size, exact: exact }) {
+            (size, exact) => match JsValue::from_serde(&ParamDataSize{ length: size, exact: exact }) {
                 Ok(val) => Ok(val),
                 Err(e) => Err(JsValue::from(format!("Failed to serialize result: {}", e))),
             }

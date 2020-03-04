@@ -82,9 +82,10 @@ fn tokenize_args(args_str: &String) -> Result<Vec<String>, String> {
             .take(i - cur_start)
             .collect::<String>();
         tokens.push(t);
+    } else if cur_start > 0 {
+        return Err(String::from("Unexpected end of argument list"));
     }
-
-    return Ok(tokens);
+    Ok(tokens)
 }
 
 fn parse_fn_args(args_str: &String, allow_indexed_flag: bool) -> Result<Vec<AbiInput>, String> {
