@@ -1,15 +1,11 @@
-import { parseFunctionSignature, isValidDataType, getCanonicalDataType, getDataSize, sha3 } from '../../src/abi/wasm';
-import { sha3 as w3sha3 } from 'web3-utils';
-
-// test.only('failures', () => {
-//     expect(parseFunctionSignature(`evaluateConsent((int32)))`)).toMatchInlineSnapshot(`
-//         Object {
-//           "inputs": Array [],
-//           "name": "evaluateConsent",
-//           "type": "function",
-//         }
-//     `);
-// });
+import {
+    parseFunctionSignature,
+    isValidDataType,
+    getCanonicalDataType,
+    getDataSize,
+    sha3,
+    toChecksumAddress,
+} from '../../src/abi/wasm';
 
 test('parseSignature', () => {
     expect(parseFunctionSignature('Hello(uint256)')).toMatchInlineSnapshot(`
@@ -133,23 +129,26 @@ test('getDataSize', () => {
 
 test('sha3', () => {
     expect(sha3('foo')).toMatchInlineSnapshot(`"0x41b1a0649752af1b28b3dc29a1556eee781e4a4c3a1f7f53f90fa834de098c4d"`);
-    expect(w3sha3('foo')).toMatchInlineSnapshot(`"0x41b1a0649752af1b28b3dc29a1556eee781e4a4c3a1f7f53f90fa834de098c4d"`);
-
     expect(sha3('')).toMatchInlineSnapshot(`null`);
-    expect(w3sha3('')).toMatchInlineSnapshot(`null`);
-
     expect(sha3('0x12')).toMatchInlineSnapshot(`"0x5fa2358263196dbbf23d1ca7a509451f7a2f64c15837bfbb81298b1e3e24e4fa"`);
-    expect(w3sha3('0x12')).toMatchInlineSnapshot(
-        `"0x5fa2358263196dbbf23d1ca7a509451f7a2f64c15837bfbb81298b1e3e24e4fa"`
-    );
     expect(sha3('0x123')).toMatchInlineSnapshot(`"0x4a4613b6024d34a6aac825a96e99f1480be5fc28f4cfe736fbaad0457f5ba1e5"`);
-    expect(w3sha3('0x123')).toMatchInlineSnapshot(
-        `"0xa88f8e91cf68fe19e866af1b030951f8b93ddba9e26fa7f5f6c45a5faeb1cdd2"`
-    );
     expect(sha3('0x123z')).toMatchInlineSnapshot(
         `"0xea7d953054ed3082a5213c6e79bc8f76c7cdfed74690fc45ce903e2c9401e3a9"`
     );
-    expect(w3sha3('0x123z')).toMatchInlineSnapshot(
-        `"0xa88f8e91cf68fe19e866af1b030951f8b93ddba9e26fa7f5f6c45a5faeb1cdd2"`
+});
+
+test('toChecksumAddress', () => {
+    expect(toChecksumAddress('0x398137383b3d25c92898c656696e41950e47316b')).toMatchInlineSnapshot(
+        `"0x398137383B3D25C92898C656696e41950e47316B"`
     );
+    expect(() => toChecksumAddress('')).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid address \\"\\" (expected \\"0x\\" prefix)"`
+    );
+    expect(() => toChecksumAddress('398137383b3d25c92898c656696e41950e47316b')).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid address \\"398137383b3d25c92898c656696e41950e47316b\\" (expected \\"0x\\" prefix)"`
+    );
+    expect(() => toChecksumAddress('foobar')).toThrowErrorMatchingInlineSnapshot(
+        `"Invalid address \\"foobar\\" (expected \\"0x\\" prefix)"`
+    );
+    expect(() => toChecksumAddress('0xfoobar')).toThrowErrorMatchingInlineSnapshot(`"Invalid address \\"0xfoobar\\""`);
 });

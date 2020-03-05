@@ -9,6 +9,7 @@ import {
     parse_function_signature,
     is_array_type,
     sha3 as wasm_sha3,
+    to_checksum_address,
 } from '../../wasm/ethabi/pkg';
 import { createModuleDebug } from '../utils/debug';
 import { AbiType } from './datatypes';
@@ -105,6 +106,17 @@ export function sha3(str: string): string | null {
     ensureInitialized();
     try {
         return wasm_sha3(str) ?? null;
+    } catch (e) {
+        if (typeof e === 'string') {
+            throw new Error(e);
+        }
+        throw e;
+    }
+}
+export function toChecksumAddress(address: string): string {
+    ensureInitialized();
+    try {
+        return to_checksum_address(address);
     } catch (e) {
         if (typeof e === 'string') {
             throw new Error(e);

@@ -46,7 +46,7 @@ pub fn from_hex(hex_str: &String) -> Result<Vec<u8>, ()> {
     }
 }
 
-fn to_checksum(addr: &Address) -> String {
+pub fn to_checksum(addr: &Address) -> String {
     let addr_string = to_hex(addr.as_bytes(), false);
     let hash_str = to_hex(&tiny_keccak::keccak256(addr_string.as_bytes()), false);
     let mut result = "0x".to_string();

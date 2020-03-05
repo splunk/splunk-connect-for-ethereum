@@ -1,12 +1,12 @@
-mod values;
-mod sig;
 mod datatypes;
+mod sig;
+mod values;
 
 #[macro_use]
 extern crate serde_derive;
 
-use ethabi::decode;
-use ethabi::param_type::{ParamType};
+use ethabi::param_type::ParamType;
+use ethabi::{decode, Address};
 use values::{token_to_value, Value};
 use wasm_bindgen::prelude::*;
 
@@ -113,7 +113,7 @@ pub fn get_canonical_type(type_str: String) -> Result<String, JsValue> {
 pub fn is_array_type(data_type: String) -> Result<bool, JsValue> {
     match datatypes::parse_param_type(&data_type) {
         Ok(ParamType::Array(_)) => Ok(true),
-        Ok(ParamType::FixedArray(_,_)) => Ok(true),
+        Ok(ParamType::FixedArray(_, _)) => Ok(true),
         Ok(_) => Ok(false),
         Err(e) => Err(JsValue::from(format!("{}", e))),
     }
@@ -129,23 +129,36 @@ pub struct ParamDataSize {
 pub fn get_data_size(type_str: String) -> Result<JsValue, JsValue> {
     match datatypes::parse_param_type(&type_str) {
         Ok(t) => match datatypes::get_data_size(&t) {
-            (size, exact) => match JsValue::from_serde(&ParamDataSize{ length: size, exact: exact }) {
+            (size, exact) => match JsValue::from_serde(&ParamDataSize {
+                length: size,
+                exact: exact,
+            }) {
                 Ok(val) => Ok(val),
                 Err(e) => Err(JsValue::from(format!("Failed to serialize result: {}", e))),
-            }
+            },
         },
         Err(err) => Err(JsValue::from(err)),
     }
 }
 
-// #[wasm_bindgen]
-// pub fn to_checksum_address(address_str: String) -> Result<String, JsValue> {
-//     let address: Address = address_str.into();
+#[wasm_bindgen]
+pub fn to_checksum_address(address_str: String) -> Result<String, JsValue> {
+    if !address_str.starts_with("0x") {
+        return Err(JsValue::from(format!("Invalid address {:?} (expected \"0x\" prefix)", address_str)));
+    }
+    let decoded = match values::from_hex(&address_str) {
+        Ok(v) => Ok(v),
+        Err(_) => Err(JsValue::from(format!("Invalid address {:?}", address_str))),
+    }?;
+    if decoded.len() != 20 {
+        return Err(JsValue::from(format!("Invalid size of address {}", address_str)));
+    }
+    let address: Address = Address::from_slice(&decoded);
+    Ok(values::to_checksum(&address))
+}
 
-//     Ok(format!(""))
-// }
-
-const NULL_SHA3: &'static str = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
+const NULL_SHA3: &'static str =
+    "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470";
 
 #[wasm_bindgen]
 pub fn sha3(s: String) -> Option<String> {
