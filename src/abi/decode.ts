@@ -154,6 +154,11 @@ export function decodeLogEvent(
                 value = [] as string[];
             } else {
                 const rawValue = topics[topicIndex++];
+                if (rawValue == null) {
+                    throw new Error(
+                        `Expected data in topic index=${topicIndex - 1}, but topics length is ${topics.length}`
+                    );
+                }
                 const [decoded] = abiDecodeParameters(rawValue.slice(2), [input.type]);
                 value = decoded;
             }

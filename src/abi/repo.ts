@@ -238,7 +238,11 @@ export class AbiRepository implements ManagedResource {
             try {
                 return decodeFn(matchingAbis.candidates, matchingAbis!.anonymous);
             } catch (e) {
-                warn('Failed to decode ABI', e);
+                if (matchingAbis!.anonymous) {
+                    debug('Failed to decode anonymous ABI', e);
+                } else {
+                    warn('Failed to decode ABI', e);
+                }
             }
         }
     }
