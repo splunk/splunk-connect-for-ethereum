@@ -334,8 +334,10 @@ async function main() {
         'METAVARIABLES',
         generateMetaVariablesReference()
     );
-    log(`Writing updated ${configurationDocsPath}`);
-    await writeFile(configurationDocsPath, updatedContent, { encoding: 'utf-8' });
+    if (updatedContent !== configDocsContent) {
+        log(`Writing updated ${configurationDocsPath}`);
+        await writeFile(configurationDocsPath, updatedContent, { encoding: 'utf-8' });
+    }
 
     const cliReference = generateCliReference();
     const envReference = generateEnvReference();
@@ -346,8 +348,10 @@ async function main() {
         'ENVREF',
         envReference
     );
-    log(`Writing updated ${cliReferenceDocsPath}`);
-    await writeFile(cliReferenceDocsPath, updatedCliReferenceContent, { encoding: 'utf-8' });
+    if (updatedCliReferenceContent !== cliReferenceContent) {
+        log(`Writing updated ${cliReferenceDocsPath}`);
+        await writeFile(cliReferenceDocsPath, updatedCliReferenceContent, { encoding: 'utf-8' });
+    }
 
     log(`Prettier-formatting markdown files`);
     execSync('yarn prettier --write docs/*.md', { cwd: join(__dirname, '..') });
