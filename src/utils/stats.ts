@@ -2,6 +2,7 @@ import { ManagedResource } from './resource';
 import { HecClient } from '../hec';
 import { AgentStatus } from 'agentkeepalive';
 import { createModuleDebug } from './debug';
+import { getWasmMemorySize } from '../abi/wasm';
 
 const { debug } = createModuleDebug('utils:stats');
 
@@ -46,6 +47,9 @@ class SystemStats {
             },
             cpu: {
                 ...cpu,
+            },
+            wasm: {
+                memorySize: getWasmMemorySize(),
             },
             uptime: process.uptime(),
         };

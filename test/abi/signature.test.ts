@@ -12,7 +12,6 @@ describe('parseSignature', () => {
         Object {
           "inputs": Array [
             Object {
-              "components": undefined,
               "type": "uint256",
             },
           ],
@@ -25,7 +24,6 @@ describe('parseSignature', () => {
         Object {
           "inputs": Array [
             Object {
-              "components": undefined,
               "type": "address[5]",
             },
           ],

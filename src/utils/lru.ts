@@ -7,7 +7,7 @@ const initialCounters = {
     misses: 0,
 };
 
-export default class LRUCache<K, V> implements Cache<K, V> {
+export class LRUCache<K, V> implements Cache<K, V> {
     private cache: Map<K, V>;
     private old: Map<K, V>;
     private readonly maxSize: number;
@@ -91,3 +91,5 @@ export default class LRUCache<K, V> implements Cache<K, V> {
         return stats;
     }
 }
+
+export default LRUCache;

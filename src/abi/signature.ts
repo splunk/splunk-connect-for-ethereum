@@ -1,8 +1,7 @@
-import { AbiInput, sha3 } from 'web3-utils';
+import { AbiInput } from 'web3-utils';
 import { isValidAbiType } from './datatypes';
 import { AbiItemDefinition } from './item';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { parseSignature: parse } = require('ethers/utils/abi-coder');
+import { parseFunctionSignature, parseEventSignature, sha3 } from './wasm';
 
 const err = (msg: string): never => {
     throw new Error(msg);
@@ -20,43 +19,38 @@ export function computeSignature(abi: AbiItemDefinition) {
     return `${abi.name}(${(abi.inputs ?? []).map(encodeParam).join(',')})`;
 }
 
-const normalizeInput = (input: any): AbiInput =>
-    ({
-        type: input.type ?? err('Failed to decode signature'),
-        components: Array.isArray(input.components) ? input.components.map(normalizeInput) : undefined,
-    } as AbiInput);
+export const encodeParamWithIndexedFlag = (input: AbiInput): string =>
+    input.indexed ? `${encodeParam(input)} indexed` : encodeParam(input);
 
-export function parseSignature(signature: string, type: 'function' | 'event'): AbiItemDefinition {
-    const res = parse(signature) as any;
-    const name: string = res.name ?? err('Failed to decode signature');
-    if (!Array.isArray(res.inputs)) {
-        err('Failed to decode signature');
+export function serializeEventSignature(abi: AbiItemDefinition): string {
+    if (abi.name == null) {
+        throw new Error('Cannot add ABI item without name');
     }
-    let inputs: AbiInput[] = res.inputs.map(normalizeInput);
-    if (inputs.length === 1 && inputs[0].type === '') {
-        inputs = [];
-    }
-    return {
-        type,
-        name,
-        inputs,
-    };
+    return `${abi.name}(${(abi.inputs ?? []).map(encodeParamWithIndexedFlag).join(',')})`;
 }
 
-export function computeSignatureHash(sigName: string, type: 'event' | 'function'): string {
-    const hash = sha3(sigName);
+export function parseSignature(signature: string, type: 'function' | 'event'): AbiItemDefinition {
+    return (type === 'event' ? parseEventSignature(signature) : parseFunctionSignature(signature)) as any;
+}
+
+export function computeSignatureHash(signature: string, type: 'event' | 'function'): string {
+    const hash = sha3(signature);
+    if (hash == null) {
+        throw new Error(`NULL signature hash for signature ${signature}`);
+    }
     return type === 'event' ? hash.slice(2) : hash.slice(2, 10);
 }
 
-export function validateSignature(signature: string) {
-    const parsed = parseSignature(signature, 'function');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function validateSignature(signature: string, type: 'event' | 'function') {
+    const parsed = parseSignature(signature, 'event');
     for (const input of parsed.inputs) {
         if (!isValidAbiType(input.type)) {
             throw new Error(`Invalid data type: ${input.type}`);
         }
     }
-    const serialized = computeSignature(parsed);
-    if (serialized !== signature) {
-        throw new Error(`Serialized signature does not match original`);
-    }
+    computeSignature(parsed);
+    // if (serialized !== signature) {
+    //     throw new Error(`Serialized signature does not match original`);
+    // }
 }

@@ -1,16 +1,16 @@
 import { readdir, readFile, stat, createReadStream } from 'fs-extra';
-import { basename, join as joinPath } from 'path';
+import { basename, join as joinPath, resolve } from 'path';
 import { AbiItem } from 'web3-utils';
 import { AbiRepositoryConfig } from '../config';
 import { Address } from '../msgs';
-import { createModuleDebug } from '../utils/debug';
+import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 import { AbiItemDefinition } from './item';
 import { computeContractFingerprint } from './contract';
 import { computeSignature } from './signature';
 import { createGunzip } from 'zlib';
 import BufferList from 'bl';
 
-const { debug, warn } = createModuleDebug('abi:files');
+const { debug, warn, trace } = createModuleDebug('abi:files');
 
 interface TruffleBuild {
     contractName: string;
@@ -48,6 +48,7 @@ export async function* searchAbiFiles(dir: string, config: AbiRepositoryConfig):
     const dirContents = await readdir(dir).catch(e =>
         Promise.reject(new Error(`Failed to load ABIs from directory ${dir}: ${e}`))
     );
+    dirContents.sort();
     const subdirs = [];
     for (const f of dirContents) {
         const full = joinPath(dir, f);
@@ -71,11 +72,23 @@ export interface AbiFileContents {
         abi: AbiItemDefinition;
         sig: string;
     }>;
+    fileName?: string;
+}
+
+export function computeRelativePath(fileName: string, basePath?: string): string | null {
+    if (basePath != null) {
+        const resolvedBased = resolve(basePath);
+        const resolvedFileName = resolve(fileName);
+        if (resolvedFileName.startsWith(resolvedBased)) {
+            return resolvedFileName.slice(resolvedBased.length + 1);
+        }
+    }
+    return null;
 }
 
 export function parseAbiFileContents(
     abiData: any,
-    { computeFingerprint, fileName }: { computeFingerprint: boolean; fileName: string }
+    { computeFingerprint, fileName, basePath }: { computeFingerprint: boolean; fileName: string; basePath?: string }
 ): AbiFileContents {
     let abis: AbiItem[];
     let contractName: string;
@@ -124,7 +137,16 @@ export function parseAbiFileContents(
             .sort();
 
         contractFingerprint = computeContractFingerprint({ functions, events });
-        debug('Computed contract fingerprint %s for contract signature %s', contractFingerprint, contractName);
+        if (TRACE_ENABLED) {
+            trace(
+                'Computed contract fingerprint %s for contract signature %s contents %O',
+                contractFingerprint,
+                contractName,
+                { functions, events }
+            );
+        } else {
+            debug('Computed contract fingerprint %s for contract signature %s', contractFingerprint, contractName);
+        }
     }
 
     return {
@@ -142,13 +164,18 @@ export function parseAbiFileContents(
                 contractAddress,
             },
         })),
+        fileName: computeRelativePath(fileName, basePath) ?? basename(fileName),
     };
 }
 
 export async function loadAbiFile(path: string, config: AbiRepositoryConfig): Promise<AbiFileContents> {
     const contents = await readFile(path, { encoding: 'utf-8' });
     const data = JSON.parse(contents);
-    return await parseAbiFileContents(data, { fileName: path, computeFingerprint: config.fingerprintContracts });
+    return await parseAbiFileContents(data, {
+        fileName: path,
+        computeFingerprint: config.fingerprintContracts,
+        basePath: config.directory,
+    });
 }
 
 export async function readGzipFile(path: string, { encoding = 'utf-8' }: { encoding?: string } = {}): Promise<string> {

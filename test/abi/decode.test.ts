@@ -1,12 +1,5 @@
-import { getInputSize, parseParameterValue } from '../../src/abi/decode';
+import { getInputSize } from '../../src/abi/decode';
 import { loadSignatureFile } from '../../src/abi/files';
-
-test('parseParameterValue', () => {
-    expect(parseParameterValue('123', 'uint256')).toBe(123);
-    expect(parseParameterValue('6581651658165165165156132198465165168', 'uint256')).toBe(
-        '6581651658165165165156132198465165168'
-    );
-});
 
 test('getInputSize for all anonymous signatures', async () => {
     const sigs = await loadSignatureFile('data/fns.abisigs.gz');
