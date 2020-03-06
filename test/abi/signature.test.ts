@@ -12,7 +12,6 @@ describe('parseSignature', () => {
         Object {
           "inputs": Array [
             Object {
-              "components": undefined,
               "type": "uint256",
             },
           ],
@@ -25,11 +24,17 @@ describe('parseSignature', () => {
         Object {
           "inputs": Array [
             Object {
-              "components": undefined,
               "type": "address[5]",
             },
           ],
           "name": "batchCancelOrders",
+          "type": "function",
+        }
+    `);
+    expect(parseSignature('helloWorld()', 'function')).toMatchInlineSnapshot(`
+        Object {
+          "inputs": Array [],
+          "name": "helloWorld",
           "type": "function",
         }
     `);

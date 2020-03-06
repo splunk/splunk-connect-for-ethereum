@@ -5,21 +5,18 @@ on: [push]
 jobs:
     build:
         runs-on: self-hosted
+        container:
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
-            - uses: actions/checkout@v1
-            - name: Use Node.js 12
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
+            - uses: actions/checkout@v2
             - name: Build ethlogger CLI
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn build
     docker-image:
         runs-on: self-hosted
         steps:
-            - uses: actions/checkout@v1
+            - uses: actions/checkout@v2
             - name: Build docker image
               run: docker build -t ethlogger .
             - name: Login to docker registry
@@ -32,15 +29,12 @@ jobs:
                   docker push docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
     unit-tests:
         runs-on: self-hosted
+        container:
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
-            - uses: actions/checkout@v1
-            - name: Use Node.js 12
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
+            - uses: actions/checkout@v2
             - name: Run unit tests and linter
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn build
                   yarn test --verbose
@@ -48,31 +42,29 @@ jobs:
                   CI: true
     check-format:
         runs-on: self-hosted
+        container:
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
-            - uses: actions/checkout@v1
-            - name: Use Node.js 12
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
+            - uses: actions/checkout@v2
             - name: Check code format
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn format:verify
               env:
                   CI: true
     check-generated-files:
         runs-on: self-hosted
+        container:
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         steps:
-            - uses: actions/checkout@v1
-            - name: Use Node.js 12
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
+            - uses: actions/checkout@v2
             - name: Check if generated files are up-to-date
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
+                  yarn build
+                  git init
+                  git add .
+                  git commit -m 'baseline' --no-verify || echo noop
                   yarn generate:all
                   echo "Checking if generated files are up-to-date"
                   git diff --exit-code
@@ -80,6 +72,8 @@ jobs:
                   CI: true
     trigger-release:
         runs-on: self-hosted
+        container:
+            image: splunkdlt/scfe-ci@sha256:c5a2eeabae59b26670262869df6abeb6cb986dcff37e49489eb5112245d1cf87
         needs:
             - build
             - docker-image
@@ -88,14 +82,9 @@ jobs:
             - check-generated-files
         if: github.ref == 'refs/heads/master'
         steps:
-            - uses: actions/checkout@v1
-            - name: Use Node.js 12
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
+            - uses: actions/checkout@v2
             - name: Semantic release
               run: |
-                  npm i -g yarn
                   yarn install --frozen-lockfile
                   yarn semantic-release
               env:

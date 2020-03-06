@@ -6,6 +6,7 @@ describe('loadAbiFile', () => {
         const result = await loadAbiFile(join(__dirname, '../abis/BCB.json'), {
             decodeAnonymous: false,
             fingerprintContracts: true,
+            directory: join(__dirname, '../abis'),
         });
 
         expect(result).toMatchSnapshot();
@@ -16,6 +17,7 @@ describe('loadAbiFile', () => {
             loadAbiFile(join(__dirname, '../abis/Airdropper.json'), {
                 decodeAnonymous: false,
                 fingerprintContracts: true,
+                directory: join(__dirname, '..'),
             })
         ).resolves.toMatchSnapshot();
     });

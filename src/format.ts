@@ -1,14 +1,14 @@
-import { toChecksumAddress } from 'web3-utils';
+import { toChecksumAddress } from './abi/wasm';
 import { RawBlockResponse, RawLogResponse, RawTransactionReceipt, RawTransactionResponse } from './eth/responses';
 import {
     AddressInfo,
+    BaseFormattedTransaction,
     EventData,
     FormattedBlock,
     FormattedLogEvent,
+    FormattedPendingTransaction,
     FormattedTransaction,
     FunctionCall,
-    FormattedPendingTransaction,
-    BaseFormattedTransaction,
 } from './msgs';
 import { bigIntToNumber, parseBigInt } from './utils/bn';
 

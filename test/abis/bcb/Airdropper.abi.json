@@ -1,0 +1,107 @@
+[
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x715018a6"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x8da5cb5b"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isOwner",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x8f32d59b"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "newOwner", "type": "address" }],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xf2fde38b"
+    },
+    { "payable": true, "stateMutability": "payable", "type": "fallback" },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": false, "name": "total", "type": "uint256" },
+            { "indexed": false, "name": "tokenAddress", "type": "address" }
+        ],
+        "name": "MultiSended",
+        "type": "event",
+        "signature": "0x61f622a329a69372a43043391304622d3c455605ee7e10c0acd493fb0098bbcd"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "previousOwner", "type": "address" },
+            { "indexed": true, "name": "newOwner", "type": "address" }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event",
+        "signature": "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "value", "type": "uint256" }],
+        "name": "withdraw",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x2e1a7d4d"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "token", "type": "address" },
+            { "name": "_contributors", "type": "address[]" },
+            { "name": "_balances", "type": "uint256[]" },
+            { "name": "fuel", "type": "uint256" },
+            { "name": "low_limit", "type": "uint256" }
+        ],
+        "name": "multiSendToken",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function",
+        "signature": "0x7f9017f1"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "badgeToken", "type": "address" },
+            { "name": "token", "type": "address" },
+            { "name": "_contributors", "type": "address[]" },
+            { "name": "_balances", "type": "uint256[]" },
+            { "name": "_url", "type": "string[]" },
+            { "name": "fuel", "type": "uint256" },
+            { "name": "low_limit", "type": "uint256" }
+        ],
+        "name": "multiSendBadge",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function",
+        "signature": "0x7c1e71f7"
+    }
+]

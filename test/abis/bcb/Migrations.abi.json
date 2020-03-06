@@ -1,0 +1,59 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "last_completed_migration",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x445df0ac"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x8da5cb5b"
+    },
+    {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor",
+        "signature": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "bar", "type": "address" },
+            { "indexed": false, "name": "blah", "type": "uint256" }
+        ],
+        "name": "Foo",
+        "type": "event",
+        "signature": "0xf31ba491e89b510fc888156ac880594d589edc875cfc250c79628ea36dd022ed"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "completed", "type": "uint256" }],
+        "name": "setCompleted",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xfdacd576"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "new_address", "type": "address" }],
+        "name": "upgrade",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x0900f010"
+    }
+]

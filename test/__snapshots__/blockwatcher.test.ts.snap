@@ -220,21 +220,25 @@ Array [
       "blockHash": "0x462bfe7d6568e3962415b5ea891e82da758f43a12989c2e3e7bdf2aab99b08a3",
       "blockNumber": 6442473,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xbCb5C62F1c8D96C0D1fE698bb931D097ad861620",
+          "to": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
+          "tokenId": 18558,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xbCb5C62F1c8D96C0D1fE698bb931D097ad861620",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 18558,
           },
@@ -260,7 +264,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 0,
@@ -274,28 +278,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0x462bfe7d6568e3962415b5ea891e82da758f43a12989c2e3e7bdf2aab99b08a3",
       "blockNumber": 6442473,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xbCb5C62F1c8D96C0D1fE698bb931D097ad861620",
+          "to": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
+          "tokenId": 18558,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xbCb5C62F1c8D96C0D1fE698bb931D097ad861620",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 18558,
           },
@@ -696,7 +704,18 @@ Array [
     "body": Object {
       "blockHash": "0x9e05ea32dbb7e1d7e3c00e879cf158ac8f362cd3c6cd3a3a657d91475b2c7695",
       "blockNumber": 6442475,
-      "call": undefined,
+      "call": Object {
+        "args": undefined,
+        "name": "createTicket",
+        "params": Array [
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x9Fd67718fb64629ffe6211D3133bce4AE1589bCB",
+          },
+        ],
+        "signature": "createTicket(address)",
+      },
       "contractAddress": null,
       "contractAddressInfo": undefined,
       "cumulativeGasUsed": 57591,
@@ -736,7 +755,23 @@ Array [
       "blockHash": "0x9e05ea32dbb7e1d7e3c00e879cf158ac8f362cd3c6cd3a3a657d91475b2c7695",
       "blockNumber": 6442475,
       "data": "0x000000000000000000000000000000000000000000000000000000000000003f0000000000000000000000009fd67718fb64629ffe6211d3133bce4ae1589bcb",
-      "event": undefined,
+      "event": Object {
+        "args": undefined,
+        "name": "TicketPurchased",
+        "params": Array [
+          Object {
+            "name": undefined,
+            "type": "uint256",
+            "value": 63,
+          },
+          Object {
+            "name": undefined,
+            "type": "address",
+            "value": "0x9Fd67718fb64629ffe6211D3133bce4AE1589bCB",
+          },
+        ],
+        "signature": "TicketPurchased(uint256,address)",
+      },
       "logIndex": 0,
       "removed": false,
       "topics": Array [
@@ -753,21 +788,25 @@ Array [
       "blockHash": "0x9e05ea32dbb7e1d7e3c00e879cf158ac8f362cd3c6cd3a3a657d91475b2c7695",
       "blockNumber": 6442475,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCBA6211fFc842576497eA341e20496b58c8e8aB",
+          "to": "0x65626e314349FE322d6a1De163a7788646755bcB",
+          "tokenId": 21120,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCBA6211fFc842576497eA341e20496b58c8e8aB",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x65626e314349FE322d6a1De163a7788646755bcB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 21120,
           },
@@ -793,7 +832,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 1,
@@ -807,28 +846,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0x9e05ea32dbb7e1d7e3c00e879cf158ac8f362cd3c6cd3a3a657d91475b2c7695",
       "blockNumber": 6442475,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCBA6211fFc842576497eA341e20496b58c8e8aB",
+          "to": "0x65626e314349FE322d6a1De163a7788646755bcB",
+          "tokenId": 21120,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCBA6211fFc842576497eA341e20496b58c8e8aB",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x65626e314349FE322d6a1De163a7788646755bcB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 21120,
           },
@@ -1531,21 +1574,25 @@ Array [
       "blockHash": "0x07baa71096b635d5ad1c2b31353093b78ec46e39c1b5bed13d13423254e4dbaf",
       "blockNumber": 6442476,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCB539Bb9dB6bBeBa94E9D2C765228ADe4e796b2",
+          "to": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
+          "tokenId": 17444,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCB539Bb9dB6bBeBa94E9D2C765228ADe4e796b2",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 17444,
           },
@@ -1571,7 +1618,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 3,
@@ -1585,28 +1632,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0x07baa71096b635d5ad1c2b31353093b78ec46e39c1b5bed13d13423254e4dbaf",
       "blockNumber": 6442476,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCB539Bb9dB6bBeBa94E9D2C765228ADe4e796b2",
+          "to": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
+          "tokenId": 17444,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCB539Bb9dB6bBeBa94E9D2C765228ADe4e796b2",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x774887B0A499058c2C46310Ea661A9895d5C2bCB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 17444,
           },
@@ -1983,21 +2034,25 @@ Array [
       "blockHash": "0x48842200f74bd5d973394f3c476b250a32fc874a5a66d9982388311eddc57991",
       "blockNumber": 6442477,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBcbA9e0DB39fA3F9655EE2ce1b6ce7a7c563baff",
+          "to": "0x9Bd4767e5baE5f71c95d1130Db6fED2bd7F8FBcb",
+          "tokenId": 21634,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBcbA9e0DB39fA3F9655EE2ce1b6ce7a7c563baff",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x9Bd4767e5baE5f71c95d1130Db6fED2bd7F8FBcb",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 21634,
           },
@@ -2023,7 +2078,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 0,
@@ -2037,28 +2092,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0x48842200f74bd5d973394f3c476b250a32fc874a5a66d9982388311eddc57991",
       "blockNumber": 6442477,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBcbA9e0DB39fA3F9655EE2ce1b6ce7a7c563baff",
+          "to": "0x9Bd4767e5baE5f71c95d1130Db6fED2bd7F8FBcb",
+          "tokenId": 21634,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBcbA9e0DB39fA3F9655EE2ce1b6ce7a7c563baff",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x9Bd4767e5baE5f71c95d1130Db6fED2bd7F8FBcb",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 21634,
           },
@@ -2084,21 +2143,25 @@ Array [
       "blockHash": "0x48842200f74bd5d973394f3c476b250a32fc874a5a66d9982388311eddc57991",
       "blockNumber": 6442477,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xbcBAa39A2a483D5579299Ea48BF31903F8Bb88de",
+          "to": "0x9E0956c736E75a5688933ECbee3E3ac044311bcb",
+          "tokenId": 21675,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xbcBAa39A2a483D5579299Ea48BF31903F8Bb88de",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x9E0956c736E75a5688933ECbee3E3ac044311bcb",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 21675,
           },
@@ -2124,7 +2187,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 1,
@@ -2138,28 +2201,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0x48842200f74bd5d973394f3c476b250a32fc874a5a66d9982388311eddc57991",
       "blockNumber": 6442477,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xbcBAa39A2a483D5579299Ea48BF31903F8Bb88de",
+          "to": "0x9E0956c736E75a5688933ECbee3E3ac044311bcb",
+          "tokenId": 21675,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xbcBAa39A2a483D5579299Ea48BF31903F8Bb88de",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x9E0956c736E75a5688933ECbee3E3ac044311bcb",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 21675,
           },
@@ -3288,21 +3355,25 @@ Array [
       "blockHash": "0xe3d9780f31ecf6cb62236f2f5660b23e1f834a9a4f2c813d2812642c56f9e3ff",
       "blockNumber": 6442482,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCbAd3473C192463DF7603A841426D8Cde027257",
+          "to": "0x13f4E9847a607886f30FcD776810c10531729BcB",
+          "tokenId": 22048,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCbAd3473C192463DF7603A841426D8Cde027257",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x13f4E9847a607886f30FcD776810c10531729BcB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 22048,
           },
@@ -3328,7 +3399,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 1,
@@ -3342,28 +3413,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0xe3d9780f31ecf6cb62236f2f5660b23e1f834a9a4f2c813d2812642c56f9e3ff",
       "blockNumber": 6442482,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCbAd3473C192463DF7603A841426D8Cde027257",
+          "to": "0x13f4E9847a607886f30FcD776810c10531729BcB",
+          "tokenId": 22048,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCbAd3473C192463DF7603A841426D8Cde027257",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x13f4E9847a607886f30FcD776810c10531729BcB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 22048,
           },
@@ -3389,21 +3464,25 @@ Array [
       "blockHash": "0xe3d9780f31ecf6cb62236f2f5660b23e1f834a9a4f2c813d2812642c56f9e3ff",
       "blockNumber": 6442482,
       "call": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCBCCDD779E87Df3c79BC2eDaaa023C85f83D104",
+          "to": "0x694D12898D1c0b40178Fd575A7BA6475Cced6BcB",
+          "tokenId": 23691,
+        },
         "name": "transferFrom",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCBCCDD779E87Df3c79BC2eDaaa023C85f83D104",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x694D12898D1c0b40178Fd575A7BA6475Cced6BcB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 23691,
           },
@@ -3429,7 +3508,7 @@ Array [
       "status": "success",
       "to": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "toInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "transactionIndex": 2,
@@ -3443,28 +3522,32 @@ Array [
     "body": Object {
       "address": "0xb1cBec88967990faB6Bf6b1a9254741A0bdE64A0",
       "addressInfo": Object {
-        "contractName": undefined,
+        "contractName": "Badges",
         "isContract": true,
       },
       "blockHash": "0xe3d9780f31ecf6cb62236f2f5660b23e1f834a9a4f2c813d2812642c56f9e3ff",
       "blockNumber": 6442482,
       "data": "0x",
       "event": Object {
-        "args": undefined,
+        "args": Object {
+          "from": "0xBCBCCDD779E87Df3c79BC2eDaaa023C85f83D104",
+          "to": "0x694D12898D1c0b40178Fd575A7BA6475Cced6BcB",
+          "tokenId": 23691,
+        },
         "name": "Transfer",
         "params": Array [
           Object {
-            "name": undefined,
+            "name": "from",
             "type": "address",
             "value": "0xBCBCCDD779E87Df3c79BC2eDaaa023C85f83D104",
           },
           Object {
-            "name": undefined,
+            "name": "to",
             "type": "address",
             "value": "0x694D12898D1c0b40178Fd575A7BA6475Cced6BcB",
           },
           Object {
-            "name": undefined,
+            "name": "tokenId",
             "type": "uint256",
             "value": 23691,
           },

@@ -26,7 +26,6 @@
         "lodash": "^4.17.15",
         "node-fetch": "^2.6.0",
         "tslib": "^1",
-        "web3-eth-abi": "^1.2.4",
         "web3-utils": "^1.2.4"
     },
     "devDependencies": {
@@ -87,7 +86,8 @@
     },
     "scripts": {
         "lint": "eslint . --ext .ts --config .eslintrc",
-        "build": "rm -rf lib && tsc -b && yarn build:signatures",
+        "build": "yarn build:wasm && rm -rf lib && tsc -b && yarn build:signatures",
+        "build:wasm": "wasm-pack build --target nodejs --release wasm/ethabi",
         "build:signatures": "ts-node scripts/buildsigs.ts",
         "test": "jest --config jest.config.json",
         "posttest": "eslint . --ext .ts --config .eslintrc",

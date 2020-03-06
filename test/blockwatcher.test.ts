@@ -1,31 +1,14 @@
-import { withRecorder } from '../src/eth/recorder';
+import { join } from 'path';
+import { ContractInfo } from '../src/abi/contract';
+import { AbiRepository } from '../src/abi/repo';
 import { BlockWatcher } from '../src/blockwatcher';
+import { Checkpoint } from '../src/checkpoint';
 import { BatchedEthereumClient } from '../src/eth/client';
 import { HttpTransport } from '../src/eth/http';
-import { AbiRepository } from '../src/abi/repo';
-import { join } from 'path';
-import { Checkpoint } from '../src/checkpoint';
-import { Output, OutputMessage } from '../src/output';
-import { Stats } from '../src/utils/stats';
-import { ContractInfo } from '../src/abi/contract';
-import LRUCache from '../src/utils/lru';
+import { withRecorder } from '../src/eth/recorder';
 import { suppressDebugLogging } from '../src/utils/debug';
-
-class TestOutput implements Output {
-    public messages: OutputMessage[] = [];
-
-    write(msg: OutputMessage) {
-        this.messages.push(msg);
-    }
-
-    async shutdown() {
-        throw new Error('shutdown');
-    }
-
-    flushStats(): Stats {
-        throw new Error('no stats');
-    }
-}
+import LRUCache from '../src/utils/lru';
+import { TestOutput } from './testoutput';
 
 let logHandle: any;
 beforeEach(() => {

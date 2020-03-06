@@ -1,0 +1,272 @@
+{
+    "contractName": "IWhitelist",
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "user",
+                    "type": "address"
+                }
+            ],
+            "name": "isWhitelisted",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"name\":\"user\",\"type\":\"address\"}],\"name\":\"isWhitelisted\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol\":\"IWhitelist\"},\"evmVersion\":\"constantinople\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol\":{\"keccak256\":\"0x5a5be3fd938cc04d51bf4fb18ce6d50abac956f617fd6d94253b7241db035d4d\",\"urls\":[\"bzzr://7398689445cd7f4d2f75d482a2dd4c68d4354b838b03fe9708276aa125beca19\",\"dweb:/ipfs/QmbLLoY9J4ckM19He1M2AvRUvoRtAdqJtEGLTTRrWQMJu1\"]}},\"version\":1}",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "pragma solidity ^0.5.0;\n\ncontract IWhitelist {\n  function isWhitelisted(address user) external view returns (bool);\n}\n",
+    "sourcePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol",
+    "ast": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol",
+        "exportedSymbols": {
+            "IWhitelist": [1142]
+        },
+        "id": 1143,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1134,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:6"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 1142,
+                "linearizedBaseContracts": [1142],
+                "name": "IWhitelist",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 1141,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "isWhitelisted",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1137,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1136,
+                                    "name": "user",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1141,
+                                    "src": "72:12:6",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 1135,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "72:7:6",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "71:14:6"
+                        },
+                        "returnParameters": {
+                            "id": 1140,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1139,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1141,
+                                    "src": "109:4:6",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 1138,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "109:4:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "108:6:6"
+                        },
+                        "scope": 1142,
+                        "src": "49:66:6",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1143,
+                "src": "25:92:6"
+            }
+        ],
+        "src": "0:118:6"
+    },
+    "legacyAST": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IWhitelist.sol",
+        "exportedSymbols": {
+            "IWhitelist": [1142]
+        },
+        "id": 1143,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1134,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:6"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 1142,
+                "linearizedBaseContracts": [1142],
+                "name": "IWhitelist",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 1141,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "isWhitelisted",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1137,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1136,
+                                    "name": "user",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1141,
+                                    "src": "72:12:6",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 1135,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "72:7:6",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "71:14:6"
+                        },
+                        "returnParameters": {
+                            "id": 1140,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1139,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1141,
+                                    "src": "109:4:6",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_bool",
+                                        "typeString": "bool"
+                                    },
+                                    "typeName": {
+                                        "id": 1138,
+                                        "name": "bool",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "109:4:6",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_bool",
+                                            "typeString": "bool"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "108:6:6"
+                        },
+                        "scope": 1142,
+                        "src": "49:66:6",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1143,
+                "src": "25:92:6"
+            }
+        ],
+        "src": "0:118:6"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.15",
+    "updatedAt": "2020-02-13T23:25:47.821Z",
+    "devdoc": {
+        "methods": {}
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}

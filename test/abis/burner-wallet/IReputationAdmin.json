@@ -1,0 +1,670 @@
+{
+    "contractName": "IReputationAdmin",
+    "abi": [
+        {
+            "constant": false,
+            "inputs": [],
+            "name": "renounceOwnership",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "isOwner",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "previousOwner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "OwnershipTransferred",
+            "type": "event"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_beneficiaries",
+                    "type": "address[]"
+                },
+                {
+                    "name": "_amounts",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "reputationMint",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_beneficiaries",
+                    "type": "address[]"
+                },
+                {
+                    "name": "_amounts",
+                    "type": "uint256[]"
+                }
+            ],
+            "name": "reputationBurn",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.10+commit.5a6ea5b1\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":false,\"inputs\":[{\"name\":\"_beneficiaries\",\"type\":\"address[]\"},{\"name\":\"_amounts\",\"type\":\"uint256[]\"}],\"name\":\"reputationMint\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_beneficiaries\",\"type\":\"address[]\"},{\"name\":\"_amounts\",\"type\":\"uint256[]\"}],\"name\":\"reputationBurn\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"isOwner()\":{\"details\":\"Returns true if the caller is the current owner.\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IReputationAdmin.sol\":\"IReputationAdmin\"},\"evmVersion\":\"constantinople\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IReputationAdmin.sol\":{\"keccak256\":\"0x5c34530609a4bb72b5bec5ce5ce93fdb908ada7fa80969b06b36e0e46d12e15b\",\"urls\":[\"bzzr://822bf0fcac57fcbfcebe4665de473bf73b11239f58879713533f7aed4e9d0918\",\"dweb:/ipfs/QmQc9qjFitbPKVrsSutU7fvReWbf2DGMx5qVLNPR9avucR\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzzr://51482c01bddf23793bddee43b60ab9578a62948a4f2082def24ea792a553b055\",\"dweb:/ipfs/QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0x6fb9d7889769d7cc161225f9ef7a90e468ba9788b253816f8d8b6894d3472c24\",\"urls\":[\"bzzr://ab46c9368bc3abdded5eb85858304518c8a0291060ab42087075d759dbf3925f\",\"dweb:/ipfs/Qmb7TChG6DsEDX7LooJ4vmxot19f7VXX8S1zUGPeJTWbwZ\"]}},\"version\":1}",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "pragma solidity ^0.5.0;\n\nimport 'openzeppelin-solidity/contracts/ownership/Ownable.sol';\n\ncontract IReputationAdmin is Ownable {\n  function reputationMint(address[] calldata _beneficiaries, uint256[] calldata _amounts) external;\n  function reputationBurn(address[] calldata _beneficiaries, uint256[] calldata _amounts) external;\n}\n",
+    "sourcePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IReputationAdmin.sol",
+    "ast": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IReputationAdmin.sol",
+        "exportedSymbols": {
+            "IReputationAdmin": [1132]
+        },
+        "id": 1133,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1110,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:5"
+            },
+            {
+                "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+                "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+                "id": 1111,
+                "nodeType": "ImportDirective",
+                "scope": 1133,
+                "sourceUnit": 4231,
+                "src": "25:63:5",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 1112,
+                            "name": "Ownable",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 4230,
+                            "src": "119:7:5",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_Ownable_$4230",
+                                "typeString": "contract Ownable"
+                            }
+                        },
+                        "id": 1113,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "119:7:5"
+                    }
+                ],
+                "contractDependencies": [3127, 4230],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 1132,
+                "linearizedBaseContracts": [1132, 4230, 3127],
+                "name": "IReputationAdmin",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 1122,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "reputationMint",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1120,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1116,
+                                    "name": "_beneficiaries",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1122,
+                                    "src": "155:33:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                                        "typeString": "address[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1114,
+                                            "name": "address",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "155:7:5",
+                                            "stateMutability": "nonpayable",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "id": 1115,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "155:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                            "typeString": "address[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 1119,
+                                    "name": "_amounts",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1122,
+                                    "src": "190:27:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                                        "typeString": "uint256[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1117,
+                                            "name": "uint256",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "190:7:5",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "id": 1118,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "190:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                            "typeString": "uint256[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "154:64:5"
+                        },
+                        "returnParameters": {
+                            "id": 1121,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "227:0:5"
+                        },
+                        "scope": 1132,
+                        "src": "131:97:5",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 1131,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "reputationBurn",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1129,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1125,
+                                    "name": "_beneficiaries",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1131,
+                                    "src": "255:33:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                                        "typeString": "address[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1123,
+                                            "name": "address",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "255:7:5",
+                                            "stateMutability": "nonpayable",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "id": 1124,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "255:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                            "typeString": "address[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 1128,
+                                    "name": "_amounts",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1131,
+                                    "src": "290:27:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                                        "typeString": "uint256[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1126,
+                                            "name": "uint256",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "290:7:5",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "id": 1127,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "290:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                            "typeString": "uint256[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "254:64:5"
+                        },
+                        "returnParameters": {
+                            "id": 1130,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "327:0:5"
+                        },
+                        "scope": 1132,
+                        "src": "231:97:5",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1133,
+                "src": "90:240:5"
+            }
+        ],
+        "src": "0:331:5"
+    },
+    "legacyAST": {
+        "absolutePath": "/home/rmoore/Projects/ethdenver-burner-wallet/contracts/contracts/IReputationAdmin.sol",
+        "exportedSymbols": {
+            "IReputationAdmin": [1132]
+        },
+        "id": 1133,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1110,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:5"
+            },
+            {
+                "absolutePath": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+                "file": "openzeppelin-solidity/contracts/ownership/Ownable.sol",
+                "id": 1111,
+                "nodeType": "ImportDirective",
+                "scope": 1133,
+                "sourceUnit": 4231,
+                "src": "25:63:5",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 1112,
+                            "name": "Ownable",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 4230,
+                            "src": "119:7:5",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_Ownable_$4230",
+                                "typeString": "contract Ownable"
+                            }
+                        },
+                        "id": 1113,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "119:7:5"
+                    }
+                ],
+                "contractDependencies": [3127, 4230],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": false,
+                "id": 1132,
+                "linearizedBaseContracts": [1132, 4230, 3127],
+                "name": "IReputationAdmin",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 1122,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "reputationMint",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1120,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1116,
+                                    "name": "_beneficiaries",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1122,
+                                    "src": "155:33:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                                        "typeString": "address[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1114,
+                                            "name": "address",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "155:7:5",
+                                            "stateMutability": "nonpayable",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "id": 1115,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "155:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                            "typeString": "address[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 1119,
+                                    "name": "_amounts",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1122,
+                                    "src": "190:27:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                                        "typeString": "uint256[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1117,
+                                            "name": "uint256",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "190:7:5",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "id": 1118,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "190:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                            "typeString": "uint256[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "154:64:5"
+                        },
+                        "returnParameters": {
+                            "id": 1121,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "227:0:5"
+                        },
+                        "scope": 1132,
+                        "src": "131:97:5",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    },
+                    {
+                        "body": null,
+                        "documentation": null,
+                        "id": 1131,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "reputationBurn",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 1129,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 1125,
+                                    "name": "_beneficiaries",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1131,
+                                    "src": "255:33:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_address_$dyn_calldata_ptr",
+                                        "typeString": "address[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1123,
+                                            "name": "address",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "255:7:5",
+                                            "stateMutability": "nonpayable",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "id": 1124,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "255:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                                            "typeString": "address[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 1128,
+                                    "name": "_amounts",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 1131,
+                                    "src": "290:27:5",
+                                    "stateVariable": false,
+                                    "storageLocation": "calldata",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_array$_t_uint256_$dyn_calldata_ptr",
+                                        "typeString": "uint256[]"
+                                    },
+                                    "typeName": {
+                                        "baseType": {
+                                            "id": 1126,
+                                            "name": "uint256",
+                                            "nodeType": "ElementaryTypeName",
+                                            "src": "290:7:5",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_uint256",
+                                                "typeString": "uint256"
+                                            }
+                                        },
+                                        "id": 1127,
+                                        "length": null,
+                                        "nodeType": "ArrayTypeName",
+                                        "src": "290:9:5",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_array$_t_uint256_$dyn_storage_ptr",
+                                            "typeString": "uint256[]"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "254:64:5"
+                        },
+                        "returnParameters": {
+                            "id": 1130,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "327:0:5"
+                        },
+                        "scope": 1132,
+                        "src": "231:97:5",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 1133,
+                "src": "90:240:5"
+            }
+        ],
+        "src": "0:331:5"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.10+commit.5a6ea5b1.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.15",
+    "updatedAt": "2020-02-13T23:25:47.821Z",
+    "devdoc": {
+        "methods": {
+            "isOwner()": {
+                "details": "Returns true if the caller is the current owner."
+            },
+            "owner()": {
+                "details": "Returns the address of the current owner."
+            },
+            "renounceOwnership()": {
+                "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner.     * NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+            },
+            "transferOwnership(address)": {
+                "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+            }
+        }
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}

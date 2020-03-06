@@ -1,15 +1,19 @@
 import { join as joinPath } from 'path';
-import { AbiCoder } from 'web3-eth-abi';
 import { AbiRepositoryConfig } from '../config';
 import { RawLogResponse } from '../eth/responses';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 import { ManagedResource } from '../utils/resource';
+import {
+    decodeBestMatchingFunctionCall,
+    decodeBestMatchingLogEvent,
+    DecodedFunctionCall,
+    DecodedLogEvent,
+} from './decode';
+import { loadAbiFile, loadSignatureFile, searchAbiFiles } from './files';
 import { AbiItemDefinition } from './item';
-import { DecodedFunctionCall, DecodedLogEvent, decodeFunctionCall, decodeLogEvent } from './decode';
-import { loadAbiFile, searchAbiFiles, loadSignatureFile } from './files';
 import { computeSignature, computeSignatureHash } from './signature';
 
-const { debug, info, trace } = createModuleDebug('abi:repo');
+const { warn, debug, info, trace } = createModuleDebug('abi:repo');
 
 interface AbiMatch {
     anonymous: boolean;
@@ -23,15 +27,55 @@ interface AbiMatchParams {
 
 export interface ContractAbi {
     contractName: string;
+    fileName?: string;
+}
+
+/** Sort abi defintions in consistent priority order */
+export function sortAbis(abis: AbiItemDefinition[]): AbiItemDefinition[] {
+    if (abis.length > 1) {
+        const sortedAbis = [...abis];
+        sortedAbis.sort((a, b) => {
+            // Always prefer user-supplied abis with an contract address attached
+            const aHasAddress = a.contractAddress != null;
+            const bHasAddress = b.contractAddress != null;
+            if (aHasAddress !== bHasAddress) {
+                return aHasAddress ? -1 : 1;
+            }
+            // Prefer user-supplied abi
+            const aHasFingerprint = a.contractFingerprint != null;
+            const bHasFingerprint = b.contractFingerprint != null;
+            if (aHasFingerprint !== bHasFingerprint) {
+                return aHasFingerprint ? -1 : 1;
+            }
+            return (
+                // Prefer abis with shorter function name as longer ones
+                // are sometimes used to deliberately produce signature hash
+                // collisions
+                a.name.length - b.name.length ||
+                // Prefer abis with fewer parameters
+                a.inputs.length - b.inputs.length ||
+                // Sort the rest by name
+                a.name.localeCompare(b.name) ||
+                // Last restort is to string compare the full signature
+                computeSignature(a).localeCompare(computeSignature(b))
+            );
+        });
+        return sortedAbis;
+    }
+    return abis;
 }
 
 export class AbiRepository implements ManagedResource {
     private signatures: Map<string, AbiItemDefinition[]> = new Map();
     private contractsByFingerprint: Map<string, ContractAbi> = new Map();
     private contractsByAddress: Map<string, ContractAbi> = new Map();
-    private abiCoder: AbiCoder = require('web3-eth-abi');
 
     constructor(private config: AbiRepositoryConfig) {}
+
+    private addToSignatures(sig: string, abis: AbiItemDefinition[]) {
+        const match = this.signatures.get(sig);
+        this.signatures.set(sig, sortAbis(match == null ? abis : [...match, ...abis]));
+    }
 
     public async initialize() {
         const config = this.config;
@@ -52,14 +96,7 @@ export class AbiRepository implements ManagedResource {
         let count = 0;
         const { entries } = await loadSignatureFile(file);
         for (const [sig, abis] of entries) {
-            const match = this.signatures.get(sig);
-            if (match == null) {
-                this.signatures.set(sig, abis);
-            } else {
-                for (const abi of abis) {
-                    match.push(abi);
-                }
-            }
+            this.addToSignatures(sig, abis);
             count++;
         }
         return count;
@@ -78,23 +115,26 @@ export class AbiRepository implements ManagedResource {
         const abiFileContents = await loadAbiFile(path, config);
         const contractInfo: ContractAbi = {
             contractName: abiFileContents.contractName,
+            fileName: abiFileContents.fileName,
         };
         if (abiFileContents.contractAddress != null) {
             this.contractsByAddress.set(abiFileContents.contractAddress.toLowerCase(), contractInfo);
         }
         if (abiFileContents.contractFingerprint != null) {
-            this.contractsByFingerprint.set(abiFileContents.contractFingerprint, contractInfo);
+            if (this.contractsByFingerprint.has(abiFileContents.contractFingerprint)) {
+                warn(
+                    'Duplicate contract fingerprint for contracts %o and %o',
+                    contractInfo,
+                    this.contractsByFingerprint.get(abiFileContents.contractFingerprint)
+                );
+            } else {
+                this.contractsByFingerprint.set(abiFileContents.contractFingerprint, contractInfo);
+            }
         }
 
         for (const { sig, abi } of abiFileContents.entries) {
             const signatureHash = computeSignatureHash(sig, abi.type);
-            let match = this.signatures.get(signatureHash);
-            if (match == null) {
-                match = [abi];
-                this.signatures.set(signatureHash, match);
-            } else {
-                match.push(abi);
-            }
+            this.addToSignatures(signatureHash, [abi]);
         }
     }
 
@@ -109,8 +149,22 @@ export class AbiRepository implements ManagedResource {
 
     public getMatchingSignatureName(signatureHash: string): string | undefined {
         const candidates = this.signatures.get(signatureHash);
+        trace(
+            'getMatchingSignatureName(%o) --> ',
+            signatureHash,
+            candidates?.map(c => computeSignature(c))
+        );
         if (candidates != null) {
-            return computeSignature(candidates[0]);
+            // We only want to consider signatures from contracts in our repo
+            // that already have a fingerprint
+            const filtered = candidates.filter(c => c.contractFingerprint != null);
+            const signatures = new Set<string>(filtered.map(c => computeSignature(c)));
+            if (signatures.size > 1) {
+                throw new Error(`Multiple signatures (${[...signatures].join(', ')}) for sig hash ${signatureHash}`);
+            }
+            if (filtered.length > 0) {
+                return computeSignature(filtered[0]);
+            }
         }
     }
 
@@ -128,6 +182,17 @@ export class AbiRepository implements ManagedResource {
     ): AbiMatch | undefined {
         const match = this.signatures.get(sigHash);
         if (match != null) {
+            trace(
+                'Looking for contract match %o for signature hash %s; candidates: %O',
+                { contractAddress, contractFingerprint },
+                sigHash,
+                match.map(item => ({
+                    name: item.contractName,
+                    signature: computeSignature(item),
+                    address: item.contractAddress,
+                    fingerprint: item.contractFingerprint,
+                }))
+            );
             if (contractAddress != null) {
                 const addressMatch = match.find(c => c.contractAddress === contractAddress.toLowerCase());
                 if (addressMatch != null) {
@@ -157,7 +222,7 @@ export class AbiRepository implements ManagedResource {
     private abiDecode<T>(
         sigHash: string,
         matchParams: AbiMatchParams,
-        decodeFn: (abi: AbiItemDefinition, signature: string, anonymous: boolean) => T
+        decodeFn: (abis: AbiItemDefinition[], anonymous: boolean) => T
     ): T | undefined {
         const matchingAbis = this.findMatchingAbis(sigHash, matchParams);
         trace('Found %d matching ABIs for signature %s', matchingAbis?.candidates?.length ?? 0, sigHash);
@@ -166,13 +231,17 @@ export class AbiRepository implements ManagedResource {
             if (matchingAbis.anonymous && !this.config.decodeAnonymous) {
                 return;
             }
-            for (const abi of matchingAbis.candidates) {
-                const signature = computeSignature(abi);
-                debug('Found ABI %s matching %o from contract %s', signature, matchParams, abi.contractName);
-                try {
-                    return decodeFn(abi, signature, matchingAbis!.anonymous);
-                } catch (e) {
-                    debug('Failed to decode function call');
+            if (matchingAbis.candidates.length === 0) {
+                trace('No matching ABI found for signature hash %s', sigHash);
+                return;
+            }
+            try {
+                return decodeFn(matchingAbis.candidates, matchingAbis!.anonymous);
+            } catch (e) {
+                if (matchingAbis!.anonymous) {
+                    debug('Failed to decode anonymous ABI', e);
+                } else {
+                    warn('Failed to decode ABI', e);
                 }
             }
         }
@@ -180,9 +249,7 @@ export class AbiRepository implements ManagedResource {
 
     public decodeFunctionCall(data: string, matchParams: AbiMatchParams): DecodedFunctionCall | undefined {
         const sigHash = data.slice(2, 10);
-        return this.abiDecode(sigHash, matchParams, (abi, sig, anon) =>
-            decodeFunctionCall(data, abi, sig, this.abiCoder, anon)
-        );
+        return this.abiDecode(sigHash, matchParams, (abi, anon) => decodeBestMatchingFunctionCall(data, abi, anon));
     }
 
     public decodeLogEvent(logEvent: RawLogResponse, matchParams: AbiMatchParams): DecodedLogEvent | undefined {
@@ -199,9 +266,7 @@ export class AbiRepository implements ManagedResource {
         const sigHash = logEvent.topics[0].slice(2);
         const { data, topics } = logEvent;
 
-        return this.abiDecode(sigHash, matchParams, (abi, sig, anon) =>
-            decodeLogEvent(data, topics, abi, sig, this.abiCoder, anon)
-        );
+        return this.abiDecode(sigHash, matchParams, (abi, anon) => decodeBestMatchingLogEvent(data, topics, abi, anon));
     }
 
     public async shutdown() {

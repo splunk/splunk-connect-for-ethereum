@@ -412,6 +412,7 @@ Object {
       "sig": "transferWithData(address,uint256,bytes)",
     },
   ],
+  "fileName": "BCB.json",
 }
 `;
 
@@ -603,5 +604,6 @@ Object {
       "sig": "multiSendBadge(address,address,address[],uint256[],string[],uint256,uint256)",
     },
   ],
+  "fileName": "abis/Airdropper.json",
 }
 `;

@@ -1,0 +1,1131 @@
+{
+    "contractName": "UtilityTokenFake",
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "name",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_spender",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "approve",
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_from",
+                    "type": "address"
+                },
+                {
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "transferFrom",
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "decimals",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint8"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "increaseBalance",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_owner",
+                    "type": "address"
+                }
+            ],
+            "name": "balanceOf",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "coGateway",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "symbol",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "transfer",
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "constant": true,
+            "inputs": [
+                {
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "name": "_spender",
+                    "type": "address"
+                }
+            ],
+            "name": "allowance",
+            "outputs": [
+                {
+                    "name": "remaining_",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "name": "_symbol",
+                    "type": "string"
+                },
+                {
+                    "name": "_name",
+                    "type": "string"
+                },
+                {
+                    "name": "_decimals",
+                    "type": "uint8"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "_from",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "name": "_to",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Transfer",
+            "type": "event"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "name": "_owner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "name": "_spender",
+                    "type": "address"
+                },
+                {
+                    "indexed": false,
+                    "name": "_value",
+                    "type": "uint256"
+                }
+            ],
+            "name": "Approval",
+            "type": "event"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_coGateway",
+                    "type": "address"
+                }
+            ],
+            "name": "setCoGateway",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_spender\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_from\",\"type\":\"address\"},{\"name\":\"_to\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"name\":\"\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"increaseBalance\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"coGateway\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_to\",\"type\":\"address\"},{\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"name\":\"success\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"_coGateway\",\"type\":\"address\"}],\"name\":\"setCoGateway\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"_owner\",\"type\":\"address\"},{\"name\":\"_spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"name\":\"remaining_\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"name\":\"_symbol\",\"type\":\"string\"},{\"name\":\"_name\",\"type\":\"string\"},{\"name\":\"_decimals\",\"type\":\"uint8\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":true,\"name\":\"_spender\",\"type\":\"address\"},{\"indexed\":false,\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"}],\"devdoc\":{\"methods\":{\"allowance(address,address)\":{\"params\":{\"_owner\":\"Address of the owner account.\",\"_spender\":\"Address of the spender account.\"},\"return\":\"remaining_ Remaining allowance for the spender to spend from                   the owner's account.\"},\"approve(address,uint256)\":{\"details\":\"Allows _spender address to withdraw from function caller's account,     multiple times up to the _value amount, if this function is called     again it overwrites the current allowance with _value.     Emits \\\"Approval\\\" event.\",\"params\":{\"_spender\":\"Address authorized to spend from the function                caller's address.\",\"_value\":\"Amount up to which spender is authorized to spend.\"},\"return\":\"True for a successful approval, false otherwise.\"},\"balanceOf(address)\":{\"params\":{\"_owner\":\"Address of the owner account.\"},\"return\":\"Account balance of the owner account.\"},\"constructor\":{\"params\":{\"_decimals\":\"Decimal places of the token.\",\"_name\":\"Name of the token.\",\"_symbol\":\"Symbol of the token.\"}},\"decimals()\":{\"details\":\"Implements EIP20TokenInterface::decimals() function.\",\"return\":\"Decimal places of the EIP20 token.\"},\"increaseBalance(address,uint256)\":{\"details\":\"The function is not part of EIP20TokenInterface and is here     to fill the balance of accounts during testing.\",\"params\":{\"_owner\":\"Account's address.\",\"_value\":\"Amount to increase for the account.\"}},\"name()\":{\"details\":\"Implements EIP20TokenInterface::name() function.\",\"return\":\"Name of the EIP20 token.\"},\"symbol()\":{\"details\":\"Implements EIP20TokenInterface::symbol() function.\",\"return\":\"Symbol of the EIP20 token.\"},\"totalSupply()\":{\"details\":\"Implements EIP20TokenInterface::totalSupply() function.     Function is only overriden and not implemented as it's not used     during testing.\"},\"transfer(address,uint256)\":{\"details\":\"Fires the \\\"Transfer\\\" event, throws if, _from account does not     have enough tokens to spend.\",\"params\":{\"_to\":\"Address to which tokens are transferred.\",\"_value\":\"Amount of tokens to be transferred.\"},\"return\":\"True for a successful transfer, false otherwise.\"},\"transferFrom(address,address,uint256)\":{\"details\":\"Allows a contract to transfer tokens on behalf of _from address     to _to address, the function caller has to be pre-authorized for     multiple transfers up to the total of _value amount by the     _from address.\",\"params\":{\"_from\":\"Address from which tokens are transferred.\",\"_to\":\"Address to which tokens are transferred.\",\"_value\":\"Amount of tokens transferred.\"},\"return\":\"True for a successful transfer, false otherwise.\"}},\"title\":\"EIP20TokenMock contract.\"},\"userdoc\":{\"methods\":{\"allowance(address,address)\":{\"notice\":\"Returns allowance of a spender for the owner account.\"},\"approve(address,uint256)\":{\"notice\":\"Allows spender to withdraw from function caller's account.\"},\"balanceOf(address)\":{\"notice\":\"Returns balance of the owner account.\"},\"increaseBalance(address,uint256)\":{\"notice\":\"Increase balance of the account with the specified value.\"},\"setCoGateway(address)\":{\"notice\":\"Sets coGateway address. \"},\"transfer(address,uint256)\":{\"notice\":\"Transfers an amount from msg.sender account.\"},\"transferFrom(address,address,uint256)\":{\"notice\":\"Transfer the specified amount between accounts.\"}},\"notice\":\"Provides EIP20Token with mock functionality to facilitate testing.\"}},\"settings\":{\"compilationTarget\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/UtilityTokenFake.sol\":\"UtilityTokenFake\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/external/SafeMath.sol\":{\"keccak256\":\"0x02ca3202c1385cd09f3c0988facc9cb814fb6d21fe4a3d103b4ddfdb8e2307f5\",\"urls\":[\"bzzr://507c36ac0540963cda02ca3043e8c403ebd99846ff7587a08d908ba9099a8537\"]},\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/EIP20TokenFake.sol\":{\"keccak256\":\"0xb588a43b55a198f0c5823e3751cd2d058ddcf7b2fb13a9c8756dcf661efa5d11\",\"urls\":[\"bzzr://a88c0f770f41e71a9b4c3ed4743ecfed64e073bbba5d5d4fae6bebeaf8a4d12e\"]},\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/UtilityTokenFake.sol\":{\"keccak256\":\"0x1dfb0e42ff71f77eb6a2e591cdcd925ae1f145b7c681b262df94c61dc717f23b\",\"urls\":[\"bzzr://dbd7892fed1854467091b6b7fbb7bc6eee4a2677c7b6fb1762ad4626b33637f4\"]},\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/token/EIP20TokenInterface.sol\":{\"keccak256\":\"0x23f49f6ba21f65817db97de96a8dd7f32f40b4e2e6c60489471e3ad6e0132f93\",\"urls\":[\"bzzr://8e42731eb2f5dc24e53b12df2111e2ab72b0f29dc9c969fa134692c0087df27c\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b50604051610a47380380610a478339810180604052606081101561003357600080fd5b81019080805164010000000081111561004b57600080fd5b8201602081018481111561005e57600080fd5b815164010000000081118282018710171561007857600080fd5b5050929190602001805164010000000081111561009457600080fd5b820160208101848111156100a757600080fd5b81516401000000008111828201871017156100c157600080fd5b505060209182015160008055855191945092508491849184916100e99160029186019061011d565b5081516100fd90600190602085019061011d565b506003805460ff191660ff92909216919091179055506101b89350505050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061015e57805160ff191683800117855561018b565b8280016001018555821561018b579182015b8281111561018b578251825591602001919060010190610170565b5061019792915061019b565b5090565b6101b591905b8082111561019757600081556001016101a1565b90565b610880806101c76000396000f3fe6080604052600436106100b95763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166306fdde0381146100be578063095ea7b31461014857806318160ddd1461019557806323b872dd146101bc578063313ce567146101ff5780635b86f5991461022a57806370a082311461026557806384f48d6a1461029857806395d89b41146102c9578063a9059cbb146102de578063ac908e4c14610317578063dd62ed3e1461034a575b600080fd5b3480156100ca57600080fd5b506100d3610385565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561010d5781810151838201526020016100f5565b50505050905090810190601f16801561013a5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561015457600080fd5b506101816004803603604081101561016b57600080fd5b50600160a060020a03813516906020013561041a565b604080519115158252519081900360200190f35b3480156101a157600080fd5b506101aa610480565b60408051918252519081900360200190f35b3480156101c857600080fd5b50610181600480360360608110156101df57600080fd5b50600160a060020a03813581169160208101359091169060400135610486565b34801561020b57600080fd5b50610214610591565b6040805160ff9092168252519081900360200190f35b34801561023657600080fd5b506102636004803603604081101561024d57600080fd5b50600160a060020a03813516906020013561059a565b005b34801561027157600080fd5b506101aa6004803603602081101561028857600080fd5b5035600160a060020a0316610694565b3480156102a457600080fd5b506102ad6106af565b60408051600160a060020a039092168252519081900360200190f35b3480156102d557600080fd5b506100d36106be565b3480156102ea57600080fd5b506101816004803603604081101561030157600080fd5b50600160a060020a03813516906020013561071c565b34801561032357600080fd5b506102636004803603602081101561033a57600080fd5b5035600160a060020a03166107cc565b34801561035657600080fd5b506101aa6004803603604081101561036d57600080fd5b50600160a060020a03813581169160200135166107fb565b60018054604080516020601f600260001961010087891615020190951694909404938401819004810282018101909252828152606093909290918301828280156104105780601f106103e557610100808354040283529160200191610410565b820191906000526020600020905b8154815290600101906020018083116103f357829003601f168201915b5050505050905090565b336000818152600560209081526040808320600160a060020a038716808552908352818420869055815186815291519394909390927f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925928290030190a350600192915050565b60005490565b600160a060020a0383166000908152600460205260408120546104af908363ffffffff61082616565b600160a060020a03851660009081526004602090815260408083209390935560058152828220338352905220546104ec908363ffffffff61082616565b600160a060020a038086166000908152600560209081526040808320338452825280832094909455918616815260049091522054610530908363ffffffff61083b16565b600160a060020a0380851660008181526004602090815260409182902094909455805186815290519193928816927fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef92918290030190a35060019392505050565b60035460ff1690565b600160a060020a038216151561063757604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602360248201527f546865206163636f756e7420746f207365742062616c616e6365206973206e7560448201527f6c6c2e0000000000000000000000000000000000000000000000000000000000606482015290519081900360840190fd5b600160a060020a038216600090815260046020526040902054610660908263ffffffff61083b16565b600160a060020a0383166000908152600460205260408120919091555461068d908263ffffffff61083b16565b6000555050565b600160a060020a031660009081526004602052604090205490565b600654600160a060020a031681565b60028054604080516020601f60001961010060018716150201909416859004938401819004810282018101909252828152606093909290918301828280156104105780601f106103e557610100808354040283529160200191610410565b3360009081526004602052604081205461073c908363ffffffff61082616565b3360009081526004602052604080822092909255600160a060020a0385168152205461076e908363ffffffff61083b16565b600160a060020a0384166000818152600460209081526040918290209390935580518581529051919233927fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef9281900390910190a350600192915050565b6006805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0392909216919091179055565b600160a060020a03918216600090815260056020908152604080832093909416825291909152205490565b60008282111561083557600080fd5b50900390565b60008282018381101561084d57600080fd5b939250505056fea165627a7a723058204999cdc0babe21c53ccf388cc63aefafd0bdb35c8cf44d72b7745660ce7daaaa0029",
+    "deployedBytecode": "0x6080604052600436106100b95763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166306fdde0381146100be578063095ea7b31461014857806318160ddd1461019557806323b872dd146101bc578063313ce567146101ff5780635b86f5991461022a57806370a082311461026557806384f48d6a1461029857806395d89b41146102c9578063a9059cbb146102de578063ac908e4c14610317578063dd62ed3e1461034a575b600080fd5b3480156100ca57600080fd5b506100d3610385565b6040805160208082528351818301528351919283929083019185019080838360005b8381101561010d5781810151838201526020016100f5565b50505050905090810190601f16801561013a5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561015457600080fd5b506101816004803603604081101561016b57600080fd5b50600160a060020a03813516906020013561041a565b604080519115158252519081900360200190f35b3480156101a157600080fd5b506101aa610480565b60408051918252519081900360200190f35b3480156101c857600080fd5b50610181600480360360608110156101df57600080fd5b50600160a060020a03813581169160208101359091169060400135610486565b34801561020b57600080fd5b50610214610591565b6040805160ff9092168252519081900360200190f35b34801561023657600080fd5b506102636004803603604081101561024d57600080fd5b50600160a060020a03813516906020013561059a565b005b34801561027157600080fd5b506101aa6004803603602081101561028857600080fd5b5035600160a060020a0316610694565b3480156102a457600080fd5b506102ad6106af565b60408051600160a060020a039092168252519081900360200190f35b3480156102d557600080fd5b506100d36106be565b3480156102ea57600080fd5b506101816004803603604081101561030157600080fd5b50600160a060020a03813516906020013561071c565b34801561032357600080fd5b506102636004803603602081101561033a57600080fd5b5035600160a060020a03166107cc565b34801561035657600080fd5b506101aa6004803603604081101561036d57600080fd5b50600160a060020a03813581169160200135166107fb565b60018054604080516020601f600260001961010087891615020190951694909404938401819004810282018101909252828152606093909290918301828280156104105780601f106103e557610100808354040283529160200191610410565b820191906000526020600020905b8154815290600101906020018083116103f357829003601f168201915b5050505050905090565b336000818152600560209081526040808320600160a060020a038716808552908352818420869055815186815291519394909390927f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925928290030190a350600192915050565b60005490565b600160a060020a0383166000908152600460205260408120546104af908363ffffffff61082616565b600160a060020a03851660009081526004602090815260408083209390935560058152828220338352905220546104ec908363ffffffff61082616565b600160a060020a038086166000908152600560209081526040808320338452825280832094909455918616815260049091522054610530908363ffffffff61083b16565b600160a060020a0380851660008181526004602090815260409182902094909455805186815290519193928816927fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef92918290030190a35060019392505050565b60035460ff1690565b600160a060020a038216151561063757604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152602360248201527f546865206163636f756e7420746f207365742062616c616e6365206973206e7560448201527f6c6c2e0000000000000000000000000000000000000000000000000000000000606482015290519081900360840190fd5b600160a060020a038216600090815260046020526040902054610660908263ffffffff61083b16565b600160a060020a0383166000908152600460205260408120919091555461068d908263ffffffff61083b16565b6000555050565b600160a060020a031660009081526004602052604090205490565b600654600160a060020a031681565b60028054604080516020601f60001961010060018716150201909416859004938401819004810282018101909252828152606093909290918301828280156104105780601f106103e557610100808354040283529160200191610410565b3360009081526004602052604081205461073c908363ffffffff61082616565b3360009081526004602052604080822092909255600160a060020a0385168152205461076e908363ffffffff61083b16565b600160a060020a0384166000818152600460209081526040918290209390935580518581529051919233927fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef9281900390910190a350600192915050565b6006805473ffffffffffffffffffffffffffffffffffffffff1916600160a060020a0392909216919091179055565b600160a060020a03918216600090815260056020908152604080832093909416825291909152205490565b60008282111561083557600080fd5b50900390565b60008282018381101561084d57600080fd5b939250505056fea165627a7a723058204999cdc0babe21c53ccf388cc63aefafd0bdb35c8cf44d72b7745660ce7daaaa0029",
+    "sourceMap": "816:648:16:-;;;1101:179;8:9:-1;5:2;;;30:1;27;20:12;5:2;1101:179:16;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;1101:179:16;;;;;;19:11:-1;14:3;11:20;8:2;;;44:1;41;34:12;8:2;62:21;;123:4;114:14;;138:31;;;135:2;;;182:1;179;172:12;135:2;213:10;;261:11;244:29;;285:43;;;282:58;-1:-1;233:115;230:2;;;361:1;358;351:12;230:2;0:372;;1101:179:16;;;;;;;19:11:-1;14:3;11:20;8:2;;;44:1;41;34:12;8:2;62:21;;123:4;114:14;;138:31;;;135:2;;;182:1;179;172:12;135:2;213:10;;261:11;244:29;;285:43;;;282:58;-1:-1;233:115;230:2;;;361:1;358;351:12;230:2;-1:-1;;1101:179:16;;;;;1483:1:13;1464:20;;1495:21;;1101:179:16;;-1:-1:-1;1101:179:16;-1:-1:-1;1227:7:16;;1101:179;;;;1495:21:13;;:11;;:21;;;;:::i;:::-;-1:-1:-1;1526:17:13;;;;:9;;:17;;;;;:::i;:::-;-1:-1:-1;1553:13:13;:25;;-1:-1:-1;;1553:25:13;;;;;;;;;;;;-1:-1:-1;816:648:16;;-1:-1:-1;;;;816:648:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;816:648:16;;;-1:-1:-1;816:648:16;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+    "deployedSourceMap": "816:648:16:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1746:87:13;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1746:87:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:100:-1;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;1746:87:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5915:234;;8:9:-1;5:2;;;30:1;27;20:12;5:2;5915:234:13;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;5915:234:13;;;;;;;;;;;;;;;;;;;;;;;;;;;2483:95;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2483:95:13;;;;;;;;;;;;;;;;;;;;4916:374;;8:9:-1;5:2;;;30:1;27;20:12;5:2;4916:374:13;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;4916:374:13;;;;;;;;;;;;;;;;;;2202:87;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2202:87:13;;;;;;;;;;;;;;;;;;;;;;;6487:313;;8:9:-1;5:2;;;30:1;27;20:12;5:2;6487:313:13;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;6487:313:13;;;;;;;;;;;2771:107;;8:9:-1;5:2;;;30:1;27;20:12;5:2;2771:107:13;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;2771:107:13;-1:-1:-1;;;;;2771:107:13;;;886:24:16;;8:9:-1;5:2;;;30:1;27;20:12;5:2;886:24:16;;;;;;;;-1:-1:-1;;;;;886:24:16;;;;;;;;;;;;;;1967:91:13;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1967:91:13;;;;3789:533;;8:9:-1;5:2;;;30:1;27;20:12;5:2;3789:533:13;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;3789:533:13;;;;;;;;;1360:102:16;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1360:102:16;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;1360:102:16;-1:-1:-1;;;;;1360:102:16;;;3212:179:13;;8:9:-1;5:2;;;30:1;27;20:12;5:2;3212:179:13;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;;;;;;3212:179:13;;;;;;;;;;;1746:87;1817:9;1810:16;;;;;;;;-1:-1:-1;;1810:16:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1785:13;;1810:16;;1817:9;;1810:16;;1817:9;1810:16;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1746:87;:::o;5915:234::-;6036:10;6000:12;6028:19;;;:7;:19;;;;;;;;-1:-1:-1;;;;;6028:29:13;;;;;;;;;;;:38;;;6082;;;;;;;6000:12;;6028:29;;6036:10;;6082:38;;;;;;;;-1:-1:-1;6138:4:13;5915:234;;;;:::o;2483:95::-;2529:7;2555:16;2483:95;:::o;4916:374::-;-1:-1:-1;;;;;5062:15:13;;5016:12;5062:15;;;:8;:15;;;;;;:27;;5082:6;5062:27;:19;:27;:::i;:::-;-1:-1:-1;;;;;5044:15:13;;;;;;:8;:15;;;;;;;;:45;;;;5128:7;:14;;;;;5143:10;5128:26;;;;;;:38;;5159:6;5128:38;:30;:38;:::i;:::-;-1:-1:-1;;;;;5099:14:13;;;;;;;:7;:14;;;;;;;;5114:10;5099:26;;;;;;;:67;;;;5192:13;;;;;:8;:13;;;;;:25;;5210:6;5192:25;:17;:25;:::i;:::-;-1:-1:-1;;;;;5176:13:13;;;;;;;:8;:13;;;;;;;;;:41;;;;5233:28;;;;;;;5176:13;;5233:28;;;;;;;;;;;;;-1:-1:-1;5279:4:13;4916:374;;;;;:::o;2202:87::-;2269:13;;;;2202:87;:::o;6487:313::-;-1:-1:-1;;;;;6596:20:13;;;;6575:102;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;6707:16:13;;;;;;:8;:16;;;;;;:28;;6728:6;6707:28;:20;:28;:::i;:::-;-1:-1:-1;;;;;6688:16:13;;;;;;:8;:16;;;;;:47;;;;6765:16;:28;;6786:6;6765:28;:20;:28;:::i;:::-;6746:16;:47;-1:-1:-1;;6487:313:13:o;2771:107::-;-1:-1:-1;;;;;2855:16:13;2829:7;2855:16;;;:8;:16;;;;;;;2771:107::o;886:24:16:-;;;-1:-1:-1;;;;;886:24:16;;:::o;1967:91:13:-;2040:11;2033:18;;;;;;;-1:-1:-1;;2033:18:13;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2008:13;;2033:18;;2040:11;;2033:18;;2040:11;2033:18;;;;;;;;;;;;;;;;;;;;;;;;3789:533;4170:10;3870:12;4161:20;;;:8;:20;;;;;;:32;;4186:6;4161:32;:24;:32;:::i;:::-;4147:10;4138:20;;;;:8;:20;;;;;;:55;;;;-1:-1:-1;;;;;4219:13:13;;;;;;:25;;4237:6;4219:25;:17;:25;:::i;:::-;-1:-1:-1;;;;;4203:13:13;;;;;;:8;:13;;;;;;;;;:41;;;;4260:33;;;;;;;4203:13;;4269:10;;4260:33;;;;;;;;;;-1:-1:-1;4311:4:13;3789:533;;;;:::o;1360:102:16:-;1433:9;:22;;-1:-1:-1;;1433:22:16;-1:-1:-1;;;;;1433:22:16;;;;;;;;;;1360:102::o;3212:179:13:-;-1:-1:-1;;;;;3359:15:13;;;3312:18;3359:15;;;:7;:15;;;;;;;;:25;;;;;;;;;;;;;3212:179::o;2252:145:0:-;2310:7;2337:6;;;;2329:15;;;;;;-1:-1:-1;2366:5:0;;;2252:145::o;2470:::-;2528:7;2559:5;;;2582:6;;;;2574:15;;;;;;2607:1;2470:145;-1:-1:-1;;;2470:145:0:o",
+    "source": "/* solhint-disable-next-line compiler-fixed */\npragma solidity ^0.5.0;\n\n// Copyright 2019 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nimport \"./EIP20TokenFake.sol\";\n\n/**\n * @title EIP20TokenMock contract.\n *\n * @notice Provides EIP20Token with mock functionality to facilitate testing.\n */\ncontract UtilityTokenFake is EIP20TokenFake {\n\n    /* Storage */\n\n    address public coGateway;\n\n\n    /* Special Functions */\n\n    /**\n     *  @param _symbol Symbol of the token.\n     *  @param _name Name of the token.\n     *  @param _decimals Decimal places of the token.\n     */\n    constructor(\n        string memory _symbol,\n        string memory _name,\n        uint8 _decimals\n    )\n        EIP20TokenFake(_symbol, _name, _decimals)\n        public\n    {\n    }\n\n\n    /* External functions */\n\n    /** @notice Sets coGateway address. */\n    function setCoGateway(address _coGateway)\n        external\n    {\n        coGateway = _coGateway;\n    }\n}\n",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/UtilityTokenFake.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/UtilityTokenFake.sol",
+        "exportedSymbols": {
+            "UtilityTokenFake": [2340]
+        },
+        "id": 2341,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 2309,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "47:23:16"
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/EIP20TokenFake.sol",
+                "file": "./EIP20TokenFake.sol",
+                "id": 2310,
+                "nodeType": "ImportDirective",
+                "scope": 2341,
+                "sourceUnit": 2132,
+                "src": "660:30:16",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 2311,
+                            "name": "EIP20TokenFake",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 2131,
+                            "src": "845:14:16",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_EIP20TokenFake_$2131",
+                                "typeString": "contract EIP20TokenFake"
+                            }
+                        },
+                        "id": 2312,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "845:14:16"
+                    }
+                ],
+                "contractDependencies": [2131, 2900],
+                "contractKind": "contract",
+                "documentation": "@title EIP20TokenMock contract.\n * @notice Provides EIP20Token with mock functionality to facilitate testing.",
+                "fullyImplemented": true,
+                "id": 2340,
+                "linearizedBaseContracts": [2340, 2131, 2900],
+                "name": "UtilityTokenFake",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 2314,
+                        "name": "coGateway",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2340,
+                        "src": "886:24:16",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 2313,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "886:7:16",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 2328,
+                            "nodeType": "Block",
+                            "src": "1273:7:16",
+                            "statements": []
+                        },
+                        "documentation": " @param _symbol Symbol of the token.\n @param _name Name of the token.\n @param _decimals Decimal places of the token.",
+                        "id": 2329,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [
+                            {
+                                "arguments": [
+                                    {
+                                        "argumentTypes": null,
+                                        "id": 2323,
+                                        "name": "_symbol",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2316,
+                                        "src": "1227:7:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_memory_ptr",
+                                            "typeString": "string memory"
+                                        }
+                                    },
+                                    {
+                                        "argumentTypes": null,
+                                        "id": 2324,
+                                        "name": "_name",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2318,
+                                        "src": "1236:5:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_memory_ptr",
+                                            "typeString": "string memory"
+                                        }
+                                    },
+                                    {
+                                        "argumentTypes": null,
+                                        "id": 2325,
+                                        "name": "_decimals",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2320,
+                                        "src": "1243:9:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint8",
+                                            "typeString": "uint8"
+                                        }
+                                    }
+                                ],
+                                "id": 2326,
+                                "modifierName": {
+                                    "argumentTypes": null,
+                                    "id": 2322,
+                                    "name": "EIP20TokenFake",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2131,
+                                    "src": "1212:14:16",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_type$_t_contract$_EIP20TokenFake_$2131_$",
+                                        "typeString": "type(contract EIP20TokenFake)"
+                                    }
+                                },
+                                "nodeType": "ModifierInvocation",
+                                "src": "1212:41:16"
+                            }
+                        ],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2321,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2316,
+                                    "name": "_symbol",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2329,
+                                    "src": "1122:21:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_string_memory_ptr",
+                                        "typeString": "string"
+                                    },
+                                    "typeName": {
+                                        "id": 2315,
+                                        "name": "string",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1122:6:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_storage_ptr",
+                                            "typeString": "string"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2318,
+                                    "name": "_name",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2329,
+                                    "src": "1153:19:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_string_memory_ptr",
+                                        "typeString": "string"
+                                    },
+                                    "typeName": {
+                                        "id": 2317,
+                                        "name": "string",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1153:6:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_storage_ptr",
+                                            "typeString": "string"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2320,
+                                    "name": "_decimals",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2329,
+                                    "src": "1182:15:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint8",
+                                        "typeString": "uint8"
+                                    },
+                                    "typeName": {
+                                        "id": 2319,
+                                        "name": "uint8",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1182:5:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint8",
+                                            "typeString": "uint8"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1112:91:16"
+                        },
+                        "returnParameters": {
+                            "id": 2327,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1273:0:16"
+                        },
+                        "scope": 2340,
+                        "src": "1101:179:16",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 2338,
+                            "nodeType": "Block",
+                            "src": "1423:39:16",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2336,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2334,
+                                            "name": "coGateway",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2314,
+                                            "src": "1433:9:16",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2335,
+                                            "name": "_coGateway",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2331,
+                                            "src": "1445:10:16",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "1433:22:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 2337,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1433:22:16"
+                                }
+                            ]
+                        },
+                        "documentation": "@notice Sets coGateway address. ",
+                        "id": 2339,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setCoGateway",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2332,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2331,
+                                    "name": "_coGateway",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2339,
+                                    "src": "1382:18:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 2330,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1382:7:16",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1381:20:16"
+                        },
+                        "returnParameters": {
+                            "id": 2333,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1423:0:16"
+                        },
+                        "scope": 2340,
+                        "src": "1360:102:16",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 2341,
+                "src": "816:648:16"
+            }
+        ],
+        "src": "47:1418:16"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/UtilityTokenFake.sol",
+        "exportedSymbols": {
+            "UtilityTokenFake": [2340]
+        },
+        "id": 2341,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 2309,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "47:23:16"
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/test_doubles/unit_tests/EIP20TokenFake.sol",
+                "file": "./EIP20TokenFake.sol",
+                "id": 2310,
+                "nodeType": "ImportDirective",
+                "scope": 2341,
+                "sourceUnit": 2132,
+                "src": "660:30:16",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 2311,
+                            "name": "EIP20TokenFake",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 2131,
+                            "src": "845:14:16",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_EIP20TokenFake_$2131",
+                                "typeString": "contract EIP20TokenFake"
+                            }
+                        },
+                        "id": 2312,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "845:14:16"
+                    }
+                ],
+                "contractDependencies": [2131, 2900],
+                "contractKind": "contract",
+                "documentation": "@title EIP20TokenMock contract.\n * @notice Provides EIP20Token with mock functionality to facilitate testing.",
+                "fullyImplemented": true,
+                "id": 2340,
+                "linearizedBaseContracts": [2340, 2131, 2900],
+                "name": "UtilityTokenFake",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 2314,
+                        "name": "coGateway",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 2340,
+                        "src": "886:24:16",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 2313,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "886:7:16",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 2328,
+                            "nodeType": "Block",
+                            "src": "1273:7:16",
+                            "statements": []
+                        },
+                        "documentation": " @param _symbol Symbol of the token.\n @param _name Name of the token.\n @param _decimals Decimal places of the token.",
+                        "id": 2329,
+                        "implemented": true,
+                        "kind": "constructor",
+                        "modifiers": [
+                            {
+                                "arguments": [
+                                    {
+                                        "argumentTypes": null,
+                                        "id": 2323,
+                                        "name": "_symbol",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2316,
+                                        "src": "1227:7:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_memory_ptr",
+                                            "typeString": "string memory"
+                                        }
+                                    },
+                                    {
+                                        "argumentTypes": null,
+                                        "id": 2324,
+                                        "name": "_name",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2318,
+                                        "src": "1236:5:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_memory_ptr",
+                                            "typeString": "string memory"
+                                        }
+                                    },
+                                    {
+                                        "argumentTypes": null,
+                                        "id": 2325,
+                                        "name": "_decimals",
+                                        "nodeType": "Identifier",
+                                        "overloadedDeclarations": [],
+                                        "referencedDeclaration": 2320,
+                                        "src": "1243:9:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint8",
+                                            "typeString": "uint8"
+                                        }
+                                    }
+                                ],
+                                "id": 2326,
+                                "modifierName": {
+                                    "argumentTypes": null,
+                                    "id": 2322,
+                                    "name": "EIP20TokenFake",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2131,
+                                    "src": "1212:14:16",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_type$_t_contract$_EIP20TokenFake_$2131_$",
+                                        "typeString": "type(contract EIP20TokenFake)"
+                                    }
+                                },
+                                "nodeType": "ModifierInvocation",
+                                "src": "1212:41:16"
+                            }
+                        ],
+                        "name": "",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2321,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2316,
+                                    "name": "_symbol",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2329,
+                                    "src": "1122:21:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_string_memory_ptr",
+                                        "typeString": "string"
+                                    },
+                                    "typeName": {
+                                        "id": 2315,
+                                        "name": "string",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1122:6:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_storage_ptr",
+                                            "typeString": "string"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2318,
+                                    "name": "_name",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2329,
+                                    "src": "1153:19:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "memory",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_string_memory_ptr",
+                                        "typeString": "string"
+                                    },
+                                    "typeName": {
+                                        "id": 2317,
+                                        "name": "string",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1153:6:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_string_storage_ptr",
+                                            "typeString": "string"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                },
+                                {
+                                    "constant": false,
+                                    "id": 2320,
+                                    "name": "_decimals",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2329,
+                                    "src": "1182:15:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_uint8",
+                                        "typeString": "uint8"
+                                    },
+                                    "typeName": {
+                                        "id": 2319,
+                                        "name": "uint8",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1182:5:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_uint8",
+                                            "typeString": "uint8"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1112:91:16"
+                        },
+                        "returnParameters": {
+                            "id": 2327,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1273:0:16"
+                        },
+                        "scope": 2340,
+                        "src": "1101:179:16",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 2338,
+                            "nodeType": "Block",
+                            "src": "1423:39:16",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "id": 2336,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "lValueRequested": false,
+                                        "leftHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2334,
+                                            "name": "coGateway",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2314,
+                                            "src": "1433:9:16",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "nodeType": "Assignment",
+                                        "operator": "=",
+                                        "rightHandSide": {
+                                            "argumentTypes": null,
+                                            "id": 2335,
+                                            "name": "_coGateway",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [],
+                                            "referencedDeclaration": 2331,
+                                            "src": "1445:10:16",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_address",
+                                                "typeString": "address"
+                                            }
+                                        },
+                                        "src": "1433:22:16",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "id": 2337,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1433:22:16"
+                                }
+                            ]
+                        },
+                        "documentation": "@notice Sets coGateway address. ",
+                        "id": 2339,
+                        "implemented": true,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "setCoGateway",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 2332,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 2331,
+                                    "name": "_coGateway",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 2339,
+                                    "src": "1382:18:16",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 2330,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "1382:7:16",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "1381:20:16"
+                        },
+                        "returnParameters": {
+                            "id": 2333,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1423:0:16"
+                        },
+                        "scope": 2340,
+                        "src": "1360:102:16",
+                        "stateMutability": "nonpayable",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 2341,
+                "src": "816:648:16"
+            }
+        ],
+        "src": "47:1418:16"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.445Z",
+    "devdoc": {
+        "methods": {
+            "allowance(address,address)": {
+                "params": {
+                    "_owner": "Address of the owner account.",
+                    "_spender": "Address of the spender account."
+                },
+                "return": "remaining_ Remaining allowance for the spender to spend from                   the owner's account."
+            },
+            "approve(address,uint256)": {
+                "details": "Allows _spender address to withdraw from function caller's account,     multiple times up to the _value amount, if this function is called     again it overwrites the current allowance with _value.     Emits \"Approval\" event.",
+                "params": {
+                    "_spender": "Address authorized to spend from the function                caller's address.",
+                    "_value": "Amount up to which spender is authorized to spend."
+                },
+                "return": "True for a successful approval, false otherwise."
+            },
+            "balanceOf(address)": {
+                "params": {
+                    "_owner": "Address of the owner account."
+                },
+                "return": "Account balance of the owner account."
+            },
+            "constructor": {
+                "params": {
+                    "_decimals": "Decimal places of the token.",
+                    "_name": "Name of the token.",
+                    "_symbol": "Symbol of the token."
+                }
+            },
+            "decimals()": {
+                "details": "Implements EIP20TokenInterface::decimals() function.",
+                "return": "Decimal places of the EIP20 token."
+            },
+            "increaseBalance(address,uint256)": {
+                "details": "The function is not part of EIP20TokenInterface and is here     to fill the balance of accounts during testing.",
+                "params": {
+                    "_owner": "Account's address.",
+                    "_value": "Amount to increase for the account."
+                }
+            },
+            "name()": {
+                "details": "Implements EIP20TokenInterface::name() function.",
+                "return": "Name of the EIP20 token."
+            },
+            "symbol()": {
+                "details": "Implements EIP20TokenInterface::symbol() function.",
+                "return": "Symbol of the EIP20 token."
+            },
+            "totalSupply()": {
+                "details": "Implements EIP20TokenInterface::totalSupply() function.     Function is only overriden and not implemented as it's not used     during testing."
+            },
+            "transfer(address,uint256)": {
+                "details": "Fires the \"Transfer\" event, throws if, _from account does not     have enough tokens to spend.",
+                "params": {
+                    "_to": "Address to which tokens are transferred.",
+                    "_value": "Amount of tokens to be transferred."
+                },
+                "return": "True for a successful transfer, false otherwise."
+            },
+            "transferFrom(address,address,uint256)": {
+                "details": "Allows a contract to transfer tokens on behalf of _from address     to _to address, the function caller has to be pre-authorized for     multiple transfers up to the total of _value amount by the     _from address.",
+                "params": {
+                    "_from": "Address from which tokens are transferred.",
+                    "_to": "Address to which tokens are transferred.",
+                    "_value": "Amount of tokens transferred."
+                },
+                "return": "True for a successful transfer, false otherwise."
+            }
+        },
+        "title": "EIP20TokenMock contract."
+    },
+    "userdoc": {
+        "methods": {
+            "allowance(address,address)": {
+                "notice": "Returns allowance of a spender for the owner account."
+            },
+            "approve(address,uint256)": {
+                "notice": "Allows spender to withdraw from function caller's account."
+            },
+            "balanceOf(address)": {
+                "notice": "Returns balance of the owner account."
+            },
+            "increaseBalance(address,uint256)": {
+                "notice": "Increase balance of the account with the specified value."
+            },
+            "setCoGateway(address)": {
+                "notice": "Sets coGateway address. "
+            },
+            "transfer(address,uint256)": {
+                "notice": "Transfers an amount from msg.sender account."
+            },
+            "transferFrom(address,address,uint256)": {
+                "notice": "Transfer the specified amount between accounts."
+            }
+        },
+        "notice": "Provides EIP20Token with mock functionality to facilitate testing."
+    }
+}

@@ -1,6 +1,8 @@
 import { join } from 'path';
-import { AbiRepository } from '../../src/abi/repo';
+import { AbiRepository, sortAbis } from '../../src/abi/repo';
 import { suppressDebugLogging } from '../../src/utils/debug';
+import { parseSignature, computeSignature } from '../../src/abi/signature';
+import { AbiItemDefinition } from '../../src/abi/item';
 
 let logHandle: any;
 beforeEach(() => {
@@ -173,5 +175,90 @@ test('AbiRepository#decodeLogEvent', async () => {
           ],
           "signature": "Transfer(address,address,uint256)",
         }
+    `);
+});
+
+test('decode anonymous with collision', async () => {
+    const abiRepo = new AbiRepository({
+        decodeAnonymous: true,
+        fingerprintContracts: false,
+    });
+    await abiRepo.initialize();
+
+    expect(
+        abiRepo.decodeFunctionCall(
+            '0x095ea7b30000000000000000000000002a085b419358a0f309775d04528478de0dab55220000000000000000000000000000000000c097ce7bc907180000000000000000',
+            {}
+        )
+    ).toMatchInlineSnapshot(`
+        Object {
+          "args": undefined,
+          "name": "approve",
+          "params": Array [
+            Object {
+              "name": undefined,
+              "type": "address",
+              "value": "0x2A085B419358A0F309775D04528478dE0dab5522",
+            },
+            Object {
+              "name": undefined,
+              "type": "uint256",
+              "value": "1000000000000000042420637374017961984",
+            },
+          ],
+          "signature": "approve(address,uint256)",
+        }
+    `);
+});
+
+test('sortAbis', () => {
+    const testSort = (...sigs: (string | AbiItemDefinition)[]): string[] =>
+        sortAbis(sigs.map(s => (typeof s === 'string' ? parseSignature(s, 'function') : s))).map(abi =>
+            computeSignature(abi)
+        );
+
+    expect(testSort('foo()')).toMatchInlineSnapshot(`
+        Array [
+          "foo()",
+        ]
+    `);
+
+    expect(
+        testSort('sign_szabo_bytecode(bytes16,uint128)', 'approve(address,uint256)', {
+            type: 'function',
+            name: 'ZZfoobaradingdongblah',
+            inputs: [
+                { type: 'address', name: '' },
+                { type: 'address', name: '' },
+                { type: 'address', name: '' },
+                { type: 'address', name: '' },
+            ],
+        })
+    ).toMatchInlineSnapshot(`
+        Array [
+          "approve(address,uint256)",
+          "sign_szabo_bytecode(bytes16,uint128)",
+          "ZZfoobaradingdongblah(address,address,address,address)",
+        ]
+    `);
+
+    expect(
+        testSort('sign_szabo_bytecode(bytes16,uint128)', 'approve(address,uint256)', {
+            type: 'function',
+            name: 'ZZfoobaradingdongblah',
+            contractAddress: '0x123',
+            inputs: [
+                { type: 'address', name: '' },
+                { type: 'address', name: '' },
+                { type: 'address', name: '' },
+                { type: 'address', name: '' },
+            ],
+        })
+    ).toMatchInlineSnapshot(`
+        Array [
+          "ZZfoobaradingdongblah(address,address,address,address)",
+          "approve(address,uint256)",
+          "sign_szabo_bytecode(bytes16,uint128)",
+        ]
     `);
 });
