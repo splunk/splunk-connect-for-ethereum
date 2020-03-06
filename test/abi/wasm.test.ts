@@ -46,10 +46,10 @@ test('parseSignature', () => {
     `);
 
     expect(() => parseFunctionSignature('foo')).toThrowErrorMatchingInlineSnapshot(
-        `"Unable to parse signature: no open parentesis found"`
+        `"Unable to parse signature: no open parenthesis found"`
     );
     expect(() => parseFunctionSignature('')).toThrowErrorMatchingInlineSnapshot(
-        `"Unable to parse signature: no open parentesis found"`
+        `"Unable to parse signature: no open parenthesis found"`
     );
     expect(() => parseFunctionSignature('foo(blah)')).toThrowErrorMatchingInlineSnapshot(
         `"Unable to parse signature: Invalid name \`blah\`"`

@@ -155,8 +155,7 @@ pub fn parse_signature(sig: &String, allow_indexed_flag: bool) -> Result<AbiItem
             }
         }
         None => Err(String::from(
-            "Unable to parse signature: no open parentesis found",
+            "Unable to parse signature: no open parenthesis found",
         )),
     }
 }
-
