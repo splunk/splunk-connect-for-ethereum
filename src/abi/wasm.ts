@@ -1,16 +1,16 @@
 import { AbiItem } from 'web3-utils';
 import {
     abi_decode_parameters,
-    get_canonical_type,
     get_data_size,
     init,
+    is_array_type,
     is_valid_param_type,
     parse_event_signature,
     parse_function_signature,
-    is_array_type,
     sha3 as wasm_sha3,
     to_checksum_address,
 } from '../../wasm/ethabi/pkg';
+import { memory } from '../../wasm/ethabi/pkg/ethlogger_ethabi_bg';
 import { createModuleDebug } from '../utils/debug';
 import { AbiType } from './datatypes';
 
@@ -29,43 +29,38 @@ function ensureInitialized() {
     }
 }
 
+class EthAbiError extends Error {
+    constructor(msg: string) {
+        super(msg);
+    }
+}
+
+function unwrapJsResult<T>(result: any): T {
+    if (result.t === 'Ok') {
+        return result.c as T;
+    } else if (result.t === 'Err') {
+        throw new EthAbiError(result.c);
+    } else {
+        throw new EthAbiError('Unexpected return value from wasm module');
+    }
+}
+
 export function abiDecodeParameters(input: string, types: AbiType[]): Value[] {
     ensureInitialized();
     const data = new Uint8Array(Buffer.from(input, 'hex'));
-    try {
-        return abi_decode_parameters(data, types);
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    return unwrapJsResult(abi_decode_parameters(data, types));
 }
 
 export function parseFunctionSignature(signature: string): AbiItem {
     ensureInitialized();
-    try {
-        const result = parse_function_signature(signature);
-        return { type: 'function', ...result };
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    const result = unwrapJsResult(parse_function_signature(signature)) as Object;
+    return { type: 'function', ...result };
 }
 
 export function parseEventSignature(signature: string): AbiItem {
     ensureInitialized();
-    try {
-        const result = parse_event_signature(signature);
-        return { type: 'event', ...result };
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    const result = unwrapJsResult(parse_event_signature(signature)) as Object;
+    return { type: 'event', ...result };
 }
 
 export function isValidDataType(dataType: string): boolean {
@@ -75,52 +70,24 @@ export function isValidDataType(dataType: string): boolean {
 
 export function isArrayType(dataType: string): boolean {
     ensureInitialized();
-    return is_array_type(dataType);
-}
-
-export function getCanonicalDataType(dataType: string): string {
-    ensureInitialized();
-    try {
-        return get_canonical_type(dataType);
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    return unwrapJsResult(is_array_type(dataType));
 }
 
 export function getDataSize(dataType: string): { length: number; exact: boolean } {
     ensureInitialized();
-    try {
-        return get_data_size(dataType);
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    return unwrapJsResult(get_data_size(dataType));
 }
 
 export function sha3(str: string): string | null {
     ensureInitialized();
-    try {
-        return wasm_sha3(str) ?? null;
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    return wasm_sha3(str) ?? null;
 }
+
 export function toChecksumAddress(address: string): string {
     ensureInitialized();
-    try {
-        return to_checksum_address(address);
-    } catch (e) {
-        if (typeof e === 'string') {
-            throw new Error(e);
-        }
-        throw e;
-    }
+    return unwrapJsResult(to_checksum_address(address));
+}
+
+export function getWasmMemorySize(): number {
+    return memory.buffer.byteLength;
 }

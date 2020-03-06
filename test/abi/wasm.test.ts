@@ -1,11 +1,4 @@
-import {
-    parseFunctionSignature,
-    isValidDataType,
-    getCanonicalDataType,
-    getDataSize,
-    sha3,
-    toChecksumAddress,
-} from '../../src/abi/wasm';
+import { getDataSize, isValidDataType, parseFunctionSignature, sha3, toChecksumAddress } from '../../src/abi/wasm';
 
 test('parseSignature', () => {
     expect(parseFunctionSignature('Hello(uint256)')).toMatchInlineSnapshot(`
@@ -99,11 +92,6 @@ test('isValidDataType', () => {
     expect(isValidDataType('int32[]')).toBe(true);
     expect(isValidDataType('(int32,bool)')).toBe(true);
     expect(isValidDataType('(int27,bool)')).toBe(false);
-});
-
-test('getCanonicalDataType', () => {
-    expect(getCanonicalDataType('uint')).toMatchInlineSnapshot(`"uint256"`);
-    expect(getCanonicalDataType('int[]')).toMatchInlineSnapshot(`"int256[]"`);
 });
 
 test('getDataSize', () => {

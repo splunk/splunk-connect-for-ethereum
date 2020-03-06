@@ -7,6 +7,7 @@ extern crate serde_derive;
 
 use ethabi::param_type::ParamType;
 use ethabi::{decode, Address};
+use serde::Serialize;
 use values::{token_to_value, Value};
 use wasm_bindgen::prelude::*;
 
@@ -20,18 +21,19 @@ extern "C" {
     fn log(s: &str);
 }
 
-#[wasm_bindgen(typescript_custom_section)]
-const TS_APPEND_CONTENT: &'static str = r#"
-export type ParameterValue = null | string | number | boolean | Array<ParameterValue>;
-export type DecodedParameters = ParameterValue[];
-export function abi_decode_parameters(data: Uint8Array, type_list: string[]): DecodedParameters;
-export interface AbiInput { type: string; components?: AbiInput[]; }
-export interface AbiItem { name?: string; inputs: AbiInput[]; }
-export function parse_signature(signature: string): AbiItem;
-"#;
-
 #[derive(Serialize, Debug)]
 pub struct DecodedParameters(Vec<Value>);
+
+#[derive(Serialize, Debug)]
+#[serde(tag = "t", content = "c")]
+pub enum JsResult<T> {
+    Ok(T),
+    Err(String),
+}
+
+fn serialize_js_result<T: Serialize>(result: &JsResult<T>) -> JsValue {
+    JsValue::from_serde(result).expect("Failed to serialize JsResult")
+}
 
 fn encode_type_list(type_list: Box<[JsValue]>) -> String {
     return format!(
@@ -51,46 +53,41 @@ fn encode_type_list(type_list: Box<[JsValue]>) -> String {
 }
 
 #[wasm_bindgen]
-pub fn abi_decode_parameters(data: &[u8], type_list: Box<[JsValue]>) -> Result<JsValue, JsValue> {
-    match datatypes::parse_param_type(&encode_type_list(type_list)) {
-        Ok(ParamType::Tuple(params)) => {
-            let p = params
-                .iter()
-                .map(|p| *(*p).clone())
-                .collect::<Vec<ParamType>>();
-            match decode(&p[..], data) {
-                Ok(tokens) => Ok(JsValue::from_serde(&DecodedParameters(
-                    tokens.iter().map(|t| token_to_value(&t)).collect(),
-                ))
-                .unwrap()),
-                Err(err) => Err(JsValue::from(format!("Failed to decode: {:?}", err))),
+pub fn abi_decode_parameters(data: &[u8], type_list: Box<[JsValue]>) -> JsValue {
+    serialize_js_result(
+        &match datatypes::parse_param_type(&encode_type_list(type_list)) {
+            Ok(ParamType::Tuple(params)) => {
+                let p = params
+                    .iter()
+                    .map(|p| *(*p).clone())
+                    .collect::<Vec<ParamType>>();
+                match decode(&p[..], data) {
+                    Ok(tokens) => JsResult::Ok(DecodedParameters(
+                        tokens.iter().map(|t| token_to_value(&t)).collect(),
+                    )),
+                    Err(err) => JsResult::Err(format!("Failed to decode: {:?}", err)),
+                }
             }
-        }
-        Err(e) => Err(JsValue::from(format!("Failed to decode: {:?}", e))),
-        _ => Err(JsValue::from_str("Unable to parse parameter list")),
-    }
+            Err(e) => JsResult::Err(format!("Failed to decode: {:?}", e)),
+            _ => JsResult::Err(format!("Unable to parse parameter list")),
+        },
+    )
 }
 
 #[wasm_bindgen]
-pub fn parse_function_signature(signature: String) -> Result<JsValue, JsValue> {
-    match sig::parse_signature(&signature, false) {
-        Ok(item) => match JsValue::from_serde(&item) {
-            Ok(val) => Ok(val),
-            Err(e) => Err(JsValue::from(format!("Failed to serialize result: {}", e))),
-        },
-        Err(msg) => Err(JsValue::from(msg)),
-    }
+pub fn parse_function_signature(signature: String) -> JsValue {
+    serialize_js_result(&match sig::parse_signature(&signature, false) {
+        Ok(item) => JsResult::Ok(item),
+        Err(msg) => JsResult::Err(msg),
+    })
 }
 
 #[wasm_bindgen]
-pub fn parse_event_signature(signature: String) -> Result<JsValue, JsValue> {
-    match sig::parse_signature(&signature, true) {
-        Ok(item) => match JsValue::from_serde(&item) {
-            Ok(val) => Ok(val),
-            Err(e) => Err(JsValue::from(format!("Failed to serialize result: {}", e))),
-        },
-        Err(msg) => Err(JsValue::from(msg)),
-    }
+pub fn parse_event_signature(signature: String) -> JsValue {
+    serialize_js_result(&match sig::parse_signature(&signature, true) {
+        Ok(item) => JsResult::Ok(item),
+        Err(msg) => JsResult::Err(msg),
+    })
 }
 
 #[wasm_bindgen]
@@ -102,21 +99,13 @@ pub fn is_valid_param_type(type_str: String) -> bool {
 }
 
 #[wasm_bindgen]
-pub fn get_canonical_type(type_str: String) -> Result<String, JsValue> {
-    match datatypes::parse_param_type(&type_str) {
-        Ok(t) => Ok(format!("{}", t)),
-        Err(e) => Err(JsValue::from(format!("{}", e))),
-    }
-}
-
-#[wasm_bindgen]
-pub fn is_array_type(data_type: String) -> Result<bool, JsValue> {
-    match datatypes::parse_param_type(&data_type) {
-        Ok(ParamType::Array(_)) => Ok(true),
-        Ok(ParamType::FixedArray(_, _)) => Ok(true),
-        Ok(_) => Ok(false),
-        Err(e) => Err(JsValue::from(format!("{}", e))),
-    }
+pub fn is_array_type(data_type: String) -> JsValue {
+    serialize_js_result(&match datatypes::parse_param_type(&data_type) {
+        Ok(ParamType::Array(_)) => JsResult::Ok(true),
+        Ok(ParamType::FixedArray(_, _)) => JsResult::Ok(true),
+        Ok(_) => JsResult::Ok(false),
+        Err(e) => JsResult::Err(format!("{}", e)),
+    })
 }
 
 #[derive(Serialize, Debug)]
@@ -126,32 +115,39 @@ pub struct ParamDataSize {
 }
 
 #[wasm_bindgen]
-pub fn get_data_size(type_str: String) -> Result<JsValue, JsValue> {
-    match datatypes::parse_param_type(&type_str) {
+pub fn get_data_size(type_str: String) -> JsValue {
+    serialize_js_result(&match datatypes::parse_param_type(&type_str) {
         Ok(t) => match datatypes::get_data_size(&t) {
-            (size, exact) => match JsValue::from_serde(&ParamDataSize {
+            (size, exact) => JsResult::Ok(ParamDataSize {
                 length: size,
                 exact: exact,
-            }) {
-                Ok(val) => Ok(val),
-                Err(e) => Err(JsValue::from(format!("Failed to serialize result: {}", e))),
-            },
+            }),
         },
-        Err(err) => Err(JsValue::from(err)),
-    }
+        Err(err) => JsResult::Err(err),
+    })
 }
 
 #[wasm_bindgen]
-pub fn to_checksum_address(address_str: String) -> Result<String, JsValue> {
+pub fn to_checksum_address(address_str: String) -> JsValue {
+    serialize_js_result(&match to_checksum_address_internal(address_str) {
+        Ok(v) => JsResult::Ok(v),
+        Err(e) => JsResult::Err(e),
+    })
+}
+
+pub fn to_checksum_address_internal(address_str: String) -> Result<String, String> {
     if !address_str.starts_with("0x") {
-        return Err(JsValue::from(format!("Invalid address {:?} (expected \"0x\" prefix)", address_str)));
+        return Err(format!(
+            "Invalid address {:?} (expected \"0x\" prefix)",
+            address_str
+        ));
     }
     let decoded = match values::from_hex(&address_str) {
         Ok(v) => Ok(v),
-        Err(_) => Err(JsValue::from(format!("Invalid address {:?}", address_str))),
+        Err(_) => Err(format!("Invalid address {:?}", address_str)),
     }?;
     if decoded.len() != 20 {
-        return Err(JsValue::from(format!("Invalid size of address {}", address_str)));
+        return Err(format!("Invalid size of address {}", address_str));
     }
     let address: Address = Address::from_slice(&decoded);
     Ok(values::to_checksum(&address))
