@@ -1,0 +1,218 @@
+{
+    "contractName": "UtilityTokenRequiredInterface",
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "coGateway",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "",
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "sourceMap": "",
+    "deployedSourceMap": "",
+    "source": "/* solhint-disable-next-line compiler-fixed */\npragma solidity ^0.5.0;\n\n// Copyright 2017 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n/**\n *  @title Provides the minimum required interface for utility token.\n */\ninterface UtilityTokenRequiredInterface {\n\n    /* External Functions */\n\n    /**\n     * @notice Returns coGateway address of utility token.\n     */\n    function coGateway() external view returns (address);\n\n}\n",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/token/UtilityTokenRequiredInterface.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/token/UtilityTokenRequiredInterface.sol",
+        "exportedSymbols": {
+            "UtilityTokenRequiredInterface": [3974]
+        },
+        "id": 3975,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 3968,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "47:23:25"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": " @title Provides the minimum required interface for utility token.",
+                "fullyImplemented": false,
+                "id": 3974,
+                "linearizedBaseContracts": [3974],
+                "name": "UtilityTokenRequiredInterface",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns coGateway address of utility token.",
+                        "id": 3973,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "coGateway",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 3969,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "908:2:25"
+                        },
+                        "returnParameters": {
+                            "id": 3972,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 3971,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 3973,
+                                    "src": "934:7:25",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 3970,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "934:7:25",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "933:9:25"
+                        },
+                        "scope": 3974,
+                        "src": "890:53:25",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 3975,
+                "src": "738:208:25"
+            }
+        ],
+        "src": "47:900:25"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/token/UtilityTokenRequiredInterface.sol",
+        "exportedSymbols": {
+            "UtilityTokenRequiredInterface": [3974]
+        },
+        "id": 3975,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 3968,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "47:23:25"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "interface",
+                "documentation": " @title Provides the minimum required interface for utility token.",
+                "fullyImplemented": false,
+                "id": 3974,
+                "linearizedBaseContracts": [3974],
+                "name": "UtilityTokenRequiredInterface",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "body": null,
+                        "documentation": "@notice Returns coGateway address of utility token.",
+                        "id": 3973,
+                        "implemented": false,
+                        "kind": "function",
+                        "modifiers": [],
+                        "name": "coGateway",
+                        "nodeType": "FunctionDefinition",
+                        "parameters": {
+                            "id": 3969,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "908:2:25"
+                        },
+                        "returnParameters": {
+                            "id": 3972,
+                            "nodeType": "ParameterList",
+                            "parameters": [
+                                {
+                                    "constant": false,
+                                    "id": 3971,
+                                    "name": "",
+                                    "nodeType": "VariableDeclaration",
+                                    "scope": 3973,
+                                    "src": "934:7:25",
+                                    "stateVariable": false,
+                                    "storageLocation": "default",
+                                    "typeDescriptions": {
+                                        "typeIdentifier": "t_address",
+                                        "typeString": "address"
+                                    },
+                                    "typeName": {
+                                        "id": 3970,
+                                        "name": "address",
+                                        "nodeType": "ElementaryTypeName",
+                                        "src": "934:7:25",
+                                        "stateMutability": "nonpayable",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_address",
+                                            "typeString": "address"
+                                        }
+                                    },
+                                    "value": null,
+                                    "visibility": "internal"
+                                }
+                            ],
+                            "src": "933:9:25"
+                        },
+                        "scope": 3974,
+                        "src": "890:53:25",
+                        "stateMutability": "view",
+                        "superFunction": null,
+                        "visibility": "external"
+                    }
+                ],
+                "scope": 3975,
+                "src": "738:208:25"
+            }
+        ],
+        "src": "47:900:25"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.460Z",
+    "devdoc": {
+        "methods": {},
+        "title": "Provides the minimum required interface for utility token."
+    },
+    "userdoc": {
+        "methods": {
+            "coGateway()": {
+                "notice": "Returns coGateway address of utility token."
+            }
+        }
+    }
+}

@@ -1,0 +1,619 @@
+{
+    "contractName": "GnosisSafeModule",
+    "abi": [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "manager",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"manager\",\"outputs\":[{\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Instead of inheriting from     gnosis/safe-contracts/contracts/base/Module.sol and pulling all needed     contracts by Module.sol into openst-contracts building process,     we define this contract, that contains only required, public interface     of Module.sol. *      The current contract is non-upgradable in contrast to GnosisSafe     Module contract.\",\"methods\":{},\"title\":\"Contract contains the required, public interface by       gnosis/safe-contracts/contracts/base/Module.sol\"},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModule.sol\":\"GnosisSafeModule\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModule.sol\":{\"keccak256\":\"0x593c6815028d6f449dce117fafe6980121ed563f6aa765995b61a5b706491c06\",\"urls\":[\"bzzr://f8cefd445df0975511a81c88669148f1b4e424f217aeee6e0532819542d2cd94\"]},\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModuleManagerInterface.sol\":{\"keccak256\":\"0x6fefe712f557f7c07f91532de76dec66fa76e796bb6a7dd2855e50b626cf99a4\",\"urls\":[\"bzzr://691a864cc5476aecf88b0e3ea94f9901199d9b98826c57051a70fe5f9f357640\"]},\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol\":{\"keccak256\":\"0x8a4470b15bc28c34d29be7bca87e920ee13ee49dd86e9fa6c2c59efcd51ae99c\",\"urls\":[\"bzzr://e586b386410452aa80a0d4b37bbe4ff85d8559f87d151c3fa901311591c61a0f\"]}},\"version\":1}",
+    "bytecode": "0x608060405234801561001057600080fd5b5060c68061001f6000396000f3fe608060405260043610603e5763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663481c6a7581146043575b600080fd5b348015604e57600080fd5b506055607e565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60015473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a7230582052308fac41a90c4e0942b69b8fa0ba7b4979d97f18a775908101f2a22f3b29860029",
+    "deployedBytecode": "0x608060405260043610603e5763ffffffff7c0100000000000000000000000000000000000000000000000000000000600035041663481c6a7581146043575b600080fd5b348015604e57600080fd5b506055607e565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b60015473ffffffffffffffffffffffffffffffffffffffff168156fea165627a7a7230582052308fac41a90c4e0942b69b8fa0ba7b4979d97f18a775908101f2a22f3b29860029",
+    "sourceMap": "1232:322:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1232:322:2;;;;;;;",
+    "deployedSourceMap": "1232:322:2:-;;;;;;;;;;;;;;;;;;;;;;;1310:47;;8:9:-1;5:2;;;30:1;27;20:12;5:2;1310:47:2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+    "source": "pragma solidity ^0.5.0;\n\n// Copyright 2019 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\nimport \"../proxies/MasterCopyNonUpgradable.sol\";\nimport \"./GnosisSafeModuleManagerInterface.sol\";\n\n/**\n * @title Contract contains the required, public interface by\n *        gnosis/safe-contracts/contracts/base/Module.sol\n *\n * @dev Instead of inheriting from\n *      gnosis/safe-contracts/contracts/base/Module.sol and pulling all needed\n *      contracts by Module.sol into openst-contracts building process,\n *      we define this contract, that contains only required, public interface\n *      of Module.sol.\n *\n *      The current contract is non-upgradable in contrast to GnosisSafe\n *      Module contract.\n */\ncontract GnosisSafeModule is MasterCopyNonUpgradable\n{\n    /* Storage */\n\n    GnosisSafeModuleManagerInterface public manager;\n\n\n    /* Modifiers */\n\n    modifier authorized() {\n        require(\n            msg.sender == address(manager),\n            \"Method can only be called from manager\"\n        );\n\n        _;\n    }\n}",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModule.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModule.sol",
+        "exportedSymbols": {
+            "GnosisSafeModule": [714]
+        },
+        "id": 715,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 693,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:2"
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol",
+                "file": "../proxies/MasterCopyNonUpgradable.sol",
+                "id": 694,
+                "nodeType": "ImportDirective",
+                "scope": 715,
+                "sourceUnit": 1140,
+                "src": "613:48:2",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModuleManagerInterface.sol",
+                "file": "./GnosisSafeModuleManagerInterface.sol",
+                "id": 695,
+                "nodeType": "ImportDirective",
+                "scope": 715,
+                "sourceUnit": 735,
+                "src": "662:48:2",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 696,
+                            "name": "MasterCopyNonUpgradable",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 1139,
+                            "src": "1261:23:2",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_MasterCopyNonUpgradable_$1139",
+                                "typeString": "contract MasterCopyNonUpgradable"
+                            }
+                        },
+                        "id": 697,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "1261:23:2"
+                    }
+                ],
+                "contractDependencies": [1139],
+                "contractKind": "contract",
+                "documentation": "@title Contract contains the required, public interface by\n       gnosis/safe-contracts/contracts/base/Module.sol\n * @dev Instead of inheriting from\n     gnosis/safe-contracts/contracts/base/Module.sol and pulling all needed\n     contracts by Module.sol into openst-contracts building process,\n     we define this contract, that contains only required, public interface\n     of Module.sol.\n *      The current contract is non-upgradable in contrast to GnosisSafe\n     Module contract.",
+                "fullyImplemented": true,
+                "id": 714,
+                "linearizedBaseContracts": [714, 1139],
+                "name": "GnosisSafeModule",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 699,
+                        "name": "manager",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 714,
+                        "src": "1310:47:2",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                            "typeString": "contract GnosisSafeModuleManagerInterface"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 698,
+                            "name": "GnosisSafeModuleManagerInterface",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 734,
+                            "src": "1310:32:2",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                                "typeString": "contract GnosisSafeModuleManagerInterface"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 712,
+                            "nodeType": "Block",
+                            "src": "1408:144:2",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                },
+                                                "id": 707,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 702,
+                                                        "name": "msg",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 4046,
+                                                        "src": "1439:3:2",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_magic_message",
+                                                            "typeString": "msg"
+                                                        }
+                                                    },
+                                                    "id": 703,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "sender",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": null,
+                                                    "src": "1439:10:2",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address_payable",
+                                                        "typeString": "address payable"
+                                                    }
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "==",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "arguments": [
+                                                        {
+                                                            "argumentTypes": null,
+                                                            "id": 705,
+                                                            "name": "manager",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 699,
+                                                            "src": "1461:7:2",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                                                                "typeString": "contract GnosisSafeModuleManagerInterface"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                                                                "typeString": "contract GnosisSafeModuleManagerInterface"
+                                                            }
+                                                        ],
+                                                        "id": 704,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "lValueRequested": false,
+                                                        "nodeType": "ElementaryTypeNameExpression",
+                                                        "src": "1453:7:2",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_type$_t_address_$",
+                                                            "typeString": "type(address)"
+                                                        },
+                                                        "typeName": "address"
+                                                    },
+                                                    "id": 706,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "kind": "typeConversion",
+                                                    "lValueRequested": false,
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1453:16:2",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "src": "1439:30:2",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4d6574686f642063616e206f6e6c792062652063616c6c65642066726f6d206d616e61676572",
+                                                "id": 708,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1483:40:2",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_f857f17fb7e241a141cb689ce417fc402008e9655fbe55c721e32587b5d510de",
+                                                    "typeString": "literal_string \"Method can only be called from manager\""
+                                                },
+                                                "value": "Method can only be called from manager"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_f857f17fb7e241a141cb689ce417fc402008e9655fbe55c721e32587b5d510de",
+                                                    "typeString": "literal_string \"Method can only be called from manager\""
+                                                }
+                                            ],
+                                            "id": 701,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1418:7:2",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 709,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1418:115:2",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 710,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1418:115:2"
+                                },
+                                {
+                                    "id": 711,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1544:1:2"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 713,
+                        "name": "authorized",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 700,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1405:2:2"
+                        },
+                        "src": "1386:166:2",
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 715,
+                "src": "1232:322:2"
+            }
+        ],
+        "src": "0:1554:2"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModule.sol",
+        "exportedSymbols": {
+            "GnosisSafeModule": [714]
+        },
+        "id": 715,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 693,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:2"
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol",
+                "file": "../proxies/MasterCopyNonUpgradable.sol",
+                "id": 694,
+                "nodeType": "ImportDirective",
+                "scope": 715,
+                "sourceUnit": 1140,
+                "src": "613:48:2",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/gnosis_safe_modules/GnosisSafeModuleManagerInterface.sol",
+                "file": "./GnosisSafeModuleManagerInterface.sol",
+                "id": 695,
+                "nodeType": "ImportDirective",
+                "scope": 715,
+                "sourceUnit": 735,
+                "src": "662:48:2",
+                "symbolAliases": [],
+                "unitAlias": ""
+            },
+            {
+                "baseContracts": [
+                    {
+                        "arguments": null,
+                        "baseName": {
+                            "contractScope": null,
+                            "id": 696,
+                            "name": "MasterCopyNonUpgradable",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 1139,
+                            "src": "1261:23:2",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_MasterCopyNonUpgradable_$1139",
+                                "typeString": "contract MasterCopyNonUpgradable"
+                            }
+                        },
+                        "id": 697,
+                        "nodeType": "InheritanceSpecifier",
+                        "src": "1261:23:2"
+                    }
+                ],
+                "contractDependencies": [1139],
+                "contractKind": "contract",
+                "documentation": "@title Contract contains the required, public interface by\n       gnosis/safe-contracts/contracts/base/Module.sol\n * @dev Instead of inheriting from\n     gnosis/safe-contracts/contracts/base/Module.sol and pulling all needed\n     contracts by Module.sol into openst-contracts building process,\n     we define this contract, that contains only required, public interface\n     of Module.sol.\n *      The current contract is non-upgradable in contrast to GnosisSafe\n     Module contract.",
+                "fullyImplemented": true,
+                "id": 714,
+                "linearizedBaseContracts": [714, 1139],
+                "name": "GnosisSafeModule",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 699,
+                        "name": "manager",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 714,
+                        "src": "1310:47:2",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                            "typeString": "contract GnosisSafeModuleManagerInterface"
+                        },
+                        "typeName": {
+                            "contractScope": null,
+                            "id": 698,
+                            "name": "GnosisSafeModuleManagerInterface",
+                            "nodeType": "UserDefinedTypeName",
+                            "referencedDeclaration": 734,
+                            "src": "1310:32:2",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                                "typeString": "contract GnosisSafeModuleManagerInterface"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "public"
+                    },
+                    {
+                        "body": {
+                            "id": 712,
+                            "nodeType": "Block",
+                            "src": "1408:144:2",
+                            "statements": [
+                                {
+                                    "expression": {
+                                        "argumentTypes": null,
+                                        "arguments": [
+                                            {
+                                                "argumentTypes": null,
+                                                "commonType": {
+                                                    "typeIdentifier": "t_address",
+                                                    "typeString": "address"
+                                                },
+                                                "id": 707,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": false,
+                                                "lValueRequested": false,
+                                                "leftExpression": {
+                                                    "argumentTypes": null,
+                                                    "expression": {
+                                                        "argumentTypes": null,
+                                                        "id": 702,
+                                                        "name": "msg",
+                                                        "nodeType": "Identifier",
+                                                        "overloadedDeclarations": [],
+                                                        "referencedDeclaration": 4046,
+                                                        "src": "1439:3:2",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_magic_message",
+                                                            "typeString": "msg"
+                                                        }
+                                                    },
+                                                    "id": 703,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "lValueRequested": false,
+                                                    "memberName": "sender",
+                                                    "nodeType": "MemberAccess",
+                                                    "referencedDeclaration": null,
+                                                    "src": "1439:10:2",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address_payable",
+                                                        "typeString": "address payable"
+                                                    }
+                                                },
+                                                "nodeType": "BinaryOperation",
+                                                "operator": "==",
+                                                "rightExpression": {
+                                                    "argumentTypes": null,
+                                                    "arguments": [
+                                                        {
+                                                            "argumentTypes": null,
+                                                            "id": 705,
+                                                            "name": "manager",
+                                                            "nodeType": "Identifier",
+                                                            "overloadedDeclarations": [],
+                                                            "referencedDeclaration": 699,
+                                                            "src": "1461:7:2",
+                                                            "typeDescriptions": {
+                                                                "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                                                                "typeString": "contract GnosisSafeModuleManagerInterface"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "expression": {
+                                                        "argumentTypes": [
+                                                            {
+                                                                "typeIdentifier": "t_contract$_GnosisSafeModuleManagerInterface_$734",
+                                                                "typeString": "contract GnosisSafeModuleManagerInterface"
+                                                            }
+                                                        ],
+                                                        "id": 704,
+                                                        "isConstant": false,
+                                                        "isLValue": false,
+                                                        "isPure": true,
+                                                        "lValueRequested": false,
+                                                        "nodeType": "ElementaryTypeNameExpression",
+                                                        "src": "1453:7:2",
+                                                        "typeDescriptions": {
+                                                            "typeIdentifier": "t_type$_t_address_$",
+                                                            "typeString": "type(address)"
+                                                        },
+                                                        "typeName": "address"
+                                                    },
+                                                    "id": 706,
+                                                    "isConstant": false,
+                                                    "isLValue": false,
+                                                    "isPure": false,
+                                                    "kind": "typeConversion",
+                                                    "lValueRequested": false,
+                                                    "names": [],
+                                                    "nodeType": "FunctionCall",
+                                                    "src": "1453:16:2",
+                                                    "typeDescriptions": {
+                                                        "typeIdentifier": "t_address",
+                                                        "typeString": "address"
+                                                    }
+                                                },
+                                                "src": "1439:30:2",
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                }
+                                            },
+                                            {
+                                                "argumentTypes": null,
+                                                "hexValue": "4d6574686f642063616e206f6e6c792062652063616c6c65642066726f6d206d616e61676572",
+                                                "id": 708,
+                                                "isConstant": false,
+                                                "isLValue": false,
+                                                "isPure": true,
+                                                "kind": "string",
+                                                "lValueRequested": false,
+                                                "nodeType": "Literal",
+                                                "src": "1483:40:2",
+                                                "subdenomination": null,
+                                                "typeDescriptions": {
+                                                    "typeIdentifier": "t_stringliteral_f857f17fb7e241a141cb689ce417fc402008e9655fbe55c721e32587b5d510de",
+                                                    "typeString": "literal_string \"Method can only be called from manager\""
+                                                },
+                                                "value": "Method can only be called from manager"
+                                            }
+                                        ],
+                                        "expression": {
+                                            "argumentTypes": [
+                                                {
+                                                    "typeIdentifier": "t_bool",
+                                                    "typeString": "bool"
+                                                },
+                                                {
+                                                    "typeIdentifier": "t_stringliteral_f857f17fb7e241a141cb689ce417fc402008e9655fbe55c721e32587b5d510de",
+                                                    "typeString": "literal_string \"Method can only be called from manager\""
+                                                }
+                                            ],
+                                            "id": 701,
+                                            "name": "require",
+                                            "nodeType": "Identifier",
+                                            "overloadedDeclarations": [4049, 4050],
+                                            "referencedDeclaration": 4050,
+                                            "src": "1418:7:2",
+                                            "typeDescriptions": {
+                                                "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                                                "typeString": "function (bool,string memory) pure"
+                                            }
+                                        },
+                                        "id": 709,
+                                        "isConstant": false,
+                                        "isLValue": false,
+                                        "isPure": false,
+                                        "kind": "functionCall",
+                                        "lValueRequested": false,
+                                        "names": [],
+                                        "nodeType": "FunctionCall",
+                                        "src": "1418:115:2",
+                                        "typeDescriptions": {
+                                            "typeIdentifier": "t_tuple$__$",
+                                            "typeString": "tuple()"
+                                        }
+                                    },
+                                    "id": 710,
+                                    "nodeType": "ExpressionStatement",
+                                    "src": "1418:115:2"
+                                },
+                                {
+                                    "id": 711,
+                                    "nodeType": "PlaceholderStatement",
+                                    "src": "1544:1:2"
+                                }
+                            ]
+                        },
+                        "documentation": null,
+                        "id": 713,
+                        "name": "authorized",
+                        "nodeType": "ModifierDefinition",
+                        "parameters": {
+                            "id": 700,
+                            "nodeType": "ParameterList",
+                            "parameters": [],
+                            "src": "1405:2:2"
+                        },
+                        "src": "1386:166:2",
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 715,
+                "src": "1232:322:2"
+            }
+        ],
+        "src": "0:1554:2"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.430Z",
+    "devdoc": {
+        "details": "Instead of inheriting from     gnosis/safe-contracts/contracts/base/Module.sol and pulling all needed     contracts by Module.sol into openst-contracts building process,     we define this contract, that contains only required, public interface     of Module.sol. *      The current contract is non-upgradable in contrast to GnosisSafe     Module contract.",
+        "methods": {},
+        "title": "Contract contains the required, public interface by       gnosis/safe-contracts/contracts/base/Module.sol"
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}

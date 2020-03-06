@@ -1,0 +1,211 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "newDrawing",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "internalType": "uint256", "name": "value", "type": "uint256" }],
+        "name": "withdraw",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "potMax",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "internalType": "address[]", "name": "_charities", "type": "address[]" }],
+        "name": "setCharities",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "currentRound",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "name": "rounds",
+        "outputs": [
+            { "internalType": "address", "name": "winner", "type": "address" },
+            { "internalType": "uint256", "name": "ticketCount", "type": "uint256" },
+            { "internalType": "uint256", "name": "pot", "type": "uint256" }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "isOwner",
+        "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            { "internalType": "uint256", "name": "_round", "type": "uint256" },
+            { "internalType": "uint256", "name": "_ticket", "type": "uint256" }
+        ],
+        "name": "getTicket",
+        "outputs": [{ "internalType": "address", "name": "_player", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "internalType": "address", "name": "_player", "type": "address" }],
+        "name": "createTicket",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "internalType": "address", "name": "_contract", "type": "address" }],
+        "name": "setTokenContract",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "currentPotLimit",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "internalType": "uint256", "name": "_potLimit", "type": "uint256" }],
+        "name": "setCurrentPotLimit",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+        "name": "transferOwnership",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "name": "charities",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "token",
+        "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    { "inputs": [], "payable": false, "stateMutability": "nonpayable", "type": "constructor" },
+    { "payable": true, "stateMutability": "payable", "type": "fallback" },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": false, "internalType": "uint256", "name": "id", "type": "uint256" },
+            { "indexed": false, "internalType": "address", "name": "player", "type": "address" }
+        ],
+        "name": "TicketPurchased",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": false, "internalType": "uint256", "name": "round", "type": "uint256" },
+            { "indexed": false, "internalType": "address", "name": "winner", "type": "address" },
+            { "indexed": false, "internalType": "uint256", "name": "ticketNumber", "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+        ],
+        "name": "DrawingCompleted",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": false, "internalType": "uint256", "name": "round", "type": "uint256" },
+            { "indexed": false, "internalType": "uint256", "name": "potLimit", "type": "uint256" }
+        ],
+        "name": "NewRound",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+            { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    }
+]

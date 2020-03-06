@@ -1,0 +1,376 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{ "name": "", "type": "bytes32" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x06fdde03"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_spender", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+        ],
+        "name": "approve",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x095ea7b3"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x18160ddd"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_roleRegistryAddress", "type": "address" },
+            { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "burnFromRoleRegistry",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x1bd42f3e"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_from", "type": "address" },
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+        ],
+        "name": "transferFrom",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x23b872dd"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" },
+            { "name": "_data", "type": "bytes" }
+        ],
+        "name": "transferWithData",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x2535f762"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{ "name": "", "type": "uint8" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x313ce567"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "metadata",
+        "outputs": [{ "name": "", "type": "string" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x392f37e9"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_to", "type": "address" },
+            { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "mint",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x40c10f19"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "gateKeeper",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x45d61ded"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "ipfsHash", "type": "string" }],
+        "name": "updateMetaData",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x5cc07505"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_spender", "type": "address" },
+            { "name": "_subtractedValue", "type": "uint256" }
+        ],
+        "name": "decreaseApproval",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x66188463"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "_owner", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "balance", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x70a08231"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_from", "type": "address" },
+            { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "burn",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x9dc29fac"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+        ],
+        "name": "transfer",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xa9059cbb"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "BURN_ROLE",
+        "outputs": [{ "name": "", "type": "bytes32" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xb930908f"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_spender", "type": "address" },
+            { "name": "_value", "type": "uint256" },
+            { "name": "_data", "type": "bytes" }
+        ],
+        "name": "approveAndCall",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xcae9ca51"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_spender", "type": "address" },
+            { "name": "_addedValue", "type": "uint256" }
+        ],
+        "name": "increaseApproval",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xd73dd623"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_roleRegistryAddress", "type": "address" },
+            { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "mintToRoleRegistry",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xdcb82f81"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            { "name": "_owner", "type": "address" },
+            { "name": "_spender", "type": "address" }
+        ],
+        "name": "allowance",
+        "outputs": [{ "name": "remaining", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xdd62ed3e"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "MINT_ROLE",
+        "outputs": [{ "name": "", "type": "bytes32" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xe9a9c850"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_from", "type": "address" },
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" },
+            { "name": "_data", "type": "bytes" }
+        ],
+        "name": "transferFromWithData",
+        "outputs": [{ "name": "success", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0xee532f31"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "UPDATE_METADATA_ROLE",
+        "outputs": [{ "name": "", "type": "bytes32" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xfff139cf"
+    },
+    {
+        "inputs": [
+            { "name": "_name", "type": "bytes32" },
+            { "name": "_decimals", "type": "uint8" },
+            { "name": "_gateKeeper", "type": "address" }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor",
+        "signature": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "from", "type": "address" },
+            { "indexed": true, "name": "to", "type": "address" },
+            { "indexed": false, "name": "value", "type": "uint256" }
+        ],
+        "name": "Transfer",
+        "type": "event",
+        "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "from", "type": "address" },
+            { "indexed": true, "name": "to", "type": "address" },
+            { "indexed": false, "name": "data", "type": "bytes" }
+        ],
+        "name": "TransferData",
+        "type": "event",
+        "signature": "0x69cf42fddae119b7568ebaa1f70aac657fd6abd62d00c2ab4fcf81ff87935ab3"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "to", "type": "address" },
+            { "indexed": false, "name": "amount", "type": "uint256" }
+        ],
+        "name": "Mint",
+        "type": "event",
+        "signature": "0x0f6798a560793a54c3bcfe86a93cde1e73087d944c0ea20544137d4121396885"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "from", "type": "address" },
+            { "indexed": false, "name": "amount", "type": "uint256" }
+        ],
+        "name": "Burn",
+        "type": "event",
+        "signature": "0xcc16f5dbb4873280815c1ee09dbd06736cffcc184412cf7a71a0fdb75d397ca5"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "owner", "type": "address" },
+            { "indexed": true, "name": "spender", "type": "address" },
+            { "indexed": false, "name": "value", "type": "uint256" }
+        ],
+        "name": "Approval",
+        "type": "event",
+        "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getIndexLength",
+        "outputs": [{ "name": "length", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0xe1ba7d01"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "index", "type": "uint256" }],
+        "name": "getByIndex",
+        "outputs": [
+            { "name": "key", "type": "address" },
+            { "name": "balance", "type": "uint256" }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x2d883a73"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "_key", "type": "address" }],
+        "name": "getByKey",
+        "outputs": [
+            { "name": "key", "type": "address" },
+            { "name": "balance", "type": "uint256" }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x49877038"
+    }
+]

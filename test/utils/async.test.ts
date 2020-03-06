@@ -81,26 +81,6 @@ test('parallel', async () => {
                 }
             `);
         }),
-        makeTask(6, 10, () => {
-            expect(Date.now() - start).toBeGreaterThanOrEqual(35);
-            expect({ started, completed }).toMatchInlineSnapshot(`
-                Object {
-                  "completed": Object {
-                    "1": true,
-                    "2": true,
-                    "4": true,
-                    "5": true,
-                  },
-                  "started": Object {
-                    "1": true,
-                    "2": true,
-                    "3": true,
-                    "4": true,
-                    "5": true,
-                  },
-                }
-            `);
-        }),
     ];
 
     const result = await parallel(tasks, { maxConcurrent: 2 });
@@ -113,7 +93,6 @@ test('parallel', async () => {
           3,
           4,
           5,
-          6,
         ]
     `);
     expect({ started, completed }).toMatchInlineSnapshot(`
@@ -124,7 +103,6 @@ test('parallel', async () => {
             "3": true,
             "4": true,
             "5": true,
-            "6": true,
           },
           "started": Object {
             "1": true,
@@ -132,7 +110,6 @@ test('parallel', async () => {
             "3": true,
             "4": true,
             "5": true,
-            "6": true,
           },
         }
     `);

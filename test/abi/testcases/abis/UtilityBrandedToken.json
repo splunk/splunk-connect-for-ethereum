@@ -1,0 +1,224 @@
+[
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{ "name": "", "type": "string" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_spender", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+        ],
+        "name": "approve",
+        "outputs": [{ "name": "success_", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "", "type": "address" }],
+        "name": "isInternalActor",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "organization",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{ "name": "", "type": "uint8" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [{ "name": "_owner", "type": "address" }],
+        "name": "balanceOf",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "coGateway",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{ "name": "", "type": "string" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "_amount", "type": "uint256" }],
+        "name": "decreaseSupply",
+        "outputs": [{ "name": "success_", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            { "name": "_owner", "type": "address" },
+            { "name": "_spender", "type": "address" }
+        ],
+        "name": "allowance",
+        "outputs": [{ "name": "", "type": "uint256" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "token",
+        "outputs": [{ "name": "", "type": "address" }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            { "name": "_token", "type": "address" },
+            { "name": "_symbol", "type": "string" },
+            { "name": "_name", "type": "string" },
+            { "name": "_decimals", "type": "uint8" },
+            { "name": "_organization", "type": "address" }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+    },
+    {
+        "anonymous": false,
+        "inputs": [{ "indexed": false, "name": "_actor", "type": "address" }],
+        "name": "InternalActorRegistered",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [{ "indexed": false, "name": "_coGateway", "type": "address" }],
+        "name": "CoGatewaySet",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "_from", "type": "address" },
+            { "indexed": true, "name": "_to", "type": "address" },
+            { "indexed": false, "name": "_value", "type": "uint256" }
+        ],
+        "name": "Transfer",
+        "type": "xevent"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            { "indexed": true, "name": "_owner", "type": "address" },
+            { "indexed": true, "name": "_spender", "type": "address" },
+            { "indexed": false, "name": "_value", "type": "uint256" }
+        ],
+        "name": "Approval",
+        "type": "event"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "_internalActors", "type": "address[]" }],
+        "name": "registerInternalActors",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "_coGateway", "type": "address" }],
+        "name": "setCoGateway",
+        "outputs": [{ "name": "success_", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_beneficiary", "type": "address" },
+            { "name": "_amount", "type": "uint256" }
+        ],
+        "name": "increaseSupply",
+        "outputs": [{ "name": "success_", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [{ "name": "account", "type": "address" }],
+        "name": "exists",
+        "outputs": [{ "name": "exists_", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+        ],
+        "name": "transfer",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            { "name": "_from", "type": "address" },
+            { "name": "_to", "type": "address" },
+            { "name": "_value", "type": "uint256" }
+        ],
+        "name": "transferFrom",
+        "outputs": [{ "name": "", "type": "bool" }],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

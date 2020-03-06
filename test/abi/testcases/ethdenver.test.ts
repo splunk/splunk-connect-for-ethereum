@@ -1,14 +1,15 @@
+import debugModule from 'debug';
 import { join } from 'path';
-import { ContractInfo } from '../src/abi/contract';
-import { AbiRepository } from '../src/abi/repo';
-import { BlockWatcher } from '../src/blockwatcher';
-import { Checkpoint } from '../src/checkpoint';
-import { BatchedEthereumClient } from '../src/eth/client';
-import { HttpTransport } from '../src/eth/http';
-import { withRecorder } from '../src/eth/recorder';
-import { suppressDebugLogging } from '../src/utils/debug';
-import LRUCache from '../src/utils/lru';
-import { TestOutput } from './testoutput';
+import { ContractInfo } from '../../../src/abi/contract';
+import { AbiRepository } from '../../../src/abi/repo';
+import { BlockWatcher } from '../../../src/blockwatcher';
+import { Checkpoint } from '../../../src/checkpoint';
+import { BatchedEthereumClient } from '../../../src/eth/client';
+import { HttpTransport } from '../../../src/eth/http';
+import { withRecorder } from '../../../src/eth/recorder';
+import { enableTraceLogging, suppressDebugLogging } from '../../../src/utils/debug';
+import { LRUCache } from '../../../src/utils/lru';
+import { TestOutput } from '../../testoutput';
 
 let logHandle: any;
 beforeEach(() => {
@@ -19,11 +20,14 @@ afterEach(() => {
 });
 
 test('blockwatcher', async () => {
+    const BLOCK = 8394957;
+    enableTraceLogging();
+    debugModule.enable('ethlogger:abi:*');
     await withRecorder(
         new HttpTransport('https://dai.poa.network', {}),
         {
-            name: 'xdai-blockwatcher',
-            storageDir: join(__dirname, './fixtures/recorded'),
+            name: `testcases-ethdenver-${BLOCK}`,
+            storageDir: join(__dirname, '../../fixtures/recorded'),
             replay: true,
         },
         async transport => {
@@ -32,13 +36,13 @@ test('blockwatcher', async () => {
                 decodeAnonymous: true,
                 fingerprintContracts: true,
                 abiFileExtension: '.json',
-                directory: join(__dirname, './abis'),
+                directory: join(__dirname, '../../abis'),
                 searchRecursive: true,
             });
             await abiRepo.initialize();
             const checkpoints = new Checkpoint({
-                initialBlockNumber: 123,
-                path: join(__dirname, '../tmp/tmpcheckpoint.json'),
+                initialBlockNumber: 0,
+                path: join(__dirname, '../../../tmp/tmpcheckpoint.json'),
                 saveInterval: 10000,
             });
             const output = new TestOutput();
@@ -57,7 +61,7 @@ test('blockwatcher', async () => {
                 waitAfterFailure: 1,
             });
 
-            await blockWatcher.processChunk({ from: 6442472, to: 6442482 });
+            await blockWatcher.processChunk({ from: BLOCK, to: BLOCK });
 
             expect(output.messages).toMatchSnapshot();
         }

@@ -1,0 +1,581 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "MetadataCleared",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "MetadataCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "oldMiningKey",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "name": "newMiningKey",
+                "type": "address"
+            }
+        ],
+        "name": "MetadataMoved",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "ChangeRequestInitiated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "CancelledRequest",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "miningKey",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "votingSender",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "name": "votingSenderMiningKey",
+                "type": "address"
+            }
+        ],
+        "name": "Confirmed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "name": "miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "FinalizedChange",
+        "type": "event"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "clearMetadata",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_oldMiningKey",
+                "type": "address"
+            },
+            {
+                "name": "_newMiningKey",
+                "type": "address"
+            }
+        ],
+        "name": "moveMetadata",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "proxyStorage",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "getValidatorName",
+        "outputs": [
+            {
+                "name": "firstName",
+                "type": "bytes32"
+            },
+            {
+                "name": "lastName",
+                "type": "bytes32"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "validators",
+        "outputs": [
+            {
+                "name": "firstName",
+                "type": "bytes32"
+            },
+            {
+                "name": "lastName",
+                "type": "bytes32"
+            },
+            {
+                "name": "licenseId",
+                "type": "bytes32"
+            },
+            {
+                "name": "fullAddress",
+                "type": "string"
+            },
+            {
+                "name": "state",
+                "type": "bytes32"
+            },
+            {
+                "name": "zipcode",
+                "type": "bytes32"
+            },
+            {
+                "name": "expirationDate",
+                "type": "uint256"
+            },
+            {
+                "name": "createdDate",
+                "type": "uint256"
+            },
+            {
+                "name": "updatedDate",
+                "type": "uint256"
+            },
+            {
+                "name": "minThreshold",
+                "type": "uint256"
+            },
+            {
+                "name": "contactEmail",
+                "type": "bytes32"
+            },
+            {
+                "name": "isCompany",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "pendingChanges",
+        "outputs": [
+            {
+                "name": "firstName",
+                "type": "bytes32"
+            },
+            {
+                "name": "lastName",
+                "type": "bytes32"
+            },
+            {
+                "name": "licenseId",
+                "type": "bytes32"
+            },
+            {
+                "name": "fullAddress",
+                "type": "string"
+            },
+            {
+                "name": "state",
+                "type": "bytes32"
+            },
+            {
+                "name": "zipcode",
+                "type": "bytes32"
+            },
+            {
+                "name": "expirationDate",
+                "type": "uint256"
+            },
+            {
+                "name": "createdDate",
+                "type": "uint256"
+            },
+            {
+                "name": "updatedDate",
+                "type": "uint256"
+            },
+            {
+                "name": "minThreshold",
+                "type": "uint256"
+            },
+            {
+                "name": "contactEmail",
+                "type": "bytes32"
+            },
+            {
+                "name": "isCompany",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "confirmations",
+        "outputs": [
+            {
+                "name": "count",
+                "type": "uint256"
+            },
+            {
+                "name": "voters",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "initMetadataDisabled",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_firstName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_lastName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_licenseId",
+                "type": "bytes32"
+            },
+            {
+                "name": "_fullAddress",
+                "type": "string"
+            },
+            {
+                "name": "_state",
+                "type": "bytes32"
+            },
+            {
+                "name": "_zipcode",
+                "type": "bytes32"
+            },
+            {
+                "name": "_expirationDate",
+                "type": "uint256"
+            },
+            {
+                "name": "_createdDate",
+                "type": "uint256"
+            },
+            {
+                "name": "_updatedDate",
+                "type": "uint256"
+            },
+            {
+                "name": "_minThreshold",
+                "type": "uint256"
+            },
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "initMetadata",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "initMetadataDisable",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_firstName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_lastName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_licenseId",
+                "type": "bytes32"
+            },
+            {
+                "name": "_fullAddress",
+                "type": "string"
+            },
+            {
+                "name": "_state",
+                "type": "bytes32"
+            },
+            {
+                "name": "_zipcode",
+                "type": "bytes32"
+            },
+            {
+                "name": "_expirationDate",
+                "type": "uint256"
+            },
+            {
+                "name": "_contactEmail",
+                "type": "bytes32"
+            },
+            {
+                "name": "_isCompany",
+                "type": "bool"
+            }
+        ],
+        "name": "createMetadata",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_firstName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_lastName",
+                "type": "bytes32"
+            },
+            {
+                "name": "_licenseId",
+                "type": "bytes32"
+            },
+            {
+                "name": "_fullAddress",
+                "type": "string"
+            },
+            {
+                "name": "_state",
+                "type": "bytes32"
+            },
+            {
+                "name": "_zipcode",
+                "type": "bytes32"
+            },
+            {
+                "name": "_expirationDate",
+                "type": "uint256"
+            },
+            {
+                "name": "_contactEmail",
+                "type": "bytes32"
+            },
+            {
+                "name": "_isCompany",
+                "type": "bool"
+            }
+        ],
+        "name": "changeRequest",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [],
+        "name": "cancelPendingChange",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            },
+            {
+                "name": "_voterMiningKey",
+                "type": "address"
+            }
+        ],
+        "name": "isValidatorAlreadyVoted",
+        "outputs": [
+            {
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "confirmPendingChange",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": false,
+        "inputs": [
+            {
+                "name": "_miningKey",
+                "type": "address"
+            }
+        ],
+        "name": "finalize",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getTime",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "constant": true,
+        "inputs": [],
+        "name": "getMinThreshold",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+]

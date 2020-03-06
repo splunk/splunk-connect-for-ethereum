@@ -1,0 +1,142 @@
+{
+    "contractName": "MasterCopyNonUpgradable",
+    "abi": [],
+    "metadata": "{\"compiler\":{\"version\":\"0.5.0+commit.1d4f565a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol\":\"MasterCopyNonUpgradable\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol\":{\"keccak256\":\"0x8a4470b15bc28c34d29be7bca87e920ee13ee49dd86e9fa6c2c59efcd51ae99c\",\"urls\":[\"bzzr://e586b386410452aa80a0d4b37bbe4ff85d8559f87d151c3fa901311591c61a0f\"]}},\"version\":1}",
+    "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3fe6080604052600080fdfea165627a7a723058205d7f7ba1aeaa6bc12a83324532ebabecc6b1f589ec25c98a833a8287b52b08e50029",
+    "deployedBytecode": "0x6080604052600080fdfea165627a7a723058205d7f7ba1aeaa6bc12a83324532ebabecc6b1f589ec25c98a833a8287b52b08e50029",
+    "sourceMap": "613:670:7:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;613:670:7;;;;;;;",
+    "deployedSourceMap": "613:670:7:-;;;;;",
+    "source": "pragma solidity ^0.5.0;\n\n// Copyright 2019 OpenST Ltd.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//    http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\ncontract MasterCopyNonUpgradable {\n\n    /* Storage */\n\n    /**\n     * @dev This storage variable *MUST* be the first storage element\n     *      for this contract.\n     *\n     *      A contract acting as a master copy for a proxy contract\n     *      inherits from this contract. In inherited contracts list, this\n     *      contract *MUST* be the first one. This would assure that\n     *      the storage variable is always the first storage element for\n     *      the inherited contract.\n     *\n     *      The proxy is applied to save gas during deployment, and importantly\n     *      the proxy is not upgradable.\n     */\n    address reservedStorageSlotForProxy;\n}",
+    "sourcePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol",
+    "ast": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol",
+        "exportedSymbols": {
+            "MasterCopyNonUpgradable": [1139]
+        },
+        "id": 1140,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1136,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:7"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": true,
+                "id": 1139,
+                "linearizedBaseContracts": [1139],
+                "name": "MasterCopyNonUpgradable",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 1138,
+                        "name": "reservedStorageSlotForProxy",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 1139,
+                        "src": "1245:35:7",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 1137,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "1245:7:7",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 1140,
+                "src": "613:670:7"
+            }
+        ],
+        "src": "0:1283:7"
+    },
+    "legacyAST": {
+        "absolutePath": "/Users/spuchbauer/dev/ethdenver/openst-contracts/contracts/proxies/MasterCopyNonUpgradable.sol",
+        "exportedSymbols": {
+            "MasterCopyNonUpgradable": [1139]
+        },
+        "id": 1140,
+        "nodeType": "SourceUnit",
+        "nodes": [
+            {
+                "id": 1136,
+                "literals": ["solidity", "^", "0.5", ".0"],
+                "nodeType": "PragmaDirective",
+                "src": "0:23:7"
+            },
+            {
+                "baseContracts": [],
+                "contractDependencies": [],
+                "contractKind": "contract",
+                "documentation": null,
+                "fullyImplemented": true,
+                "id": 1139,
+                "linearizedBaseContracts": [1139],
+                "name": "MasterCopyNonUpgradable",
+                "nodeType": "ContractDefinition",
+                "nodes": [
+                    {
+                        "constant": false,
+                        "id": 1138,
+                        "name": "reservedStorageSlotForProxy",
+                        "nodeType": "VariableDeclaration",
+                        "scope": 1139,
+                        "src": "1245:35:7",
+                        "stateVariable": true,
+                        "storageLocation": "default",
+                        "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                        },
+                        "typeName": {
+                            "id": 1137,
+                            "name": "address",
+                            "nodeType": "ElementaryTypeName",
+                            "src": "1245:7:7",
+                            "stateMutability": "nonpayable",
+                            "typeDescriptions": {
+                                "typeIdentifier": "t_address",
+                                "typeString": "address"
+                            }
+                        },
+                        "value": null,
+                        "visibility": "internal"
+                    }
+                ],
+                "scope": 1140,
+                "src": "613:670:7"
+            }
+        ],
+        "src": "0:1283:7"
+    },
+    "compiler": {
+        "name": "solc",
+        "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+    },
+    "networks": {},
+    "schemaVersion": "3.0.9",
+    "updatedAt": "2020-02-15T21:03:36.434Z",
+    "devdoc": {
+        "methods": {}
+    },
+    "userdoc": {
+        "methods": {}
+    }
+}
