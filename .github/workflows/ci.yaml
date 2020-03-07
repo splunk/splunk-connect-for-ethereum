@@ -89,8 +89,22 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    post-release:
+        runs-on: self-hosted
+        needs:
+            - trigger-release
+        if: github.ref == 'refs/heads/master'
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - name: Use Node.js 12
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12
             - name: Post release
               run: |
+                  yarn install --frozen-lockfile
                   yarn ts-node scripts/postrelease.ts
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
