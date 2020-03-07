@@ -84,7 +84,6 @@ jobs:
                   fetch-depth: 0
             - name: Semantic release
               run: |
-                  git fetch --prune --unshallow
                   yarn install --frozen-lockfile
                   yarn semantic-release
               env:
