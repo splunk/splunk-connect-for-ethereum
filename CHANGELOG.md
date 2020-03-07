@@ -1,3 +1,9 @@
+## [2.0.5](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.4...v2.0.5) (2020-03-07)
+
+### Bug Fixes
+
+-   removed unnecessary dependency on web3-utils ([2939685](https://github.com/splunk/splunk-connect-for-ethereum/commit/2939685b6b8b1aca8e7e2e0625ba63dedf7742ca))
+
 ## [2.0.4](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.3...v2.0.4) (2020-03-07)
 
 ### Bug Fixes
