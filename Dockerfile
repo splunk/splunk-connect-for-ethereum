@@ -1,4 +1,4 @@
-FROM splunkdlt/scfe-ci@sha256:f318132799daed215224fbac79522f00720476d3e939cda9fd4a3f563384fdfc as builder
+FROM splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49 as builder
 
 WORKDIR /ethlogger
 

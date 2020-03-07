@@ -6,7 +6,7 @@ jobs:
     build:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:f318132799daed215224fbac79522f00720476d3e939cda9fd4a3f563384fdfc
+            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
             - uses: actions/checkout@v2
             - name: Build ethlogger CLI
@@ -15,6 +15,9 @@ jobs:
                   yarn build
     docker-image:
         runs-on: self-hosted
+        container:
+            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            volumes: ['/var/run/docker.sock:/var/run/docker.sock']
         steps:
             - uses: actions/checkout@v2
             - name: Build docker image
@@ -30,7 +33,7 @@ jobs:
     unit-tests:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:f318132799daed215224fbac79522f00720476d3e939cda9fd4a3f563384fdfc
+            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
             - uses: actions/checkout@v2
             - name: Run unit tests and linter
@@ -43,7 +46,7 @@ jobs:
     check-format:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:f318132799daed215224fbac79522f00720476d3e939cda9fd4a3f563384fdfc
+            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
             - uses: actions/checkout@v2
             - name: Check code format
@@ -55,7 +58,7 @@ jobs:
     check-generated-files:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:f318132799daed215224fbac79522f00720476d3e939cda9fd4a3f563384fdfc
+            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
             - uses: actions/checkout@v2
             - name: Check if generated files are up-to-date
@@ -70,7 +73,8 @@ jobs:
     trigger-release:
         runs-on: self-hosted
         container:
-            image: splunkdlt/scfe-ci@sha256:f318132799daed215224fbac79522f00720476d3e939cda9fd4a3f563384fdfc
+            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            volumes: ['/var/run/docker.sock:/var/run/docker.sock']
         needs:
             - build
             - docker-image
@@ -86,26 +90,8 @@ jobs:
               run: |
                   yarn install --frozen-lockfile
                   yarn semantic-release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    post-release:
-        runs-on: self-hosted
-        needs:
-            - trigger-release
-        if: github.ref == 'refs/heads/master'
-        steps:
-            - uses: actions/checkout@v2
-              with:
-                  fetch-depth: 0
-            - name: Use Node.js 12
-              uses: actions/setup-node@v1
-              with:
-                  node-version: 12
-            - name: Post release
-              run: |
-                  yarn install --frozen-lockfile
                   yarn ts-node scripts/postrelease.ts
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
