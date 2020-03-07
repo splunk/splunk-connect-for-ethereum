@@ -1,4 +1,3 @@
-import { AbiItem } from 'web3-utils';
 import {
     abi_decode_parameters,
     get_data_size,
@@ -13,6 +12,7 @@ import {
 import { memory } from '../../wasm/ethabi/pkg/ethlogger_ethabi_bg';
 import { createModuleDebug } from '../utils/debug';
 import { AbiType } from './datatypes';
+import { AbiItem } from './item';
 
 const { trace } = createModuleDebug('abi:decode');
 

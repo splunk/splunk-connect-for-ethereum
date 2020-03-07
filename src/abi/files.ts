@@ -1,10 +1,9 @@
 import { readdir, readFile, stat, createReadStream } from 'fs-extra';
 import { basename, join as joinPath, resolve } from 'path';
-import { AbiItem } from 'web3-utils';
 import { AbiRepositoryConfig } from '../config';
 import { Address } from '../msgs';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
-import { AbiItemDefinition } from './item';
+import { AbiItemDefinition, AbiItem } from './item';
 import { computeContractFingerprint } from './contract';
 import { computeSignature } from './signature';
 import { createGunzip } from 'zlib';

@@ -1,7 +1,6 @@
-import { AbiInput } from 'web3-utils';
 import { isValidAbiType } from './datatypes';
-import { AbiItemDefinition } from './item';
-import { parseFunctionSignature, parseEventSignature, sha3 } from './wasm';
+import { AbiInput, AbiItemDefinition } from './item';
+import { parseEventSignature, parseFunctionSignature, sha3 } from './wasm';
 
 const err = (msg: string): never => {
     throw new Error(msg);

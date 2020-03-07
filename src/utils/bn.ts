@@ -1,5 +1,6 @@
 const MAX_NUMBER = BigInt(Number.MAX_SAFE_INTEGER);
 const MIN_NUMBER = BigInt(Number.MIN_SAFE_INTEGER);
+const ZERO = BigInt(0);
 
 /**
  * Parses the given input using JS's native BigInt and returns a number or a string depending on the size of the number.
@@ -25,4 +26,13 @@ export function bigIntToNumber(input: number | string | BigInt): number {
         throw new Error(`BigInt overflow for "${input}" - cannot convert to number`);
     }
     return parseInt(n.toString(10), 10);
+}
+
+/**
+ * Returns hex representation of the given number if "0x" prefix
+ */
+export function numberToHex(input: number | string | BigInt): string {
+    const n = BigInt(input);
+    const hex = n.toString(16);
+    return n < ZERO ? `-0x${hex.slice(1)}` : `0x${hex}`;
 }

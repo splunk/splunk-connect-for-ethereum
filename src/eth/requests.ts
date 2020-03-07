@@ -1,5 +1,4 @@
-import { numberToHex } from 'web3-utils';
-import { bigIntToNumber } from '../utils/bn';
+import { bigIntToNumber, numberToHex } from '../utils/bn';
 import { JsonRpcResponse } from './jsonrpc';
 import {
     GethMemStats,
@@ -13,8 +12,8 @@ import {
     ParityPendingTransaction,
     RawBlockResponse,
     RawTransactionReceipt,
-    SyncStatus,
     RawTransactionResponse,
+    SyncStatus,
 } from './responses';
 
 export interface EthRequest<P extends any[], R> {
