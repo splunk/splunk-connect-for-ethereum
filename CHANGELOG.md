@@ -1,3 +1,9 @@
+## [2.0.4](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.3...v2.0.4) (2020-03-07)
+
+### Bug Fixes
+
+-   🐛 adjusted log level during platform introspection ([291afd1](https://github.com/splunk/splunk-connect-for-ethereum/commit/291afd1953b5a41a4be4ca82cc4fc3eaad48bacd))
+
 ## [2.0.3](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.2...v2.0.3) (2020-03-07)
 
 ### Bug Fixes
