@@ -8,7 +8,7 @@ import { ParityAdapter } from './platforms/parity';
 import { QuorumAdapter } from './platforms/quorum';
 import { retry, linearBackoff } from './utils/retry';
 
-const { debug, info, error } = createModuleDebug('introspect');
+const { debug, info, warn, error } = createModuleDebug('introspect');
 
 export function createNodeAdapter(version: string, chain?: string, network?: string): NodePlatformAdapter {
     if (version.startsWith('Geth/')) {
@@ -53,7 +53,7 @@ export async function introspectTargetNodePlatform(
         try {
             await adapter.initialize(eth);
         } catch (e) {
-            error('Failed to initialize node platform adapter:', e);
+            warn('Failed to initialize node platform adapter:', e.message);
 
             try {
                 adapter = new GenericNodeAdapter(version, chain, network);
