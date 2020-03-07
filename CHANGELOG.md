@@ -1,3 +1,9 @@
+## [2.0.3](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.2...v2.0.3) (2020-03-07)
+
+### Bug Fixes
+
+-   🐛 deterministic signature order for anonymous ABI decoding ([8f0c380](https://github.com/splunk/splunk-connect-for-ethereum/commit/8f0c38012050ef2a3ddc440fa09d4a18233cb669))
+
 ## [2.0.2](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.1...v2.0.2) (2020-02-13)
 
 ### Bug Fixes
