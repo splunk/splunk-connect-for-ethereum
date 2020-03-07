@@ -6,6 +6,8 @@
 
 -   [Node.js](https://nodejs.org/) 12
 -   [Yarn package manager](https://yarnpkg.com/) (recent/latest version)
+-   [Rust toolchain](https://rustup.rs/) (rustc 1.41.0)
+-   [wasm-pack](https://rustwasm.github.io/wasm-pack/) (recent/latest version)
 -   [Docker](https://www.docker.com/) to build docker images
 
 1. Clone the respository
@@ -42,7 +44,7 @@ You can use ethloggers CLI flags `--debug` or `--trace` to
 ```sh-session
 $ ./bin/run --debug ...
 or
-$ ./bin/run --trace ...
+$ DEBUG=ethlogger:abi:* ./bin/run --trace ...
 ```
 
 > Note that `--trace` is very verbose
