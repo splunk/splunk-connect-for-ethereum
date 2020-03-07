@@ -90,6 +90,7 @@ jobs:
               run: |
                   yarn install --frozen-lockfile
                   yarn semantic-release
+                  docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
                   yarn ts-node scripts/postrelease.ts
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

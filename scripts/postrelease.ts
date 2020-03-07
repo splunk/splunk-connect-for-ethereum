@@ -89,9 +89,13 @@ export async function main(args: string[]) {
     if (process.env.DOCKER_HUB_TOKEN) {
         console.log('Logging in to docker hub');
         await execa('docker', ['login', '-u', 'dltbuilder', '-p', process.env.DOCKER_HUB_TOKEN]);
+    }
+    let publishedToDockerhub = false;
+    try {
         await publishImageVersions(DOCKER_HUB_IMAGE);
-    } else {
-        console.log('No docker hub token set. Skipping publish to docker hub.');
+        publishedToDockerhub = true;
+    } catch (e) {
+        console.log('Failed to push image to docker hub:', e.message);
     }
 
     const bullet = (prefix: string, title: string, href: string) => `- ${prefix}: [${title}](${href})`;
@@ -112,7 +116,7 @@ export async function main(args: string[]) {
                 semver.version
             )}`
         ),
-        process.env.DOCKER_HUB_TOKEN != null
+        publishedToDockerhub
             ? bullet(
                   'Docker image on docker hub',
                   `${DOCKER_HUB_IMAGE}:${semver.version}`,
