@@ -1,10 +1,22 @@
-FROM node:12.16 as builder
+FROM ubuntu:18.04
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates software-properties-common build-essential
+
+# Make sure we have recent version of Git for github actions runner
+RUN add-apt-repository ppa:git-core/ppa && apt-get update && apt-get install -y --no-install-recommends git && git --version
+
+# Install node + yarn
+RUN curl https://nodejs.org/dist/v12.16.1/node-v12.16.1-linux-x64.tar.gz | tar -xzf - -C /usr/local --strip-components=1 --no-same-owner \
+    && node --version \
+    && npm --version \
+    && npm i -g yarn \
+    && yarn --version
+
+# Install rust toolchain + wasm-pack
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
     RUST_VERSION=1.41.0
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-RUN npm i -g yarn --force
 RUN rustup target add wasm32-unknown-unknown
+RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
