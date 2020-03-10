@@ -31,7 +31,10 @@ impl<T> From<Result<T, String>> for JsResult<T> {
     }
 }
 
-impl<T> From<JsResult<T>> for JsValue where T: Serialize {
+impl<T> From<JsResult<T>> for JsValue
+where
+    T: Serialize,
+{
     fn from(result: JsResult<T>) -> JsValue {
         to_js_result(&result)
     }
@@ -46,22 +49,21 @@ pub struct DecodedParameters(Vec<Value>);
 
 #[wasm_bindgen]
 pub fn abi_decode_parameters(data: &[u8], type_list: Box<[JsValue]>) -> JsValue {
-    let params = type_list.iter().map(|v| {
-        match v.as_string() {
+    let params = type_list
+        .iter()
+        .map(|v| match v.as_string() {
             Some(s) => datatypes::parse_param_type(&s),
-            None => Err(format!("Type argument {:?} is not a string", v))
-        }
-    }).collect::<Result<Vec<ParamType>,String>>();
+            None => Err(format!("Type argument {:?} is not a string", v)),
+        })
+        .collect::<Result<Vec<ParamType>, String>>();
 
     let decoded = match params {
-        Ok(params) => {
-            match decode(&params[..], data) {
-                Ok(tokens) => JsResult::Ok(DecodedParameters(
-                    tokens.iter().map(|t| token_to_value(&t)).collect(),
-                )),
-                Err(err) => JsResult::Err(format!("Failed to decode: {:?}", err)),
-            }
-        }
+        Ok(params) => match decode(&params[..], data) {
+            Ok(tokens) => JsResult::Ok(DecodedParameters(
+                tokens.iter().map(|t| token_to_value(&t)).collect(),
+            )),
+            Err(err) => JsResult::Err(format!("Failed to decode: {:?}", err)),
+        },
         Err(e) => JsResult::Err(format!("Failed to decode: {:?}", e)),
     };
 

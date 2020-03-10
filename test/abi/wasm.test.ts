@@ -94,6 +94,219 @@ test('isValidDataType', () => {
     expect(isValidDataType('(int27,bool)')).toBe(false);
 });
 
+test('parseSignature panic', () => {
+    expect(
+        parseFunctionSignature(
+            `cancelDebtOffer((address,((uint256,address),(uint8,bytes32,bytes32)),(uint256,uint256,address,(uint8,bytes32,bytes32)),(uint256,uint256,address,(uint8,bytes32,bytes32)),(address,address,uint256,address,uint256,address,address,uint256,address,uint256,address,uint256,address,uint256,uint256,address,bytes32,uint256,uint256,(uint8,bytes32,bytes32),(uint8,bytes32,bytes32),(uint8,bytes32,bytes32))))`
+        )
+    ).toMatchInlineSnapshot(`
+        Object {
+          "inputs": Array [
+            Object {
+              "components": Array [
+                Object {
+                  "type": "address",
+                },
+                Object {
+                  "components": Array [
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint256",
+                        },
+                        Object {
+                          "type": "address",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint8",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                  ],
+                  "type": "tuple",
+                },
+                Object {
+                  "components": Array [
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint8",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                  ],
+                  "type": "tuple",
+                },
+                Object {
+                  "components": Array [
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint8",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                  ],
+                  "type": "tuple",
+                },
+                Object {
+                  "components": Array [
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "address",
+                    },
+                    Object {
+                      "type": "bytes32",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "type": "uint256",
+                    },
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint8",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint8",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                    Object {
+                      "components": Array [
+                        Object {
+                          "type": "uint8",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                        Object {
+                          "type": "bytes32",
+                        },
+                      ],
+                      "type": "tuple",
+                    },
+                  ],
+                  "type": "tuple",
+                },
+              ],
+              "type": "tuple",
+            },
+          ],
+          "name": "cancelDebtOffer",
+          "type": "function",
+        }
+    `);
+});
+
 test('getDataSize', () => {
     expect(getDataSize('uint')).toMatchInlineSnapshot(`
         Object {
