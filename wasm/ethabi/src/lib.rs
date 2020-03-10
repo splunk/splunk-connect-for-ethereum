@@ -15,15 +15,6 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
-extern "C" {
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
-}
-
-#[derive(Serialize, Debug)]
-pub struct DecodedParameters(Vec<Value>);
-
 #[derive(Serialize, Debug)]
 #[serde(tag = "t", content = "c")]
 pub enum JsResult<T> {
@@ -31,63 +22,60 @@ pub enum JsResult<T> {
     Err(String),
 }
 
-fn serialize_js_result<T: Serialize>(result: &JsResult<T>) -> JsValue {
+impl<T> From<Result<T, String>> for JsResult<T> {
+    fn from(result: Result<T, String>) -> Self {
+        match result {
+            Ok(v) => JsResult::Ok(v),
+            Err(e) => JsResult::Err(e),
+        }
+    }
+}
+
+impl<T> From<JsResult<T>> for JsValue where T: Serialize {
+    fn from(result: JsResult<T>) -> JsValue {
+        to_js_result(&result)
+    }
+}
+
+fn to_js_result<T: Serialize>(result: &JsResult<T>) -> JsValue {
     JsValue::from_serde(result).expect("Failed to serialize JsResult")
 }
 
-fn encode_type_list(type_list: Box<[JsValue]>) -> String {
-    return format!(
-        "({})",
-        type_list
-            .iter()
-            .map(|v| {
-                if v.is_string() {
-                    v.as_string().unwrap()
-                } else {
-                    "<<INVALID>>".to_string()
-                }
-            })
-            .collect::<Vec<String>>()
-            .join(",")
-    );
-}
+#[derive(Serialize, Debug)]
+pub struct DecodedParameters(Vec<Value>);
 
 #[wasm_bindgen]
 pub fn abi_decode_parameters(data: &[u8], type_list: Box<[JsValue]>) -> JsValue {
-    serialize_js_result(
-        &match datatypes::parse_param_type(&encode_type_list(type_list)) {
-            Ok(ParamType::Tuple(params)) => {
-                let p = params
-                    .iter()
-                    .map(|p| *(*p).clone())
-                    .collect::<Vec<ParamType>>();
-                match decode(&p[..], data) {
-                    Ok(tokens) => JsResult::Ok(DecodedParameters(
-                        tokens.iter().map(|t| token_to_value(&t)).collect(),
-                    )),
-                    Err(err) => JsResult::Err(format!("Failed to decode: {:?}", err)),
-                }
+    let params = type_list.iter().map(|v| {
+        match v.as_string() {
+            Some(s) => datatypes::parse_param_type(&s),
+            None => Err(format!("Type argument {:?} is not a string", v))
+        }
+    }).collect::<Result<Vec<ParamType>,String>>();
+
+    let decoded = match params {
+        Ok(params) => {
+            match decode(&params[..], data) {
+                Ok(tokens) => JsResult::Ok(DecodedParameters(
+                    tokens.iter().map(|t| token_to_value(&t)).collect(),
+                )),
+                Err(err) => JsResult::Err(format!("Failed to decode: {:?}", err)),
             }
-            Err(e) => JsResult::Err(format!("Failed to decode: {:?}", e)),
-            _ => JsResult::Err(format!("Unable to parse parameter list")),
-        },
-    )
+        }
+        Err(e) => JsResult::Err(format!("Failed to decode: {:?}", e)),
+    };
+
+    to_js_result(&decoded)
 }
 
 #[wasm_bindgen]
 pub fn parse_function_signature(signature: String) -> JsValue {
-    serialize_js_result(&match sig::parse_signature(&signature, false) {
-        Ok(item) => JsResult::Ok(item),
-        Err(msg) => JsResult::Err(msg),
-    })
+    to_js_result(&sig::parse_signature(&signature, false).into())
 }
 
 #[wasm_bindgen]
 pub fn parse_event_signature(signature: String) -> JsValue {
-    serialize_js_result(&match sig::parse_signature(&signature, true) {
-        Ok(item) => JsResult::Ok(item),
-        Err(msg) => JsResult::Err(msg),
-    })
+    to_js_result(&sig::parse_signature(&signature, true).into())
 }
 
 #[wasm_bindgen]
@@ -100,7 +88,7 @@ pub fn is_valid_param_type(type_str: String) -> bool {
 
 #[wasm_bindgen]
 pub fn is_array_type(data_type: String) -> JsValue {
-    serialize_js_result(&match datatypes::parse_param_type(&data_type) {
+    to_js_result(&match datatypes::parse_param_type(&data_type) {
         Ok(ParamType::Array(_)) => JsResult::Ok(true),
         Ok(ParamType::FixedArray(_, _)) => JsResult::Ok(true),
         Ok(_) => JsResult::Ok(false),
@@ -116,7 +104,7 @@ pub struct ParamDataSize {
 
 #[wasm_bindgen]
 pub fn get_data_size(type_str: String) -> JsValue {
-    serialize_js_result(&match datatypes::parse_param_type(&type_str) {
+    to_js_result(&match datatypes::parse_param_type(&type_str) {
         Ok(t) => match datatypes::get_data_size(&t) {
             (size, exact) => JsResult::Ok(ParamDataSize {
                 length: size,
@@ -129,10 +117,7 @@ pub fn get_data_size(type_str: String) -> JsValue {
 
 #[wasm_bindgen]
 pub fn to_checksum_address(address_str: String) -> JsValue {
-    serialize_js_result(&match to_checksum_address_internal(address_str) {
-        Ok(v) => JsResult::Ok(v),
-        Err(e) => JsResult::Err(e),
-    })
+    to_js_result(&to_checksum_address_internal(address_str).into())
 }
 
 pub fn to_checksum_address_internal(address_str: String) -> Result<String, String> {
@@ -174,8 +159,8 @@ pub fn sha3(s: String) -> Option<String> {
     }
 }
 
-#[wasm_bindgen]
-pub fn init() {
+#[wasm_bindgen(start)]
+pub fn init_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
     // `set_panic_hook` function at least once during initialization, and then
     // we will get better error messages if our code ever panics.
