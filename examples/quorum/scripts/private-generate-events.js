@@ -34,5 +34,8 @@ var abi = [
 var contract = eth.contract(abi).at(address);
 
 for (i = 0; i < 20; i++) {
-    contract.set(4, { from: eth.accounts[0], privateFor: ['ROAZBWtSacxXQrOe3FGAqJDyJjFePR5ce4TSIzmJ0Bc='] });
+    contract.set(4, {
+        from: eth.accounts[0],
+        privateFor: ['BULeR8JyUWhiuuCMU/HLA0Q5pzkYT+cHII3ZKBey3Bo=', 'QfeDAys9MPDs2XHExtc84jKGHxZg/aj52DTh0vtA3Xc='],
+    });
 }

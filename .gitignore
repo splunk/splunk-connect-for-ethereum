@@ -12,6 +12,7 @@ node_modules
 nohup.out
 .private-contract
 .public-contract
+.txns.pid
 data/*.abisigs*
 /coverage
 .env
