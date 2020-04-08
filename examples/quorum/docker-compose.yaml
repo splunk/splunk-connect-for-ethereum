@@ -7,7 +7,7 @@
 # e.g.: QUORUM_TX_MANAGER_DOCKER_IMAGE=quorumengineering/constellation:0.3.2 docker-compose up -d
 # To use Remix, set QUORUM_GETH_ARGS="--rpccorsdomain https://remix.ethereum.org"
 
-version: '3.6'
+version: '3.7'
 
 x-logging: &default-logging
     driver: 'splunk'
@@ -31,6 +31,10 @@ x-quorum-def: &quorum-def
         timeout: 3s
         retries: 10
         start_period: 5s
+    deploy:
+        resources:
+            limits:
+                cpus: '0.30'
     labels:
         com.quorum.consensus: ${QUORUM_CONSENSUS:-istanbul}
     entrypoint:
@@ -104,6 +108,11 @@ x-tx-manager-def: &tx-manager-def
         timeout: 3s
         retries: 20
         start_period: 5s
+    deploy:
+        resources:
+            limits:
+                cpus: '0.50'
+                memory: 768M
     entrypoint:
         - /bin/sh
         - -c
@@ -177,6 +186,9 @@ x-tx-manager-def: &tx-manager-def
                      },
                      {
                          "url": "http://txmanager2:9000"
+                     },
+                     {
+                         "url": "http://txmanager3:9000"
                      }
                   ],
                   "keys": {
@@ -236,7 +248,6 @@ services:
                 <<: *log-opts
                 splunk-sourcetype: 'docker:quorum-node'
                 splunk-source: node1
-
     txmanager1:
         <<: *tx-manager-def
         hostname: txmanager1
@@ -306,6 +317,53 @@ services:
                 splunk-sourcetype: 'docker:tessera'
                 splunk-source: node2
 
+    node3:
+        <<: *quorum-def
+        hostname: node3
+        ports:
+            - '22002:8545'
+        volumes:
+            - vol3:/qdata
+            - ./config:/config:ro
+            - ./scripts:/scripts:ro
+        depends_on:
+            - txmanager3
+            - splunk
+        environment:
+            - PRIVATE_CONFIG=/qdata/tm/tm.ipc
+            - NODE_ID=3
+        networks:
+            quorum-examples-net:
+                ipv4_address: 172.16.239.13
+        logging:
+            <<: *default-logging
+            options:
+                <<: *log-opts
+                splunk-sourcetype: 'docker:quorum-node'
+                splunk-source: node3
+
+    txmanager3:
+        <<: *tx-manager-def
+        hostname: txmanager3
+        ports:
+            - '9083:9080'
+        volumes:
+            - vol3:/qdata
+            - ./config:/config:ro
+        depends_on:
+            - splunk
+        networks:
+            quorum-examples-net:
+                ipv4_address: 172.16.239.103
+        environment:
+            - NODE_ID=3
+        logging:
+            <<: *default-logging
+            options:
+                <<: *log-opts
+                splunk-sourcetype: 'docker:tessera'
+                splunk-source: node3
+
     splunk:
         container_name: splunk
         image: splunk/splunk:latest
@@ -330,8 +388,35 @@ services:
             - /opt/splunk/var
             - /opt/splunk/etc
 
+    cadivsor:
+        container_name: cadvisor
+        image: google/cadvisor:latest
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:ro
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
+        command:
+            - --storage_driver=statsd
+            - --storage_driver_host=splunk:8125
+            - --storage_driver_db=docker
+            - --docker_only=true
+            - --enable_load_reader=true
+        networks:
+            quorum-examples-net:
+                ipv4_address: 172.16.239.201
+        user: root
+        depends_on:
+            - splunk
+        logging:
+            <<: *default-logging
+            options:
+                <<: *log-opts
+                splunk-sourcetype: 'docker:cadvisor'
+                splunk-source: cadvisor
+
     ethlogger1:
-        image: docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlogger:latest
+        image: splunkdlt/ethlogger:latest
         container_name: ethlogger1
         environment:
             - ETH_RPC_URL=http://node1:8545
@@ -349,16 +434,20 @@ services:
             - DEBUG=ethlogger:abi:*
         volumes:
             - ./abi:/abi
-            - ./ethlogger1:/app
+            - ethlogger1:/app
         networks:
             quorum-examples-net:
-                ipv4_address: 172.16.239.201
+                ipv4_address: 172.16.239.202
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.20'
         depends_on:
             - splunk
             - node1
 
     ethlogger2:
-        image: docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlogger:latest
+        image: splunkdlt/ethlogger:latest
         container_name: ethlogger2
         environment:
             - ETH_RPC_URL=http://node2:8545
@@ -377,13 +466,49 @@ services:
             - DEBUG=ethlogger:abi:*
         volumes:
             - ./abi:/abi
-            - ./ethlogger2:/app
+            - ethlogger2:/app
         networks:
             quorum-examples-net:
-                ipv4_address: 172.16.239.202
+                ipv4_address: 172.16.239.203
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.20'
         depends_on:
             - splunk
             - node2
+
+    ethlogger3:
+        image: splunkdlt/ethlogger:latest
+        container_name: ethlogger3
+        environment:
+            - ETH_RPC_URL=http://node3:8545
+            - NETWORK_NAME=quorum
+            - START_AT_BLOCK=genesis
+            - SPLUNK_HEC_URL=https://splunk:8088
+            - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-111111111111
+            - SPLUNK_EVENTS_INDEX=ethereum
+            - SPLUNK_METRICS_INDEX=metrics
+            - SPLUNK_INTERNAL_INDEX=metrics
+            - SPLUNK_HEC_REJECT_INVALID_CERTS=false
+            - COLLECT_BLOCKS=false
+            - ABI_DIR=/abi
+            - COLLECT_PENDING_TX=true
+            - COLLECT_PEER_INFO=true
+            - DEBUG=ethlogger:abi:*
+        volumes:
+            - ./abi:/abi
+            - ethlogger3:/app
+        networks:
+            quorum-examples-net:
+                ipv4_address: 172.16.239.204
+        deploy:
+            resources:
+                limits:
+                    cpus: '0.20'
+        depends_on:
+            - splunk
+            - node3
 
 networks:
     quorum-examples-net:
@@ -395,3 +520,7 @@ networks:
 volumes:
     'vol1':
     'vol2':
+    'vol3':
+    'ethlogger1':
+    'ethlogger2':
+    'ethlogger3':
