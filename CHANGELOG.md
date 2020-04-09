@@ -1,3 +1,9 @@
+## [2.0.6](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.5...v2.0.6) (2020-04-09)
+
+### Bug Fixes
+
+-   🐛 avoid panic when parsing certain ABI param types ([f4a2d94](https://github.com/splunk/splunk-connect-for-ethereum/commit/f4a2d94e06c0af829153baccff05574a1e255ba1)), closes [#35](https://github.com/splunk/splunk-connect-for-ethereum/issues/35)
+
 ## [2.0.5](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.4...v2.0.5) (2020-03-07)
 
 ### Bug Fixes
