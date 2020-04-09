@@ -54,7 +54,7 @@ There's a lot of information available via RPC on Ethereum nodes, but they need 
 -   Quorum Specific Endpoints: `--rpcapi quorum,istanbul,raft` (note: only one of `istanbul` or `raft` is active depending on the consensus method)
 -   Geth and Quorum: ensure that the host `ethlogger` is running on is whitelisted in the `--rpcvhosts` cli setting.
 -   [Parity Endpoints](https://wiki.parity.io/JSONRPC): note that the command line flag is `--jsonrpc-apis APIs`
--   [Besu Endpoints](https://besu.hyperledger.org/en/stable/HowTo/Interact/APIs/Using-JSON-RPC-API/)
+-   [Besu Endpoints](https://besu.hyperledger.org/en/stable/HowTo/Interact/APIs/Using-JSON-RPC-API/) or you can turn on: `--rpc-http-enabled --rpc-ws-enabled --rpc-http-api admin,eth,debug,miner,net,txpool,priv,trace,web3`
 
 ## Contributing
 
