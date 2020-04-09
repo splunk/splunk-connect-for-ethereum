@@ -34,7 +34,7 @@ pub fn from_hex(hex_str: &String) -> Result<Vec<u8>, ()> {
         return Err(());
     }
 
-   let result: Result<Vec<_>, _> = (0..hex_str.len())
+    let result: Result<Vec<_>, _> = (0..hex_str.len())
         .step_by(2)
         .skip(1)
         .map(|i| u8::from_str_radix(&hex_str[i..i + 2], 16))

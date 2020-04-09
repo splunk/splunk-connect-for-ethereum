@@ -1,5 +1,5 @@
-use crate::datatypes::parse_param_type;
-use ethabi::param_type::{ParamType};
+use crate::datatypes::{parse_param_type, tokenize};
+use ethabi::param_type::ParamType;
 
 #[derive(Serialize, Debug, PartialEq)]
 pub struct AbiInput {
@@ -41,87 +41,36 @@ fn param_to_abi_input(param: &ParamType, indexed: Option<bool>) -> AbiInput {
     }
 }
 
-fn tokenize_args(args_str: &String) -> Result<Vec<String>, String> {
-    let mut cur_start = 0;
-    let mut paren_depth = 0;
-    let mut tokens = Vec::new();
-
-    for (i, ch) in args_str.chars().enumerate() {
-        match ch {
-            '(' => {
-                paren_depth += 1;
-            }
-            ')' => {
-                paren_depth -= 1;
-                if paren_depth < 0 {
-                    return Err(format!("Unbalanced parenthesis"));
-                }
-            }
-            ',' => {
-                if paren_depth == 0 {
-                    let t = args_str
-                        .chars()
-                        .skip(cur_start)
-                        .take(i - cur_start)
-                        .collect::<String>();
-                    tokens.push(t);
-                    cur_start = i + 1;
-                }
-            }
-            _ => {}
-        };
-    }
-    if paren_depth != 0 {
-        return Err(String::from("Unbalanced parenthesis"));
-    }
-    if cur_start < args_str.len() {
-        let i = args_str.len();
-        let t = args_str
-            .chars()
-            .skip(cur_start)
-            .take(i - cur_start)
-            .collect::<String>();
-        tokens.push(t);
-    } else if cur_start > 0 {
-        return Err(String::from("Unexpected end of argument list"));
-    }
-    Ok(tokens)
-}
-
 fn parse_fn_args(args_str: &String, allow_indexed_flag: bool) -> Result<Vec<AbiInput>, String> {
     if args_str.chars().next() != Some('(') || args_str.chars().last() != Some(')') {
         return Err(String::from(
             "Unable to parse signature: Invalid argument list",
         ));
     }
-    let tokens = tokenize_args(
-        &args_str
-            .chars()
-            .skip(1)
-            .take(args_str.len() - 2)
-            .collect::<String>(),
-    )?;
+    let tokens = match tokenize(&args_str[1..(args_str.len() - 1)]) {
+        Ok(t) => t,
+        Err(e) => return Err(format!("{}", e)),
+    };
     let mut inputs = Vec::new();
     for token in tokens {
         let mut indexed = None;
-        let mut cur = token.as_str();
+        let mut cur = token;
         if allow_indexed_flag {
             if cur.ends_with(" indexed") {
                 cur = &cur[0..(cur.len() - 8)];
                 indexed = Some(true);
             } else {
-                indexed= Some(false);
+                indexed = Some(false);
             }
         }
         match parse_param_type(&String::from(cur)) {
             Ok(p) => {
                 inputs.push(param_to_abi_input(&p, indexed));
-            },
+            }
             Err(e) => {
                 return Err(format!("Unable to parse signature: {}", e));
-            },
+            }
         }
-
     }
     return Ok(inputs);
 }
