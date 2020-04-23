@@ -16,8 +16,11 @@ $ docker-compose up -d
 2. Wait for all containers to start.
    You can rely on the output of `docker ps` to see the state of services.
 
-3. Then go to [http://localhost:18000](http://localhost:18000) to explore the data produced by ethlogger.
-   Login using user `admin` and password `changeme`
+3. Go to [http://localhost:18000](http://localhost:18000) and login using user `admin` and password `changeme`.
+
+4. [Open the Ethereum Basis application](http://localhost:18000/en-US/app/ethereum-basics/introduction) to explore block data.
+
+5. You can search for logs [with the search `index="logs"`](http://localhost:18000/en-US/app/search/search?q=search%20index%3D%22logs%22).
 
 ## Note
 
