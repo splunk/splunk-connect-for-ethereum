@@ -30,12 +30,12 @@ Find out how to configure ethlogger in the [configuration docs](./docs/configura
 
 ## Docker
 
-Splunk Connect for Ethereum can also be run as a docker image. You can pull the image from [Github package registry](https://github.com/splunk/splunk-connect-for-ethereum/packages/90723?version=latest) (Make sure to [set up docker to pull images from Github package registry](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-docker-for-use-with-github-packages)).
+Splunk Connect for Ethereum can also be run as a docker image. You can pull the image from [Docker Hub](https://hub.docker.com/r/splunkdlt/ethlogger) or the [Github package registry](https://github.com/splunk/splunk-connect-for-ethereum/packages/90723?version=latest) (Make sure to [set up docker to pull images from Github package registry](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-docker-for-use-with-github-packages)).
 
 Example:
 
 ```sh-session
-$ docker run -it docker.pkg.github.com/splunk/splunk-connect-for-ethereum/ethlogger:latest \
+$ docker run -it splunkdlt/ethlogger:latest \
     --eth-rpc-url=https://dai.poa.network \
     --start-at-block=latest \
     --hec-url=https://mysplunkserver.com:8088 \

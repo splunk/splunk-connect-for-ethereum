@@ -6,14 +6,15 @@ Ethlogger configuration is provided in the form of [environment variables](../..
 
 ## Run
 
-1. [Set up docker to pull images from Github package registry](https://help.github.com/en/github/managing-packages-with-github-packages/configuring-docker-for-use-with-github-packages)
-
-2. Start docker-compose
+1. Start docker-compose
 
 ```sh-session
 $ cd examples/docker-compose-basic
 $ docker-compose up -d
 ```
+
+2. Wait for all containers to start.
+   You can rely on the output of `docker ps` to see the state of services.
 
 3. Then go to [http://localhost:8000](http://localhost:8000) to explore the data produced by ethlogger.
    Login using user `admin` and password `changeme`
