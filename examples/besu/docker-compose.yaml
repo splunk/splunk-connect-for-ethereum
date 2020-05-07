@@ -45,6 +45,7 @@ services:
             - ./:/app
         depends_on:
             - splunk
+        restart: always
     besu:
         image: hyperledger/besu:1.4.4
         container_name: besu

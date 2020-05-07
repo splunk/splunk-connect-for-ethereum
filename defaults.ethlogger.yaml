@@ -20,7 +20,7 @@ hec:
         maxSockets: 128
         userAgent: ethlogger-hec-client/$VERSION
         multipleMetricFormatEnabled: false
-        waitForAvailability: 1m
+        waitForAvailability: 2m
         retryWaitTime:
             type: exponential-backoff
             min: 10ms

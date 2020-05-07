@@ -43,3 +43,4 @@ services:
             - ./:/app
         depends_on:
             - splunk
+        restart: always
