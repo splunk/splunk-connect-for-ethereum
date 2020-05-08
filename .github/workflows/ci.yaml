@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
     build:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         container:
             image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
@@ -14,10 +14,9 @@ jobs:
                   yarn install --frozen-lockfile
                   yarn build
     docker-image:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         container:
             image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
-            volumes: ['/var/run/docker.sock:/var/run/docker.sock']
         steps:
             - uses: actions/checkout@v2
             - name: Build docker image
@@ -31,7 +30,7 @@ jobs:
                   docker tag ethlogger docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
                   docker push docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
     unit-tests:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         container:
             image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
@@ -44,7 +43,7 @@ jobs:
               env:
                   CI: true
     check-format:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         container:
             image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
@@ -56,7 +55,7 @@ jobs:
               env:
                   CI: true
     check-generated-files:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         container:
             image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
         steps:
@@ -71,10 +70,9 @@ jobs:
               env:
                   CI: true
     trigger-release:
-        runs-on: self-hosted
+        runs-on: ubuntu-latest
         container:
             image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
-            volumes: ['/var/run/docker.sock:/var/run/docker.sock']
         needs:
             - build
             - docker-image
