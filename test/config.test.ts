@@ -74,7 +74,7 @@ test('defaults', async () => {
                       "url": undefined,
                       "userAgent": "ethlogger-hec-client/$VERSION",
                       "validateCertificate": true,
-                      "waitForAvailability": 60000,
+                      "waitForAvailability": 120000,
                     },
                     "events": undefined,
                     "internal": Object {
