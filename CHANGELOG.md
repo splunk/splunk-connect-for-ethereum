@@ -1,3 +1,9 @@
+## [2.0.7](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.6...v2.0.7) (2020-05-08)
+
+### Bug Fixes
+
+-   🐛 HEC timeout in docker-compose examples ([6dda3f4](https://github.com/splunk/splunk-connect-for-ethereum/commit/6dda3f4159380acdcc3a9396fe4cea0369b3a49c)), closes [#43](https://github.com/splunk/splunk-connect-for-ethereum/issues/43)
+
 ## [2.0.6](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.5...v2.0.6) (2020-04-09)
 
 ### Bug Fixes
