@@ -1,3 +1,16 @@
+import {
+    ABORT,
+    AbortHandle,
+    linearBackoff,
+    parallel,
+    resolveWaitTime,
+    retry,
+    sleep,
+    WaitTime,
+} from '@splunkdlt/async-tasks';
+import { Cache, cachedAsync, NoopCache } from '@splunkdlt/cache';
+import { ManagedResource } from '@splunkdlt/managed-resource';
+import { AggregateMetric } from '@splunkdlt/stats-collector';
 import { ContractInfo, getContractInfo } from './abi/contract';
 import { AbiRepository } from './abi/repo';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
@@ -8,14 +21,8 @@ import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/
 import { formatBlock, formatLogEvent, formatTransaction } from './format';
 import { Address, AddressInfo, FormattedBlock, LogEventMessage } from './msgs';
 import { Output, OutputMessage } from './output';
-import { ABORT, AbortHandle } from './utils/abort';
-import { parallel, sleep } from './utils/async';
 import { bigIntToNumber } from './utils/bn';
-import { Cache, cachedAsync, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
-import { ManagedResource } from './utils/resource';
-import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
-import { AggregateMetric } from './utils/stats';
 
 const { debug, info, warn, error, trace } = createModuleDebug('blockwatcher');
 

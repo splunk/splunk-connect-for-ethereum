@@ -1,4 +1,4 @@
-import { sleep } from '../utils/async';
+import { sleep } from '@splunkdlt/async-tasks';
 import { createModuleDebug } from '../utils/debug';
 import { checkError, createJsonRpcPayload, JsonRpcError, JsonRpcRequest } from './jsonrpc';
 import { EthRequest } from './requests';

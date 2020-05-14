@@ -1,16 +1,16 @@
+import { alwaysResolve, sleep } from '@splunkdlt/async-tasks';
+import { ManagedResource } from '@splunkdlt/managed-resource';
 import { readFile, writeFile } from 'fs-extra';
 import {
     BlockRange,
+    blockRangeIncludes,
+    blockRangeSize,
     compactRanges,
     getInverseBlockRanges,
     parseBlockRange,
     serializeBlockRange,
-    blockRangeSize,
-    blockRangeIncludes,
 } from './blockrange';
 import { createModuleDebug } from './utils/debug';
-import { ManagedResource } from './utils/resource';
-import { alwaysResolve, sleep } from './utils/async';
 
 const { debug, info, error } = createModuleDebug('checkpoint');
 

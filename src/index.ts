@@ -1,4 +1,9 @@
 import { Command } from '@oclif/command';
+import { ABORT } from '@splunkdlt/async-tasks';
+import { LRUCache } from '@splunkdlt/cache';
+import { HecClient } from '@splunkdlt/hec-client';
+import { ManagedResource, shutdownAll, waitForSignal } from '@splunkdlt/managed-resource';
+import { InternalStatsCollector } from '@splunkdlt/stats-collector';
 import debugModule from 'debug';
 import { inspect } from 'util';
 import { ContractInfo } from './abi/contract';
@@ -10,17 +15,11 @@ import { ConfigError, EthloggerConfig, loadEthloggerConfig } from './config';
 import { BatchedEthereumClient, EthereumClient } from './eth/client';
 import { HttpTransport } from './eth/http';
 import { checkHealthState, HealthStateMonitor } from './health';
-import { HecClient } from './hec';
 import { introspectTargetNodePlatform } from './introspect';
 import { substituteVariablesInHecConfig } from './meta';
 import { NodeStatsCollector } from './nodestats';
 import { createOutput } from './output';
-import { ABORT } from './utils/abort';
 import { createModuleDebug, enableTraceLogging } from './utils/debug';
-import LRUCache from './utils/lru';
-import { ManagedResource, shutdownAll } from './utils/resource';
-import { waitForSignal } from './utils/signal';
-import { InternalStatsCollector } from './utils/stats';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -120,11 +119,13 @@ class Ethlogger extends Command {
         const output = await createOutput(config, baseHec);
         addResource(output);
 
+        const internalHec = baseHec.clone(config.hec.internal);
         const internalStatsCollector = new InternalStatsCollector({
             collect: config.internalMetrics.enabled,
             collectInterval: config.internalMetrics.collectInterval,
-            dest: baseHec.clone(config.hec.internal),
             basePrefix: 'ethlogger.internal',
+            collectSystemStats: true,
+            dest: m => internalHec.pushMetrics(m),
         });
         addResource(internalStatsCollector);
         internalStatsCollector.addSource(transport, 'ethTransport');

@@ -669,6 +669,57 @@
     lodash "^4.17.4"
     read-pkg-up "^7.0.0"
 
+"@splunkdlt/async-tasks@1.0.0-alpha0":
+  version "1.0.0-alpha0"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/async-tasks/-/async-tasks-1.0.0-alpha0.tgz#1ebaea00a6e25de025c36c3c8dffd44b061351f4"
+  integrity sha512-lLLTjmJS9IOra6EqPtk1/+TzVqF2WOG5vS833kU8Wjv1/fMYV66byIurbhNx58Z+p/T3wHdJ2glxgI0bKi/nFA==
+  dependencies:
+    "@splunkdlt/debug-logging" "1.0.0"
+
+"@splunkdlt/async-tasks@^1.0.0-alpha1":
+  version "1.0.0-alpha2"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/async-tasks/-/async-tasks-1.0.0-alpha2.tgz#9e7b0593b6cd8e7affeb1bc0d9986bacfc2a97df"
+  integrity sha512-CExma/VzHNJD6sbhn+2o1+2ZwvwDro/B50sgbQT0uoimVAb7wteBBhSbHh33QfTPWD7G2Jix2zze9A//wFi6eg==
+  dependencies:
+    "@splunkdlt/debug-logging" "1.0.0"
+
+"@splunkdlt/cache@^1.0.0-alpha1":
+  version "1.0.0-alpha1"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/cache/-/cache-1.0.0-alpha1.tgz#523ec54e45669002e07af936a0fb7784981ef1d9"
+  integrity sha512-a1cy6+I+3cU/om3DQeuPGxO19NEvNb9c07+kCwPc/16a4cNwBYTcS1USq3jddZIxpNF2fpZjqjZnbMGRafGdmw==
+
+"@splunkdlt/debug-logging@1.0.0", "@splunkdlt/debug-logging@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/debug-logging/-/debug-logging-1.0.0.tgz#5ce6c44a865d9e27ef34b00177c4fa9f32da1b81"
+  integrity sha512-dmz5lRAdjdiPFOijsY+DyBKOoLHnvxCKgwZX3JC30jh5hcpwMrKUhSnoKo2XKPIGUnGBHQxI2hbqCcWoZDsMNA==
+  dependencies:
+    debug "^4.1.1"
+
+"@splunkdlt/hec-client@^0.1.0-alpha0":
+  version "0.1.0-alpha1"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/hec-client/-/hec-client-0.1.0-alpha1.tgz#7563e396dfeaa0082a4fb18c5c2a46e8acb9679a"
+  integrity sha512-OAKH0Coq20Ev0xkbgiIHO6b7UE3Gy3DVMqk9NgTzGJTVDBZdmMvDu9gLQWCHTI9kykzV5RJJonxRP6RF2FYO7g==
+  dependencies:
+    "@splunkdlt/async-tasks" "1.0.0-alpha0"
+    "@splunkdlt/debug-logging" "1.0.0"
+    "@splunkdlt/stats-collector" "1.0.0-alpha0"
+    abort-controller "^3.0.0"
+    agentkeepalive "^4.1.0"
+    bl "^4.0.0"
+    node-fetch "^2.6.0"
+
+"@splunkdlt/managed-resource@1.0.0-alpha0", "@splunkdlt/managed-resource@^1.0.0-alpha0":
+  version "1.0.0-alpha0"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/managed-resource/-/managed-resource-1.0.0-alpha0.tgz#a602e55a2ba4dbdca1798cf3ce0d8bd4392489c5"
+  integrity sha512-z2VEbKgpfmqxK6OrBh89s02cJTt7tqVeUhMikb56cStUFVxmI5xTN1XbwaceLEt2zIuUy9/uIVEXHSvL6s4gDg==
+
+"@splunkdlt/stats-collector@1.0.0-alpha0", "@splunkdlt/stats-collector@^1.0.0-alpha0":
+  version "1.0.0-alpha0"
+  resolved "https://registry.yarnpkg.com/@splunkdlt/stats-collector/-/stats-collector-1.0.0-alpha0.tgz#16f66ca47a5f80fb9436166fbc0237693431328d"
+  integrity sha512-QqWve7l3HXeU35cZ6a0lfmP/Th7n7IyCWPzRINfYkk5BI3CS+Jb2K1DLpc74mvcZLDIHEgTlozzJalq2LyrXvQ==
+  dependencies:
+    "@splunkdlt/managed-resource" "1.0.0-alpha0"
+
 "@types/babel__core@^7.1.0":
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.3.tgz#e441ea7df63cd080dfcd02ab199e6d16a735fc30"

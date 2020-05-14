@@ -1,9 +1,9 @@
+import { AggregateMetric } from '@splunkdlt/stats-collector';
 import { default as HttpAgent, HttpOptions, HttpsAgent } from 'agentkeepalive';
 import fetch from 'node-fetch';
 import { HttpTransportConfig } from '../config';
 import { createModuleDebug } from '../utils/debug';
 import { isHttps } from '../utils/httputils';
-import { AggregateMetric, httpClientStats } from '../utils/stats';
 import { checkError, JsonRpcRequest, JsonRpcResponse, validateJsonRpcResponse } from './jsonrpc';
 import { EthereumTransport } from './transport';
 
@@ -137,12 +137,13 @@ export class HttpTransport implements EthereumTransport {
         }
     }
 
-    public get stats() {
-        return {
-            ...this.counters,
-            httpClient: httpClientStats(this.httpAgent.getCurrentStatus()),
-        };
-    }
+    // TODO:
+    // public get stats() {
+    //     return {
+    //         ...this.counters,
+    //         httpClient: httpClientStats(this.httpAgent.getCurrentStatus()),
+    //     };
+    // }
 
     public flushStats() {
         const stats = {

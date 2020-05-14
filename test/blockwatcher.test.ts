@@ -1,3 +1,4 @@
+import { LRUCache } from '@splunkdlt/cache';
 import { join } from 'path';
 import { ContractInfo } from '../src/abi/contract';
 import { AbiRepository } from '../src/abi/repo';
@@ -7,7 +8,6 @@ import { BatchedEthereumClient } from '../src/eth/client';
 import { HttpTransport } from '../src/eth/http';
 import { withRecorder } from '../src/eth/recorder';
 import { suppressDebugLogging } from '../src/utils/debug';
-import LRUCache from '../src/utils/lru';
 import { TestOutput } from './testoutput';
 
 let logHandle: any;

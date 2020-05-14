@@ -1,13 +1,11 @@
-import { NodeInfoConfig, NodeMetricsConfig, PendingTxConfig, PeerInfoConfig } from './config';
+import { ABORT, AbortHandle, alwaysResolve, resolveWaitTime, sleep, WaitTime } from '@splunkdlt/async-tasks';
+import { ManagedResource } from '@splunkdlt/managed-resource';
+import { AggregateMetric } from '@splunkdlt/stats-collector';
+import { NodeInfoConfig, NodeMetricsConfig, PeerInfoConfig, PendingTxConfig } from './config';
 import { EthereumClient } from './eth/client';
 import { Output, OutputMessage } from './output';
 import { NodePlatformAdapter } from './platforms';
-import { ABORT, AbortHandle } from './utils/abort';
-import { alwaysResolve, sleep } from './utils/async';
 import { createModuleDebug } from './utils/debug';
-import { ManagedResource } from './utils/resource';
-import { resolveWaitTime, WaitTime } from './utils/retry';
-import { AggregateMetric } from './utils/stats';
 
 const { debug, info, warn, error } = createModuleDebug('nodestats');
 

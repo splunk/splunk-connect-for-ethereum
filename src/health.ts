@@ -1,8 +1,7 @@
-import { ManagedResource } from './utils/resource';
-import { pathExists, writeFile, unlink, readFile } from 'fs-extra';
+import { ABORT, AbortHandle, sleep } from '@splunkdlt/async-tasks';
+import { ManagedResource } from '@splunkdlt/managed-resource';
+import { pathExists, readFile, unlink, writeFile } from 'fs-extra';
 import { createModuleDebug } from './utils/debug';
-import { AbortHandle, ABORT } from './utils/abort';
-import { sleep } from './utils/async';
 
 const { debug, info, warn, error } = createModuleDebug('health');
 

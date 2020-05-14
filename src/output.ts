@@ -1,5 +1,7 @@
+import { HecClient } from '@splunkdlt/hec-client';
+import { ManagedResource } from '@splunkdlt/managed-resource';
+import { Stats } from '@splunkdlt/stats-collector';
 import { EthloggerConfig, HecOutputConfig } from './config';
-import { HecClient } from './hec';
 import {
     BlockMessage,
     GethPeerMessage,
@@ -11,8 +13,6 @@ import {
 } from './msgs';
 import { createDebug } from './utils/debug';
 import { prefixKeys } from './utils/obj';
-import { ManagedResource } from './utils/resource';
-import { Stats } from './utils/stats';
 
 export const defaultSourcetypes = {
     block: 'ethereum:block',
@@ -151,8 +151,10 @@ export async function createOutput(config: EthloggerConfig, baseHecClient: HecCl
         const metricsHec = config.hec.metrics ? baseHecClient.clone(config.hec.metrics) : baseHecClient;
         const hecOutput = new HecOutput(eventsHec, metricsHec, config.output);
         const maxWaitTime = Math.max(
-            eventsHec.config.waitForAvailability ?? 0,
-            metricsHec.config.waitForAvailability ?? 0
+            config.hec.default?.waitForAvailability ?? 0,
+            config.hec.events?.waitForAvailability ?? 0,
+            config.hec.metrics?.waitForAvailability ?? 0,
+            config.hec.internal?.waitForAvailability ?? 0
         );
         if (maxWaitTime > 0) {
             await hecOutput.waitUntilAvailable(maxWaitTime);

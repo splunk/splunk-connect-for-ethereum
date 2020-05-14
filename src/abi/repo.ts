@@ -1,8 +1,8 @@
+import { ManagedResource } from '@splunkdlt/managed-resource';
 import { join as joinPath } from 'path';
 import { AbiRepositoryConfig } from '../config';
 import { RawLogResponse } from '../eth/responses';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
-import { ManagedResource } from '../utils/resource';
 import {
     decodeBestMatchingFunctionCall,
     decodeBestMatchingLogEvent,

@@ -1,12 +1,12 @@
+import { linearBackoff, retry } from '@splunkdlt/async-tasks';
 import { EthereumClient } from './eth/client';
 import { clientVersion } from './eth/requests';
-import { createModuleDebug } from './utils/debug';
 import { NodePlatformAdapter } from './platforms';
 import { GenericNodeAdapter } from './platforms/generic';
 import { GethAdapter } from './platforms/geth';
 import { ParityAdapter } from './platforms/parity';
 import { QuorumAdapter } from './platforms/quorum';
-import { retry, linearBackoff } from './utils/retry';
+import { createModuleDebug } from './utils/debug';
 
 const { debug, info, warn, error } = createModuleDebug('introspect');
 

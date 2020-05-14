@@ -1,5 +1,5 @@
+import { Stats } from '@splunkdlt/stats-collector';
 import { Output, OutputMessage } from '../src/output';
-import { Stats } from '../src/utils/stats';
 
 export class TestOutput implements Output {
     public messages: OutputMessage[] = [];
