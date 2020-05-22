@@ -147,12 +147,12 @@ export class AbiRepository implements ManagedResource {
         return candidates != null ? { anonymous: true, candidates } : undefined;
     }
 
-    public getMatchingSignatureName(signatureHash: string): string | undefined {
+    public getMatchingSignature(signatureHash: string): string | undefined {
         const candidates = this.signatures.get(signatureHash);
         trace(
-            'getMatchingSignatureName(%o) --> ',
+            'getMatchingSignature(%o) --> ',
             signatureHash,
-            candidates?.map(c => computeSignature(c))
+            candidates?.filter(c => c.contractFingerprint != null)?.map(c => computeSignature(c))
         );
         if (candidates != null) {
             // We only want to consider signatures from contracts in our repo

@@ -353,7 +353,7 @@ export class BlockWatcher implements ManagedResource {
             getContractInfo(
                 addr,
                 this.ethClient,
-                (sig: string) => abiRepo.getMatchingSignatureName(sig),
+                (sig: string) => abiRepo.getMatchingSignature(sig),
                 (address: string, fingerprint: string) =>
                     abiRepo.getContractByAddress(address)?.contractName ??
                     abiRepo.getContractByFingerprint(fingerprint)?.contractName

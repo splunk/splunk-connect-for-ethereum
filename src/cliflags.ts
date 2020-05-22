@@ -129,6 +129,12 @@ export const CLI_FLAGS = {
         description: 'Directory containing ABI definitions (JSON files). This directory will be searched recursively',
     }),
 
+    'debug-contract-info': flags.string({
+        hidden: true,
+        helpValue: '<contract-address>',
+        description: 'Tool for troubleshooting the machting of ABIs to contracts',
+    }),
+
     'start-at-block': flags.option<StartBlock>({
         env: 'START_AT_BLOCK',
         multiple: false,

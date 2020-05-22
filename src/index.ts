@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import debugModule from 'debug';
 import { inspect } from 'util';
-import { ContractInfo } from './abi/contract';
+import { ContractInfo, getContractInfo } from './abi/contract';
 import { AbiRepository } from './abi/repo';
 import { BlockWatcher } from './blockwatcher';
 import { Checkpoint } from './checkpoint';
@@ -61,6 +61,29 @@ class Ethlogger extends Command {
                 return;
             }
             const config = await loadEthloggerConfig(flags);
+
+            if (flags['debug-contract-info'] != null) {
+                const addr = flags['debug-contract-info'];
+                info(`Determining info for contract at address=%s`, addr);
+                enableTraceLogging('ethlogger:abi:*');
+                const abiRepo = new AbiRepository(config.abi);
+                await abiRepo.initialize();
+                const transport = new HttpTransport(config.eth.url, config.eth.http);
+                const client = new EthereumClient(transport);
+
+                const contractInfo = await getContractInfo(
+                    addr,
+                    client,
+                    (sig: string) => abiRepo.getMatchingSignature(sig),
+                    (address: string, fingerprint: string) =>
+                        abiRepo.getContractByAddress(address)?.contractName ??
+                        abiRepo.getContractByFingerprint(fingerprint)?.contractName
+                );
+
+                info('Contract info: %O', contractInfo);
+                return;
+            }
+
             const health = new HealthStateMonitor();
             health.start();
             this.resources.push(health);

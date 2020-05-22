@@ -21,8 +21,11 @@ export const createModuleDebug = (name: string) => {
     return { debug, info, warn, error, trace };
 };
 
-export function enableTraceLogging() {
+export function enableTraceLogging(modulePattern?: string) {
     TRACE_ENABLED = true;
+    if (modulePattern != null) {
+        create.enable(`${modulePattern},ethlogger:*:info,ethlogger:*:warn,ethlogger:*:error`);
+    }
 }
 
 // disable debug logging for tests
