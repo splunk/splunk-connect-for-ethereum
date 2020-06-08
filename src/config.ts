@@ -153,6 +153,13 @@ export interface AbiRepositoryConfigSchema {
      */
     fingerprintContracts: boolean;
     /**
+     * If enabled, signature matches will be treated as anonyomous (parameter names will be omitted from
+     * the output) if a contract cannot be tied to an ABI definition via either a fingerprint match,
+     * or a contract address match (when the ABI file includes the address of the deployed contract).
+     * Enabled by default. Setting this to `false` will output parameter names for any matching signature.
+     */
+    requireContractMatch: boolean;
+    /**
      * If enabled, ethlogger will attempt to decode function calls and event logs using a set of
      * common signatures as a fallback if no match against any supplied ABI definition was found.
      */
@@ -765,6 +772,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             directory: flags['abi-dir'] ?? defaults.abi?.directory,
             abiFileExtension: defaults.abi?.abiFileExtension,
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
+            requireContractMatch: defaults.abi?.requireContractMatch ?? true,
             decodeAnonymous: defaults.abi?.decodeAnonymous ?? true,
         },
         blockWatcher: {

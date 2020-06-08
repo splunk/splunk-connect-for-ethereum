@@ -20,6 +20,10 @@
                     "description": "If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.",
                     "type": "boolean"
                 },
+                "requireContractMatch": {
+                    "description": "If enabled, signature matches will be treated as anonyomous (parameter names will be omitted from\nthe output) if a contract cannot be tied to an ABI definition via either a fingerprint match,\nor a contract address match (when the ABI file includes the address of the deployed contract).\nEnabled by default. Setting this to `false` will output parameter names for any matching signature.",
+                    "type": "boolean"
+                },
                 "searchRecursive": {
                     "description": "`true` to search ABI directory recursively for ABI files",
                     "type": "boolean"

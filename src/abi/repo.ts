@@ -79,18 +79,17 @@ export class AbiRepository implements ManagedResource {
 
     public async initialize() {
         const config = this.config;
+        debug('Initializing ABI repository with config %O', config);
         if (config.directory != null) {
             const abiCount = await this.loadAbisFromDir(config.directory!, config);
             info('Loaded %d ABIs from directory %s', abiCount, config.directory);
         }
-
         if (config.decodeAnonymous) {
             const fnCount = await this.loadAnonymousSignatures(joinPath(__dirname, '../../data/fns.abisigs.gz'));
             const evCount = await this.loadAnonymousSignatures(joinPath(__dirname, '../../data/evts.abisigs.gz'));
             info('Loaded %d anonymous ABI signatures from built-in signature files', fnCount + evCount);
         }
     }
-
     public async loadAnonymousSignatures(file: string): Promise<number> {
         debug('Loading anonymous signatures from %s', file);
         let count = 0;
@@ -206,6 +205,9 @@ export class AbiRepository implements ManagedResource {
                 }
             }
             if (match.length > 0) {
+                if (this.config.requireContractMatch === false) {
+                    return { candidates: match, anonymous: false };
+                }
                 return { candidates: match, anonymous: true };
             }
             if (TRACE_ENABLED) {
@@ -222,7 +224,7 @@ export class AbiRepository implements ManagedResource {
     private abiDecode<T>(
         sigHash: string,
         matchParams: AbiMatchParams,
-        decodeFn: (abis: AbiItemDefinition[], anonymous: boolean) => T
+        decoder: (abis: AbiItemDefinition[], anonymous: boolean) => T
     ): T | undefined {
         const matchingAbis = this.findMatchingAbis(sigHash, matchParams);
         trace('Found %d matching ABIs for signature %s', matchingAbis?.candidates?.length ?? 0, sigHash);
@@ -236,7 +238,7 @@ export class AbiRepository implements ManagedResource {
                 return;
             }
             try {
-                return decodeFn(matchingAbis.candidates, matchingAbis!.anonymous);
+                return decoder(matchingAbis.candidates, matchingAbis.anonymous);
             } catch (e) {
                 if (matchingAbis!.anonymous) {
                     debug('Failed to decode anonymous ABI', e);
