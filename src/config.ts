@@ -39,13 +39,13 @@ export interface EthloggerConfigSchema {
     nodeInfo: NodeInfoConfigSchema;
     /** Settings for collecting pending transactions from node */
     pendingTx: PendingTxConfigSchema;
-    /** Settings for collecting peer informataion from the node */
+    /** Settings for collecting peer information from the node */
     peerInfo: PeerInfoConfigSchema;
     /** Settings for internal metrics collection */
     internalMetrics: InternalMetricsConfigSchema;
 }
 
-// Resolved configuraiton
+// Resolved configuration
 export interface EthloggerConfig {
     eth: EthereumConfig;
     output: OutputConfigSchema;
@@ -104,7 +104,7 @@ export interface EthereumConfigSchema {
      * @see [https://chainid.network](https://chainid.network)
      */
     chain?: string;
-    /** HTTP tansport configuration */
+    /** HTTP transport configuration */
     http: HttpTransportConfigSchema;
     /** Ethereum client configuration */
     client: EthereumClientConfigSchema;
@@ -147,13 +147,13 @@ export interface AbiRepositoryConfigSchema {
     /** Set to `.json` by default as the file extension for ABIs */
     abiFileExtension?: string;
     /**
-     * If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI
+     * If enabled, the ABI repository will creates hashes of all function and event signatures of an ABI
      * (the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts
      * we encounter.
      */
     fingerprintContracts: boolean;
     /**
-     * If enabled, signature matches will be treated as anonyomous (parameter names will be omitted from
+     * If enabled, signature matches will be treated as anonymous (parameter names will be omitted from
      * the output) if a contract cannot be tied to an ABI definition via either a fingerprint match,
      * or a contract address match (when the ABI file includes the address of the deployed contract).
      * Enabled by default. Setting this to `false` will output parameter names for any matching signature.
@@ -204,7 +204,7 @@ export interface BlockWatcherConfig extends Omit<BlockWatcherConfigSchema, 'retr
     retryWaitTime: WaitTime;
 }
 
-/** The node metrics colletor retrieves numeric measurements from nodes on a periodic basis. */
+/** The node metrics collector retrieves numeric measurements from nodes on a periodic basis. */
 export interface NodeMetricsConfigSchema {
     /** Specify `false` to disable node metrics collection */
     enabled: boolean;
@@ -254,7 +254,7 @@ export interface PendingTxConfig extends Omit<PendingTxConfigSchema, 'retryWaitT
  * Note that this is only possible with certain types of ethereum nodes (geth atm)
  */
 export interface PeerInfoConfigSchema {
-    /** Enable or disable collection of peer informataion */
+    /** Enable or disable collection of peer information */
     enabled: boolean;
     /** Interval in which to collect peer information */
     collectInterval: DurationConfig;
@@ -281,7 +281,7 @@ export interface InternalMetricsConfig extends InternalMetricsConfigSchema {
     collectInterval: Duration;
 }
 
-/** Etherem client settings - configure batching multiple JSON RPC method calls into single HTTP requests */
+/** Ethereum client settings - configure batching multiple JSON RPC method calls into single HTTP requests */
 export interface EthereumClientConfigSchema {
     /** Maximum number of JSON RPC requests to pack into a single batch. Set to `1` to disable batching. */
     maxBatchSize: number;
@@ -346,7 +346,7 @@ export interface ConsoleOutputConfig {
 /** File output will append all generated messages to a file. (this output type has not been implemented) */
 export interface FileOutputConfig {
     type: 'file';
-    /** Path to otuput file */
+    /** Path to output file */
     path: string;
 }
 
@@ -366,7 +366,7 @@ export interface HecConfigSchema {
     /** The HEC token used to authenticate HTTP requests */
     token?: string;
     /**
-     * Defaults for host, source, sourcetype and index. Can be overriden for each message
+     * Defaults for host, source, sourcetype and index. Can be overridden for each message
      * @see [Use variables in metadata](#metadata-variables)
      */
     defaultMetadata?: {
@@ -390,7 +390,7 @@ export interface HecConfigSchema {
     gzip?: boolean;
     /** Maximum number of attempts to send a batch to HEC. By default this there is no limit */
     maxRetries?: number;
-    /** Number of milliseconds to wait before considereing an HTTP request as failed */
+    /** Number of milliseconds to wait before considering an HTTP request as failed */
     timeout?: DurationConfig;
     /** Set to `false` to disable HTTP keep-alive for connections to Splunk */
     requestKeepAlive?: boolean;
@@ -436,8 +436,8 @@ export type Duration = number;
 /** Duration specified as golang style duration expression (eg "1h30m") or a number in milliseconds */
 export type DurationConfig = number | string;
 
-/** Exponentiallly increasing wait time with randomness */
-export interface ExponentalBackoffConfig {
+/** Exponentially increasing wait time with randomness */
+export interface ExponentialBackoffConfig {
     type: 'exponential-backoff';
     /** Minimum wait time */
     min?: DurationConfig;
@@ -458,7 +458,7 @@ export interface LinearBackoffConfig {
  * Time to wait between retries. Can either be a fixed duration or a dynamic backoff function
  * where the wait time is determined based on the number of attempts made so far.
  */
-export type WaitTimeConfig = DurationConfig | ExponentalBackoffConfig | LinearBackoffConfig;
+export type WaitTimeConfig = DurationConfig | ExponentialBackoffConfig | LinearBackoffConfig;
 
 export function parseDuration(value?: DurationConfig): Duration | undefined {
     if (typeof value === 'string') {
@@ -615,7 +615,7 @@ const parseBooleanEnvVar = (envVar?: string): boolean | undefined => {
                     return false;
                 default:
                     throw new ConfigError(
-                        `Unexpected vablue for environment variable ${envVar} - boolean value (true or false) expected`
+                        `Unexpected value for environment variable ${envVar} - boolean value (true or false) expected`
                     );
             }
         }
@@ -863,7 +863,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         }
         if (!dryRun) {
             throw new ConfigError(
-                problems.length > 1 ? 'Detected multipe problems in ethlogger configuration, see logs' : problems[0]
+                problems.length > 1 ? 'Detected multiple problems in ethlogger configuration, see logs' : problems[0]
             );
         }
     }

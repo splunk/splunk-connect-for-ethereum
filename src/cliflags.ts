@@ -27,7 +27,7 @@ export const CLI_FLAGS = {
     'config-file': flags.string({
         char: 'c',
         description:
-            'Ethlogger configuration file to use. If not specfified ethlogger will look for a file ' +
+            'Ethlogger configuration file to use. If not specified ethlogger will look for a file ' +
             'called ethlogger.yaml or ethlogger.json in the current working directory',
     }),
 
@@ -132,7 +132,7 @@ export const CLI_FLAGS = {
     'debug-contract-info': flags.string({
         hidden: true,
         helpValue: '<contract-address>',
-        description: 'Tool for troubleshooting the machting of ABIs to contracts',
+        description: 'Tool for troubleshooting the matching of ABIs to contracts',
     }),
 
     'start-at-block': flags.option<StartBlock>({
