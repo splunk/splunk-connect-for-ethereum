@@ -1,3 +1,16 @@
+# [2.1.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.7...v2.1.0) (2020-07-08)
+
+
+### Bug Fixes
+
+* 🐛 avoid bigint overflow when parsing gas related info ([c743bbb](https://github.com/splunk/splunk-connect-for-ethereum/commit/c743bbb4f16a60b4c9305abcac10932d89784e87)), closes [#53](https://github.com/splunk/splunk-connect-for-ethereum/issues/53)
+
+
+### Features
+
+* 🎸 New config paramter to skip contract match requirement ([29403f4](https://github.com/splunk/splunk-connect-for-ethereum/commit/29403f402ba10b1411dc9297b409d4b648964fc0))
+* 🎸 New debug mode to determine contract info ([465efdd](https://github.com/splunk/splunk-connect-for-ethereum/commit/465efdd16c2e1a5991916bd9c6ef23089639b252))
+
 ## [2.0.7](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.6...v2.0.7) (2020-05-08)
 
 ### Bug Fixes
