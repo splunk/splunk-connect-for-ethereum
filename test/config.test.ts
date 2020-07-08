@@ -15,6 +15,7 @@ test('defaults', async () => {
                     "decodeAnonymous": true,
                     "directory": undefined,
                     "fingerprintContracts": true,
+                    "requireContractMatch": true,
                   },
                   "blockWatcher": Object {
                     "blocksMaxChunkSize": 25,

@@ -63,6 +63,7 @@ abi:
     abiFileExtension: .json
     searchRecursive: true
     fingerprintContracts: true
+    requireContractMatch: true
     decodeAnonymous: true
 contractInfo:
     maxCacheEntries: 25000

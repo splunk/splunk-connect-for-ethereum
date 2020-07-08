@@ -62,9 +62,9 @@ export interface BaseFormattedTransaction {
     /** address of the receiver. null when its a contract creation transaction */
     to: Address | null;
     /** gas provided by the sender */
-    gas: number;
+    gas: number | string;
     /** gas price provided by the sender in Wei */
-    gasPrice: number;
+    gasPrice: number | string;
     /** the data send along with the transaction */
     input: string;
     /** the number of transactions made by the sender prior to this one */
@@ -115,9 +115,9 @@ export interface FormattedTransaction extends BaseFormattedTransaction {
     /** Success or failure state of the transaction receipt */
     status: 'success' | 'failure' | null;
     /** The amount of gas used by this specific transaction alone */
-    gasUsed: number;
+    gasUsed: number | string;
     /** The total amount of gas used when this transaction was executed in the block */
-    cumulativeGasUsed: number;
+    cumulativeGasUsed: number | string;
     /** The contract address created, if the transaction was a contract creation, otherwise null  */
     contractAddress: Address | null;
 

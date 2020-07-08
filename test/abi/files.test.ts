@@ -7,6 +7,7 @@ describe('loadAbiFile', () => {
             decodeAnonymous: false,
             fingerprintContracts: true,
             directory: join(__dirname, '../abis'),
+            requireContractMatch: true,
         });
 
         expect(result).toMatchSnapshot();
@@ -18,6 +19,7 @@ describe('loadAbiFile', () => {
                 decodeAnonymous: false,
                 fingerprintContracts: true,
                 directory: join(__dirname, '..'),
+                requireContractMatch: true,
             })
         ).resolves.toMatchSnapshot();
     });

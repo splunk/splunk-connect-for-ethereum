@@ -92,7 +92,9 @@ export function parseAbiFileContents(
     let abis: AbiItem[];
     let contractName: string;
     let contractAddress: string | undefined;
+    debug('Parsing contents of ABI file %s', fileName);
     if (isTruffleBuildFile(abiData)) {
+        debug('ABI file contains truffle build output');
         abis = abiData.abi;
         contractName =
             abiData.contractName ||

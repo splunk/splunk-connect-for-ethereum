@@ -8,12 +8,13 @@ test('extractFunctionsAndEvents', async () => {
         decodeAnonymous: false,
         fingerprintContracts: true,
         abiFileExtension: '.json',
+        requireContractMatch: true,
     };
     const abis = new AbiRepository(config);
     await abis.loadAbiFile(join(__dirname, '../abis/BCB.json'), config);
     const fne = extractFunctionsAndEvents(
         await readFile(join(__dirname, '../fixtures/contract1.txt'), { encoding: 'utf-8' }),
-        (sig: string) => abis.getMatchingSignatureName(sig)
+        (sig: string) => abis.getMatchingSignature(sig)
     );
     expect(fne).toMatchInlineSnapshot(`
         Object {

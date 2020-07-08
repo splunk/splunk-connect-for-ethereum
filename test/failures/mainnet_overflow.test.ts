@@ -1,14 +1,14 @@
 import { join } from 'path';
-import { ContractInfo } from '../src/abi/contract';
-import { AbiRepository } from '../src/abi/repo';
-import { BlockWatcher } from '../src/blockwatcher';
-import { Checkpoint } from '../src/checkpoint';
-import { BatchedEthereumClient } from '../src/eth/client';
-import { HttpTransport } from '../src/eth/http';
-import { withRecorder } from '../src/eth/recorder';
-import { suppressDebugLogging } from '../src/utils/debug';
-import LRUCache from '../src/utils/lru';
-import { TestOutput } from './testoutput';
+import { ContractInfo } from '../../src/abi/contract';
+import { AbiRepository } from '../../src/abi/repo';
+import { BlockWatcher } from '../../src/blockwatcher';
+import { Checkpoint } from '../../src/checkpoint';
+import { BatchedEthereumClient } from '../../src/eth/client';
+import { HttpTransport } from '../../src/eth/http';
+import { withRecorder } from '../../src/eth/recorder';
+import { suppressDebugLogging } from '../../src/utils/debug';
+import { LRUCache } from '../../src/utils/lru';
+import { TestOutput } from '../testoutput';
 
 let logHandle: any;
 beforeEach(() => {
@@ -18,12 +18,13 @@ afterEach(() => {
     logHandle.restore();
 });
 
-test('blockwatcher', async () => {
+const BLOCK = 10237208;
+test(`mainnet overflow ${BLOCK}`, async () => {
     await withRecorder(
-        new HttpTransport('https://dai.poa.network', {}),
+        new HttpTransport(`https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`, {}),
         {
-            name: 'xdai-blockwatcher',
-            storageDir: join(__dirname, './fixtures/recorded'),
+            name: `testcases-mainnet-overflow-${BLOCK}`,
+            storageDir: join(__dirname, '../fixtures/recorded'),
             replay: true,
         },
         async transport => {
@@ -32,14 +33,13 @@ test('blockwatcher', async () => {
                 decodeAnonymous: true,
                 fingerprintContracts: true,
                 abiFileExtension: '.json',
-                directory: join(__dirname, './abis'),
                 searchRecursive: true,
                 requireContractMatch: true,
             });
             await abiRepo.initialize();
             const checkpoints = new Checkpoint({
-                initialBlockNumber: 123,
-                path: join(__dirname, '../tmp/tmpcheckpoint.json'),
+                initialBlockNumber: 0,
+                path: join(__dirname, `../../tmp/tmpcheckpoint_${BLOCK}.json`),
                 saveInterval: 10000,
             });
             const output = new TestOutput();
@@ -58,9 +58,7 @@ test('blockwatcher', async () => {
                 waitAfterFailure: 1,
             });
 
-            await blockWatcher.processChunk({ from: 6442472, to: 6442482 });
-
-            expect(output.messages).toMatchSnapshot();
+            await expect(blockWatcher.processChunk({ from: BLOCK, to: BLOCK })).resolves.toBeUndefined();
         }
     );
 }, 15000);

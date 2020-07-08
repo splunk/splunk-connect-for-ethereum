@@ -38,6 +38,7 @@ test('blockwatcher', async () => {
                 abiFileExtension: '.json',
                 directory: join(__dirname, 'abis'),
                 searchRecursive: true,
+                requireContractMatch: true,
             });
             await abiRepo.initialize();
             const checkpoints = new Checkpoint({

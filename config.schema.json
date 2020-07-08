@@ -17,7 +17,11 @@
                     "type": "string"
                 },
                 "fingerprintContracts": {
-                    "description": "If enabled, the ABI repsitory will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.",
+                    "description": "If enabled, the ABI repository will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.",
+                    "type": "boolean"
+                },
+                "requireContractMatch": {
+                    "description": "If enabled, signature matches will be treated as anonymous (parameter names will be omitted from\nthe output) if a contract cannot be tied to an ABI definition via either a fingerprint match,\nor a contract address match (when the ABI file includes the address of the deployed contract).\nEnabled by default. Setting this to `false` will output parameter names for any matching signature.",
                     "type": "boolean"
                 },
                 "searchRecursive": {
@@ -49,7 +53,7 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -121,7 +125,7 @@
             "type": "object"
         },
         "EthereumClientConfigSchema": {
-            "description": "Etherem client settings - configure batching multiple JSON RPC method calls into single HTTP requests",
+            "description": "Ethereum client settings - configure batching multiple JSON RPC method calls into single HTTP requests",
             "properties": {
                 "maxBatchSize": {
                     "description": "Maximum number of JSON RPC requests to pack into a single batch. Set to `1` to disable batching.",
@@ -147,7 +151,7 @@
                 },
                 "http": {
                     "$ref": "#/definitions/HttpTransportConfigSchema",
-                    "description": "HTTP tansport configuration"
+                    "description": "HTTP transport configuration"
                 },
                 "network": {
                     "description": "Network name logged as a field with every event and metric.\nEthlogger will attempt to automatically determine if not specified\nbut there are only a handful of known public networkIds associated\nwith particular networks (ethereum mainnet, ropsten, ...). Typical\nvalues of the network name are `\"mainnet\"` or `\"testnet\"`.",
@@ -160,8 +164,8 @@
             },
             "type": "object"
         },
-        "ExponentalBackoffConfig": {
-            "description": "Exponentiallly increasing wait time with randomness",
+        "ExponentialBackoffConfig": {
+            "description": "Exponentially increasing wait time with randomness",
             "properties": {
                 "max": {
                     "description": "Maximum wait time",
@@ -182,7 +186,7 @@
             "description": "File output will append all generated messages to a file. (this output type has not been implemented)",
             "properties": {
                 "path": {
-                    "description": "Path to otuput file",
+                    "description": "Path to output file",
                     "type": "string"
                 },
                 "type": {
@@ -222,7 +226,7 @@
                     "type": "object"
                 },
                 "defaultMetadata": {
-                    "description": "Defaults for host, source, sourcetype and index. Can be overriden for each message",
+                    "description": "Defaults for host, source, sourcetype and index. Can be overridden for each message",
                     "properties": {
                         "host": {
                             "type": "string"
@@ -274,7 +278,7 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -286,7 +290,7 @@
                     "description": "Wait time before retrying to send a (batch of) HEC messages after an error"
                 },
                 "timeout": {
-                    "description": "Number of milliseconds to wait before considereing an HTTP request as failed",
+                    "description": "Number of milliseconds to wait before considering an HTTP request as failed",
                     "type": ["string", "number"]
                 },
                 "token": {
@@ -402,7 +406,7 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -417,7 +421,7 @@
             "type": "object"
         },
         "NodeMetricsConfigSchema": {
-            "description": "The node metrics colletor retrieves numeric measurements from nodes on a periodic basis.",
+            "description": "The node metrics collector retrieves numeric measurements from nodes on a periodic basis.",
             "properties": {
                 "collectInterval": {
                     "description": "Interval in which to collect node metrics",
@@ -430,7 +434,7 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -452,7 +456,7 @@
                     "type": "object"
                 },
                 "defaultMetadata": {
-                    "description": "Defaults for host, source, sourcetype and index. Can be overriden for each message",
+                    "description": "Defaults for host, source, sourcetype and index. Can be overridden for each message",
                     "properties": {
                         "host": {
                             "type": "string"
@@ -504,7 +508,7 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -516,7 +520,7 @@
                     "description": "Wait time before retrying to send a (batch of) HEC messages after an error"
                 },
                 "timeout": {
-                    "description": "Number of milliseconds to wait before considereing an HTTP request as failed",
+                    "description": "Number of milliseconds to wait before considering an HTTP request as failed",
                     "type": ["string", "number"]
                 },
                 "token": {
@@ -551,13 +555,13 @@
                     "type": ["string", "number"]
                 },
                 "enabled": {
-                    "description": "Enable or disable collection of peer informataion",
+                    "description": "Enable or disable collection of peer information",
                     "type": "boolean"
                 },
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -585,7 +589,7 @@
                 "retryWaitTime": {
                     "anyOf": [
                         {
-                            "$ref": "#/definitions/ExponentalBackoffConfig"
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
                         },
                         {
                             "$ref": "#/definitions/LinearBackoffConfig"
@@ -691,7 +695,7 @@
         },
         "peerInfo": {
             "$ref": "#/definitions/PeerInfoConfigSchema",
-            "description": "Settings for collecting peer informataion from the node"
+            "description": "Settings for collecting peer information from the node"
         },
         "pendingTx": {
             "$ref": "#/definitions/PendingTxConfigSchema",

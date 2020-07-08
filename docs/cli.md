@@ -14,7 +14,7 @@ USAGE
 
 OPTIONS
   -c, --config-file=config-file
-      Ethlogger configuration file to use. If not specfified ethlogger will look
+      Ethlogger configuration file to use. If not specified ethlogger will look
       for a file called ethlogger.yaml or ethlogger.json in the current working
       directory
 
