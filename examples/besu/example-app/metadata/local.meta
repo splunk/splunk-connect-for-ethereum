@@ -1,0 +1,18 @@
+[app/ui]
+owner = admin
+version = 8.0.4.1
+modtime = 1596222381.455176000
+
+[app/launcher]
+owner = admin
+version = 8.0.4.1
+modtime = 1596222381.482082000
+
+[app/package/check_for_updates]
+version = 8.0.4.1
+modtime = 1596222381.496412000
+
+[views/example_dashboard]
+owner = admin
+version = 8.0.4.1
+modtime = 1595358642.097762000

@@ -27,7 +27,7 @@ services:
         environment:
             - COLLECT_PEER_INFO=true
             - COLLECT_PENDING_TX=true
-            - ETH_RPC_URL=http://besu:8545
+            - ETH_RPC_URL=http://geth:8545
             - NETWORK_NAME=dev
             - START_AT_BLOCK=latest
             - SPLUNK_HEC_URL=https://splunk:8088
@@ -44,24 +44,29 @@ services:
         depends_on:
             - splunk
         restart: always
-    besu:
-        image: hyperledger/besu:1.4.4
-        container_name: besu
-        environment:
-            - BESU_RPC_HTTP_ENABLED=true
-            - BESU_RPC_WS_ENABLED=true
-            - BESU_NETWORK=dev
-            - BESU_MINER_ENABLED=true
-            - BESU_MINER_COINBASE=0xfe3b557e8fb62b89f4916b721be55ceb828dbd73
-            - BESU_HOST_WHITELIST=*
-            - BESU_RPC_HTTP_HOST=0.0.0.0
-            - BESU_RPC_WS_HOST=0.0.0.0
-            - BESU_RPC_HTTP_API=admin,eth,debug,miner,net,txpool,priv,trace,web3
-            - BESU_RPC_HTTP_CORS_ORIGIN="all"
-            - BESU_LOGGING=trace
-            # Splunk logging configuration
-            - LOGGER=Splunk
-            - SPLUNK_URL=https://splunk:8088
-            - SPLUNK_INDEX=logs
-            - SPLUNK_TOKEN=11111111-1111-1111-1111-1111111111113
-            - SPLUNK_SKIPTLSVERIFY=true
+    geth:
+        image: ethereum/client-go:v1.9.18
+        hostname: geth
+        container_name: geth
+        entrypoint:
+            - /bin/sh
+            - -c
+            - |
+              geth \
+                --nousb \
+                --verbosity=3 \
+                --ws --wsport 8546 --wsaddr "0.0.0.0" --wsorigins="*" \
+                --wsapi=eth,web3,shh,net,admin \
+                --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" \
+                --rpcapi "eth,web3,net,admin,debug,db,shh" \
+                --allow-insecure-unlock \
+                --dev
+        healthcheck:
+            test: ["CMD", "wget", "-q", "http://localhost:8545"]
+            interval: 15s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
+        ports:
+            - 8545:8545
+            - 8546:8546

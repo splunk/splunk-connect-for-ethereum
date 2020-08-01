@@ -16,3 +16,4 @@ nohup.out
 data/*.abisigs*
 /coverage
 .env
+!/examples/quorum/.env

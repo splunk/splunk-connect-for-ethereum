@@ -1,0 +1,48 @@
+version: "3.6"
+
+x-splunk-def:
+  &splunk-def
+  image: splunk/splunk:8.0.4-debian
+  environment:
+    - SPLUNK_START_ARGS=--accept-license
+    - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+    - SPLUNK_PASSWORD=changeme
+    - SPLUNK_APPS_URL=https://github.com/splunk/ethereum-basics/releases/download/latest/ethereum-basics.tgz,https://splunk-quorum.s3.us-east-2.amazonaws.com/oss-quorum-app-for-splunk_109.tgz,https://splunk-quorum.s3.us-east-2.amazonaws.com/maps-for-splunk_315.tgz
+  expose:
+    - "8000"
+    - "8088"
+  healthcheck:
+    test: ['CMD', 'curl', '-f', 'http://localhost:8000']
+    interval: 5s
+    timeout: 5s
+    retries: 20
+services:
+  splunk:
+    << : *splunk-def
+    container_name: splunk
+    hostname: splunk
+    ports:
+      - "8000:8000"
+      - "8088:8088"
+      - "8125:8125"
+    volumes:
+      - splunk-var:/opt/splunk/var
+      - splunk-etc:/opt/splunk/etc
+      - ./out/config/splunk/splunk-config.yml:/tmp/defaults/default.yml
+      - ./out/config/splunk/dashboards:/dashboards
+      - ./out/config/splunk/airport_geo.csv:/opt/splunk/etc/apps/splunk-app-quorum/lookups/airport_geo.csv
+      - ./example-app:/opt/splunk/etc/apps/example
+    networks:
+      3-nodes-istanbul-tessera-docker-compose-net:
+        ipv4_address: 172.16.20.66
+networks:
+  3-nodes-istanbul-tessera-docker-compose-net:
+    name: 3-nodes-istanbul-tessera-docker-compose-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.20.0/24
+volumes:
+  "splunk-var":
+  "splunk-etc":

@@ -1,0 +1,181 @@
+<dashboard theme="dark">
+  <label>environment metrics</label>
+  <row>
+    <panel>
+      <chart>
+        <title>Node CPU Usage (%)</title>
+        <search>
+          <query>| mstats avg(_value) as avgTotal WHERE metric_name="cadvisor./docker.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name
+| appendcols
+    [ mstats avg(_value) as avgCPU1 WHERE (metric_name="cadvisor.node1.cpu_cumulative_usage") AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avgCPU2 WHERE metric_name="cadvisor.node2.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avgCPU3 WHERE metric_name="cadvisor.node3.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name]
+| sort - metric_name _time
+| streamstats stdev(avgCPU1) as difCPU1 stdev(avgCPU2) as difCPU2 stdev(avgCPU3) as difCPU3 stdev(avgTotal) as difTotal window=2 by metric_name
+| eval percentCPU1=difCPU1/difTotal*100
+| eval percentCPU2=difCPU2/difTotal*100
+| eval percentCPU3=difCPU3/difTotal*100
+| eval groupTotal=percentCPU1+percentCPU2+percentCPU3
+| timechart partial=f limit=15 latest(percentCPU1) as node1 latest(percentCPU2) as node2 latest(percentCPU3) as node3  latest(groupTotal) as total span=10s</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Tx Manager CPU Usage (%)</title>
+        <search>
+          <query>| mstats avg(_value) as avgTotal WHERE metric_name="cadvisor./docker.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name
+| appendcols
+    [ mstats avg(_value) as avgCPU1 WHERE (metric_name="cadvisor.*_txmanager1_1.cpu_cumulative_usage") AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avgCPU2 WHERE metric_name="cadvisor.*_txmanager2_1.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avgCPU3 WHERE metric_name="cadvisor.*_txmanager3_1.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name]
+| sort - metric_name _time
+| streamstats stdev(avgCPU1) as difCPU1 stdev(avgCPU2) as difCPU2 stdev(avgCPU3) as difCPU3 stdev(avgTotal) as difTotal window=2 by metric_name
+| eval percentCPU1=difCPU1/difTotal*100
+| eval percentCPU2=difCPU2/difTotal*100
+| eval percentCPU3=difCPU3/difTotal*100
+| eval groupTotal=percentCPU1+percentCPU2+percentCPU3
+| timechart partial=f limit=15 latest(percentCPU1) as tx-mgr1 latest(percentCPU2) as tx-mgr2 latest(percentCPU3) as tx-mgr3  latest(groupTotal) as total span=10s</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Shared Service CPU Usage (%)</title>
+        <search>
+          <query>| mstats avg(_value) as avgTotal WHERE metric_name="cadvisor./docker.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name
+| appendcols
+    [ mstats avg(_value) as avgCPU1 WHERE (metric_name="cadvisor.splunk.cpu_cumulative_usage") AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avgCPU2 WHERE metric_name="cadvisor.*_cakeshop_1.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avgCPU3 WHERE metric_name="cadvisor.*_cadvisor_1.cpu_cumulative_usage" AND index="quorum_metrics" span=10s by metric_name]
+| sort - metric_name _time
+| streamstats stdev(avgCPU1) as difCPU1 stdev(avgCPU2) as difCPU2 stdev(avgCPU3) as difCPU3 stdev(avgTotal) as difTotal window=2 by metric_name
+| eval percentCPU1=difCPU1/difTotal*100
+| eval percentCPU2=difCPU2/difTotal*100
+| eval percentCPU3=difCPU3/difTotal*100
+| eval groupTotal=percentCPU1+percentCPU2+percentCPU3
+| timechart partial=f limit=15 latest(percentCPU1) as splunk latest(percentCPU2) as cakeshop latest(percentCPU3) as cadvisor latest(groupTotal) as total span=10s</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Node Memory Usage (MB)</title>
+        <search>
+          <query>| mstats avg(_value) as avgTotal WHERE metric_name="cadvisor./docker.memory_usage" AND index="quorum_metrics" span=10s by metric_name
+| appendcols
+    [ mstats avg(_value) as avg1 WHERE metric_name="cadvisor.*_node1_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avg2 WHERE metric_name="cadvisor.*_node2_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avg3 WHERE metric_name="cadvisor.*_node3_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| sort - metric_name _time
+| streamstats stdev(avg1) as dif1 stdev(avg2) as dif2 stdev(avg3) as dif3 stdev(avgTotal) as difTotal window=2 by metric_name
+| eval bytes1=round(avg1/1024/1024,2)
+| eval bytes2=round(avg2/1024/1024,2)
+| eval bytes3=round(avg3/1024/1024,2)
+| timechart partial=f limit=15 latest(bytes1) as node1 latest(bytes2) as node2 latest(bytes3) as node3 span=10s</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Tx Manager Memory Usage (MB)</title>
+        <search>
+          <query>| mstats avg(_value) as avgTotal WHERE metric_name="cadvisor./docker.memory_usage" AND index="quorum_metrics" span=10s by metric_name
+| appendcols
+    [ mstats avg(_value) as avg1 WHERE metric_name="cadvisor.*_txmanager1_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avg2 WHERE metric_name="cadvisor.*_txmanager2_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avg3 WHERE metric_name="cadvisor.*_txmanager3_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| sort - metric_name _time
+| streamstats stdev(avg1) as dif1 stdev(avg2) as dif2 stdev(avg3) as dif3 stdev(avgTotal) as difTotal window=2 by metric_name
+| eval bytes1=round(avg1/1024/1024,2)
+| eval bytes2=round(avg2/1024/1024,2)
+| eval bytes3=round(avg3/1024/1024,2)
+| timechart partial=f limit=15 latest(bytes1) as tx-mgr1 latest(bytes2) as tx-mgr2 latest(bytes3) as tx-mgr3 span=10s</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Shared Service Memory Usage (MB)</title>
+        <search>
+          <query>| mstats avg(_value) as avgTotal WHERE metric_name="cadvisor./docker.memory_usage" AND index="quorum_metrics" span=10s by metric_name
+| appendcols
+    [ mstats avg(_value) as avg1 WHERE metric_name="cadvisor.*_splunk_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avg2 WHERE metric_name="cadvisor.*_cakeshop_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| appendcols
+    [ mstats avg(_value) as avg3 WHERE metric_name="cadvisor.*_cadvisor_1.memory_usage" AND index="quorum_metrics" span=10s by metric_name]
+| sort - metric_name _time
+| streamstats stdev(avg1) as dif1 stdev(avg2) as dif2 stdev(avg3) as dif3 stdev(avgTotal) as difTotal window=2 by metric_name
+| eval bytes1=round(avg1/1024/1024,2)
+| eval bytes2=round(avg2/1024/1024,2)
+| eval bytes3=round(avg3/1024/1024,2)
+| timechart partial=f limit=15 latest(bytes1) as splunk latest(bytes2) as cakeshop latest(bytes3) as cadvisor span=10s</query>
+          <earliest>-15m</earliest>
+          <latest>now</latest>
+          <refresh>1m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

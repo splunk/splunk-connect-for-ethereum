@@ -1,0 +1,45 @@
+splunk:
+  conf:
+    indexes:
+      directory: /opt/splunk/etc/apps/search/local
+      content:
+        metrics:
+          coldPath: $SPLUNK_DB/metrics/colddb
+          datatype: metric
+          homePath: $SPLUNK_DB/metrics/db
+          maxTotalDataSizeMB: 512000
+          thawedPath: $SPLUNK_DB/metrics/thaweddb
+        ethereum:
+          coldPath: $SPLUNK_DB/ethereum/colddb
+          datatype: event
+          homePath: $SPLUNK_DB/ethereum/db
+          maxTotalDataSizeMB: 512000
+          thawedPath: $SPLUNK_DB/ethereum/thaweddb
+        logs:
+          coldPath: $SPLUNK_DB/logs/colddb
+          datatype: event
+          homePath: $SPLUNK_DB/logs/db
+          maxTotalDadtaSizeMB: 512000
+          thawedPath: $SPLUNK_DB/logs/thaweddb
+    inputs:
+      directory: /opt/splunk/etc/apps/search/local
+      content:
+        "udp://8125":
+          connection_host: ip
+          index: metrics
+          sourcetype: statsd
+        "logs://cadivsor":
+          index: logs
+          sourcetype: cadvisor
+          disabled: 0
+        "logs://cakeshop":
+          index: logs
+          sourcetype: cakeshop
+          disabled: 0
+    props:
+      directory: /opt/splunk/etc/apps/search/local
+      content:
+        ethlogger:
+          EXTRACT-log_ethlogger: ethlogger-[a-f0-9]{12}.*ethlogger:(?P<log_ethlogger>.*)
+        docker:
+          EXTRACT-container_name,container_id: ^(?P<container_name>\w+)\-(?P<container_id>[^ ]+)
