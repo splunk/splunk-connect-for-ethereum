@@ -1,5 +1,18 @@
 version: '3.6'
 
+x-logging:
+  &default-logging
+  driver: splunk
+  options:
+    splunk-token: 11111111-1111-1111-1111-1111111111113
+    splunk-url: https://172.25.0.100:8088
+    splunk-index: logs
+    splunk-sourcetype: docker
+    splunk-insecureskipverify: "true"
+    splunk-verify-connection: "false"
+    splunk-format: "raw"
+    tag: "{{.Name}}-{{.ID}}"
+
 services:
     splunk:
         image: splunk/splunk:latest
@@ -21,16 +34,21 @@ services:
             - /opt/splunk/var
             - /opt/splunk/etc
             - ./example-app:/opt/splunk/etc/apps/example
+        networks:
+            geth:
+                ipv4_address: 172.25.0.100
+        logging: *default-logging
+
     ethlogger:
         image: splunkdlt/ethlogger:latest
         container_name: ethlogger
         environment:
             - COLLECT_PEER_INFO=true
             - COLLECT_PENDING_TX=true
-            - ETH_RPC_URL=http://geth:8545
+            - ETH_RPC_URL=http://172.25.0.102:8545
             - NETWORK_NAME=dev
             - START_AT_BLOCK=latest
-            - SPLUNK_HEC_URL=https://splunk:8088
+            - SPLUNK_HEC_URL=https://172.25.0.100:8088
             - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
             - SPLUNK_EVENTS_INDEX=main
             - SPLUNK_METRICS_INDEX=metrics
@@ -43,7 +61,12 @@ services:
             - ./:/app
         depends_on:
             - splunk
-        restart: always
+        restart: unless-stopped
+        networks:
+            geth:
+                ipv4_address: 172.25.0.101
+        logging: *default-logging
+
     geth:
         image: ethereum/client-go:v1.9.18
         hostname: geth
@@ -70,3 +93,14 @@ services:
         ports:
             - 8545:8545
             - 8546:8546
+        networks:
+            geth:
+                ipv4_address: 172.25.0.102
+        logging: *default-logging
+
+networks:
+  geth:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
