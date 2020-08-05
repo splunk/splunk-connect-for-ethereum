@@ -23,7 +23,7 @@ services:
             - SPLUNK_PASSWORD=changeme
             - SPLUNK_APPS_URL=https://github.com/splunk/ethereum-basics/releases/download/latest/ethereum-basics.tgz
         ports:
-            - 18000:8000
+            - 8000:8000
         healthcheck:
             test: ['CMD', 'curl', '-f', 'http://localhost:8000']
             interval: 5s
@@ -37,7 +37,6 @@ services:
         networks:
             geth:
                 ipv4_address: 172.25.0.100
-        logging: *default-logging
 
     ethlogger:
         image: splunkdlt/ethlogger:latest
