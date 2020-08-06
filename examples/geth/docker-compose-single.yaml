@@ -1,0 +1,105 @@
+version: '3.6'
+
+x-logging:
+  &default-logging
+  driver: splunk
+  options:
+    splunk-token: 11111111-1111-1111-1111-1111111111113
+    splunk-url: https://172.25.0.100:8088
+    splunk-index: logs
+    splunk-sourcetype: docker
+    splunk-insecureskipverify: "true"
+    splunk-verify-connection: "false"
+    splunk-format: "raw"
+    tag: "{{.Name}}-{{.ID}}"
+
+services:
+    splunk:
+        image: splunk/splunk:latest
+        container_name: splunk
+        environment:
+            - SPLUNK_START_ARGS=--accept-license
+            - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+            - SPLUNK_PASSWORD=changeme
+            - SPLUNK_APPS_URL=https://github.com/splunk/ethereum-basics/releases/download/latest/ethereum-basics.tgz
+        ports:
+            - 8000:8000
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:8000']
+            interval: 5s
+            timeout: 5s
+            retries: 20
+        volumes:
+            - ./splunk.yml:/tmp/defaults/default.yml
+            - /opt/splunk/var
+            - /opt/splunk/etc
+            - ./example-app:/opt/splunk/etc/apps/example
+        networks:
+            geth:
+                ipv4_address: 172.25.0.100
+
+    ethlogger:
+        image: splunkdlt/ethlogger:latest
+        container_name: ethlogger
+        environment:
+            - COLLECT_PEER_INFO=true
+            - COLLECT_PENDING_TX=true
+            - ETH_RPC_URL=http://172.25.0.102:8545
+            - NETWORK_NAME=dev
+            - START_AT_BLOCK=latest
+            - SPLUNK_HEC_URL=https://172.25.0.100:8088
+            - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+            - SPLUNK_EVENTS_INDEX=main
+            - SPLUNK_METRICS_INDEX=metrics
+            - SPLUNK_INTERNAL_INDEX=metrics
+            - SPLUNK_HEC_REJECT_INVALID_CERTS=false
+            - ABI_DIR=/app/abis
+            - DEBUG=ethlogger:platforms,ethlogger:eth
+        volumes:
+            - ./abis:/app/abis
+            - ./:/app
+        depends_on:
+            - splunk
+        restart: unless-stopped
+        networks:
+            geth:
+                ipv4_address: 172.25.0.101
+        logging: *default-logging
+
+    geth:
+        image: ethereum/client-go:v1.9.18
+        hostname: geth
+        container_name: geth
+        entrypoint:
+            - /bin/sh
+            - -c
+            - |
+              geth \
+                --nousb \
+                --verbosity=3 \
+                --ws --wsport 8546 --wsaddr "0.0.0.0" --wsorigins="*" \
+                --wsapi=eth,web3,shh,net,admin \
+                --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" \
+                --rpcapi "eth,web3,net,admin,debug,db,shh" \
+                --allow-insecure-unlock \
+                --dev
+        healthcheck:
+            test: ["CMD", "wget", "-q", "http://localhost:8545"]
+            interval: 15s
+            timeout: 10s
+            retries: 3
+            start_period: 10s
+        ports:
+            - 8545:8545
+            - 8546:8546
+        networks:
+            geth:
+                ipv4_address: 172.25.0.102
+        logging: *default-logging
+
+networks:
+  geth:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/24
