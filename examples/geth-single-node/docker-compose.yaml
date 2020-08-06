@@ -1,17 +1,16 @@
 version: '3.6'
 
-x-logging:
-  &default-logging
-  driver: splunk
-  options:
-    splunk-token: 11111111-1111-1111-1111-1111111111113
-    splunk-url: https://172.25.0.100:8088
-    splunk-index: logs
-    splunk-sourcetype: docker
-    splunk-insecureskipverify: "true"
-    splunk-verify-connection: "false"
-    splunk-format: "raw"
-    tag: "{{.Name}}-{{.ID}}"
+x-logging: &default-logging
+    driver: splunk
+    options:
+        splunk-token: 11111111-1111-1111-1111-1111111111113
+        splunk-url: https://172.25.0.100:8088
+        splunk-index: logs
+        splunk-sourcetype: docker
+        splunk-insecureskipverify: 'true'
+        splunk-verify-connection: 'false'
+        splunk-format: 'raw'
+        tag: '{{.Name}}-{{.ID}}'
 
 services:
     splunk:
@@ -74,17 +73,17 @@ services:
             - /bin/sh
             - -c
             - |
-              geth \
-                --nousb \
-                --verbosity=3 \
-                --ws --wsport 8546 --wsaddr "0.0.0.0" --wsorigins="*" \
-                --wsapi=eth,web3,shh,net,admin \
-                --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" \
-                --rpcapi "eth,web3,net,admin,debug,db,shh" \
-                --allow-insecure-unlock \
-                --dev
+                geth \
+                  --nousb \
+                  --verbosity=3 \
+                  --ws --wsport 8546 --wsaddr "0.0.0.0" --wsorigins="*" \
+                  --wsapi=eth,web3,shh,net,admin \
+                  --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" \
+                  --rpcapi "eth,web3,net,admin,debug,db,shh" \
+                  --allow-insecure-unlock \
+                  --dev
         healthcheck:
-            test: ["CMD", "wget", "-q", "http://localhost:8545"]
+            test: ['CMD', 'wget', '-q', 'http://localhost:8545']
             interval: 15s
             timeout: 10s
             retries: 3
@@ -98,8 +97,8 @@ services:
         logging: *default-logging
 
 networks:
-  geth:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.25.0.0/24
+    geth:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.25.0.0/24

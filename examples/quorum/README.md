@@ -10,12 +10,13 @@ quorum-wizard
 ```
 
 For the quickest path to a working environment with Quorum, Splunk & ethlogger, select the following:
- - Simple Network
- - docker-compose
- - istanbul
- - any version of Quorum
- - any version of Tessera
- - select Splunk
+
+-   Simple Network
+-   docker-compose
+-   istanbul
+-   any version of Quorum
+-   any version of Tessera
+-   select Splunk
 
 Further instructions will be printed out after the wizard creates your environment. The url and credentials for Splunk will be printed also. Navigate to the directory you chose and run `./start.sh`.
 
