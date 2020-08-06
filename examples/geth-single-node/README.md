@@ -1,4 +1,4 @@
-# Geth example running ethlogger using docker-compose
+# Geth examples running ethlogger using docker-compose
 
 This is a simple example showing how to run a Geth node in development mode being monitored by ethlogger in docker-compose alongside a Splunk Enterprise container.
 
@@ -8,19 +8,10 @@ Ethlogger configuration is provided in the form of [environment variables](../..
 
 1. Start docker-compose
 
-  a. single node (dev mode)
-  ```sh-session
-  $ cd examples/geth
-  $ docker-compose -f docker-compose-single.yaml up -d
-  ```
-
-  or
-
-  b. multi node (private network)
-  ```sh-session
-  $ cd examples/geth
-  $ docker-compose -f docker-compose-multi.yaml up -d
-  ```
+```sh-session
+$ cd examples/geth
+$ docker-compose -f docker-compose-single.yaml up -d
+```
 
 2. Wait for all containers to start.
    You can rely on the output of `docker ps` to see the state of services.
@@ -40,7 +31,9 @@ Ethlogger configuration is provided in the form of [environment variables](../..
 $ docker-compose -f docker-compose-single.yaml down
 $ docker volume prune
 ```
+
 OR
+
 ```sh-session
 $ docker-compose -f docker-compose-multi.yaml down
 $ docker volume prune
