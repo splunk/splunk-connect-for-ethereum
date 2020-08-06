@@ -1,0 +1,15 @@
+<dashboard theme="dark">
+  <label>example dashboard</label>
+  <row>
+    <panel>
+      <event>
+        <search>
+          <query>index=* sourcetype=ethereum:block</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="list.drilldown">none</option>
+      </event>
+    </panel>
+  </row>
+</dashboard>
