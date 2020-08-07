@@ -3,14 +3,14 @@ version: '3.6'
 x-logging: &default-logging
     driver: splunk
     options:
-    splunk-token: 11111111-1111-1111-1111-1111111111113
-    splunk-url: https://localhost:8088
-    splunk-index: logs
-    splunk-sourcetype: docker
-    splunk-insecureskipverify: 'true'
-    splunk-verify-connection: 'false'
-    splunk-format: 'raw'
-    tag: '{{.Name}}-{{.ID}}'
+        splunk-token: 11111111-1111-1111-1111-1111111111113
+        splunk-url: https://localhost:8088
+        splunk-index: logs
+        splunk-sourcetype: docker
+        splunk-insecureskipverify: 'true'
+        splunk-verify-connection: 'false'
+        splunk-format: 'raw'
+        tag: '{{.Name}}-{{.ID}}'
 
 services:
     splunk:
@@ -33,6 +33,7 @@ services:
             - ./splunk.yml:/tmp/defaults/default.yml
             - /opt/splunk/var
             - /opt/splunk/etc
+
     ethlogger:
         image: splunkdlt/ethlogger:latest
         container_name: ethlogger
@@ -57,6 +58,7 @@ services:
             - splunk
         restart: unless-stopped
         logging: *default-logging
+
     besu:
         image: hyperledger/besu:1.4.4
         container_name: besu
