@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.1.0...v2.1.1) (2020-08-07)
+
+
+### Bug Fixes
+
+* 🐛 stop polling debug_metrics for recent Geth versions ([66180f7](https://github.com/splunk/splunk-connect-for-ethereum/commit/66180f7805c0fca81ebe13115fccd00bb4445d47)), closes [#49](https://github.com/splunk/splunk-connect-for-ethereum/issues/49)
+
 # [2.1.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.0.7...v2.1.0) (2020-07-08)
 
 ### Bug Fixes
