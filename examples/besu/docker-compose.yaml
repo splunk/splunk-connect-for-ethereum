@@ -20,7 +20,6 @@ services:
             - ./splunk.yml:/tmp/defaults/default.yml
             - /opt/splunk/var
             - /opt/splunk/etc
-            - ./example-app:/opt/splunk/etc/apps/example
     ethlogger:
         image: splunkdlt/ethlogger:latest
         container_name: ethlogger
