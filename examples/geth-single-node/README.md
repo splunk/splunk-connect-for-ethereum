@@ -26,6 +26,7 @@ $ docker-compose up -d
 
 > This example is not meant to be used in a production setup.
 > Splunk and ethlogger persist data using local volumes. If you would like to start clean run the following.
+> Using the logging driver to log to a container in the same docker-compose stack shouldn't be used in production.
 
 ```sh-session
 $ docker-compose down
