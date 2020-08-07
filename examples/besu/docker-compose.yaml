@@ -33,10 +33,7 @@ services:
             - ./splunk.yml:/tmp/defaults/default.yml
             - /opt/splunk/var
             - /opt/splunk/etc
-<<<<<<< HEAD
 
-=======
->>>>>>> 449b4a9... docs: ✏️  remove example app from besu docker-compose
     ethlogger:
         image: splunkdlt/ethlogger:latest
         container_name: ethlogger
