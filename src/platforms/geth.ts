@@ -8,7 +8,7 @@ import { createModuleDebug } from '../utils/debug';
 import { durationStringToMs, parseAbbreviatedNumber } from '../utils/parse';
 import { captureDefaultMetrics, GenericNodeAdapter, checkRpcMethodSupport } from './generic';
 
-const { debug, error } = createModuleDebug('platforms:geth');
+const { debug, info, error } = createModuleDebug('platforms:geth');
 
 type MetricsObj = { [k: string]: number | string | any[] | MetricsObj };
 
@@ -67,15 +67,25 @@ export function formatGethMemStats(memStats: GethMemStats): [string, number | un
         );
 }
 
-export async function captureGethMetrics(ethClient: EthereumClient, captureTime: number): Promise<NodeMetricsMessage> {
+export async function captureGethMetrics(
+    ethClient: EthereumClient,
+    captureTime: number,
+    supports: { debugMetrics: boolean; memStats: boolean }
+): Promise<NodeMetricsMessage | null> {
+    if (!supports.debugMetrics && !supports.memStats) {
+        return null;
+    }
     const [metricsResults, memStatsResults] = await Promise.all([
-        ethClient.request(gethMetrics(true)),
-        ethClient.request(gethMemStats()),
+        supports.debugMetrics ? ethClient.request(gethMetrics(true)) : null,
+        supports.memStats ? ethClient.request(gethMemStats()) : null,
     ]);
     return {
         type: 'nodeMetrics',
         time: captureTime,
-        metrics: Object.fromEntries([...formatGethMetrics(metricsResults), ...formatGethMemStats(memStatsResults)]),
+        metrics: Object.fromEntries([
+            ...(metricsResults != null ? formatGethMetrics(metricsResults) : []),
+            ...(memStatsResults != null ? formatGethMemStats(memStatsResults) : []),
+        ]),
     };
 }
 
@@ -133,6 +143,22 @@ export interface GethNodeInfo extends NodeInfo {
 export class GethAdapter extends GenericNodeAdapter {
     protected gethNodeInfo?: GethNodeInfoResponse;
 
+    protected gethSupports?: { debugMetrics: boolean; memStats: boolean };
+
+    public async initialize(ethClient: EthereumClient) {
+        await super.initialize(ethClient);
+        debug('Determining support for geth-specific RPC methods');
+        const [supportsDebugMetrics, supportsMemStats] = await Promise.all([
+            checkRpcMethodSupport(ethClient, gethMetrics(true)),
+            checkRpcMethodSupport(ethClient, gethMemStats()),
+        ]);
+        this.gethSupports = {
+            debugMetrics: supportsDebugMetrics,
+            memStats: supportsMemStats,
+        };
+        info('Determined support for geth-specific RPC methods: %o', this.gethSupports);
+    }
+
     public async captureNodeInfo(ethClient: EthereumClient): Promise<NodeInfo> {
         debug('Retrieving nodeInfo from geth node');
         const [baseNodeInfo, gethNodeInfoRes, clientVersionRes] = await Promise.all([
@@ -161,9 +187,9 @@ export class GethAdapter extends GenericNodeAdapter {
     public async captureNodeMetrics(ethClient: EthereumClient, captureTime: number): Promise<NodeMetricsMessage[]> {
         const [defaultMetrics, gethMetrics] = await Promise.all([
             captureDefaultMetrics(ethClient, captureTime),
-            captureGethMetrics(ethClient, captureTime),
+            captureGethMetrics(ethClient, captureTime, this.gethSupports!),
         ]);
-        return [defaultMetrics, gethMetrics];
+        return [defaultMetrics, gethMetrics].filter(m => m != null) as NodeMetricsMessage[];
     }
 
     public async supportsPendingTransactions(ethClient: EthereumClient): Promise<boolean> {

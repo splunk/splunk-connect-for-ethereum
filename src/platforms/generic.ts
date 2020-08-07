@@ -24,7 +24,7 @@ import { prefixKeys } from '../utils/obj';
 
 const { debug, warn, error } = createModuleDebug('platforms:generic');
 
-export async function checkRpcMethodSupport(eth: EthereumClient, req: EthRequest<[], any>): Promise<boolean> {
+export async function checkRpcMethodSupport(eth: EthereumClient, req: EthRequest<any, any>): Promise<boolean> {
     try {
         debug('Checking if RPC method %s is supported by ethereum node', req.method);
         await eth.request(req, { immediate: true });
