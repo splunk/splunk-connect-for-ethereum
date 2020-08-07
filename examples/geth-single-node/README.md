@@ -10,7 +10,7 @@ Ethlogger configuration is provided in the form of [environment variables](../..
 
 ```sh-session
 $ cd examples/geth
-$ docker-compose -f docker-compose-single.yaml up -d
+$ docker-compose up -d
 ```
 
 2. Wait for all containers to start.
@@ -28,13 +28,6 @@ $ docker-compose -f docker-compose-single.yaml up -d
 > Splunk and ethlogger persist data using local volumes. If you would like to start clean run the following.
 
 ```sh-session
-$ docker-compose -f docker-compose-single.yaml down
-$ docker volume prune
-```
-
-OR
-
-```sh-session
-$ docker-compose -f docker-compose-multi.yaml down
+$ docker-compose down
 $ docker volume prune
 ```
