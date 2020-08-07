@@ -10,7 +10,7 @@ services:
             - SPLUNK_PASSWORD=changeme
             - SPLUNK_APPS_URL=https://github.com/splunk/ethereum-basics/releases/download/latest/ethereum-basics.tgz
         ports:
-            - 18000:8000
+            - 8000:8000
         healthcheck:
             test: ['CMD', 'curl', '-f', 'http://localhost:8000']
             interval: 5s

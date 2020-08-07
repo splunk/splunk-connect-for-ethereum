@@ -1,0 +1,209 @@
+version: '3.6'
+
+x-node-def: &node-def
+    image: ethereum/client-go:v1.9.15
+    entrypoint:
+        - /bin/sh
+        - -c
+        - |
+            NODEKEYHEX_ARGS=""
+            if [ "$${nodekeyhex}" != "" ]; then
+              NODEKEYHEX_ARGS="--nodekeyhex $${nodekeyhex}"
+            fi
+            echo $${password} > /root/.accountpassword
+            echo $${privatekey} > /root/.privatekey
+            geth init /root/genesis.json
+            geth account import --password /root/.accountpassword /root/.privatekey
+            geth \
+              --bootnodes "enode://$${bootnodeId}@$${bootnodeIp}:30301" \
+              --networkid "$${networkId}" \
+              --nousb --shh \
+              --verbosity=$${verbosity} \
+              --ws --wsport 8546 --wsaddr "0.0.0.0" --wsorigins="*" \
+              --wsapi=eth,web3,shh,net,admin \
+              --rpc --rpcaddr "0.0.0.0" --rpccorsdomain "*" \
+              --rpcapi "eth,web3,net,admin,debug,db,shh" \
+              --syncmode=$${nodeType} \
+              --etherbase $${address} \
+              --unlock $${address} \
+              --password /root/.accountpassword \
+              --allow-insecure-unlock \
+              --gasprice "0" $${extra} $${NODEKEYHEX_ARGS}
+    healthcheck:
+        test: ['CMD', 'wget', '-q', 'http://localhost:8545']
+        interval: 15s
+        timeout: 10s
+        retries: 3
+        start_period: 10s
+
+x-logging: &default-logging
+    driver: splunk
+    options:
+        splunk-token: 11111111-1111-1111-1111-1111111111113
+        splunk-url: https://172.25.0.100:8088
+        splunk-index: logs
+        splunk-sourcetype: docker
+        splunk-insecureskipverify: 'true'
+        splunk-verify-connection: 'false'
+        splunk-format: 'raw'
+        tag: '{{.Name}}-{{.ID}}'
+
+services:
+    splunk:
+        image: splunk/splunk:latest
+        container_name: splunk
+        environment:
+            - SPLUNK_START_ARGS=--accept-license
+            - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+            - SPLUNK_PASSWORD=changeme
+            - SPLUNK_APPS_URL=https://github.com/splunk/ethereum-basics/releases/download/latest/ethereum-basics.tgz
+        ports:
+            - 8000:8000
+        healthcheck:
+            test: ['CMD', 'curl', '-f', 'http://localhost:8000']
+            interval: 5s
+            timeout: 5s
+            retries: 20
+        volumes:
+            - ./splunk.yml:/tmp/defaults/default.yml
+            - /opt/splunk/var
+            - /opt/splunk/etc
+        networks:
+            geth:
+                ipv4_address: 172.25.0.100
+
+    ethlogger:
+        image: splunkdlt/ethlogger:latest
+        container_name: ethlogger
+        environment:
+            - COLLECT_PEER_INFO=true
+            - COLLECT_PENDING_TX=true
+            - ETH_RPC_URL=http://172.25.0.104:8545
+            - NETWORK_NAME=dev
+            - START_AT_BLOCK=latest
+            - SPLUNK_HEC_URL=https://172.25.0.100:8088
+            - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
+            - SPLUNK_EVENTS_INDEX=main
+            - SPLUNK_METRICS_INDEX=metrics
+            - SPLUNK_INTERNAL_INDEX=metrics
+            - SPLUNK_HEC_REJECT_INVALID_CERTS=false
+            - ABI_DIR=/app/abis
+            - DEBUG=ethlogger:platforms,ethlogger:eth
+        volumes:
+            - ./abis:/app/abis
+            - ./:/app
+        depends_on:
+            - splunk
+        restart: unless-stopped
+        networks:
+            geth:
+                ipv4_address: 172.25.0.101
+        logging: *default-logging
+
+    geth-bootnode:
+        build:
+            context: ./
+            dockerfile: ./bootnode/Dockerfile
+        hostname: geth-bootnode
+        container_name: geth-bootnode
+        environment:
+            - nodekeyhex=08f0e1dee5c1b4645f3331a566009e41a4514b6cd28656d63d0449ecf812812b
+        entrypoint:
+            - /bin/bash
+            - -c
+            - |
+                bootnode -nodekeyhex $${nodekeyhex}
+        networks:
+            geth:
+                ipv4_address: 172.25.0.102 # The miners need to know the IP address later on
+        ports:
+            - 30301:30301/udp
+        logging: *default-logging
+
+    geth-node:
+        <<: *node-def
+        hostname: geth-node
+        container_name: geth-node
+        depends_on:
+            - geth-miner1
+            - geth-miner2
+        environment:
+            - nodeType=full
+            - bootnodeId=76a8171707eca17647a47ca99ffd348927dfa60102792ea349a25d5192e61855be83b786e376276a306afcceea4ffd1c9c77e4370b417efc39f328a0d068004c
+            - bootnodeIp=172.25.0.102
+            - networkId=6660001
+            - verbosity=3
+            - address=0x4d980799b71ae28fde37b8cadbe56ef8305b1727
+            - privatekey=54c68a6104df07a9661b9b8fe1106263feeeddfd67aed8dafed1438040e421d1
+            - password=word
+        volumes:
+            - ./genesis.json:/root/genesis.json:ro
+            - ./static-nodes.json:/root/.ethereum/geth/static-nodes.json
+        networks:
+            geth:
+                ipv4_address: 172.25.0.103
+        ports:
+            - 8547:8545
+            - 8548:8546
+            - 30303:30303
+        logging: *default-logging
+
+    geth-miner1:
+        <<: *node-def
+        hostname: geth-miner1
+        container_name: geth-miner1
+        depends_on:
+            - geth-bootnode
+        environment:
+            - nodeType=full
+            - bootnodeId=76a8171707eca17647a47ca99ffd348927dfa60102792ea349a25d5192e61855be83b786e376276a306afcceea4ffd1c9c77e4370b417efc39f328a0d068004c
+            - bootnodeIp=172.25.0.102
+            - networkId=6660001
+            - verbosity=3
+            - nodekeyhex=8eb666d3e8a42bfc7d9e829af60b6d9142d65bef1ecb5897622b4c3ef93377e2
+            - address=0x8cc5a1a0802db41db826c2fcb72423744338dcb0
+            - privatekey=df504d175ae63abf209bad9dda965310d99559620550e74521a6798a41215f46
+            - password=pass
+            - extra=--mine
+        volumes:
+            - ./genesis.json:/root/genesis.json:ro
+        ports:
+            - 8544:8545/tcp
+            - 8543:8546
+        networks:
+            geth:
+                ipv4_address: 172.25.0.104
+        logging: *default-logging
+
+    geth-miner2:
+        <<: *node-def
+        hostname: geth-miner2
+        container_name: geth-miner2
+        depends_on:
+            - geth-bootnode
+        environment:
+            - nodeType=full
+            - bootnodeId=76a8171707eca17647a47ca99ffd348927dfa60102792ea349a25d5192e61855be83b786e376276a306afcceea4ffd1c9c77e4370b417efc39f328a0d068004c
+            - bootnodeIp=172.25.0.102
+            - networkId=6660001
+            - verbosity=3
+            - nodekeyhex=8861389742e9ee2669855a4928a712cec0f275241a359647772df689840c3c6c
+            - address=0x3590aca93338b0721966a8d0c96ebf2c4c87c544
+            - privatekey=bc5b578e0dcb2dbf98dd6e5fe62cb5a28b84a55e15fc112d4ca88e1f62bd7c35
+            - password=word
+            - extra=--mine
+        volumes:
+            - ./genesis.json:/root/genesis.json:ro
+        ports:
+            - 8542:8545/tcp
+        networks:
+            geth:
+                ipv4_address: 172.25.0.105
+        logging: *default-logging
+
+networks:
+    geth:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.25.0.0/24

@@ -1,15 +1,25 @@
-# Splunk Connect for Quorum
+# Quorum example running ethlogger using docker-compose
 
-This example starts up a 3 node Quorum node with transaction managers to demonstrate how Splunk Connect for Ethereum is compatible with Quorum. To start the demo run the command:
+This example uses [`quorum-wizard`]() to generate a docker-compose configuration and supporting resources.
 
+## Run
+
+```sh-session
+npm install -g quorum-wizard@beta
+quorum-wizard
 ```
-./start (istanbul|raft)
-```
 
-You can view Splunk at `localhost:18000`
+For the quickest path to a working environment with Quorum, Splunk & ethlogger, select the following:
 
-To shut down the example:
+-   Simple Network
+-   docker-compose
+-   istanbul
+-   any version of Quorum
+-   any version of Tessera
+-   select Splunk
 
-```
-./stop.sh
-```
+Further instructions will be printed out after the wizard creates your environment. The url and credentials for Splunk will be printed also. Navigate to the directory you chose and run `./start.sh`.
+
+## Note
+
+Run `./stop.sh` to shut down the environment.

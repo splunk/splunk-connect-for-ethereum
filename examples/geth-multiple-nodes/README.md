@@ -1,6 +1,6 @@
-# Besu example running ethlogger using docker-compose
+# Multi-node Geth example running ethlogger using docker-compose
 
-This is a simple example showing how to run a Besu node in development mode being monitored by ethlogger in docker-compose alongside a Splunk Enterprise container.
+This is a simple example showing how to run a Geth node in development mode being monitored by ethlogger in docker-compose alongside a Splunk Enterprise container.
 
 Ethlogger configuration is provided in the form of [environment variables](../../docs/cli.md#environment-variables) in [docker-compose.yaml](./docker-compose.yaml#L25).
 
@@ -9,7 +9,7 @@ Ethlogger configuration is provided in the form of [environment variables](../..
 1. Start docker-compose
 
 ```sh-session
-$ cd examples/besu
+$ cd examples/geth
 $ docker-compose up -d
 ```
 
