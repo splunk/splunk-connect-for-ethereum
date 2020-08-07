@@ -1,5 +1,0 @@
-<nav search_view="search">
-  <view name="search" />
-  <view name="alerts" />
-  <view name="dashboards" />
-</nav>

@@ -68,7 +68,6 @@ services:
             - ./splunk.yml:/tmp/defaults/default.yml
             - /opt/splunk/var
             - /opt/splunk/etc
-            - ./example-app:/opt/splunk/etc/apps/example
         networks:
             geth:
                 ipv4_address: 172.25.0.100
