@@ -5,7 +5,7 @@ This example uses [`quorum-wizard`]() to generate a docker-compose configuration
 ## Run
 
 ```sh-session
-npm install -g quorum-wizard@beta
+npm install -g quorum-wizard@next
 quorum-wizard
 ```
 
