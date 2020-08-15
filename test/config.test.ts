@@ -19,6 +19,7 @@ test('defaults', async () => {
                   },
                   "blockWatcher": Object {
                     "blocksMaxChunkSize": 25,
+                    "decryptPrivateTransactions": false,
                     "enabled": true,
                     "maxParallelChunks": 3,
                     "pollInterval": 500,
@@ -139,6 +140,7 @@ test('cli flags overrides', async () => {
     expect(config.blockWatcher).toMatchInlineSnapshot(`
         Object {
           "blocksMaxChunkSize": 25,
+          "decryptPrivateTransactions": false,
           "enabled": true,
           "maxParallelChunks": 3,
           "pollInterval": 500,

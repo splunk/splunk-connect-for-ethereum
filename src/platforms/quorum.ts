@@ -1,12 +1,16 @@
+import { EnterpriseNodePlatformAdapter } from '.';
 import { EthereumClient } from '../eth/client';
 import {
     quorumIstanbulCandidates,
+    quorumIstanbulSnapshot,
+    quorumPrivateTransactionPayload,
     quorumRaftCluster,
     quorumRaftLeader,
     quorumRaftRole,
-    quroumIstanbulSnapshot,
 } from '../eth/requests';
+import { RawTransactionResponse } from '../eth/responses';
 import { QuorumProtocolInfo } from '../msgs';
+import { bigIntToNumber } from '../utils/bn';
 import { createModuleDebug } from '../utils/debug';
 import { GethAdapter } from './geth';
 
@@ -17,7 +21,7 @@ export type QUORUM_CONSENSUS = 'istanbul' | 'raft';
 export async function captureIstanbulData(ethClient: EthereumClient): Promise<QuorumProtocolInfo> {
     debug('Capturing istanbul data from quorum node');
     const [snapshot, candidates] = await Promise.all([
-        ethClient.request(quroumIstanbulSnapshot()),
+        ethClient.request(quorumIstanbulSnapshot()),
         ethClient.request(quorumIstanbulCandidates()),
     ]);
     return {
@@ -42,7 +46,7 @@ export async function captureRaftData(ethClient: EthereumClient): Promise<Quorum
     };
 }
 
-export class QuorumAdapter extends GethAdapter {
+export class QuorumAdapter extends GethAdapter implements EnterpriseNodePlatformAdapter {
     private consensus: 'istanbul' | 'raft' | null = null;
     public async initialize(ethClient: EthereumClient) {
         await super.initialize(ethClient);
@@ -80,5 +84,20 @@ export class QuorumAdapter extends GethAdapter {
 
     public get name() {
         return this.consensus == null ? 'quorum' : `quorum:${this.consensus}`;
+    }
+
+    public supportsPrivateTransactions() {
+        return true;
+    }
+
+    public isPrivateTransaction(tx: RawTransactionResponse) {
+        const v = bigIntToNumber(tx.v);
+        debug('Checking isPrivateTransaction v=%o (%o)', v, tx.v);
+        // https://docs.goquorum.com/en/latest/Privacy/Overview/#private-transactions
+        return v === 37 || v === 38;
+    }
+
+    public getRawTransactionInput(input: string, ethClient: EthereumClient): Promise<string> {
+        return ethClient.request(quorumPrivateTransactionPayload(input));
     }
 }

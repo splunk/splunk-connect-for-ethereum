@@ -1,6 +1,7 @@
-import { OutputMessage } from '../output';
 import { EthereumClient } from '../eth/client';
+import { RawTransactionResponse } from '../eth/responses';
 import { NodeInfo, NodeMetricsMessage } from '../msgs';
+import { OutputMessage } from '../output';
 
 /** Generic interface to capture platform-specific metrics and data from nodes */
 export interface NodePlatformAdapter {
@@ -22,4 +23,14 @@ export interface NodePlatformAdapter {
     supportsPendingTransactions(ethClient: EthereumClient): Promise<boolean>;
     capturePeerInfo?(ethClient: EthereumClient, captureTime: number): Promise<OutputMessage[]>;
     supportsPeerInfo(ethClient: EthereumClient): Promise<boolean>;
+}
+
+export interface EnterpriseNodePlatformAdapter extends NodePlatformAdapter {
+    supportsPrivateTransactions(): boolean;
+    isPrivateTransaction(tx: RawTransactionResponse): boolean;
+    getRawTransactionInput(input: string, ethClient: EthereumClient): Promise<string>;
+}
+
+export function isEnterprisePlatform(platform: NodePlatformAdapter): platform is EnterpriseNodePlatformAdapter {
+    return typeof (platform as any).supportsPrivateTransactions === 'function';
 }

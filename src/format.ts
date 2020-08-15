@@ -9,6 +9,7 @@ import {
     FormattedPendingTransaction,
     FormattedTransaction,
     FunctionCall,
+    PrivateTransactionPayload,
 } from './msgs';
 import { bigIntToNumber, parseBigInt } from './utils/bn';
 
@@ -72,7 +73,8 @@ export function formatTransaction(
     fromInfo?: AddressInfo,
     toInfo?: AddressInfo,
     contractAddressInfo?: AddressInfo,
-    call?: FunctionCall
+    call?: FunctionCall,
+    privatePayload?: PrivateTransactionPayload
 ): FormattedTransaction {
     return {
         ...formatBaseTransaction(rawTx),
@@ -87,6 +89,7 @@ export function formatTransaction(
         toInfo,
         contractAddressInfo,
         call,
+        privatePayload,
     };
 }
 

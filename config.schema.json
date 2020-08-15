@@ -38,6 +38,10 @@
                     "description": "Max. number of blocks to fetch at once",
                     "type": "number"
                 },
+                "decryptPrivateTransactions": {
+                    "description": "For chains/nodes that do support private transcations, this settings instructs block watcher to\nattempt to load the decrypted payload for private transactions",
+                    "type": "boolean"
+                },
                 "enabled": {
                     "description": "Specify `false` to disable the block watcher",
                     "type": "boolean"

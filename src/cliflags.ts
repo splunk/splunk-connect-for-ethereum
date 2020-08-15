@@ -157,6 +157,11 @@ export const CLI_FLAGS = {
             return n;
         },
     }),
+    'decrypt-private-txs': flags.boolean({
+        env: 'DECRYPT_PRIVATE_TXS',
+        description:
+            'Enable to download decrypted content of private transactions (only available for Quorum at the moment)',
+    }),
 
     'reject-invalid-certs': flags.boolean({
         env: 'REJECT_INVALID_CERTS',

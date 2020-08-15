@@ -53,6 +53,10 @@ OPTIONS
   --debug
       Enable debug log output
 
+  --decrypt-private-txs
+      Enable to download decrypted content of private transactions (only available
+      for Quorum at the moment)
+
   --[no-]eth-reject-invalid-certs
       Disable to allow ethereum client to connect to HTTPS without rejecting
       invalid (self-signed) certificates
@@ -146,6 +150,7 @@ OPTIONS
 | `ETH_REJECT_INVALID_CERTS`        | `boolean` | Disable to allow ethereum client to connect to HTTPS without rejecting invalid (self-signed) certificates                                                                                |
 | `ABI_DIR`                         | `string`  | Directory containing ABI definitions (JSON files). This directory will be searched recursively                                                                                           |
 | `START_AT_BLOCK`                  | `string`  | First block to start ingesting from. Possible values are "genesis", "latest", an absolute block number or a negative number describing how many blocks before the latest one to start at |
+| `DECRYPT_PRIVATE_TXS`             | `boolean` | Enable to download decrypted content of private transactions (only available for Quorum at the moment)                                                                                   |
 | `REJECT_INVALID_CERTS`            | `boolean` | Disable to allow all HTTP clients (HEC and ETH) to connect to HTTPS without rejecting invalid (self-signed) certificates                                                                 |
 | `NETWORK_NAME`                    | `string`  | The network name will be attached to all events sent to Splunk. This is typically either "mainnet" or "testnet".                                                                         |
 | `CHAIN_NAME`                      | `string`  | The name of the chain that will be attached to all events sent to Splunk                                                                                                                 |

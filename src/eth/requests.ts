@@ -124,7 +124,7 @@ export const gethTxpool = (): EthRequest<[], GethTxpool> => ({
 
 // Quorum specific requests
 
-export const quroumIstanbulSnapshot = (): EthRequest<[], any> => ({
+export const quorumIstanbulSnapshot = (): EthRequest<[], any> => ({
     method: 'istanbul_getSnapshot',
 });
 
@@ -142,6 +142,11 @@ export const quorumRaftLeader = (): EthRequest<[], any> => ({
 
 export const quorumRaftCluster = (): EthRequest<[], any> => ({
     method: 'raft_cluster',
+});
+
+export const quorumPrivateTransactionPayload = (id: string): EthRequest<[string], string> => ({
+    method: 'eth_getQuorumPayload',
+    params: [id],
 });
 
 // Parity specific requests
