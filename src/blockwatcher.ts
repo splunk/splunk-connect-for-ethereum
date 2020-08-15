@@ -309,10 +309,14 @@ export class BlockWatcher implements ManagedResource {
                         debug('Successfully retrieved decrypted transaction payload %o', { input });
                         privatePayload = { input };
                     } catch (e) {
-                        error('Failed to retrieve decrypted transaction payload %o', {
-                            txHash: rawTx.hash,
-                            input: rawTx.input,
-                        });
+                        error(
+                            'Failed to retrieve decrypted transaction payload %o',
+                            {
+                                txHash: rawTx.hash,
+                                input: rawTx.input,
+                            },
+                            e
+                        );
                     }
                 }
             } else {

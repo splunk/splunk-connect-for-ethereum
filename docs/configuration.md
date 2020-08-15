@@ -233,15 +233,15 @@ Ethlogger checks for each address it encounters whether it is a smart contract b
 
 Block watcher is the component that retrieves blocks, transactions, event logs from the node and sends them to output.
 
-| Name                         | Type                        | Description                                                                                                                                                    |
-| ---------------------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `enabled`                    | `boolean`                   | Specify `false` to disable the block watcher                                                                                                                   |
-| `pollInterval`               | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)                                                                     |
-| `blocksMaxChunkSize`         | `number`                    | Max. number of blocks to fetch at once                                                                                                                         |
-| `maxParallelChunks`          | `number`                    | Max. number of chunks to process in parallel                                                                                                                   |
-| `startAt`                    | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.                                                              |
-| `retryWaitTime`              | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                                                                                            |
-| `decryptPrivateTransactions` | `boolean`                   | For chains/nodes that do support private transcations, this settings instructs block watcher to attempt to load the decrypted payload for private transactions |
+| Name                         | Type                        | Description                                                                                                                                                   |
+| ---------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                    | `boolean`                   | Specify `false` to disable the block watcher                                                                                                                  |
+| `pollInterval`               | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)                                                                    |
+| `blocksMaxChunkSize`         | `number`                    | Max. number of blocks to fetch at once                                                                                                                        |
+| `maxParallelChunks`          | `number`                    | Max. number of chunks to process in parallel                                                                                                                  |
+| `startAt`                    | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.                                                             |
+| `retryWaitTime`              | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                                                                                           |
+| `decryptPrivateTransactions` | `boolean`                   | For chains/nodes that do support private transactions, this setting instructs block watcher to attempt to load the decrypted payload for private transactions |
 
 ### NodeMetrics
 

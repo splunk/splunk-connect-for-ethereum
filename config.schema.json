@@ -39,7 +39,7 @@
                     "type": "number"
                 },
                 "decryptPrivateTransactions": {
-                    "description": "For chains/nodes that do support private transcations, this settings instructs block watcher to\nattempt to load the decrypted payload for private transactions",
+                    "description": "For chains/nodes that do support private transactions, this setting instructs block watcher to\nattempt to load the decrypted payload for private transactions",
                     "type": "boolean"
                 },
                 "enabled": {

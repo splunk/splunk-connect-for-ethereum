@@ -9,7 +9,7 @@ import {
     DecodedFunctionCall,
     DecodedLogEvent,
 } from './decode';
-import { loadAbiFile, loadSignatureFile, searchAbiFiles } from './files';
+import { loadAbiFile, loadSignatureFile, searchAbiFiles, AbiFileContents } from './files';
 import { AbiItemDefinition } from './item';
 import { computeSignature, computeSignatureHash } from './signature';
 
@@ -112,6 +112,10 @@ export class AbiRepository implements ManagedResource {
 
     public async loadAbiFile(path: string, config: AbiRepositoryConfig) {
         const abiFileContents = await loadAbiFile(path, config);
+        this.addAbi(abiFileContents);
+    }
+
+    public addAbi(abiFileContents: AbiFileContents) {
         const contractInfo: ContractAbi = {
             contractName: abiFileContents.contractName,
             fileName: abiFileContents.fileName,

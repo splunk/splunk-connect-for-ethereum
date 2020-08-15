@@ -198,7 +198,7 @@ export interface BlockWatcherConfigSchema {
     /** Wait time before retrying to fetch and process blocks after failure */
     retryWaitTime: WaitTimeConfig;
     /**
-     * For chains/nodes that do support private transcations, this settings instructs block watcher to
+     * For chains/nodes that do support private transactions, this setting instructs block watcher to
      * attempt to load the decrypted payload for private transactions
      */
     decryptPrivateTransactions: boolean;
