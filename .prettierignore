@@ -1,1 +1,3 @@
 CHANGELOG.md
+examples/helm/**
+examples/k8s/*.yaml

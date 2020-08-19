@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: splunk-defaults
+data:
+  default.yml: |-
+    retry_num: 50
+    splunk:
+      app_paths:
+        default: /opt/splunk/etc/apps
+        httpinput: /opt/splunk/etc/apps/splunk_httpinput
+        idxc: /opt/splunk/etc/master-apps
+        shc: /opt/splunk/etc/shcluster/apps
+      enable_service: false
+      exec: /opt/splunk/bin/splunk
+      group: splunk
+      hec_disabled: 0
+      hec_enableSSL: 1
+      hec_port: {{ .Values.service.hecport }}
+      hec_token: {{ .Values.global.splunk.hec.token }}
+      home: /opt/splunk
+      http_port: {{ .Values.service.webport }}
+      idxc:
+        enable: false
+      opt: /opt
+      password: {{ .Values.global.splunk.password }}
+      pid: /opt/splunk/var/run/splunk/splunkd.pid
+      s2s_port: 9997
+      secret: null
+      shc:
+        enable: false
+        label: shc_label
+        replication_factor: 3
+        replication_port: 4001
+        secret: lS5aoPDHdganlLBWJP/1DwK0wcHpaJaD
+      smartstore: null
+      svc_port: 8089
+      user: splunk
+      conf:
+        inputs:
+          directory: /opt/splunk/etc/apps/search/local
+          content:
+            http://ledger_metrics:
+              disabled: 0
+              index: ledger_metrics
+              token: 12345678-ABCD-EFGH-IJKL-123456789012
+            http://ledger_data:
+              disabled: 0
+              index: ledger_data
+              token: 12345678-ABCD-EFGH-IJKL-123456789012
+        indexes:
+          directory: /opt/splunk/etc/apps/search/local
+          content:
+            ledger_metrics:
+              coldPath: $SPLUNK_DB/ledger_metrics/colddb
+              datatype: metric
+              homePath: $SPLUNK_DB/ledger_metrics/db
+              thawedPath: $SPLUNK_DB/ledger_metrics/thaweddb
+            ledger_data:
+              coldPath: $SPLUNK_DB/ledger_data/colddb
+              homePath: $SPLUNK_DB/ledger_data/db
+              thawedPath: $SPLUNK_DB/ledger_data/thaweddb

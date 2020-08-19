@@ -16,3 +16,4 @@ nohup.out
 data/*.abisigs*
 /coverage
 .env
+/examples/helm/local_example/.kubeconfig
