@@ -7,6 +7,7 @@ import { Checkpoint } from '../../../src/checkpoint';
 import { BatchedEthereumClient } from '../../../src/eth/client';
 import { HttpTransport } from '../../../src/eth/http';
 import { withRecorder } from '../../../src/eth/recorder';
+import { MOCK_NODE_ADAPTER } from '../../../src/platforms/mock';
 import { enableTraceLogging, suppressDebugLogging } from '../../../src/utils/debug';
 import { LRUCache } from '../../../src/utils/lru';
 import { TestOutput } from '../../testoutput';
@@ -51,15 +52,21 @@ test('blockwatcher', async () => {
             const blockWatcher = new BlockWatcher({
                 abiRepo,
                 checkpoints,
-                chunkSize: 1,
+                config: {
+                    enabled: true,
+                    blocksMaxChunkSize: 1,
+                    pollInterval: 1,
+                    maxParallelChunks: 1,
+                    startAt: 'latest',
+                    decryptPrivateTransactions: false,
+                    retryWaitTime: 10,
+                },
                 ethClient,
-                maxParallelChunks: 1,
                 output,
-                pollInterval: 1,
-                startAt: 'latest',
                 chunkQueueMaxSize: 10,
                 contractInfoCache,
                 waitAfterFailure: 1,
+                nodePlatform: MOCK_NODE_ADAPTER,
             });
 
             await blockWatcher.processChunk({ from: BLOCK, to: BLOCK });

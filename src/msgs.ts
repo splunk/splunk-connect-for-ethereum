@@ -125,6 +125,8 @@ export interface FormattedTransaction extends BaseFormattedTransaction {
 
     /** Information about the created contract address */
     contractAddressInfo?: AddressInfo;
+    /** Decrypted information from private transactions */
+    privatePayload?: PrivateTransactionPayload;
 }
 
 export interface AddressInfo {
@@ -132,6 +134,11 @@ export interface AddressInfo {
     isContract: boolean;
     /** Name of the smart contract by matching it against configured ABI information */
     contractName?: string;
+}
+
+export interface PrivateTransactionPayload {
+    /** Decrypted input data */
+    input?: string;
 }
 
 export interface FunctionCall {

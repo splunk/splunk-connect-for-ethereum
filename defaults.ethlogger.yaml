@@ -73,6 +73,7 @@ blockWatcher:
     blocksMaxChunkSize: 25
     maxParallelChunks: 3
     startAt: genesis
+    decryptPrivateTransactions: false
     retryWaitTime:
         type: linear-backoff
         min: 0

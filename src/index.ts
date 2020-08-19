@@ -190,11 +190,9 @@ class Ethlogger extends Command {
                 ethClient: client,
                 output,
                 abiRepo: abiRepo,
-                startAt: config.blockWatcher.startAt,
+                config: config.blockWatcher,
                 contractInfoCache,
-                chunkSize: config.blockWatcher.blocksMaxChunkSize,
-                maxParallelChunks: config.blockWatcher.maxParallelChunks,
-                pollInterval: config.blockWatcher.pollInterval,
+                nodePlatform: platformAdapter,
             });
             addResource(blockWatcher);
             internalStatsCollector.addSource(blockWatcher, 'blockWatcher');

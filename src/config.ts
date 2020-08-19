@@ -197,6 +197,11 @@ export interface BlockWatcherConfigSchema {
     startAt: StartBlock;
     /** Wait time before retrying to fetch and process blocks after failure */
     retryWaitTime: WaitTimeConfig;
+    /**
+     * For chains/nodes that do support private transactions, this setting instructs block watcher to
+     * attempt to load the decrypted payload for private transactions
+     */
+    decryptPrivateTransactions: boolean;
 }
 
 export interface BlockWatcherConfig extends Omit<BlockWatcherConfigSchema, 'retryWaitTime'> {
@@ -786,6 +791,11 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             pollInterval: parseDuration(defaults.blockWatcher?.pollInterval) ?? 500,
             startAt: parseStartAt(flags['start-at-block'] ?? defaults.blockWatcher?.startAt) ?? 'genesis',
             retryWaitTime: waitTimeFromConfig(defaults.blockWatcher?.retryWaitTime) ?? 60000,
+            decryptPrivateTransactions:
+                flags['decrypt-private-txs'] ??
+                parseBooleanEnvVar(CLI_FLAGS['decrypt-private-txs'].env) ??
+                defaults.blockWatcher?.decryptPrivateTransactions ??
+                false,
         },
         checkpoint: {
             filename: defaults.checkpoint?.filename ?? 'checkpoint.json',

@@ -1,6 +1,6 @@
-# Quorum example running ethlogger using docker-compose
+# Quorum Example
 
-This example uses [`quorum-wizard`]() to generate a docker-compose configuration and supporting resources.
+To generate an example showcasing Splunk Connect for Ethereum with **Quorum** we suggest you use [quorum-wizard](https://github.com/jpmorganchase/quorum-wizard) to generate the docker-compose configuration and supporting resources.
 
 ## Run
 

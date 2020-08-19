@@ -2,12 +2,14 @@ import { ContractInfo, getContractInfo } from './abi/contract';
 import { AbiRepository } from './abi/repo';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { Checkpoint } from './checkpoint';
+import { BlockWatcherConfig } from './config';
 import { EthereumClient } from './eth/client';
 import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
 import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/responses';
 import { formatBlock, formatLogEvent, formatTransaction } from './format';
-import { Address, AddressInfo, FormattedBlock, LogEventMessage } from './msgs';
+import { Address, AddressInfo, FormattedBlock, LogEventMessage, PrivateTransactionPayload } from './msgs';
 import { Output, OutputMessage } from './output';
+import { isEnterprisePlatform, NodePlatformAdapter } from './platforms';
 import { ABORT, AbortHandle } from './utils/abort';
 import { parallel, sleep } from './utils/async';
 import { bigIntToNumber } from './utils/bn';
@@ -61,10 +63,8 @@ export class BlockWatcher implements ManagedResource {
     private checkpoints: Checkpoint;
     private output: Output;
     private abiRepo?: AbiRepository;
-    private startAt: StartBlock;
-    private chunkSize: number = 25;
-    private maxParallelChunks: number = 3;
-    private pollInterval: number = 500;
+    private config: BlockWatcherConfig;
+    private nodePlatform: NodePlatformAdapter;
     private abortHandle = new AbortHandle();
     private endCallbacks: Array<() => void> = [];
     private waitAfterFailure: WaitTime;
@@ -82,36 +82,30 @@ export class BlockWatcher implements ManagedResource {
         checkpoints,
         output,
         abiRepo,
-        startAt = 'genesis',
         contractInfoCache,
+        config,
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
-        chunkSize = 25,
-        maxParallelChunks = 3,
-        pollInterval = 500,
+        nodePlatform,
     }: {
         ethClient: EthereumClient;
         checkpoints: Checkpoint;
         output: Output;
         abiRepo: AbiRepository;
-        startAt: StartBlock;
+        config: BlockWatcherConfig;
         waitAfterFailure?: WaitTime;
         chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
-        chunkSize: number;
-        maxParallelChunks: number;
-        pollInterval: number;
+        nodePlatform: NodePlatformAdapter;
     }) {
         this.ethClient = ethClient;
         this.checkpoints = checkpoints;
         this.output = output;
         this.abiRepo = abiRepo;
-        this.startAt = startAt;
+        this.config = config;
         this.waitAfterFailure = waitAfterFailure;
-        this.chunkSize = chunkSize;
-        this.maxParallelChunks = maxParallelChunks;
-        this.pollInterval = pollInterval;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
+        this.nodePlatform = nodePlatform;
         if (contractInfoCache) {
             this.contractInfoCache = contractInfoCache;
         }
@@ -122,25 +116,25 @@ export class BlockWatcher implements ManagedResource {
         const { ethClient, checkpoints } = this;
 
         if (checkpoints.isEmpty()) {
-            if (typeof this.startAt === 'number') {
-                if (this.startAt < 0) {
+            if (typeof this.config.startAt === 'number') {
+                if (this.config.startAt < 0) {
                     const latestBlockNumber = await ethClient.request(blockNumber());
-                    checkpoints.initialBlockNumber = Math.max(0, latestBlockNumber + this.startAt);
+                    checkpoints.initialBlockNumber = Math.max(0, latestBlockNumber + this.config.startAt);
                 } else {
-                    checkpoints.initialBlockNumber = this.startAt;
+                    checkpoints.initialBlockNumber = this.config.startAt;
                 }
-            } else if (this.startAt === 'genesis') {
+            } else if (this.config.startAt === 'genesis') {
                 checkpoints.initialBlockNumber = 0;
-            } else if (this.startAt === 'latest') {
+            } else if (this.config.startAt === 'latest') {
                 const latestBlockNumber = await ethClient.request(blockNumber());
                 checkpoints.initialBlockNumber = latestBlockNumber;
             } else {
-                throw new Error(`Invalid start block: ${JSON.stringify(this.startAt)}`);
+                throw new Error(`Invalid start block: ${JSON.stringify(this.config.startAt)}`);
             }
             info(
                 'Determined initial block number: %d from configured value %o',
                 checkpoints.initialBlockNumber,
-                this.startAt
+                this.config.startAt
             );
         }
 
@@ -164,25 +158,27 @@ export class BlockWatcher implements ManagedResource {
                         throw ABORT;
                     }
                     await parallel(
-                        chunkedBlockRanges(range, this.chunkSize, this.chunkQueueMaxSize).map(chunk => async () => {
-                            if (!this.active) {
-                                return;
+                        chunkedBlockRanges(range, this.config.blocksMaxChunkSize, this.chunkQueueMaxSize).map(
+                            chunk => async () => {
+                                if (!this.active) {
+                                    return;
+                                }
+                                await retry(() => this.processChunk(chunk), {
+                                    attempts: 100,
+                                    waitBetween: this.waitAfterFailure,
+                                    taskName: `block range ${serializeBlockRange(chunk)}`,
+                                    abortHandle: this.abortHandle,
+                                    warnOnError: true,
+                                    onRetry: attempt =>
+                                        warn(
+                                            'Retrying to process block range %s (attempt %d)',
+                                            serializeBlockRange(chunk),
+                                            attempt
+                                        ),
+                                });
                             }
-                            await retry(() => this.processChunk(chunk), {
-                                attempts: 100,
-                                waitBetween: this.waitAfterFailure,
-                                taskName: `block range ${serializeBlockRange(chunk)}`,
-                                abortHandle: this.abortHandle,
-                                warnOnError: true,
-                                onRetry: attempt =>
-                                    warn(
-                                        'Retrying to process block range %s (attempt %d)',
-                                        serializeBlockRange(chunk),
-                                        attempt
-                                    ),
-                            });
-                        }),
-                        { maxConcurrent: this.maxParallelChunks, abortHandle: this.abortHandle }
+                        ),
+                        { maxConcurrent: this.config.maxParallelChunks, abortHandle: this.abortHandle }
                     );
                     failures = 0;
                 }
@@ -200,7 +196,7 @@ export class BlockWatcher implements ManagedResource {
             }
             if (this.active) {
                 try {
-                    await this.abortHandle.race(sleep(this.pollInterval));
+                    await this.abortHandle.race(sleep(this.config.pollInterval));
                 } catch (e) {
                     if (e === ABORT) {
                         break;
@@ -300,9 +296,40 @@ export class BlockWatcher implements ManagedResource {
             contractAddresInfo = await this.lookupContractInfo(receipt.contractAddress);
         }
 
+        let privatePayload: PrivateTransactionPayload | undefined;
+        if (this.config.decryptPrivateTransactions) {
+            if (isEnterprisePlatform(this.nodePlatform)) {
+                if (this.nodePlatform.isPrivateTransaction(rawTx)) {
+                    debug('Retrieving decrypted private transaction input %o', {
+                        txHash: rawTx.hash,
+                        input: rawTx.input,
+                    });
+                    try {
+                        const input = await this.nodePlatform.getRawTransactionInput(rawTx.input, this.ethClient);
+                        debug('Successfully retrieved decrypted transaction payload %o', { input });
+                        privatePayload = { input };
+                    } catch (e) {
+                        error(
+                            'Failed to retrieve decrypted transaction payload %o',
+                            {
+                                txHash: rawTx.hash,
+                                input: rawTx.input,
+                            },
+                            e
+                        );
+                    }
+                }
+            } else {
+                warn(
+                    "Decryption of private transactions is enabled, but detected node type (%s) doesn't support it",
+                    this.nodePlatform.name
+                );
+            }
+        }
+
         let callInfo;
         if (this.abiRepo && toInfo && toInfo.isContract) {
-            callInfo = this.abiRepo.decodeFunctionCall(rawTx.input, {
+            callInfo = this.abiRepo.decodeFunctionCall(privatePayload?.input ?? rawTx.input, {
                 contractAddress: rawTx.to ?? undefined,
                 contractFingerprint: toInfo.fingerprint,
             });
@@ -321,7 +348,8 @@ export class BlockWatcher implements ManagedResource {
                     toAddressInfo(fromInfo),
                     toAddressInfo(toInfo),
                     toAddressInfo(contractAddresInfo),
-                    callInfo
+                    callInfo,
+                    privatePayload
                 ),
             },
             ...(await Promise.all(receipt?.logs?.map(l => this.processTransactionLog(l, blockTime)) ?? [])),
