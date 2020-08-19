@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.1.1...v2.2.0) (2020-08-19)
+
+
+### Features
+
+* 🎸 Support for Quorum private transaction payload ([a25aad9](https://github.com/splunk/splunk-connect-for-ethereum/commit/a25aad9fac293a7c073d3999a1d8c79d753f2f73))
+
 ## [2.1.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.1.0...v2.1.1) (2020-08-07)
 
 
