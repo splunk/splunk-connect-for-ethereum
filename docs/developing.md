@@ -17,16 +17,16 @@
 $ yarn install
 ```
 
-3. Run ethlogger
-
-```sh-session
-$ ./bin/run --help
-```
-
-### Build ethlogger
+3. Build
 
 ```sh-session
 $ yarn build
+```
+
+4. Run ethlogger
+
+```sh-session
+$ ./bin/run --help
 ```
 
 ### Build ethlogger docker image
