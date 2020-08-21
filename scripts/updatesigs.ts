@@ -124,6 +124,7 @@ function validateSignature(sig: string): boolean {
 const ABI_REPO_CONFIG = {
     decodeAnonymous: true,
     fingerprintContracts: false,
+    requireContractMatch: false,
     abiFileExtension: '.json',
 };
 
