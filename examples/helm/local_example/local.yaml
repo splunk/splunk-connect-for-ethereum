@@ -1,0 +1,9 @@
+# Splunk instance to contact:
+splunkHecURL: "https://splunk-splunk-kube:8088/services/collector"
+splunkToken: "12345678-ABCD-EFGH-IJKL-123456789012"
+# JSON-RPC endpoint to contact:
+ethRpcUrl: "http://geth:8545"
+# Allow self-signed certs:
+rejectInvalidCerts: false
+splunkHecRejectInvalidCerts: false
+ethRejectInvalidCerts: false

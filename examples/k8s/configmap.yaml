@@ -1,0 +1,38 @@
+---
+# Source: ethlogger/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: abis
+data:
+  example.json: |
+    [
+        {
+            "type": "function",
+            "name": "transfer",
+            "inputs": [
+                {
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ]
+        },
+        {
+            "type": "event",
+            "name": "TransferApproved",
+            "inputs": [
+                {
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ]
+        }
+    ]

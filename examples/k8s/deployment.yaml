@@ -1,0 +1,95 @@
+---
+# Source: ethlogger/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ethlogger
+  labels:
+    app.kubernetes.io/name: ethlogger
+    app.kubernetes.io/instance: ethlogger
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ethlogger
+      app.kubernetes.io/instance: ethlogger
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ethlogger
+        app.kubernetes.io/instance: ethlogger
+    spec:
+      serviceAccountName: ethlogger
+      securityContext:
+        {}
+      containers:
+        - name: ethlogger
+          securityContext:
+            {}
+          image: "splunkdlt/ethlogger:2.1.1"
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/abis
+              name: abis
+          env:
+            - name: COLLECT_BLOCKS
+              value: "true"
+            - name: COLLECT_NODE_METRICS
+              value: "true"
+            - name: COLLECT_NODE_INFO
+              value: "true"
+            - name: COLLECT_PENDING_TX
+              value: "false"
+            - name: COLLECT_PEER_INFO
+              value: "false"
+            - name: COLLECT_INTERNAL_METRICS
+              value: "true"
+            - name: SPLUNK_HEC_URL
+              value: ""
+            - name: SPLUNK_HEC_TOKEN
+              value: ""
+            - name: SPLUNK_HEC_REJECT_INVALID_CERTS
+              value: "true"
+
+            - name: SPLUNK_EVENTS_INDEX
+              value: "ledger_data"
+
+
+            - name: SPLUNK_METRICS_INDEX
+              value: "ledger_metrics"
+
+
+            - name: SPLUNK_INTERNAL_INDEX
+              value: "ethlogger_internals"
+
+
+
+
+            - name: ETH_RPC_URL
+              value: ""
+            - name: ETH_REJECT_INVALID_CERTS
+              value: "true"
+            - name: ABI_DIR
+              value: "/var/abis"
+            - name: START_AT_BLOCK
+              value: "latest"
+            - name: REJECT_INVALID_CERTS
+              value: "true"
+            - name: NETWORK_NAME
+              value: "dev"
+            - name: CHAIN_NAME
+              value: "dev"
+          livenessProbe:
+            exec:
+              command:
+                - ethlogger
+                - --health-check
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          resources:
+            {}
+      volumes:
+        - name: abis
+          configMap:
+              name: abis

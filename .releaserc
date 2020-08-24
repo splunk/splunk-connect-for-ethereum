@@ -5,6 +5,9 @@
         "@semantic-release/release-notes-generator",
         "@semantic-release/changelog",
         "@semantic-release/npm",
+        ["@semantic-release/exec", {
+            "prepareCmd": "yarn ts-node scripts/updatek8s.ts ${nextRelease.version}"
+        }],
         "@semantic-release/github",
         [
             "@semantic-release/git",

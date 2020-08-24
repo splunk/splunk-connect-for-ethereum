@@ -1,0 +1,30 @@
+[
+    {
+        "type": "function",
+        "name": "transfer",
+        "inputs": [
+            {
+                "name": "recipient",
+                "type": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            }
+        ]
+    },
+    {
+        "type": "event",
+        "name": "TransferApproved",
+        "inputs": [
+            {
+                "name": "recipient",
+                "type": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256"
+            }
+        ]
+    }
+]
