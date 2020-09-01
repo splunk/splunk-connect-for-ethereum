@@ -2,6 +2,8 @@ import { isValidAbiType } from './datatypes';
 import { AbiInput, AbiItemDefinition } from './item';
 import { parseEventSignature, parseFunctionSignature, sha3 } from './wasm';
 
+export type SignatureType = 'function' | 'event';
+
 const err = (msg: string): never => {
     throw new Error(msg);
 };
@@ -28,11 +30,11 @@ export function serializeEventSignature(abi: AbiItemDefinition): string {
     return `${abi.name}(${(abi.inputs ?? []).map(encodeParamWithIndexedFlag).join(',')})`;
 }
 
-export function parseSignature(signature: string, type: 'function' | 'event'): AbiItemDefinition {
+export function parseSignature(signature: string, type: SignatureType): AbiItemDefinition {
     return (type === 'event' ? parseEventSignature(signature) : parseFunctionSignature(signature)) as any;
 }
 
-export function computeSignatureHash(signature: string, type: 'event' | 'function'): string {
+export function computeSignatureHash(signature: string, type: SignatureType): string {
     const hash = sha3(signature);
     if (hash == null) {
         throw new Error(`NULL signature hash for signature ${signature}`);
@@ -41,7 +43,7 @@ export function computeSignatureHash(signature: string, type: 'event' | 'functio
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function validateSignature(signature: string, type: 'event' | 'function') {
+export function validateSignature(signature: string, type: SignatureType) {
     const parsed = parseSignature(signature, 'event');
     for (const input of parsed.inputs) {
         if (!isValidAbiType(input.type)) {

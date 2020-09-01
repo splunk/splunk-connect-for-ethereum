@@ -1,3 +1,5 @@
+import { SignatureType } from './signature';
+
 export type AbiType = 'function' | 'constructor' | 'event' | 'fallback';
 export type StateMutabilityType = 'pure' | 'view' | 'nonpayable' | 'payable';
 
@@ -32,7 +34,7 @@ export interface AbiOutput {
  */
 export interface AbiItemDefinition {
     name: string;
-    type: 'function' | 'event';
+    type: SignatureType;
     inputs: AbiInput[];
     contractName?: string;
     contractFingerprint?: string;

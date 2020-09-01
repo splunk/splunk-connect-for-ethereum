@@ -350,14 +350,13 @@ export class BlockWatcher implements ManagedResource {
             return;
         }
         const result = await cachedAsync(address, this.contractInfoCache, (addr: Address) =>
-            getContractInfo(
-                addr,
-                this.ethClient,
-                (sig: string) => abiRepo.getMatchingSignature(sig),
-                (address: string, fingerprint: string) =>
+            getContractInfo(addr, this.ethClient, {
+                detectProxy: false,
+                signatureMatcher: (sig: string) => abiRepo.getMatchingSignature(sig),
+                contractNameLookup: (address: string, fingerprint: string) =>
                     abiRepo.getContractByAddress(address)?.contractName ??
-                    abiRepo.getContractByFingerprint(fingerprint)?.contractName
-            )
+                    abiRepo.getContractByFingerprint(fingerprint)?.contractName,
+            })
         );
         return result;
     }

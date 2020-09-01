@@ -1,13 +1,13 @@
-import { readdir, readFile, stat, createReadStream } from 'fs-extra';
+import BufferList from 'bl';
+import { createReadStream, readdir, readFile, stat } from 'fs-extra';
 import { basename, join as joinPath, resolve } from 'path';
+import { createGunzip } from 'zlib';
 import { AbiRepositoryConfig } from '../config';
 import { Address } from '../msgs';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
-import { AbiItemDefinition, AbiItem } from './item';
 import { computeContractFingerprint } from './contract';
-import { computeSignature } from './signature';
-import { createGunzip } from 'zlib';
-import BufferList from 'bl';
+import { AbiItem, AbiItemDefinition } from './item';
+import { computeSignature, SignatureType } from './signature';
 
 const { debug, warn, trace } = createModuleDebug('abi:files');
 
@@ -22,7 +22,7 @@ interface TruffleBuild {
 }
 
 export interface SignatureFileContents {
-    type: 'function' | 'event';
+    type: SignatureType;
     entries: Array<[string, AbiItemDefinition[]]>;
 }
 
@@ -158,7 +158,7 @@ export function parseAbiFileContents(
             sig: item.sig,
             abi: {
                 name: item.abi.name!,
-                type: item.abi.type as 'function' | 'event',
+                type: item.abi.type as SignatureType,
                 inputs: item.abi.inputs ?? [],
                 contractName,
                 contractFingerprint,

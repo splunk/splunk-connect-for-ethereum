@@ -71,14 +71,13 @@ class Ethlogger extends Command {
                 const transport = new HttpTransport(config.eth.url, config.eth.http);
                 const client = new EthereumClient(transport);
 
-                const contractInfo = await getContractInfo(
-                    addr,
-                    client,
-                    (sig: string) => abiRepo.getMatchingSignature(sig),
-                    (address: string, fingerprint: string) =>
+                const contractInfo = await getContractInfo(addr, client, {
+                    signatureMatcher: (sig: string) => abiRepo.getMatchingSignature(sig),
+                    contractNameLookup: (address: string, fingerprint: string) =>
                         abiRepo.getContractByAddress(address)?.contractName ??
-                        abiRepo.getContractByFingerprint(fingerprint)?.contractName
-                );
+                        abiRepo.getContractByFingerprint(fingerprint)?.contractName,
+                    detectProxy: config.abi.detectProxyContracts,
+                });
 
                 info('Contract info: %O', contractInfo);
                 return;
@@ -91,7 +90,7 @@ class Ethlogger extends Command {
             // Run ethlogger until we receive ctrl+c or hit an unrecoverable error
             await Promise.race([this.startEthlogger(config), waitForSignal('SIGINT'), waitForSignal('SIGTERM')]);
 
-            info('Recieved signal, proceeding with shutdown sequence');
+            info('Received signal, proceeding with shutdown sequence');
             const cleanShutdown = await shutdownAll(this.resources, 10_000);
             info('Shutdown complete.');
             process.exit(cleanShutdown ? 0 : 2);

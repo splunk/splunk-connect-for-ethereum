@@ -3,16 +3,20 @@ import { getCode } from '../eth/requests';
 import { Address } from '../msgs';
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
 import { sha3 } from './wasm';
+import { ContractBytecode } from '../eth/evm';
+import { ProxyContractInfo, detectProxyContract } from '../eth/proxy';
 
 const { debug, trace } = createModuleDebug('abi:contract');
 
 export interface ContractInfo {
     /** True if the corresponding account is a smart contract, otherwise false */
     isContract: boolean;
-    /** A unqiue representation of all function and event signatures of a contract */
+    /** A unique representation of all function and event signatures of a contract */
     fingerprint?: string;
     /** Name of the contract from configured ABIs */
     contractName?: string;
+    /** Information  */
+    proxy?: ProxyContractInfo;
 }
 
 /** Lookup function to find matching signature for a hash */
@@ -26,25 +30,16 @@ export type ContractNameLookup = (address: Address, fingerprint: string) => stri
  * known hashes from configured ABIs
  */
 export function extractFunctionsAndEvents(
-    contractCode: string,
+    contractCode: ContractBytecode,
     signatureMatcher: SignatureMatcher
 ): { functions: string[]; events: string[] } | undefined {
     const functionMatches: Set<string> = new Set();
     const eventMatches: Set<string> = new Set();
-    const code = Buffer.from(contractCode.slice(2), 'hex');
-    for (let i = 0, len = code.length; i < len; i++) {
-        const opcode = code[i];
-        // Look for PUSH<n> opcodes - their pushData may contain a log topic or function signature hash
-        if (opcode >= 0x60 && opcode <= 0x7f) {
-            const dataLength = opcode - 0x5f;
-            if (dataLength === 32 || dataLength === 4) {
-                const data = code.slice(i + 1, i + dataLength + 1).toString('hex');
-                const match = signatureMatcher(data);
-                if (match) {
-                    (dataLength === 4 ? functionMatches : eventMatches).add(match);
-                }
-            }
-            i += dataLength;
+
+    for (const data of contractCode.getPossibleSignatureHashes()) {
+        const match = signatureMatcher(data);
+        if (match) {
+            (data.length === 8 ? functionMatches : eventMatches).add(match);
         }
     }
 
@@ -71,17 +66,25 @@ export function computeContractFingerprint(
 export async function getContractInfo(
     address: Address,
     ethClient: EthereumClient,
-    signatureMatcher?: SignatureMatcher,
-    contractNameLookup?: ContractNameLookup
+    {
+        detectProxy = false,
+        signatureMatcher,
+        contractNameLookup,
+    }: {
+        detectProxy?: boolean;
+        signatureMatcher?: SignatureMatcher;
+        contractNameLookup?: ContractNameLookup;
+    } = {}
 ): Promise<ContractInfo> {
     debug('Retrieving contract information for address %s', address);
-    const code = await ethClient.request(getCode(address));
-    if (code === '0x') {
+    const bytecode = await ethClient.request(getCode(address));
+    if (bytecode === '0x') {
         return { isContract: false };
     }
     if (signatureMatcher == null) {
         return { isContract: true };
     }
+    const code = new ContractBytecode(bytecode);
     const fnsEvts = extractFunctionsAndEvents(code, (fingerprint: string) => signatureMatcher(fingerprint, address));
     const fingerprint = computeContractFingerprint(fnsEvts);
     if (TRACE_ENABLED) {
@@ -89,9 +92,16 @@ export async function getContractInfo(
     }
     const contractName =
         fingerprint != null && contractNameLookup != null ? contractNameLookup(address, fingerprint) : undefined;
+
+    let proxy = undefined;
+    if (detectProxy) {
+        proxy = await detectProxyContract(address, code, ethClient);
+    }
+
     return {
         isContract: true,
         fingerprint,
         contractName,
+        proxy,
     };
 }

@@ -44,6 +44,42 @@ export const getCode = (address: string): EthRequest<[string, string], string> =
     params: [address, 'latest'],
 });
 
+// export const getLogs = (filter: {
+//     address?: string;
+//     fromBlock?: number | 'latest' | 'pending' | 'earliest';
+//     toBlock?: number | 'latest' | 'pending' | 'earliest';
+//     topics?: string[];
+// }): EthRequest<
+//     [
+//         {
+//             address?: string;
+//             fromBlock?: string;
+//             toBlock?: string;
+//             topics?: string[];
+//         }
+//     ],
+//     any
+// > => ({
+//     method: 'eth_getLogs',
+//     params: [
+//         {
+//             address: filter.address,
+//             topics: filter.topics,
+//             fromBlock: typeof filter.fromBlock === 'number' ? numberToHex(filter.fromBlock) : filter.fromBlock,
+//             toBlock: typeof filter.toBlock === 'number' ? numberToHex(filter.toBlock) : filter.toBlock,
+//         },
+//     ],
+// });
+
+export const getStorageAt = (
+    address: string,
+    storageIdx: string,
+    block?: number | 'latest'
+): EthRequest<[string, string, string], string> => ({
+    method: 'eth_getStorageAt',
+    params: [address, storageIdx, typeof block === 'number' ? numberToHex(block) : block || 'latest'],
+});
+
 export const pendingTransactions = (): EthRequest<[], RawTransactionResponse[]> => ({
     method: 'eth_pendingTransactions',
 });

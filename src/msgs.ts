@@ -132,6 +132,10 @@ export interface AddressInfo {
     isContract: boolean;
     /** Name of the smart contract by matching it against configured ABI information */
     contractName?: string;
+    /**  */
+    proxyType?: 'EIP-1822' | 'EIP-3212' | 'EIP-1231';
+    /** */
+    proxyTarget?: Address;
 }
 
 export interface FunctionCall {

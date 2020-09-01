@@ -164,6 +164,19 @@ export interface AbiRepositoryConfigSchema {
      * common signatures as a fallback if no match against any supplied ABI definition was found.
      */
     decodeAnonymous: boolean;
+    /**
+     * If enabled, ethlogger will attempt to detect proxy contracts determine the ABI match based
+     * on the implementation contract. Currently proxy contract detections looks for contracts
+     * adhereing to EIP-1167, EIP-1967 or EIP-1822.
+     *
+     * To determine proxy contracts details, ethlogger uses the the eth_getStorageAt RPC method,
+     * passing historic blocks to determine a previous storage state. It requires the RPC endpoint
+     * to be able to answer this request (typically an archive node, popular PRC providers often
+     * support this too).
+     *
+     * NOTE: This is experimental and may change in the future.
+     */
+    detectProxyContracts: boolean;
 }
 
 export type AbiRepositoryConfig = AbiRepositoryConfigSchema;
@@ -774,6 +787,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
             requireContractMatch: defaults.abi?.requireContractMatch ?? true,
             decodeAnonymous: defaults.abi?.decodeAnonymous ?? true,
+            detectProxyContracts: defaults.abi?.detectProxyContracts ?? false,
         },
         blockWatcher: {
             enabled:

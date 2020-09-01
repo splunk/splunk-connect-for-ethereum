@@ -3,8 +3,14 @@ import { createWriteStream, readFile } from 'fs-extra';
 import { createGzip } from 'zlib';
 import { getInputSize } from '../src/abi/decode';
 import { AbiItemDefinition } from '../src/abi/item';
-import { computeSignatureHash, parseSignature, validateSignature, computeSignature } from '../src/abi/signature';
 import { sortAbis } from '../src/abi/repo';
+import {
+    computeSignature,
+    computeSignatureHash,
+    parseSignature,
+    SignatureType,
+    validateSignature,
+} from '../src/abi/signature';
 
 const debug = createDebug('buildsigs');
 debug.enabled = true;
@@ -21,7 +27,7 @@ async function readSignatureFile(file: string): Promise<Iterable<string>> {
     return allSignatures;
 }
 
-async function buildSignatureFile(sourceFile: string, destFile: string, type: 'function' | 'event') {
+async function buildSignatureFile(sourceFile: string, destFile: string, type: SignatureType) {
     const fns = await readSignatureFile(sourceFile);
     const sigHashMap = new Map<string, string[]>();
     let invalidCount = 0;
