@@ -164,6 +164,12 @@ export interface AbiRepositoryConfigSchema {
      * common signatures as a fallback if no match against any supplied ABI definition was found.
      */
     decodeAnonymous: boolean;
+    /**
+     * If enabled, ethlogger will attempt to reconcile the shape of struct definitions from decoded tuples
+     * data if the ABI definition contains names for each of the tuple components. This basically turns
+     * the decoded array into an key-value map, where the keys are the names from the ABI definition.
+     */
+    reconcileStructShapeFromTuples: boolean;
 }
 
 export type AbiRepositoryConfig = AbiRepositoryConfigSchema;
@@ -779,6 +785,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
             requireContractMatch: defaults.abi?.requireContractMatch ?? true,
             decodeAnonymous: defaults.abi?.decodeAnonymous ?? true,
+            reconcileStructShapeFromTuples: defaults.abi?.reconcileStructShapeFromTuples ?? false,
         },
         blockWatcher: {
             enabled:

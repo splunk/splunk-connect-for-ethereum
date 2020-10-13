@@ -9,6 +9,7 @@ test('extractFunctionsAndEvents', async () => {
         fingerprintContracts: true,
         abiFileExtension: '.json',
         requireContractMatch: true,
+        reconcileStructShapeFromTuples: false,
     };
     const abis = new AbiRepository(config);
     await abis.loadAbiFile(join(__dirname, '../abis/BCB.json'), config);

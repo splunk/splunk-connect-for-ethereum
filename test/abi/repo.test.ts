@@ -20,6 +20,7 @@ test('AbiRepository#decodeFunctionCall', async () => {
         directory: join(__dirname, '../abis'),
         searchRecursive: true,
         requireContractMatch: true,
+        reconcileStructShapeFromTuples: false,
     });
 
     await abiRepo.initialize();
@@ -127,6 +128,7 @@ test('AbiRepository#decodeLogEvent', async () => {
         directory: join(__dirname, '../abis'),
         searchRecursive: true,
         requireContractMatch: true,
+        reconcileStructShapeFromTuples: false,
     });
     await abiRepo.initialize();
 
@@ -185,6 +187,7 @@ test('decode anonymous with collision', async () => {
         decodeAnonymous: true,
         fingerprintContracts: false,
         requireContractMatch: true,
+        reconcileStructShapeFromTuples: false,
     });
     await abiRepo.initialize();
 

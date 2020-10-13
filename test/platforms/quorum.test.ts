@@ -35,6 +35,7 @@ test('decrypt private transaction', async () => {
                 decodeAnonymous: false,
                 fingerprintContracts: false,
                 requireContractMatch: false,
+                reconcileStructShapeFromTuples: false,
             });
 
             abiRepo.addAbi({
