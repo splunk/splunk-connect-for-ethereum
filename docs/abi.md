@@ -101,7 +101,7 @@ For cases where we can find a match with beweteen a deployed contract and a supp
 If anonymous ABI encoding is enabled (which it is by default), then this reduced amount of informataion is emitted. In addition to the ABIs supplied by the user, ethlogger ships with a standard set of function and event signatures that are compliled from from external sources:
 
 -   https://github.com/MrLuit/evm
--   https://4byte.directory
+-   https://www.4byte.directory
 
 Compiled lists can be found here:
 
