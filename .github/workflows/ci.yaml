@@ -6,7 +6,7 @@ jobs:
     build:
         runs-on: ubuntu-latest
         container:
-            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            image: splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f
         steps:
             - uses: actions/checkout@v2
             - name: Build ethlogger CLI
@@ -16,7 +16,7 @@ jobs:
     docker-image:
         runs-on: ubuntu-latest
         container:
-            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            image: splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f
         steps:
             - uses: actions/checkout@v2
             - name: Build docker image
@@ -32,7 +32,7 @@ jobs:
     unit-tests:
         runs-on: ubuntu-latest
         container:
-            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            image: splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f
         steps:
             - uses: actions/checkout@v2
             - name: Run unit tests and linter
@@ -45,7 +45,7 @@ jobs:
     check-format:
         runs-on: ubuntu-latest
         container:
-            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            image: splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f
         steps:
             - uses: actions/checkout@v2
             - name: Check code format
@@ -57,7 +57,7 @@ jobs:
     check-generated-files:
         runs-on: ubuntu-latest
         container:
-            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            image: splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f
         steps:
             - uses: actions/checkout@v2
             - name: Check if generated files are up-to-date
@@ -72,7 +72,7 @@ jobs:
     trigger-release:
         runs-on: ubuntu-latest
         container:
-            image: splunkdlt/scfe-ci@sha256:f3af6d7d65d2c5d67bfbba4d0029b7a9a6cdd15a2170a442aec765a6cffdaa49
+            image: splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f
         needs:
             - build
             - docker-image
