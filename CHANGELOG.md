@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.2.0...v2.2.1) (2020-11-12)
+
+
+### Bug Fixes
+
+* 🐛 properly decode tuple values in call/event inputs ([28edb0b](https://github.com/splunk/splunk-connect-for-ethereum/commit/28edb0b5000be33f8f8fec6c30ed53d28960ac0a))
+
 # [2.2.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.1.1...v2.2.0) (2020-08-19)
 
 
