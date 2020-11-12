@@ -36,6 +36,7 @@ test('blockwatcher', async () => {
                 directory: join(__dirname, './abis'),
                 searchRecursive: true,
                 requireContractMatch: true,
+                reconcileStructShapeFromTuples: false,
             });
             await abiRepo.initialize();
             const checkpoints = new Checkpoint({

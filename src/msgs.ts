@@ -1,3 +1,4 @@
+import { DecodedStruct } from './abi/decode';
 import { GethPeer } from './eth/responses';
 
 export type Address = string;
@@ -153,13 +154,13 @@ export interface FunctionCall {
         /** Data type */
         type: string;
         /** Decoded value */
-        value: Value;
+        value: Value | DecodedStruct;
     }>;
     /**
      * A map of parameter names and their decoded value.
      * Omitted if the function call was decoded anonymously
      */
-    args?: { [name: string]: Value };
+    args?: { [name: string]: Value | DecodedStruct };
 }
 
 export interface TransactionMessage {
@@ -211,10 +212,10 @@ export interface EventData {
         /** Data type */
         type: string;
         /** Decoded value */
-        value: Value;
+        value: Value | DecodedStruct;
     }>;
     /** A map of parameter names and their decoded value. Omitted if decoded anonymously */
-    args?: { [name: string]: Value };
+    args?: { [name: string]: Value | DecodedStruct };
 }
 
 export interface LogEventMessage {

@@ -36,6 +36,7 @@ test(`mainnet overflow ${BLOCK}`, async () => {
                 abiFileExtension: '.json',
                 searchRecursive: true,
                 requireContractMatch: true,
+                reconcileStructShapeFromTuples: false,
             });
             await abiRepo.initialize();
             const checkpoints = new Checkpoint({

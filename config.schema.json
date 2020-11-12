@@ -20,6 +20,10 @@
                     "description": "If enabled, the ABI repository will creates hashes of all function and event signatures of an ABI\n(the hash is the fingerprint) and match it against the EVM bytecode obtained from live smart contracts\nwe encounter.",
                     "type": "boolean"
                 },
+                "reconcileStructShapeFromTuples": {
+                    "description": "If enabled, ethlogger will attempt to reconcile the shape of struct definitions from decoded tuples\ndata if the ABI definition contains names for each of the tuple components. This basically turns\nthe decoded array into an key-value map, where the keys are the names from the ABI definition.",
+                    "type": "boolean"
+                },
                 "requireContractMatch": {
                     "description": "If enabled, signature matches will be treated as anonymous (parameter names will be omitted from\nthe output) if a contract cannot be tied to an ABI definition via either a fingerprint match,\nor a contract address match (when the ABI file includes the address of the deployed contract).\nEnabled by default. Setting this to `false` will output parameter names for any matching signature.",
                     "type": "boolean"

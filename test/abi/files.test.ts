@@ -8,6 +8,7 @@ describe('loadAbiFile', () => {
             fingerprintContracts: true,
             directory: join(__dirname, '../abis'),
             requireContractMatch: true,
+            reconcileStructShapeFromTuples: false,
         });
 
         expect(result).toMatchSnapshot();
@@ -20,6 +21,7 @@ describe('loadAbiFile', () => {
                 fingerprintContracts: true,
                 directory: join(__dirname, '..'),
                 requireContractMatch: true,
+                reconcileStructShapeFromTuples: false,
             })
         ).resolves.toMatchSnapshot();
     });

@@ -255,7 +255,9 @@ export class AbiRepository implements ManagedResource {
 
     public decodeFunctionCall(data: string, matchParams: AbiMatchParams): DecodedFunctionCall | undefined {
         const sigHash = data.slice(2, 10);
-        return this.abiDecode(sigHash, matchParams, (abi, anon) => decodeBestMatchingFunctionCall(data, abi, anon));
+        return this.abiDecode(sigHash, matchParams, (abi, anon) =>
+            decodeBestMatchingFunctionCall(data, abi, anon, this.config.reconcileStructShapeFromTuples)
+        );
     }
 
     public decodeLogEvent(logEvent: RawLogResponse, matchParams: AbiMatchParams): DecodedLogEvent | undefined {
@@ -272,7 +274,9 @@ export class AbiRepository implements ManagedResource {
         const sigHash = logEvent.topics[0].slice(2);
         const { data, topics } = logEvent;
 
-        return this.abiDecode(sigHash, matchParams, (abi, anon) => decodeBestMatchingLogEvent(data, topics, abi, anon));
+        return this.abiDecode(sigHash, matchParams, (abi, anon) =>
+            decodeBestMatchingLogEvent(data, topics, abi, anon, this.config.reconcileStructShapeFromTuples)
+        );
     }
 
     public async shutdown() {
