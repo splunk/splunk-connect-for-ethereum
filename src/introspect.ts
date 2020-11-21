@@ -6,6 +6,7 @@ import { GenericNodeAdapter } from './platforms/generic';
 import { GethAdapter } from './platforms/geth';
 import { ParityAdapter } from './platforms/parity';
 import { QuorumAdapter } from './platforms/quorum';
+import { BesuAdapter } from './platforms/besu';
 import { retry, linearBackoff } from './utils/retry';
 
 const { debug, info, warn, error } = createModuleDebug('introspect');
@@ -25,6 +26,9 @@ export function createNodeAdapter(version: string, chain?: string, network?: str
     if (version.startsWith('Parity//') || version.startsWith('Parity-Ethereum//')) {
         debug('Detected parity node');
         return new ParityAdapter(version, chain, network);
+    } else if (version.includes('besu')) {
+        debug('Detected besu node');
+        return new BesuAdapter(version, chain, network);
     }
     debug('No specific support for given node type, falling bakc to generic adapter');
     return new GenericNodeAdapter(version, chain, network);
