@@ -26,7 +26,7 @@ export function createNodeAdapter(version: string, chain?: string, network?: str
     if (version.startsWith('Parity//') || version.startsWith('Parity-Ethereum//')) {
         debug('Detected parity node');
         return new ParityAdapter(version, chain, network);
-    } else if (version.includes('besu')) {
+    } else if (version.startsWith('besu')) {
         debug('Detected besu node');
         return new BesuAdapter(version, chain, network);
     }
