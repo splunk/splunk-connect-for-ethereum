@@ -9,17 +9,14 @@ import {
     to_checksum_address,
 } from '../../wasm/ethabi/pkg';
 import { memory } from '../../wasm/ethabi/pkg/ethlogger_ethabi_bg';
+import { RuntimeError } from '../utils/error';
 import { AbiType } from './datatypes';
 import { AbiItem } from './item';
 
 export type ScalarValue = string | number | boolean;
 export type Value = ScalarValue | ScalarValue[];
 
-class EthAbiError extends Error {
-    constructor(msg: string) {
-        super(msg);
-    }
-}
+class EthAbiError extends RuntimeError {}
 
 function unwrapJsResult<T>(result: any): T {
     if (result.t === 'Ok') {
