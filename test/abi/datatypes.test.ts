@@ -14,7 +14,7 @@ test('isValidAbiType', () => {
     expect(isValidAbiType('string')).toBe(true);
     expect(isValidAbiType('function')).toBe(false);
     expect(isValidAbiType('bytes')).toBe(true);
-    expect(isValidAbiType('string[]')).toBe(false);
+    expect(isValidAbiType('string[]')).toBe(true);
 });
 
 test('getDataSize', () => {
@@ -70,8 +70,6 @@ test('getDataSize', () => {
     expect(() => getDataSize('foo')).toThrowErrorMatchingInlineSnapshot(`"Invalid name \`foo\`"`);
     expect(() => getDataSize('uint13')).toThrowErrorMatchingInlineSnapshot(`"Invalid type: uint13"`);
     expect(() => getDataSize('int10000')).toThrowErrorMatchingInlineSnapshot(`"Invalid type: int10000"`);
-    expect(() => getDataSize('string[]')).toThrowErrorMatchingInlineSnapshot(`"Invalid type: string[]"`);
-    expect(() => getDataSize('bytes[]')).toThrowErrorMatchingInlineSnapshot(`"Invalid type: bytes[]"`);
 });
 
 describe('encodeInputType', () => {
