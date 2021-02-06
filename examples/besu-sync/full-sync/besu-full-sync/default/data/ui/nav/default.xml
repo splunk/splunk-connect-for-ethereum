@@ -1,0 +1,5 @@
+<nav search_view="search">
+  <view name="search" default='true' />
+  <view name="analytics_workspace" />
+  <view name="sync" />
+</nav>

@@ -1,0 +1,351 @@
+<form theme="dark">
+    <label>Fast Sync</label>
+    <fieldset submitButton="false">
+        <input type="time" searchWhenChanged="true" token="global_time_tok">
+            <label>Time Range</label>
+            <default>
+                <earliest>-24h</earliest>
+                <latest>now</latest>
+            </default>
+        </input>
+        <input type="dropdown">
+            <label>Time Span</label>
+            <choice value="auto">auto</choice>
+            <choice value="5s">5s</choice>
+            <choice value="10s">10s</choice>
+            <choice value="30s">30s</choice>
+            <choice value="1m">1m</choice>
+            <choice value="5m">5m</choice>
+            <choice value="10m">10m</choice>
+            <choice value="30m">30m</choice>
+            <choice value="1h">1h</choice>
+            <default>auto</default>
+            <change>
+                <eval token="timechart_span">if($value$ == "auto", "", "span=".$value$)</eval>
+                <eval token="mstats_span">"span=".$value$</eval>
+            </change>
+        </input>
+    </fieldset>
+    <row>
+        <panel>
+            <title>Syncing</title>
+            <single>
+                <search>
+                    <query>| mstats latest("in_sync") AS "val" WHERE "index"="metrics"
+                        | eval Syncing=if(val=="0", "In Progress", "Done")
+                        | table "Syncing"</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                </search>
+                <option name="displayview">analytics_workspace</option>
+                <option name="drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </single>
+        </panel>
+        <panel>
+            <title>Fast Sync Time</title>
+            <table>
+                <search>
+                    <query>index="logs" sourcetype="besu" "chain segment 1 to"
+                        | head 1
+                        | rename time AS Start
+                        | join end
+                        [ search index="logs" sourcetype="besu" "Fast sync completed successfully"
+                        | head 1
+                        | rename time AS End]
+                        | eval Duration=tostring(End - Start, "duration")
+                        | stats latest(Duration) AS "Fast Sync Time"</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </table>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Highest block number</title>
+            <single>
+                <title>Highest block number</title>
+                <search>
+                    <query>| mstats max("eth.blockNumber") prestats=true WHERE "index"="metrics" $mstats_span$
+                        | timechart max("eth.blockNumber") AS "Block number" $timechart_span$
+                        | fields - _span*</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                </search>
+                <option name="displayview">analytics_workspace</option>
+                <option name="drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </single>
+        </panel>
+        <panel>
+            <title>Peer count</title>
+            <single>
+                <search>
+                    <query>| mstats avg("peer_count") prestats=true WHERE "index"="metrics" $mstats_span$
+                        | timechart avg("peer_count") AS "peers" $timechart_span$
+                        | fields - _span*</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                </search>
+                <option name="displayview">analytics_workspace</option>
+                <option name="drilldown">none</option>
+                <option name="refresh.display">progressbar</option>
+            </single>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Operation duration</title>
+            <table>
+                <search>
+                    <query>index="traces" kind="SPAN_KIND_INTERNAL" parent_span_id=""
+                        | fields kind name start_time end_time
+                        | eval nanos=(end_time - start_time)
+                        | eval duration = nanos/1e6
+                        | stats avg(duration) as AvgDuration by name
+                        | eval "Duration (ms)"=round(AvgDuration,2)
+                        | sort by "Duration (ms)" desc
+                        | fields - AvgDuration</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="count">20</option>
+                <option name="dataOverlayMode">none</option>
+                <option name="drilldown">none</option>
+                <option name="percentagesRow">false</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="rowNumbers">false</option>
+                <option name="totalsRow">false</option>
+                <option name="wrap">true</option>
+            </table>
+        </panel>
+        <panel>
+            <title>Logs</title>
+            <chart>
+                <search>
+                    <query>index="logs" sourcetype=besu | fields severity | timechart count(severity) $timechart_span$ by severity</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">collapsed</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">area</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+        <panel>
+            <title>Loggers</title>
+            <chart>
+                <search>
+                    <query>index="logs" sourcetype=besu | stats count by logger</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">visible</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">pie</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Process block time</title>
+            <chart>
+                <search>
+                    <query>index="traces" processBlock  | spath name  | search name="processBlock"| eval duration=(end_time - start_time)/1e6 | bucket _time $timechart_span$ | timechart avg(duration) As duration</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">collapsed</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="refresh.display">progressbar</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+        <panel>
+            <title>JSON-RPC response time</title>
+            <chart>
+                <search>
+                    <query>index="traces" kind="SPAN_KIND_SERVER" |  fields kind name start_time end_time | eval nanos=(end_time - start_time) | eval duration = (nanos/1e6) | bucket _time $timechart_span$ | stats avg(duration) by _time</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                    <sampleRatio>1</sampleRatio>
+                </search>
+                <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+                <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+                <option name="charting.axisTitleX.visibility">collapsed</option>
+                <option name="charting.axisTitleY.visibility">visible</option>
+                <option name="charting.axisTitleY2.visibility">visible</option>
+                <option name="charting.axisX.abbreviation">none</option>
+                <option name="charting.axisX.scale">linear</option>
+                <option name="charting.axisY.abbreviation">none</option>
+                <option name="charting.axisY.scale">linear</option>
+                <option name="charting.axisY2.abbreviation">none</option>
+                <option name="charting.axisY2.enabled">0</option>
+                <option name="charting.axisY2.scale">inherit</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.bubbleMaximumSize">50</option>
+                <option name="charting.chart.bubbleMinimumSize">10</option>
+                <option name="charting.chart.bubbleSizeBy">area</option>
+                <option name="charting.chart.nullValueMode">gaps</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+                <option name="charting.chart.stackMode">default</option>
+                <option name="charting.chart.style">shiny</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.layout.splitSeries">0</option>
+                <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+                <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+                <option name="charting.legend.mode">standard</option>
+                <option name="charting.legend.placement">right</option>
+                <option name="charting.lineWidth">2</option>
+                <option name="trellis.enabled">0</option>
+                <option name="trellis.scales.shared">1</option>
+                <option name="trellis.size">medium</option>
+            </chart>
+        </panel>
+    </row>
+    <row>
+        <panel>
+            <title>Total connection attempts</title>
+            <chart>
+                <search>
+                    <query>| mstats avg("connected_total") prestats=true WHERE "index"="metrics" $mstats_span$
+                        | timechart avg("connected_total") AS "Connections" $timechart_span$
+                        | fields - _span*</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                </search>
+                <option name="charting.axisTitleX.visibility">collapsed</option>
+                <option name="charting.axisY.abbreviation">auto</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.nullValueMode">connect</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.fieldColors">{"Avg":"#1e93c6"}</option>
+                <option name="charting.fieldDashStyles">{"Avg":"solid"}</option>
+                <option name="charting.gridLinesX.showMajorLines">1</option>
+                <option name="charting.legend.mode">seriesCompare</option>
+                <option name="displayview">analytics_workspace</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+        <panel>
+            <title>Current inflight discovery interactions</title>
+            <chart>
+                <search>
+                    <query>| mstats avg("discovery_inflight_interactions_current") prestats=true WHERE "index"="metrics" $mstats_span$
+                        | timechart avg("discovery_inflight_interactions_current") AS Inflight $timechart_span$
+                        | fields - _span*</query>
+                    <earliest>$global_time_tok.earliest$</earliest>
+                    <latest>$global_time_tok.latest$</latest>
+                </search>
+                <option name="charting.axisTitleX.visibility">collapsed</option>
+                <option name="charting.axisY.abbreviation">auto</option>
+                <option name="charting.chart">line</option>
+                <option name="charting.chart.nullValueMode">connect</option>
+                <option name="charting.chart.showDataLabels">none</option>
+                <option name="charting.drilldown">none</option>
+                <option name="charting.fieldColors">{"Avg":"#1e93c6"}</option>
+                <option name="charting.fieldDashStyles">{"Avg":"solid"}</option>
+                <option name="charting.gridLinesX.showMajorLines">1</option>
+                <option name="charting.legend.mode">seriesCompare</option>
+                <option name="displayview">analytics_workspace</option>
+                <option name="refresh.display">progressbar</option>
+            </chart>
+        </panel>
+    </row>
+</form>
