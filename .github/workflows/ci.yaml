@@ -22,13 +22,14 @@ jobs:
             - name: Build docker image
               run: docker build -t ethlogger .
             - name: Login to docker registry
-              run: docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
+              run: docker login ghcr.io -u $GHCR_USER -p $GHCR_PAT
               env:
-                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+                  GHCR_USER: ${{secrets.GHCR_USER}}
+                  GHCR_PAT: ${{secrets.GHCR_PAT}}
             - name: Publish docker image
               run: |
-                  docker tag ethlogger docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
-                  docker push docker.pkg.github.com/$GITHUB_REPOSITORY/ethlogger:$GITHUB_SHA
+                  docker tag ethlogger ghcr.io/splunkdlt/ethlogger:commit-$GITHUB_SHA
+                  docker push ghcr.io/splunkdlt/ethlogger:commit-$GITHUB_SHA
     unit-tests:
         runs-on: ubuntu-latest
         container:

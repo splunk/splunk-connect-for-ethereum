@@ -11,6 +11,8 @@ RUN yarn build
 # MAIN IMAGE
 FROM node:12.16-alpine
 
+LABEL org.opencontainers.image.source https://github.com/splunk/splunk-connect-for-ethereum
+
 WORKDIR /ethlogger
 
 COPY --from=builder /ethlogger/package.json /ethlogger/yarn.lock /ethlogger/
