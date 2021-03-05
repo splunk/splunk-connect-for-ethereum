@@ -27,7 +27,7 @@ spec:
         - name: ethlogger
           securityContext:
             {}
-          image: "splunkdlt/ethlogger:2.1.1"
+          image: "ghcr.io/splunkdlt/ethlogger:2.3.0"
           imagePullPolicy: IfNotPresent
           volumeMounts:
             - mountPath: /var/abis
