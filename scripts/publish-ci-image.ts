@@ -3,7 +3,7 @@ import execa from 'execa';
 import { join } from 'path';
 import { readFile, writeFile } from 'fs-extra';
 
-const IMAGE = 'splunkdlt/scfe-ci';
+const IMAGE = 'ghcr.io/splunkdlt/connect-ci';
 
 const getImageWithSha = async (img: string): Promise<string> => {
     const { stdout } = await execa('docker', ['inspect', '--format={{index .RepoDigests 0}}', img]);
@@ -12,7 +12,7 @@ const getImageWithSha = async (img: string): Promise<string> => {
 
 const replaceImageInFile = async (filePath: string, img: string) => {
     const contents = await readFile(filePath, { encoding: 'utf-8' });
-    const updatedContents = contents.replace(/splunkdlt\/scfe-ci@sha256:\w+/g, img);
+    const updatedContents = contents.replace(/(ghcr\.io\/)?splunkdlt\/(scfe-ci|connect-ci)@sha256:\w+/g, img);
     if (updatedContents !== contents) {
         console.log(`Replaced docker image reference in file ${filePath}`);
         await writeFile(filePath, updatedContents, { encoding: 'utf-8' });

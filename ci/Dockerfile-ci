@@ -1,5 +1,8 @@
 FROM ubuntu:18.04
 
+LABEL org.opencontainers.image.source https://github.com/splunk/splunk-connect-for-ethereum
+LABEL org.opencontainers.image.description "Image used for builds in CI of connector packages"
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl ca-certificates software-properties-common build-essential apt-transport-https docker.io \
     && add-apt-repository ppa:git-core/ppa \
@@ -13,7 +16,7 @@ RUN apt-get update \
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
 # Install node + yarn
-RUN curl https://nodejs.org/dist/v12.16.1/node-v12.16.1-linux-x64.tar.gz | tar -xzf - -C /usr/local --strip-components=1 --no-same-owner \
+RUN curl https://nodejs.org/dist/v14.16.0/node-v14.16.0-linux-x64.tar.gz | tar -xzf - -C /usr/local --strip-components=1 --no-same-owner \
     && node --version \
     && npm --version \
     && npm i -g yarn \
@@ -23,7 +26,7 @@ RUN curl https://nodejs.org/dist/v12.16.1/node-v12.16.1-linux-x64.tar.gz | tar -
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
-    RUST_VERSION=1.41.0
+    RUST_VERSION=1.50.0
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 RUN rustup target add wasm32-unknown-unknown
 RUN curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh

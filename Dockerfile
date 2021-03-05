@@ -1,4 +1,4 @@
-FROM splunkdlt/scfe-ci@sha256:b141249cf9221b76f05f98c87c015c8494673d0a4a8d15a93b97b117c9a1323f as builder
+FROM ghcr.io/splunkdlt/connect-ci@sha256:10e6353d1bedecfb5a0100053ad0f0def1d2437e9ef79d0c3404ee877db5cad8 as builder
 
 WORKDIR /ethlogger
 
@@ -9,7 +9,7 @@ COPY . ./
 RUN yarn build
 
 # MAIN IMAGE
-FROM node:12.16-alpine
+FROM node:14.16-alpine
 
 LABEL org.opencontainers.image.source https://github.com/splunk/splunk-connect-for-ethereum
 
