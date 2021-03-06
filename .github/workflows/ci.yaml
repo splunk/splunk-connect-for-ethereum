@@ -25,7 +25,7 @@ jobs:
             - name: Pull latest pre-release image
               run: docker pull ghcr.io/splunkdlt/ethlogger-pre:latest
             - name: Build docker image
-              run: docker build -t ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA . --cache-from ghcr.io/splunkdlt/ethlogger-pre:latest
+              run: docker build --build-arg ETHLOGGER_GIT_COMMIT=$GITHUB_SHA -t ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA . --cache-from ghcr.io/splunkdlt/ethlogger-pre:latest
             - name: Publish docker image
               run: docker push ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA
             - name: Publish docker image

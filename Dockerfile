@@ -32,4 +32,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 CMD ethlo
 ENV NODE_ENV production
 ENV NODE_OPTS --max-old-size=4096
 
+ARG ETHLOGGER_GIT_COMMIT="n/a"
+ENV ETHLOGGER_GIT_COMMIT $ETHLOGGER_GIT_COMMIT
+
 ENTRYPOINT [ "ethlogger" ]

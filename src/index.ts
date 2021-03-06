@@ -25,12 +25,18 @@ import { InternalStatsCollector } from './utils/stats';
 const { debug, error, info } = createModuleDebug('cli');
 
 class Ethlogger extends Command {
-    static description = 'Splunk Connect for Ethereum';
+    static description =
+        'Ethlogger is an agent to gather metrics and blockchain information from an Ethereum node ' +
+        'and ingest it in Splunk via its HTTP Event Collector. It is part of Splunk Connect for Ethereum.';
+    static usage = '--rpc-url=<rpc-url> [options]';
     static flags = CLI_FLAGS;
 
     private resources: ManagedResource[] = [];
 
     async run() {
+        if (process.env.ETHLOGGER_GIT_COMMIT != null) {
+            this.config.userAgent = `${this.config.userAgent} git-sha=${process.env.ETHLOGGER_GIT_COMMIT}`;
+        }
         const { flags } = this.parse(Ethlogger);
 
         if (flags.debug) {
