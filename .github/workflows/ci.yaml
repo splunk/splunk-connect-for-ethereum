@@ -15,21 +15,24 @@ jobs:
                   yarn build
     docker-image:
         runs-on: ubuntu-latest
-        container:
-            image: ghcr.io/splunkdlt/connect-ci@sha256:10e6353d1bedecfb5a0100053ad0f0def1d2437e9ef79d0c3404ee877db5cad8
         steps:
             - uses: actions/checkout@v2
-            - name: Build docker image
-              run: docker build -t ethlogger .
             - name: Login to docker registry
               run: docker login ghcr.io -u $GHCR_USER -p $GHCR_PAT
               env:
                   GHCR_USER: ${{secrets.GHCR_USER}}
                   GHCR_PAT: ${{secrets.GHCR_PAT}}
+            - name: Pull latest pre-release image
+              run: docker pull ghcr.io/splunkdlt/ethlogger-pre:latest
+            - name: Build docker image
+              run: docker build -t ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA . --cache-from ghcr.io/splunkdlt/ethlogger-pre:latest
             - name: Publish docker image
+              run: docker push ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA
+            - name: Publish docker image
+              if: github.ref == 'refs/heads/master'
               run: |
-                  docker tag ethlogger ghcr.io/splunkdlt/ethlogger:commit-$GITHUB_SHA
-                  docker push ghcr.io/splunkdlt/ethlogger:commit-$GITHUB_SHA
+                  docker tag ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA ghcr.io/splunkdlt/ethlogger-pre:latest
+                  docker push ghcr.io/splunkdlt/ethlogger-pre:latest
     unit-tests:
         runs-on: ubuntu-latest
         container:
