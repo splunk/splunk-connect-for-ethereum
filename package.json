@@ -1,6 +1,6 @@
 {
-    "name": "@splunk/splunk-connect-for-ethereum",
-    "description": "Splunk Connect for Ethereum",
+    "name": "@splunkdlt/ethlogger",
+    "description": "Agent to gather information from an Ethereum node - part of Splunk Connect for Ethereum",
     "version": "2.3.0",
     "author": "Splunk",
     "bin": {

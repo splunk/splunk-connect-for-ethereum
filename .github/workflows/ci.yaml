@@ -17,22 +17,15 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - name: Login to docker registry
-              run: docker login ghcr.io -u $GHCR_USER -p $GHCR_PAT
-              env:
-                  GHCR_USER: ${{secrets.GHCR_USER}}
-                  GHCR_PAT: ${{secrets.GHCR_PAT}}
-            - name: Pull latest pre-release image
-              run: docker pull ghcr.io/splunkdlt/ethlogger-pre:latest
-            - name: Build docker image
-              run: docker build --build-arg ETHLOGGER_GIT_COMMIT=$GITHUB_SHA -t ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA . --cache-from ghcr.io/splunkdlt/ethlogger-pre:latest
-            - name: Publish docker image
-              run: docker push ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA
-            - name: Publish docker image
-              if: github.ref == 'refs/heads/master'
-              run: |
-                  docker tag ghcr.io/splunkdlt/ethlogger-pre:commit-$GITHUB_SHA ghcr.io/splunkdlt/ethlogger-pre:latest
-                  docker push ghcr.io/splunkdlt/ethlogger-pre:latest
+            - uses: splunkdlt/dlt-connect-libs/actions/build-publish-container@actions
+              with:
+                  publish-type: pre-release
+                  ghcr-org: splunkdlt
+                  ghcr-release-name: ethlogger
+                  ghcr-prerelease-name: ethlogger-pre
+                  ghcr-user: ${{ secrets.GHCR_USER }}
+                  ghcr-pat: ${{ secrets.GHCR_PAT }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
     unit-tests:
         runs-on: ubuntu-latest
         container:
@@ -92,9 +85,5 @@ jobs:
               run: |
                   yarn install --frozen-lockfile
                   yarn semantic-release
-                  docker login docker.pkg.github.com -u $GITHUB_ACTOR -p $GITHUB_TOKEN
-                  yarn ts-node scripts/postrelease.ts
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
