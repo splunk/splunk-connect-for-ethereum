@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: splunkdlt/ethlogger
-  version: 2.1.1
+  repository: ghcr.io/splunkdlt/ethlogger
+  version: 2.3.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

@@ -7,10 +7,10 @@ The ethlogger CLI tool is used to start and configure connections to the blockch
 <!-- CLIREF -->
 
 ```
-Splunk Connect for Ethereum
+Ethlogger is an agent to gather metrics and blockchain information from an Ethereum node and ingest it in Splunk via its HTTP Event Collector. It is part of Splunk Connect for Ethereum.
 
 USAGE
-  $ ethlogger
+  $ ethlogger --rpc-url=<rpc-url> [options]
 
 OPTIONS
   -c, --config-file=config-file

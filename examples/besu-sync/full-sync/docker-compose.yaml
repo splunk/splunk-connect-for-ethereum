@@ -42,7 +42,7 @@ services:
             - SPLUNK_ACCESS_TOKEN=$SPLUNK_ACCESS_TOKEN
             - SPLUNK_REALM=$SPLUNK_REALM
     ethlogger:
-        image: splunkdlt/ethlogger:latest
+        image: ghcr.io/splunkdlt/ethlogger:latest
         container_name: ethlogger
         environment:
             - COLLECT_PEER_INFO=true

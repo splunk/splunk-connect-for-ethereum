@@ -22,7 +22,7 @@ services:
             - /opt/splunk/var
             - /opt/splunk/etc
     ethlogger:
-        image: splunkdlt/ethlogger:latest
+        image: ghcr.io/splunkdlt/ethlogger:latest
         container_name: ethlogger
         environment:
             - ETH_RPC_URL=https://dai.poa.network

@@ -38,7 +38,7 @@ services:
                 ipv4_address: 172.25.0.100
 
     ethlogger:
-        image: splunkdlt/ethlogger:latest
+        image: ghcr.io/splunkdlt/ethlogger:latest
         container_name: ethlogger
         environment:
             - COLLECT_PEER_INFO=true
