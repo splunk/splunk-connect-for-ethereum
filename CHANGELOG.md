@@ -1,3 +1,10 @@
+# [2.4.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.3.0...v2.4.0) (2021-03-24)
+
+
+### Features
+
+* 🎸 Exposing git commit SHA in --version output ([e2ca052](https://github.com/splunk/splunk-connect-for-ethereum/commit/e2ca05262cd27dd5e0fa26f07fb38230df49b4c6))
+
 # [2.3.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.2.1...v2.3.0) (2020-11-24)
 
 
