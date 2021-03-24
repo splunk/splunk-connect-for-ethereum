@@ -17,12 +17,12 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - uses: splunkdlt/dlt-connect-libs/actions/build-publish-container@actions
+            - uses: splunkdlt/dlt-connect-libs/actions/build-publish-container@main
               with:
                   publish-type: pre-release
                   ghcr-org: splunkdlt
                   ghcr-release-name: ethlogger
-                  ghcr-prerelease-name: ethlogger-pre
+                  ghcr-pre-release-name: ethlogger-pre
                   ghcr-user: ${{ secrets.GHCR_USER }}
                   ghcr-pat: ${{ secrets.GHCR_PAT }}
                   github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -86,4 +86,4 @@ jobs:
                   yarn install --frozen-lockfile
                   yarn semantic-release
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.RELEASE_GH_TOKEN }}
