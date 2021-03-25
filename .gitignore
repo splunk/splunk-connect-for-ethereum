@@ -17,3 +17,4 @@ data/*.abisigs*
 /coverage
 .env
 /examples/helm/local_example/.kubeconfig
+/test/abi/testcases/local
