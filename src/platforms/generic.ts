@@ -99,7 +99,10 @@ export async function fetchDefaultNodeInfo(ethClient: EthereumClient): Promise<D
     const [networkId, chainIdResult, protocol] = await Promise.all([
         ethClient.request(netVersion()),
         ethClient.request(chainId()),
-        ethClient.request(protocolVersion()),
+        ethClient.request(protocolVersion()).catch(e => {
+            warn('Ethereum node failed to respond to protocol version request', e);
+            return -1;
+        }),
     ]);
     return { networkId, chainId: chainIdResult, protocolVersion: protocol };
 }
