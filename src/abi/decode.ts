@@ -1,10 +1,13 @@
 import { createModuleDebug, TRACE_ENABLED } from '../utils/debug';
-import { DataSize, getDataSize, isArrayType } from './datatypes';
-import { AbiItemDefinition, AbiInput } from './item';
-import { computeSignature, encodeParam } from './signature';
+import { RuntimeError } from '../utils/error';
+import { DataSize, encodeInputType, getDataSize, isArrayType, isTuple, isTupleArray } from './datatypes';
+import { AbiInput, AbiItemDefinition } from './item';
+import { computeSignature } from './signature';
 import { abiDecodeParameters, Value } from './wasm';
 
 const { trace } = createModuleDebug('abi:decode');
+
+export class DecodeError extends RuntimeError {}
 
 export interface DecodedParameter {
     name?: string;
@@ -29,34 +32,26 @@ export interface DecodedLogEvent {
 export function getInputSize(abi: AbiItemDefinition): DataSize {
     try {
         return abi.inputs
-            .map(input => getDataSize(encodeParam(input)))
+            .map(input => getDataSize(encodeInputType(input)))
             .reduce((total, cur) => ({ length: total.length + cur.length, exact: total.exact && cur.exact }), {
                 length: 0,
                 exact: true,
             });
     } catch (e) {
-        throw new Error(`Failed to determine input size for ${computeSignature(abi)}: ${e.message}`);
+        throw new DecodeError(`Failed to determine input size for ${computeSignature(abi)}: ${e.message}`);
     }
 }
 
-export const isTuple = (inputDef: AbiInput): boolean => inputDef.type === 'tuple';
-
-export const encodeInputType = (inputDef: AbiInput): string =>
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    isTuple(inputDef) ? encodeTupleInputType(inputDef) : inputDef.type;
-
-export function encodeTupleInputType(itemDef: AbiInput): string {
-    if (!itemDef.components?.length) {
-        // invalid tuple definition without component types
-        return 'tuple';
-    }
-    const serializedComponentTypes = itemDef.components.map(c => encodeInputType(c)).join(',');
-    return `(${serializedComponentTypes})`;
-}
-
-export type DecodedStruct = { [k: string]: Value | DecodedStruct };
+export type DecodedStruct = { [k: string]: Value | DecodedStruct } | DecodedStruct[];
 
 export function reconcileStructFromDecodedTuple(decodedTuple: Value[], inputDef: AbiInput): DecodedStruct | null {
+    if (isTupleArray(inputDef) && Array.isArray(decodedTuple)) {
+        const arrayElementInputDef = { ...inputDef, type: 'tuple' };
+        return decodedTuple
+            .filter(v => Array.isArray(v))
+            .map(v => reconcileStructFromDecodedTuple(v as Value[], arrayElementInputDef))
+            .filter(v => v != null) as DecodedStruct;
+    }
     if (!inputDef.components?.length || !Array.isArray(decodedTuple)) {
         return null;
     }
@@ -187,7 +182,7 @@ export function decodeBestMatchingFunctionCall(
         }
     }
 
-    throw lastError ?? new Error('Unable to decode');
+    throw lastError ?? new DecodeError('Unable to decode');
 }
 
 export function decodeLogEvent(
@@ -217,7 +212,7 @@ export function decodeLogEvent(
             } else {
                 const rawValue = topics[topicIndex++];
                 if (rawValue == null) {
-                    throw new Error(
+                    throw new DecodeError(
                         `Expected data in topic index=${topicIndex - 1}, but topics length is ${topics.length}`
                     );
                 }
@@ -270,5 +265,5 @@ export function decodeBestMatchingLogEvent(
             }
         }
     }
-    throw lastError ?? new Error('Unable to decode log event');
+    throw lastError ?? new DecodeError('Unable to decode log event');
 }

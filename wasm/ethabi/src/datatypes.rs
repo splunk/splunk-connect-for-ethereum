@@ -11,10 +11,7 @@ pub fn is_valid_param_type(param_type: &ParamType) -> bool {
         Uint(bits) => bits > 0 && bits <= 256 && bits % 8 == 0,
         FixedBytes(bytes) => bytes > 0 && bytes <= 32,
         FixedArray(el, n) => n > 0 && is_valid_param_type(&*el),
-        Array(el) => match *el {
-            ParamType::String | Bytes => false,
-            _ => is_valid_param_type(&*el),
-        },
+        Array(el) => is_valid_param_type(&*el),
         _ => true,
     }
 }
@@ -174,6 +171,7 @@ mod tests {
 
     #[test]
     fn test_parse_param_type() {
+        assert!(parse_param_type(&String::from("string[]")).is_ok());
         assert_eq!(
             parse_param_type(&"(uint8,bool)".to_string()).unwrap(),
             ParamType::Tuple(vec![
@@ -183,6 +181,9 @@ mod tests {
         );
         assert!(
             parse_param_type(&"((address,((uint256,address),(uint8,bytes32,bytes32)),(uint256,uint256,address,(uint8,bytes32,bytes32)),(uint256,uint256,address,(uint8,bytes32,bytes32)),(address,address,uint256,address,uint256,address,address,uint256,address,uint256,address,uint256,address,uint256,uint256,address,bytes32,uint256,uint256,(uint8,bytes32,bytes32),(uint8,bytes32,bytes32),(uint8,bytes32,bytes32))))".to_string()).is_ok()
+        );
+        assert!(
+            parse_param_type(&"(string,string,string,string,string,uint256,uint256,uint256,uint256,uint256,uint256,uint256,string,string,uint256,string[],uint256,string[],(string,string,string))".to_string()).is_ok()
         );
     }
 }

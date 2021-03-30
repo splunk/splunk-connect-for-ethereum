@@ -8,8 +8,11 @@ import { computeContractFingerprint } from './contract';
 import { computeSignature } from './signature';
 import { createGunzip } from 'zlib';
 import BufferList from 'bl';
+import { RuntimeError } from '../utils/error';
 
 const { debug, warn, trace } = createModuleDebug('abi:files');
+
+export class AbiError extends RuntimeError {}
 
 interface TruffleBuild {
     contractName: string;
@@ -45,7 +48,7 @@ export function extractDeployedContractAddresses(truffleBuild: TruffleBuild): Ad
 export async function* searchAbiFiles(dir: string, config: AbiRepositoryConfig): AsyncIterable<string> {
     debug('Searching for ABI files in %s', dir);
     const dirContents = await readdir(dir).catch(e =>
-        Promise.reject(new Error(`Failed to load ABIs from directory ${dir}: ${e}`))
+        Promise.reject(new AbiError(`Failed to load ABIs from directory ${dir}: ${e}`))
     );
     dirContents.sort();
     const subdirs = [];
@@ -116,7 +119,7 @@ export function parseAbiFileContents(
         abis = abiData;
         contractName = basename(fileName).split('.', 1)[0];
     } else {
-        throw new Error(`Invalid contents of ABI file ${fileName}`);
+        throw new AbiError(`Invalid contents of ABI file ${fileName}`);
     }
 
     const entries = abis

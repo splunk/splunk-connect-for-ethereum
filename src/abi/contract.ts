@@ -9,7 +9,7 @@ const { debug, trace } = createModuleDebug('abi:contract');
 export interface ContractInfo {
     /** True if the corresponding account is a smart contract, otherwise false */
     isContract: boolean;
-    /** A unqiue representation of all function and event signatures of a contract */
+    /** A unique representation of all function and event signatures of a contract */
     fingerprint?: string;
     /** Name of the contract from configured ABIs */
     contractName?: string;

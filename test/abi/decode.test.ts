@@ -1,28 +1,74 @@
-import { getInputSize } from '../../src/abi/decode';
-import { loadSignatureFile } from '../../src/abi/files';
+import { reconcileStructFromDecodedTuple } from '../../src/abi/decode';
 
-test('getInputSize for all anonymous signatures', async () => {
-    const sigs = await loadSignatureFile('data/fns.abisigs.gz');
-    for (const abis of sigs.entries.map(i => i[1])) {
-        for (const abi of abis) {
-            expect(() => getInputSize(abi)).not.toThrow();
-        }
-    }
+describe('reconcileStructFromDecodedTuple', () => {
+    it('reconciles struct from tuple', () => {
+        expect(
+            reconcileStructFromDecodedTuple(['foo', 'bar', 123], {
+                name: 'foo',
+                type: 'tuple',
+                components: [
+                    {
+                        name: 'a',
+                        type: 'string',
+                    },
+                    {
+                        name: 'b',
+                        type: 'string',
+                    },
+                    {
+                        name: 'c',
+                        type: 'uint256',
+                    },
+                ],
+            })
+        ).toMatchInlineSnapshot(`
+            Object {
+              "a": "foo",
+              "b": "bar",
+              "c": 123,
+            }
+        `);
+    });
 
-    // TODO: Add check we're prioritizing signatures in our anonymous db properely
-
-    // const collisions = sigs.entries.filter(([sig, items]) => items.length > 1);
-    // console.log(
-    //     collisions
-    //         .map(
-    //             ([sig, items]) =>
-    //                 '--> ' +
-    //                 sig +
-    //                 '\n' +
-    //                 sortAbis(items)
-    //                     .map(i => '\t' + computeSignature(i) + ' - ' + JSON.stringify(getInputSize(i)))
-    //                     .join('\n')
-    //         )
-    //         .join('\n\n')
-    // );
+    it('reconciles array of struct from tuple array', () => {
+        expect(
+            reconcileStructFromDecodedTuple(
+                [
+                    ['foo', 'bar', 123],
+                    ['baz', 'bing', 456],
+                ],
+                {
+                    name: 'foo',
+                    type: 'tuple[]',
+                    components: [
+                        {
+                            name: 'a',
+                            type: 'string',
+                        },
+                        {
+                            name: 'b',
+                            type: 'string',
+                        },
+                        {
+                            name: 'c',
+                            type: 'uint256',
+                        },
+                    ],
+                }
+            )
+        ).toMatchInlineSnapshot(`
+            Array [
+              Object {
+                "a": "foo",
+                "b": "bar",
+                "c": 123,
+              },
+              Object {
+                "a": "baz",
+                "b": "bing",
+                "c": 456,
+              },
+            ]
+        `);
+    });
 });

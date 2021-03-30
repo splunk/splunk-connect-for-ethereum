@@ -4,14 +4,14 @@ export function removeEmtpyValues<R extends { [k: string]: any }, I extends { [P
     return Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null)) as R;
 }
 
-export function prefixKeys<T extends { [k: string]: any }>(obj: T, prefix?: string | null, removeEmtpy?: boolean): T {
+export function prefixKeys<T extends { [k: string]: any }>(obj: T, prefix?: string | null, removeEmpty?: boolean): T {
     if (prefix == null || prefix === '') {
-        return removeEmtpy ? removeEmtpyValues(obj) : obj;
+        return removeEmpty ? removeEmtpyValues(obj) : obj;
     }
     const entries = Object.entries(obj);
     return Object.fromEntries(
-        (removeEmtpy ? entries.filter(([, v]) => v != null) : entries).map(([k, v]) => [prefix + k, v])
-    );
+        (removeEmpty ? entries.filter(([, v]) => v != null) : entries).map(([k, v]) => [prefix + k, v])
+    ) as T;
 }
 
 /**

@@ -785,7 +785,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             fingerprintContracts: defaults.abi?.fingerprintContracts ?? true,
             requireContractMatch: defaults.abi?.requireContractMatch ?? true,
             decodeAnonymous: defaults.abi?.decodeAnonymous ?? true,
-            reconcileStructShapeFromTuples: defaults.abi?.reconcileStructShapeFromTuples ?? false,
+            reconcileStructShapeFromTuples: defaults.abi?.reconcileStructShapeFromTuples ?? true,
         },
         blockWatcher: {
             enabled:
