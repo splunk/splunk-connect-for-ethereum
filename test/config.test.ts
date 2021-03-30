@@ -15,7 +15,7 @@ test('defaults', async () => {
                     "decodeAnonymous": true,
                     "directory": undefined,
                     "fingerprintContracts": true,
-                    "reconcileStructShapeFromTuples": false,
+                    "reconcileStructShapeFromTuples": true,
                     "requireContractMatch": true,
                   },
                   "blockWatcher": Object {

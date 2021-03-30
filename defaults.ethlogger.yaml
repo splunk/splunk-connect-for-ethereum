@@ -65,7 +65,7 @@ abi:
     fingerprintContracts: true
     requireContractMatch: true
     decodeAnonymous: true
-    reconcileStructShapeFromTuples: false
+    reconcileStructShapeFromTuples: true
 contractInfo:
     maxCacheEntries: 25000
 blockWatcher:
