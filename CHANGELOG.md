@@ -1,3 +1,25 @@
+# [3.0.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.4.0...v3.0.0) (2021-03-30)
+
+
+### Bug Fixes
+
+* 🐛 compatibility with nodes not supporting eth_protocolVersion ([256c4d9](https://github.com/splunk/splunk-connect-for-ethereum/commit/256c4d94c9ce269f63c0eaa7c216613e7accc98d))
+* 🐛 Parsing error of certain parameter data types ([504e482](https://github.com/splunk/splunk-connect-for-ethereum/commit/504e482f43f7792ca2f5bfc40b85c3cb382b3456))
+
+
+### Features
+
+* 🎸 ABI decoding of tuple arrays ([cbf3ecf](https://github.com/splunk/splunk-connect-for-ethereum/commit/cbf3ecfcb9386be157d43571f54aa839bb7dfdba))
+* 🎸 enable reconciliation of struct data by default ([90e57e0](https://github.com/splunk/splunk-connect-for-ethereum/commit/90e57e08cc77ae77ae836a3263cd097024cc4b77))
+
+
+### BREAKING CHANGES
+
+* Output of decoded transactions and events may look
+different with the change of the default behavior. Set
+`reconcileStructShapeFromTuples` to false in ethlogger.yaml to restore
+the behavior of previous versions.
+
 # [2.4.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.3.0...v2.4.0) (2021-03-24)
 
 
