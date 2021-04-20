@@ -86,7 +86,7 @@ Truffle build files can have information about which network and contract addres
 
 ## Contract Fingerprinting
 
-One challenge that can occur when decoding ABI information is overlapping signatures. Imagine 2 smart contracts both exposing a function with the signature `transfer(address,uint256)`. For one contract the second argument may refer to an amount of currency being transferred (eg. `transfer(to address, amount uint256)`) and for another contract the second argument refers to the ID of a non-fungible item (eg. `transfer(to address, tokenId uint256)`). Given the nature of ABI encoding, both functions end up having the same signature and it's ambiguous for the ABI decoder which one to choose, unless the smart contract can be associated with the ABI definition (if the ABI definiton contains the contract address).
+One challenge that can occur when decoding ABI information is overlapping signatures. Imagine 2 smart contracts both exposing a function with the signature `transfer(address,uint256)`. For one contract the second argument may refer to an amount of currency being transferred (eg. `transfer(to address, amount uint256)`) and for another contract the second argument refers to the ID of a non-fungible item (eg. `transfer(to address, tokenId uint256)`). Given the nature of ABI encoding, both functions end up having the same signature and it's ambiguous for the ABI decoder which one to choose, unless the smart contract can be associated with the ABI definition (if the ABI definition contains the contract address).
 
 It would be nice, to be able to decode any instance of a smart contract, like an ERC20 and not having to enumerate all the address the contract has been deployed to.
 
@@ -96,12 +96,12 @@ Fingerprinting is enabled by default and can be disabled in the [ethlogger confi
 
 ## Anonymous ABI decoding
 
-For cases where we can find a match with beweteen a deployed contract and a supplied ABI definition, but do have a match for the function or event signature hash, we can emit the reduced amount of information we can derive from the signature alone (the function/event name, the parameter data types and values, but not the parameter names or the contract name).
+For cases where we can find a match with between a deployed contract and a supplied ABI definition, but do have a match for the function or event signature hash, we can emit the reduced amount of information we can derive from the signature alone (the function/event name, the parameter data types and values, but not the parameter names or the contract name).
 
-If anonymous ABI encoding is enabled (which it is by default), then this reduced amount of informataion is emitted. In addition to the ABIs supplied by the user, ethlogger ships with a standard set of function and event signatures that are compliled from from external sources:
+If anonymous ABI encoding is enabled (which it is by default), then this reduced amount of information is emitted. In addition to the ABIs supplied by the user, ethlogger ships with a standard set of function and event signatures that are compiled from from external sources:
 
 -   https://github.com/MrLuit/evm
--   https://4byte.directory
+-   https://www.4byte.directory/
 
 Compiled lists can be found here:
 
