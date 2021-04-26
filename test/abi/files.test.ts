@@ -25,4 +25,16 @@ describe('loadAbiFile', () => {
             })
         ).resolves.toMatchSnapshot();
     });
+
+    it('loads EventEmitter.json', async () => {
+        await expect(
+            loadAbiFile(join(__dirname, '../abis/EventEmitter.json'), {
+                decodeAnonymous: false,
+                fingerprintContracts: true,
+                directory: join(__dirname, '..'),
+                requireContractMatch: true,
+                reconcileStructShapeFromTuples: false,
+            })
+        ).resolves.toMatchSnapshot();
+    });
 });

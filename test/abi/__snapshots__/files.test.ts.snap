@@ -1,5 +1,79 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`loadAbiFile loads EventEmitter.json 1`] = `
+Object {
+  "contractAddress": undefined,
+  "contractFingerprint": "a9e90fbc1bf47877d0dd918a13af663585b3290b93c0cd53b0869705ae1137c3",
+  "contractName": "EventEmitter",
+  "entries": Array [
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "a9e90fbc1bf47877d0dd918a13af663585b3290b93c0cd53b0869705ae1137c3",
+        "contractName": "EventEmitter",
+        "inputs": Array [
+          Object {
+            "indexed": false,
+            "internalType": "address",
+            "name": "_to",
+            "type": "address",
+          },
+          Object {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256",
+          },
+        ],
+        "name": "stored",
+        "type": "event",
+      },
+      "sig": "stored(address,uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "a9e90fbc1bf47877d0dd918a13af663585b3290b93c0cd53b0869705ae1137c3",
+        "contractName": "EventEmitter",
+        "inputs": Array [],
+        "name": "sender",
+        "type": "function",
+      },
+      "sig": "sender()",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "a9e90fbc1bf47877d0dd918a13af663585b3290b93c0cd53b0869705ae1137c3",
+        "contractName": "EventEmitter",
+        "inputs": Array [
+          Object {
+            "internalType": "uint256",
+            "name": "_amount",
+            "type": "uint256",
+          },
+        ],
+        "name": "store",
+        "type": "function",
+      },
+      "sig": "store(uint256)",
+    },
+    Object {
+      "abi": Object {
+        "contractAddress": undefined,
+        "contractFingerprint": "a9e90fbc1bf47877d0dd918a13af663585b3290b93c0cd53b0869705ae1137c3",
+        "contractName": "EventEmitter",
+        "inputs": Array [],
+        "name": "value",
+        "type": "function",
+      },
+      "sig": "value()",
+    },
+  ],
+  "fileName": "abis/EventEmitter.json",
+}
+`;
+
 exports[`loadAbiFile loads raw ABI file 1`] = `
 Object {
   "contractAddress": undefined,
