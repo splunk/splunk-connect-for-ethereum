@@ -50,11 +50,11 @@ There is also an example on how to run [ethlogger in docker-compose](./examples/
 
 There's a lot of information available via RPC on Ethereum nodes, but they need to be enabled via the command line on startup for `ethlogger` to connect. See the relevant docs for:
 
--   [Geth and Quorum Docs](https://github.com/ethereum/go-ethereum/wiki/Management-APIs) or you can turn it all on: `--rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3`
--   Quorum Specific Endpoints: `--rpcapi quorum,istanbul,raft` (note: only one of `istanbul` or `raft` is active depending on the consensus method)
--   Geth and Quorum: ensure that the host `ethlogger` is running on is whitelisted in the `--rpcvhosts` cli setting.
--   [Parity Endpoints](https://wiki.parity.io/JSONRPC): note that the command line flag is `--jsonrpc-apis APIs`
--   [Besu Endpoints](https://besu.hyperledger.org/en/stable/HowTo/Interact/APIs/Using-JSON-RPC-API/) or you can turn on: `--rpc-http-enabled --rpc-ws-enabled --rpc-http-api admin,eth,debug,miner,net,txpool,priv,trace,web3`
+-   [Geth and Quorum Docs](https://geth.ethereum.org/docs/rpc/server) or you can turn it all on: `--http.api admin,db,eth,debug,miner,net,shh,txpool,personal,web3`
+-   Quorum Specific Endpoints: `--http.api quorum,istanbul,raft` (note: only one of `istanbul` or `raft` is active depending on the consensus method)
+-   Geth and Quorum: ensure that the host `ethlogger` is running on is whitelisted in the `--http.vhosts` cli setting.
+-   [OpenEthereum (Parity) Endpoints](https://openethereum.github.io/JSONRPC): note that the command line flag is `--jsonrpc-apis APIs`
+-   [Besu Endpoints](https://besu.hyperledger.org/en/stable/HowTo/Interact/APIs/Using-JSON-RPC-API/) or you can turn on: `--rpc-http-enabled --rpc-http-api admin,eth,debug,miner,net,txpool,priv,trace,web3`
 
 ## Contributing
 
