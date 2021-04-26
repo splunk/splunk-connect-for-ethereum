@@ -147,6 +147,15 @@ test('chunkedBlockRanges', () => {
           },
         ]
     `);
+
+    expect(chunkedBlockRanges({ from: 1, to: 30 }, 1, 1)).toMatchInlineSnapshot(`
+        Array [
+          Object {
+            "from": 1,
+            "to": 1,
+          },
+        ]
+    `);
 });
 
 test('blockRangeSize', () => {

@@ -64,7 +64,6 @@ test('blockwatcher', async () => {
                 },
                 ethClient,
                 output,
-                chunkQueueMaxSize: 10,
                 contractInfoCache,
                 waitAfterFailure: 1,
                 nodePlatform: MOCK_NODE_ADAPTER,

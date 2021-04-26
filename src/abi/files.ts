@@ -29,12 +29,16 @@ export interface SignatureFileContents {
     entries: Array<[string, AbiItemDefinition[]]>;
 }
 
+export function isAbiItem(obj: any): obj is AbiItem {
+    return typeof obj.type === 'string';
+}
+
 export function isAbiItemArray(obj: any): obj is AbiItem[] {
-    return Array.isArray(obj);
+    return Array.isArray(obj) && obj.every(isAbiItem);
 }
 
 export function isTruffleBuildFile(obj: any): obj is TruffleBuild {
-    return typeof obj === 'object' && typeof obj.contractName === 'string' && Array.isArray(obj.abi);
+    return typeof obj === 'object' && isAbiItemArray(obj.abi);
 }
 
 export function extractDeployedContractAddresses(truffleBuild: TruffleBuild): Address[] | undefined {
