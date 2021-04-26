@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.0.0...v3.0.1) (2021-04-26)
+
+
+### Bug Fixes
+
+* 🐛 accept truffle-style ABI files without contractName ([e2f3e28](https://github.com/splunk/splunk-connect-for-ethereum/commit/e2f3e28e1cac024ea09abac523ab891187ff8e7c))
+
 # [3.0.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v2.4.0...v3.0.0) (2021-03-30)
 
 
