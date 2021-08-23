@@ -22,9 +22,11 @@ $ docker-compose up -d
 ## Note
 
 > This example is not meant to be used in a production setup.
-> Splunk and ethlogger persist data using local volumes. If you would like to start clean run the following.
+> Using the logging driver to log to a container in the same docker-compose stack shouldn't be used in production.
+> Splunk and ethlogger persist data using local volumes and a checkpoints file. If blocks are no longer being ingested, or if you want to change the blockchain you are using, you should clear this state. To start clean, run the following.
 
 ```sh-session
 $ docker-compose down
+$ rm checkpoints.json
 $ docker volume prune
 ```
