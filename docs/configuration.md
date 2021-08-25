@@ -308,13 +308,13 @@ A duration in ethlogger's config can be specified either as as a `number` or a `
 
 Wait time expresses how long to wait between retry attempts based on the number of attempts made so far.
 
-| Type                                      | Description                                         |
-| ----------------------------------------- | --------------------------------------------------- |
-| [`Duration`](#Duration)                   | Absolute and static time to wait after each attempt |
-| [`ExponentalBackoff`](#ExponentalBackoff) | Exponentially increasing wait time with randomness  |
-| [`LinearBackoff`](#LinearBackoff)         | Linear increasing wait time                         |
+| Type                                        | Description                                         |
+| ------------------------------------------- | --------------------------------------------------- |
+| [`Duration`](#Duration)                     | Absolute and static time to wait after each attempt |
+| [`ExponentialBackoff`](#ExponentialBackoff) | Exponentially increasing wait time with randomness  |
+| [`LinearBackoff`](#LinearBackoff)           | Linear increasing wait time                         |
 
-### ExponentalBackoff
+### ExponentialBackoff
 
 Exponentially increasing wait time with randomness. The wait time will be a random number between `min` and 2<sup>attempts</sup> (up to `max`) after each attempt.
 
