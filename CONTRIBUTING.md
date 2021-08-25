@@ -109,4 +109,4 @@ We could always use improvements to our documentation! Anyone can contribute to 
 2. More examples or generic templates that others can use.
 3. Blog posts, articles and such – they’re all very appreciated.
 
-You can also edit documentation files directly in the GitHub web interface, without creating a local copy. This can be convenient for small typos or grammer fixes.
+You can also edit documentation files directly in the GitHub web interface, without creating a local copy. This can be convenient for small typos or grammar fixes.
