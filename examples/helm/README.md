@@ -8,7 +8,7 @@ This chart will deploy the Splunk Connect For Ethereum ethlogger tool as a pod o
 It is designed to connect to one Ethereum client.
 
 See [the
-docs](https://github.com/splunk/splunk-connect-for-ethereum/tree/master/docs)
+docs](https://github.com/splunk/splunk-connect-for-ethereum/tree/main/docs)
 for more information on how ethlogger works.
 
 ## Configuration

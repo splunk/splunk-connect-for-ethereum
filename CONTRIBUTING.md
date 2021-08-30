@@ -76,7 +76,7 @@ If you want to learn more, please consult this [tutorial on how pull requests wo
 Here's an overview of how you can make a pull request against this project:
 
 1. Fork the [Splunk Connect for Ethereum GitHub repository](https://github.com/splunk/splunk-connect-for-ethereum)
-2. Clone your fork using git and create a branch off master
+2. Clone your fork using git and create a branch off main
 3. Run all the tests to verify your environment
 4. Make your changes, commit and push once your tests have passed
 5. Submit a pull request through the GitHub website using the changes from your forked codebase
