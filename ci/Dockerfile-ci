@@ -13,7 +13,7 @@ RUN apt-get update \
     && apt-get clean
 
 # Install helm
-RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 # Install node + yarn
 RUN curl https://nodejs.org/dist/v14.16.0/node-v14.16.0-linux-x64.tar.gz | tar -xzf - -C /usr/local --strip-components=1 --no-same-owner \
