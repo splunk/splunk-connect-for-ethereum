@@ -15,7 +15,7 @@ describe('retry', () => {
 
         await expect(p).rejects.toMatchInlineSnapshot(`[Error: nope]`);
         expect(tried).toBe(5);
-        expect(Date.now() - startTime).toBeGreaterThanOrEqual(5);
+        expect(Date.now() - startTime).toBeGreaterThanOrEqual(4);
         expect(Date.now() - startTime).toBeLessThan(100);
     });
 
@@ -36,7 +36,7 @@ describe('retry', () => {
 
         await expect(p).resolves.toMatchInlineSnapshot(`"RESULT"`);
         expect(tried).toBe(5);
-        expect(Date.now() - startTime).toBeGreaterThanOrEqual(5);
+        expect(Date.now() - startTime).toBeGreaterThanOrEqual(4);
         expect(Date.now() - startTime).toBeLessThan(100);
     });
 
