@@ -117,6 +117,11 @@ export const CLI_FLAGS = {
         env: 'ETH_RPC_URL',
         description: 'URL to reach the target ethereum node. Supported format is currently only HTTP(s) for JSON RPC',
     }),
+    'eth-rpc-proxy': flags.string({
+        env: 'ETH_RPC_PROXY',
+        description:
+            'Optional proxy URL required to reach the target ethereum node. Supported format is HTTP/HTTPS. Note: this disables internal httpClient stats',
+    }),
     'eth-reject-invalid-certs': flags.boolean({
         allowNo: true,
         env: 'ETH_REJECT_INVALID_CERTS',

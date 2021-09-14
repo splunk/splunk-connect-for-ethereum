@@ -42,6 +42,7 @@ test('defaults', async () => {
                     },
                     "http": Object {
                       "maxSockets": 256,
+                      "proxyUrl": undefined,
                       "requestKeepAlive": true,
                       "timeout": 60000,
                       "validateCertificate": true,

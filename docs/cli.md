@@ -61,6 +61,10 @@ OPTIONS
       Disable to allow ethereum client to connect to HTTPS without rejecting
       invalid (self-signed) certificates
 
+  --eth-rpc-proxy=eth-rpc-proxy
+      Optional proxy URL required to reach the target ethereum node. Supported
+      format is HTTP/HTTPS. Note: this disables internal httpClient stats
+
   --eth-rpc-url=eth-rpc-url
       URL to reach the target ethereum node. Supported format is currently only
       HTTP(s) for JSON RPC
@@ -147,6 +151,7 @@ OPTIONS
 | `SPLUNK_METRICS_HEC_TOKEN`        | `string`  | HEC token to use for sending metrics. You can alternatively configure different indexes to correctly route your data                                                                     |
 | `SPLUNK_INTERNAL_HEC_TOKEN`       | `string`  | HEC token to use for sending internal metrics. You can alternatively configure different indexes to correctly route your data                                                            |
 | `ETH_RPC_URL`                     | `string`  | URL to reach the target ethereum node. Supported format is currently only HTTP(s) for JSON RPC                                                                                           |
+| `ETH_RPC_PROXY`                   | `string`  | Optional proxy URL required to reach the target ethereum node. Supported format is HTTP/HTTPS. Note: this disables internal httpClient stats                                             |
 | `ETH_REJECT_INVALID_CERTS`        | `boolean` | Disable to allow ethereum client to connect to HTTPS without rejecting invalid (self-signed) certificates                                                                                |
 | `ABI_DIR`                         | `string`  | Directory containing ABI definitions (JSON files). This directory will be searched recursively                                                                                           |
 | `START_AT_BLOCK`                  | `string`  | First block to start ingesting from. Possible values are "genesis", "latest", an absolute block number or a negative number describing how many blocks before the latest one to start at |
