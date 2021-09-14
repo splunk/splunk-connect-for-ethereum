@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.0.1...v3.1.0) (2021-09-14)
+
+
+### Features
+
+* 🎸 add http/s proxy support for RPC endpoints ([f0436fc](https://github.com/splunk/splunk-connect-for-ethereum/commit/f0436fc0ef7f2e6ef8760c0969ea712cd619c75e))
+
 ## [3.0.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.0.0...v3.0.1) (2021-04-26)
 
 
