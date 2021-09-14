@@ -317,6 +317,8 @@ export interface HttpTransportConfigSchema {
     requestKeepAlive?: boolean;
     /** Maximum number of sockets HEC will use (per host) */
     maxSockets?: number;
+    /** Optional proxy URL to route HTTP requests through. Note: this disables internal httpClient stats */
+    proxyUrl?: string;
 }
 
 export interface HttpTransportConfig extends HttpTransportConfigSchema {
@@ -741,6 +743,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 maxSockets: defaults.eth?.http?.maxSockets!,
                 requestKeepAlive: defaults.eth?.http?.requestKeepAlive!,
                 timeout: parseDuration(defaults.eth?.http?.timeout!),
+                proxyUrl: flags['eth-rpc-proxy'] ?? defaults.eth?.http?.proxyUrl,
                 validateCertificate:
                     flags['eth-reject-invalid-certs'] ??
                     parseBooleanEnvVar(CLI_FLAGS['eth-reject-invalid-certs'].env) ??

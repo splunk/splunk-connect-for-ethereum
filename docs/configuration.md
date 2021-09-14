@@ -109,6 +109,7 @@ Settings for ethlogger connecting to the ethereum node via JSON RPC over HTTP
 | `validateCertificate` | `boolean`               | If set to false, the HTTP client will ignore certificate errors (eg. when using self-signed certs)                                     |
 | `requestKeepAlive`    | `boolean`               | Keep sockets to JSON RPC open                                                                                                          |
 | `maxSockets`          | `number`                | Maximum number of sockets HEC will use (per host)                                                                                      |
+| `proxyUrl`            | `string`                | Optional proxy URL to route HTTP requests through. Note: this disables internal httpClient stats                                       |
 
 ### EthereumClient
 

@@ -349,6 +349,10 @@
                     "description": "Maximum number of sockets HEC will use (per host)",
                     "type": "number"
                 },
+                "proxyUrl": {
+                    "description": "Optional proxy URL to route HTTP requests through. Note: this disables internal httpClient stats",
+                    "type": "string"
+                },
                 "requestKeepAlive": {
                     "description": "Keep sockets to JSON RPC open",
                     "type": "boolean"

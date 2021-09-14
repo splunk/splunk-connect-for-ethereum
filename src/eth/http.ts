@@ -6,6 +6,9 @@ import { isHttps } from '../utils/httputils';
 import { AggregateMetric, httpClientStats } from '../utils/stats';
 import { checkError, JsonRpcRequest, JsonRpcResponse, validateJsonRpcResponse } from './jsonrpc';
 import { EthereumTransport } from './transport';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+import { HttpProxyAgent } from 'http-proxy-agent';
+import { parse } from 'url';
 
 const { debug, trace } = createModuleDebug('eth:http');
 
@@ -29,7 +32,7 @@ const initialCounters = {
 
 export class HttpTransport implements EthereumTransport {
     private config: HttpTransportConfig & typeof CONFIG_DEFAULTS;
-    private httpAgent: HttpAgent | HttpsAgent;
+    private httpAgent: HttpAgent | HttpsAgent | HttpProxyAgent | HttpsProxyAgent;
     private counters = { ...initialCounters };
     private aggregates = { requestDuration: new AggregateMetric(), batchSize: new AggregateMetric() };
 
@@ -39,12 +42,24 @@ export class HttpTransport implements EthereumTransport {
             keepAlive: true,
             maxSockets: 256,
         };
-        this.httpAgent = isHttps(url)
-            ? new HttpsAgent({
-                  ...baseAgentOptions,
-                  rejectUnauthorized: this.config.validateCertificate,
-              })
-            : new HttpAgent(baseAgentOptions);
+
+        if (this.config.proxyUrl) {
+            const proxyUrlOptions = parse(this.config.proxyUrl);
+            const baseProxyAgentOptions = { ...baseAgentOptions, ...proxyUrlOptions };
+            this.httpAgent = isHttps(url)
+                ? new HttpsProxyAgent({
+                      ...baseProxyAgentOptions,
+                      rejectUnauthorized: this.config.validateCertificate,
+                  })
+                : new HttpProxyAgent(baseProxyAgentOptions);
+        } else {
+            this.httpAgent = isHttps(url)
+                ? new HttpsAgent({
+                      ...baseAgentOptions,
+                      rejectUnauthorized: this.config.validateCertificate,
+                  })
+                : new HttpAgent(baseAgentOptions);
+        }
     }
 
     public get source() {
@@ -140,7 +155,9 @@ export class HttpTransport implements EthereumTransport {
     public get stats() {
         return {
             ...this.counters,
-            httpClient: httpClientStats(this.httpAgent.getCurrentStatus()),
+            httpClient: this.httpAgent.hasOwnProperty('getCurrentStatus')
+                ? httpClientStats((this.httpAgent as any).getCurrentStatus())
+                : {},
         };
     }
 
