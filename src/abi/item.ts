@@ -33,8 +33,11 @@ export interface AbiOutput {
 export interface AbiItemDefinition {
     name: string;
     type: 'function' | 'event';
+    stateMutability: 'pure' | 'view' | 'nonpayable' | 'payable';
     inputs: AbiInput[];
-    contractName?: string;
+    outputs: AbiOutput[];
+    contractName: string;
     contractFingerprint?: string;
-    contractAddress?: string;
+    contractAddress: string;
+    constant: boolean;
 }

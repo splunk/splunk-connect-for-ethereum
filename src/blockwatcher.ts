@@ -4,7 +4,7 @@ import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, seri
 import { Checkpoint } from './checkpoint';
 import { BlockWatcherConfig } from './config';
 import { EthereumClient } from './eth/client';
-import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
+import { blockNumber, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
 import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/responses';
 import { formatBlock, formatLogEvent, formatTransaction } from './format';
 import { Address, AddressInfo, FormattedBlock, LogEventMessage, PrivateTransactionPayload } from './msgs';
@@ -18,6 +18,8 @@ import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
+import { AbiItemDefinition } from './abi/item';
+import { abiDecodeParameters } from './abi/wasm';
 
 const { debug, info, warn, error, trace } = createModuleDebug('blockwatcher');
 
@@ -260,14 +262,51 @@ export class BlockWatcher implements ManagedResource {
         const txMsgs = await this.abortHandle.race(
             Promise.all(block.transactions.map(tx => this.processTransaction(tx, blockTime, formattedBlock)))
         );
+        this.abiRepo?.getViewFunctions().forEach(value => {
+            info('Going to call %s', value.name);
+        });
+        const viewFns = this.abiRepo
+            ? await this.abortHandle.race(
+                  Promise.all(
+                      this.abiRepo?.getViewFunctions().map(fn => {
+                          return this.processViewFunction(fn, blockTime, formattedBlock);
+                      })
+                  )
+              )
+            : [];
+
         if (!this.active) {
             return;
         }
         outputMessages.forEach(msg => this.output.write(msg));
         txMsgs.forEach(msgs => msgs.forEach(msg => this.output.write(msg)));
+        viewFns.forEach(msg => this.output.write(msg));
         this.checkpoints.markBlockComplete(formattedBlock.number);
         this.counters.blocksProcessed++;
         this.aggregates.blockProcessTime.push(Date.now() - startTime);
+    }
+
+    async processViewFunction(
+        fn: AbiItemDefinition,
+        blockTime: number,
+        formattedBlock: FormattedBlock
+    ): Promise<OutputMessage> {
+        const startTime = Date.now();
+        trace('Processing view function %s/%s from block %d', fn.contractName!, fn.name, formattedBlock.number);
+        const fnValue = await this.ethClient.request(ethCall(fn, formattedBlock.number!));
+
+        trace('Completed processing view function %s/%s in %d ms', fn.contractName!, fn.name, Date.now() - startTime);
+        return {
+            type: 'view',
+            time: blockTime,
+            body: {
+                blockNumber: formattedBlock.number!,
+                result: fnValue,
+                name: fn.name,
+                contract: fn.contractName!,
+                contractAddress: fn.contractAddress!,
+            },
+        };
     }
 
     async processTransaction(

@@ -30,7 +30,7 @@ export interface ContractAbi {
     fileName?: string;
 }
 
-/** Sort abi defintions in consistent priority order */
+/** Sort abi definitions in consistent priority order */
 export function sortAbis(abis: AbiItemDefinition[]): AbiItemDefinition[] {
     if (abis.length > 1) {
         const sortedAbis = [...abis];
@@ -56,7 +56,7 @@ export function sortAbis(abis: AbiItemDefinition[]): AbiItemDefinition[] {
                 a.inputs.length - b.inputs.length ||
                 // Sort the rest by name
                 a.name.localeCompare(b.name) ||
-                // Last restort is to string compare the full signature
+                // Last resort is to string compare the full signature
                 computeSignature(a).localeCompare(computeSignature(b))
             );
         });
@@ -69,6 +69,7 @@ export class AbiRepository implements ManagedResource {
     private signatures: Map<string, AbiItemDefinition[]> = new Map();
     private contractsByFingerprint: Map<string, ContractAbi> = new Map();
     private contractsByAddress: Map<string, ContractAbi> = new Map();
+    private viewFunctions: Array<AbiItemDefinition> = new Array<AbiItemDefinition>();
 
     constructor(private config: AbiRepositoryConfig) {}
 
@@ -138,6 +139,9 @@ export class AbiRepository implements ManagedResource {
         for (const { sig, abi } of abiFileContents.entries) {
             const signatureHash = computeSignatureHash(sig, abi.type);
             this.addToSignatures(signatureHash, [abi]);
+            if (abi.stateMutability == 'view' && abi.inputs.length == 0 && !abi.constant) {
+                this.viewFunctions.push(abi);
+            }
         }
     }
 
@@ -177,6 +181,10 @@ export class AbiRepository implements ManagedResource {
 
     public getContractByAddress(address: string): ContractAbi | undefined {
         return this.contractsByAddress.get(address?.toLowerCase());
+    }
+
+    public getViewFunctions() {
+        return this.viewFunctions;
     }
 
     public findMatchingAbis(

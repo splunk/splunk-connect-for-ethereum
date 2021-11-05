@@ -25,6 +25,7 @@
         "http-proxy-agent": "^4.0.1",
         "https-proxy-agent": "^5.0.0",
         "js-yaml": "^3.13.1",
+        "keccak256": "^1.0.3",
         "lodash": "^4.17.15",
         "node-fetch": "^2.6.0",
         "tslib": "^1"

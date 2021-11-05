@@ -122,15 +122,28 @@ export function parseAbiFileContents(
     } else if (isAbiItemArray(abiData)) {
         abis = abiData;
         contractName = basename(fileName).split('.', 1)[0];
+        contractAddress = contractName; // FIXME hack to get a contract address.
     } else {
         throw new AbiError(`Invalid contents of ABI file ${fileName}`);
+    }
+    if (contractAddress == null) {
+        throw new AbiError(`Could not find the contract address of ${fileName}`);
     }
 
     const entries = abis
         .filter(abi => (abi.type === 'function' || abi.type === 'event') && abi.name != null)
         .map(abi => ({
             abi,
-            sig: computeSignature({ name: abi.name!, inputs: abi.inputs ?? [], type: 'function' }),
+            sig: computeSignature({
+                name: abi.name!,
+                inputs: abi.inputs ?? [],
+                outputs: abi.outputs ?? [],
+                type: 'function',
+                contractAddress: contractAddress!,
+                contractName: contractName,
+                stateMutability: abi.stateMutability!,
+                constant: abi.constant || false,
+            }),
         }));
 
     let contractFingerprint: string | undefined;
@@ -157,6 +170,7 @@ export function parseAbiFileContents(
         }
     }
 
+    const cAddress = contractAddress!;
     return {
         contractName,
         contractAddress,
@@ -167,9 +181,12 @@ export function parseAbiFileContents(
                 name: item.abi.name!,
                 type: item.abi.type as 'function' | 'event',
                 inputs: item.abi.inputs ?? [],
+                outputs: item.abi.outputs ?? [],
+                stateMutability: item.abi.stateMutability!,
                 contractName,
                 contractFingerprint,
-                contractAddress,
+                contractAddress: cAddress,
+                constant: item.abi.constant || false,
             },
         })),
         fileName: computeRelativePath(fileName, basePath) ?? basename(fileName),

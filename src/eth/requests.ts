@@ -15,6 +15,9 @@ import {
     RawTransactionResponse,
     SyncStatus,
 } from './responses';
+import { AbiItemDefinition } from '../abi/item';
+import { computeSignature } from '../abi/signature';
+import keccak256 from 'keccak256';
 
 export interface EthRequest<P extends any[], R> {
     method: string;
@@ -97,6 +100,17 @@ export const peerCount = (): EthRequest<[], number> => ({
 /** Returns an object with sync status data or FALSE, when not syncing */
 export const syncing = (): EthRequest<[], SyncStatus> => ({
     method: 'eth_syncing',
+});
+
+export const ethCall = (
+    fnDef: AbiItemDefinition,
+    blockNumber: number
+): EthRequest<[{ to: string; data: string }, string], string> => ({
+    method: 'eth_call',
+    params: [
+        { to: fnDef.contractAddress!, data: '0x' + keccak256(computeSignature(fnDef)).toString('hex', 0, 4) },
+        '0x' + blockNumber.toString(16),
+    ],
 });
 
 // Geth specific requests

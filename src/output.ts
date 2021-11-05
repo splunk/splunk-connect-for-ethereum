@@ -8,6 +8,7 @@ import {
     NodeMetricsMessage,
     PendingTransactionMessage,
     TransactionMessage,
+    ViewValueMessage,
 } from './msgs';
 import { createDebug } from './utils/debug';
 import { prefixKeys } from './utils/obj';
@@ -22,6 +23,7 @@ export const defaultSourcetypes = {
     nodeInfo: 'ethereum:node:info',
     nodeMetrics: 'ethereum:node:metrics',
     gethPeer: 'ethereum:geth:peer',
+    view: 'ethereum:view',
 };
 
 export type OutputMessage =
@@ -31,7 +33,8 @@ export type OutputMessage =
     | LogEventMessage
     | NodeInfoMessage
     | NodeMetricsMessage
-    | GethPeerMessage;
+    | GethPeerMessage
+    | ViewValueMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -46,6 +49,7 @@ export class HecOutput implements Output, ManagedResource {
         switch (msg.type) {
             case 'block':
             case 'transaction':
+            case 'view':
             case 'event':
             case 'pendingtx':
             case 'nodeInfo':

@@ -349,6 +349,8 @@ export interface SourcetypesSchema {
     nodeMetrics?: string;
     /** @default "ethereum:geth:peer" */
     gethPeer?: string;
+    /** @default "ethereum:view" */
+    view?: string;
 }
 
 /** Console output prints all generated events and metrics to STDOUT */

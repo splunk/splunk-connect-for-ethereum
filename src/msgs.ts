@@ -149,7 +149,7 @@ export interface FunctionCall {
     signature: string;
     /** List of decoded parameters */
     params: Array<{
-        /** Paramter name - omitted if the function call was decoded anonymously */
+        /** Parameter name - omitted if the function call was decoded anonymously */
         name?: string;
         /** Data type */
         type: string;
@@ -292,4 +292,18 @@ export interface NodeMetricsMessage {
     type: 'nodeMetrics';
     time: number;
     metrics: NodeMetrics;
+}
+
+export interface ViewValueBody {
+    blockNumber: number;
+    result: Object | undefined;
+    name: string;
+    contract: string;
+    contractAddress: string;
+}
+
+export interface ViewValueMessage {
+    type: 'view';
+    time: number;
+    body: ViewValueBody;
 }
