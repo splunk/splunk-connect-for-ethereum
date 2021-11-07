@@ -124,3 +124,17 @@ export function formatLogEvent(evt: RawLogResponse, addressInfo?: AddressInfo, e
         event,
     };
 }
+
+/** Format a value into a floating-point number divided by decimals. */
+export function formatHexToFloatingPoint(value: string, decimals: number): string {
+    // first get value into a decimal radix:
+    let formattedValue = value == '0x' ? '0' : BigInt(value).toString(10);
+    // pad the value with as many zeros as needed:
+    formattedValue = formattedValue.padStart(decimals + 1, '0');
+    const integerPart = formattedValue.substr(0, formattedValue.length - decimals);
+    if (integerPart == formattedValue) {
+        return integerPart;
+    }
+    // now inject the floating number period:
+    return integerPart + '.' + formattedValue.substr(formattedValue.length - decimals);
+}

@@ -1,42 +1,46 @@
-import { Checkpoint } from '../src/checkpoint';
+import { State } from '../src/state';
 
 test('Checkpoint', () => {
-    const empty = new Checkpoint({ path: '.foo' });
-    expect(empty.isEmpty()).toBe(true);
+    const empty = new State({ path: '.foo' });
+    const checkpoint = empty.getCheckpoint('main');
+    expect(checkpoint.isEmpty()).toBe(true);
 
-    const checkpoints = new Checkpoint({ path: '.foo', initialBlockNumber: 0 });
-    expect(checkpoints.serialize()).toMatchInlineSnapshot(`
+    const state = new State({ path: '.foo' });
+    expect(state.serialize()).toMatchInlineSnapshot(`
         "{
-          \\"v\\": 1,
-          \\"init\\": 0,
-          \\"ranges\\": []
+          \\"v\\": 2
+        }"
+    `);
+    state.getCheckpoint('main').setInitialBlockNumber(0);
+
+    state.getCheckpoint('main').markComplete({ from: 10, to: 20 });
+    expect(state.serialize()).toMatchInlineSnapshot(`
+        "{
+          \\"v\\": 2,
+          \\"main\\": {
+            \\"init\\": 0,
+            \\"ranges\\": [
+              \\"10-20\\"
+            ]
+          }
         }"
     `);
 
-    checkpoints.markComplete({ from: 10, to: 20 });
-    expect(checkpoints.serialize()).toMatchInlineSnapshot(`
+    state.getCheckpoint('main').markComplete({ from: 30, to: 40 });
+    expect(state.serialize()).toMatchInlineSnapshot(`
         "{
-          \\"v\\": 1,
-          \\"init\\": 0,
-          \\"ranges\\": [
-            \\"10-20\\"
-          ]
+          \\"v\\": 2,
+          \\"main\\": {
+            \\"init\\": 0,
+            \\"ranges\\": [
+              \\"10-20\\",
+              \\"30-40\\"
+            ]
+          }
         }"
     `);
 
-    checkpoints.markComplete({ from: 30, to: 40 });
-    expect(checkpoints.serialize()).toMatchInlineSnapshot(`
-        "{
-          \\"v\\": 1,
-          \\"init\\": 0,
-          \\"ranges\\": [
-            \\"10-20\\",
-            \\"30-40\\"
-          ]
-        }"
-    `);
-
-    expect(checkpoints.getIncompleteRanges(50)).toMatchInlineSnapshot(`
+    expect(state.getCheckpoint('main').getIncompleteRanges(50)).toMatchInlineSnapshot(`
         Array [
           Object {
             "from": 0,
@@ -53,7 +57,29 @@ test('Checkpoint', () => {
         ]
     `);
 
-    const restored = new Checkpoint({ path: '.foo' });
+    const contractCheckpoint = state.getCheckpoint('0xdeadbeef');
+    contractCheckpoint.setInitialBlockNumber(1000);
+    contractCheckpoint.markComplete({ from: 1100, to: 1200 });
+    expect(state.serialize()).toMatchInlineSnapshot(`
+        "{
+          \\"v\\": 2,
+          \\"main\\": {
+            \\"init\\": 0,
+            \\"ranges\\": [
+              \\"10-20\\",
+              \\"30-40\\"
+            ]
+          },
+          \\"0xdeadbeef\\": {
+            \\"init\\": 1000,
+            \\"ranges\\": [
+              \\"1100-1200\\"
+            ]
+          }
+        }"
+    `);
+
+    const restored = new State({ path: '.foo' });
     restored.initializeFromCheckpointContents(`
       {
         "v": 1,
@@ -63,8 +89,8 @@ test('Checkpoint', () => {
           "30-40"
         ]
       }`);
-    expect(restored.initialBlockNumber).toMatchInlineSnapshot(`0`);
-    expect(restored.getIncompleteRanges(50)).toMatchInlineSnapshot(`
+    expect(restored.getCheckpoint('main').getinitialBlockNumber()).toMatchInlineSnapshot(`0`);
+    expect(restored.getCheckpoint('main').getIncompleteRanges(50)).toMatchInlineSnapshot(`
         Array [
           Object {
             "from": 0,
@@ -79,5 +105,17 @@ test('Checkpoint', () => {
             "to": 50,
           },
         ]
+    `);
+    expect(restored.serialize()).toMatchInlineSnapshot(`
+        "{
+          \\"v\\": 2,
+          \\"main\\": {
+            \\"init\\": 0,
+            \\"ranges\\": [
+              \\"10-20\\",
+              \\"30-40\\"
+            ]
+          }
+        }"
     `);
 });

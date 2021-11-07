@@ -2,7 +2,7 @@ import { join } from 'path';
 import { ContractInfo } from '../src/abi/contract';
 import { AbiRepository } from '../src/abi/repo';
 import { BlockWatcher } from '../src/blockwatcher';
-import { Checkpoint } from '../src/checkpoint';
+import { State } from '../src/state';
 import { BatchedEthereumClient } from '../src/eth/client';
 import { HttpTransport } from '../src/eth/http';
 import { withRecorder } from '../src/eth/recorder';
@@ -39,16 +39,17 @@ test('blockwatcher', async () => {
                 reconcileStructShapeFromTuples: false,
             });
             await abiRepo.initialize();
-            const checkpoints = new Checkpoint({
-                initialBlockNumber: 123,
+            const state = new State({
                 path: join(__dirname, '../tmp/tmpcheckpoint.json'),
                 saveInterval: 10000,
             });
+            const checkpoint = state.getCheckpoint('main');
+            checkpoint.setInitialBlockNumber(123);
             const output = new TestOutput();
             const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 100 });
             const blockWatcher = new BlockWatcher({
                 abiRepo,
-                checkpoints,
+                checkpoint,
                 config: {
                     enabled: true,
                     blocksMaxChunkSize: 1,

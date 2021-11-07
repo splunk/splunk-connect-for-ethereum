@@ -1,6 +1,7 @@
 import { EthloggerConfig, HecOutputConfig } from './config';
 import { HecClient } from './hec';
 import {
+    BalanceMessage,
     BlockMessage,
     GethPeerMessage,
     LogEventMessage,
@@ -22,6 +23,7 @@ export const defaultSourcetypes = {
     nodeInfo: 'ethereum:node:info',
     nodeMetrics: 'ethereum:node:metrics',
     gethPeer: 'ethereum:geth:peer',
+    balance: 'ethereum:balance',
 };
 
 export type OutputMessage =
@@ -31,7 +33,8 @@ export type OutputMessage =
     | LogEventMessage
     | NodeInfoMessage
     | NodeMetricsMessage
-    | GethPeerMessage;
+    | GethPeerMessage
+    | BalanceMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -50,6 +53,7 @@ export class HecOutput implements Output, ManagedResource {
             case 'pendingtx':
             case 'nodeInfo':
             case 'gethPeer':
+            case 'balance':
                 this.eventsHec.pushEvent({
                     time: msg.time,
                     body: msg.body,

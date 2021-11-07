@@ -81,6 +81,7 @@ Root configuration schema for ethlogger
 | `abi`             | [`AbiRepository`](#AbiRepository)                                                                                                  | ABI repository configuration                                                                                                                                                                                           |
 | `contractInfo`    | [`ContractInfo`](#ContractInfo)                                                                                                    | Contract info cache settings                                                                                                                                                                                           |
 | `blockWatcher`    | [`BlockWatcher`](#BlockWatcher)                                                                                                    | Block watcher settings, configure how blocks, transactions, event logs are ingested                                                                                                                                    |
+| `balanceWatchers` | [`BalanceWatchers`](#BalanceWatchers)                                                                                              | Balance watchers, tracking balance of ERC-20 token holders                                                                                                                                                             |
 | `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                                                                                                                                                                |
 | `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                                                                                                                                                   |
 | `pendingTx`       | [`PendingTx`](#PendingTx)                                                                                                          | Settings for collecting pending transactions from node                                                                                                                                                                 |
@@ -141,6 +142,7 @@ Configurable set of `sourcetype` field values emitted by ethlogger
 | `nodeInfo`    | `string` | `"ethereum:node:info"`           |
 | `nodeMetrics` | `string` | `"ethereum:node:metrics"`        |
 | `gethPeer`    | `string` | `"ethereum:geth:peer"`           |
+| `balance`     | `string` | `"ethereum:balance"`             |
 
 ### ConsoleOutput
 
@@ -244,6 +246,29 @@ Block watcher is the component that retrieves blocks, transactions, event logs f
 | `startAt`                    | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point.                                                             |
 | `retryWaitTime`              | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                                                                                           |
 | `decryptPrivateTransactions` | `boolean`                   | For chains/nodes that do support private transactions, this setting instructs block watcher to attempt to load the decrypted payload for private transactions |
+
+### BalanceWatchers
+
+Balance watchers is a component tracking transfers of tokens and reporting balances of accounts.
+
+| Name | Type                                            | Description                                                                |
+| ---- | ----------------------------------------------- | -------------------------------------------------------------------------- |
+| `-`  | map<string,[`BalanceWatcher`](#BalanceWatcher)> | Mapping of name => balancer watcher.<br><br>See BalanceWatcherConfigSchema |
+
+### BalanceWatcher
+
+Balance watcher is a component tracking transfers of a token and reporting balances of its accounts.
+
+| Name                 | Type                        | Description                                                                                       |
+| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| `contractAddress`    | `string`                    | The address of the contract to watch.                                                             |
+| `decimals`           | `number`                    | The number of decimals to divide balances with.                                                   |
+| `startAt`            | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. |
+| `enabled`            | `boolean`                   | Specify `false` to disable the balance watcher                                                    |
+| `pollInterval`       | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)        |
+| `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
+| `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
+| `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
 
 ### NodeMetrics
 

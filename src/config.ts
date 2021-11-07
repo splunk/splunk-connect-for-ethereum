@@ -33,6 +33,8 @@ export interface EthloggerConfigSchema {
     contractInfo: ContractInfoConfigSchema;
     /** Block watcher settings, configure how blocks, transactions, event logs are ingested */
     blockWatcher: BlockWatcherConfigSchema;
+    /** Balance watchers, tracking balance of ERC-20 token holders */
+    balanceWatchers: BalanceWatchersConfigSchema;
     /** Settings for the node metrics collector */
     nodeMetrics: NodeMetricsConfigSchema;
     /** Settings for the node info collector */
@@ -59,6 +61,7 @@ export interface EthloggerConfig {
     abi: AbiRepositoryConfig;
     contractInfo: ContractInfoConfig;
     blockWatcher: BlockWatcherConfig;
+    balanceWatchers: Map<string, BalanceWatcherConfig>;
     nodeMetrics: NodeMetricsConfig;
     nodeInfo: NodeInfoConfig;
     pendingTx: PendingTxConfig;
@@ -210,7 +213,48 @@ export interface BlockWatcherConfigSchema {
     decryptPrivateTransactions: boolean;
 }
 
+/**
+ * Balance watcher is a component tracking transfers of a token and reporting balances of its accounts.
+ */
+export interface BalanceWatcherConfigSchema {
+    /**
+     * The address of the contract to watch.
+     */
+    contractAddress: string;
+    /**
+     * The number of decimals to divide balances with.
+     */
+    decimals: number;
+    /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
+    startAt: StartBlock;
+    /** Specify `false` to disable the balance watcher */
+    enabled: boolean;
+    /** Interval in which to look for the latest block number (if not busy processing the backlog) */
+    pollInterval: DurationConfig;
+    /** Max. number of blocks to fetch at once */
+    blocksMaxChunkSize: number;
+    /** Max. number of chunks to process in parallel */
+    maxParallelChunks: number;
+    /** Wait time before retrying to fetch and process blocks after failure */
+    retryWaitTime: WaitTimeConfig;
+}
+
+/**
+ * Balance watchers is a component tracking transfers of tokens and reporting balances of accounts.
+ */
+interface BalanceWatchersConfigSchema {
+    /**
+     * Mapping of name => balancer watcher.
+     * @see BalanceWatcherConfigSchema
+     */
+    [name: string]: BalanceWatcherConfigSchema;
+}
+
 export interface BlockWatcherConfig extends Omit<BlockWatcherConfigSchema, 'retryWaitTime'> {
+    pollInterval: Duration;
+    retryWaitTime: WaitTime;
+}
+export interface BalanceWatcherConfig extends Omit<BalanceWatcherConfigSchema, 'retryWaitTime'> {
     pollInterval: Duration;
     retryWaitTime: WaitTime;
 }
@@ -349,6 +393,8 @@ export interface SourcetypesSchema {
     nodeMetrics?: string;
     /** @default "ethereum:geth:peer" */
     gethPeer?: string;
+    /** @default "ethereum:balance" */
+    balance?: string;
 }
 
 /** Console output prints all generated events and metrics to STDOUT */
@@ -670,6 +716,19 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         return val;
     };
 
+    const configRequired = <T>(flag: string, configValue: string | undefined): string => {
+        if (configValue == null) {
+            if (dryRun) {
+                error('Missing required field %s', flag);
+                return '';
+            } else {
+                throw new ConfigError(`Missing required field ${flag}`);
+            }
+        } else {
+            return configValue;
+        }
+    };
+
     const parseSpecificHecConfig = (
         defaults: DeepPartial<HecConfigSchema> | undefined,
         indexFlag: keyof CliFlags,
@@ -729,6 +788,22 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 };
         }
     };
+    const balanceWatchers = new Map<string, BalanceWatcherConfig>();
+    const defaultBalanceWatchers = defaults.balanceWatchers ?? {};
+    for (const key in defaultBalanceWatchers) {
+        const value = defaultBalanceWatchers[key];
+
+        balanceWatchers.set(key, {
+            enabled: value?.enabled ?? true,
+            pollInterval: parseDuration(value?.pollInterval) ?? 500,
+            blocksMaxChunkSize: value?.blocksMaxChunkSize ?? 25,
+            maxParallelChunks: value?.maxParallelChunks ?? 3,
+            startAt: value?.startAt ?? 'genesis',
+            retryWaitTime: waitTimeFromConfig(value?.retryWaitTime) ?? 10000,
+            decimals: value?.decimals ?? 18,
+            contractAddress: configRequired('contractAddress', value?.contractAddress),
+        });
+    }
 
     const config: EthloggerConfig = {
         eth: {
@@ -807,6 +882,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 defaults.blockWatcher?.decryptPrivateTransactions ??
                 false,
         },
+        balanceWatchers: balanceWatchers,
         checkpoint: {
             filename: defaults.checkpoint?.filename ?? 'checkpoint.json',
             saveInterval: parseDuration(defaults.checkpoint?.saveInterval) ?? 100,

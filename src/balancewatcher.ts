@@ -1,75 +1,48 @@
-import { ContractInfo, getContractInfo } from './abi/contract';
-import { AbiRepository } from './abi/repo';
-import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
-import { Checkpoint } from './state';
-import { BlockWatcherConfig } from './config';
-import { EthereumClient } from './eth/client';
-import { blockNumber, getBlock, getTransactionReceipt } from './eth/requests';
-import { RawBlockResponse, RawLogResponse, RawTransactionResponse } from './eth/responses';
-import { formatBlock, formatLogEvent, formatTransaction } from './format';
-import { Address, AddressInfo, FormattedBlock, LogEventMessage, PrivateTransactionPayload } from './msgs';
-import { Output, OutputMessage } from './output';
-import { isEnterprisePlatform, NodePlatformAdapter } from './platforms';
-import { ABORT, AbortHandle } from './utils/abort';
-import { parallel, sleep } from './utils/async';
-import { bigIntToNumber } from './utils/bn';
-import { Cache, cachedAsync, NoopCache } from './utils/cache';
 import { createModuleDebug } from './utils/debug';
 import { ManagedResource } from './utils/resource';
+import { EthereumClient } from './eth/client';
+import { Output, OutputMessage } from './output';
+import { BalanceWatcherConfig } from './config';
+import { NodePlatformAdapter } from './platforms';
+import { ABORT, AbortHandle } from './utils/abort';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
+import { Cache } from './utils/cache';
+import { ContractInfo } from './abi/contract';
 import { AggregateMetric } from './utils/stats';
+import { blockNumber, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
+import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
+import { parallel, sleep } from './utils/async';
+import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
+import { bigIntToNumber } from './utils/bn';
+import { formatBlock, formatHexToFloatingPoint } from './format';
+import { parseBlockTime } from './blockwatcher';
+import { BalanceMessage, FormattedBlock } from './msgs';
+import { sha3 } from './abi/wasm';
+import { Checkpoint } from './state';
 
-const { debug, info, warn, error, trace } = createModuleDebug('blockwatcher');
+const { debug, info, warn, error, trace } = createModuleDebug('balancewatcher');
 
-export type StartBlock = 'latest' | 'genesis' | number;
-
-const toAddressInfo = (contractInfo?: ContractInfo): AddressInfo | undefined =>
-    contractInfo
-        ? {
-              contractName: contractInfo.contractName,
-              isContract: contractInfo.isContract,
-          }
-        : undefined;
-
-export function parseBlockTime(timestamp: number | string): number {
-    if (typeof timestamp === 'number') {
-        return timestamp * 1000;
-    }
-
-    if (typeof timestamp === 'string') {
-        // Timestamp on Quorum/Raft nodes are emitted as nanoseconds since unix epoch
-        // so translate it to milliseconds
-        const ms = BigInt(timestamp) / BigInt(1_000_000);
-        return bigIntToNumber(ms);
-    }
-    throw new Error(`Unable to parse block timestamp "${timestamp}"`);
-}
+const transferEventSignature = sha3('Transfer(address,address,uint256)')!;
 
 const initialCounters = {
     blocksProcessed: 0,
-    transactionsProcessed: 0,
-    transactionLogEventsProcessed: 0,
+    transfersProcessed: 0,
 };
 
 /**
- * BlockWatcher will query all blocks, transactions, receipts and logs from an ethereum node,
- * compute some additional information, such as address information and decoded ABI data and
- * will send them to the output. It uses checkpoints to keep track of state and will resume
- * where it left off when restarted.
+ * BalanceWatcher will watch the activity of a contract on chain, and keep track of all accounts transferring tokens.
  */
-export class BlockWatcher implements ManagedResource {
+export class BalanceWatcher implements ManagedResource {
     private active: boolean = true;
     private ethClient: EthereumClient;
     private checkpoint: Checkpoint;
     private output: Output;
-    private abiRepo?: AbiRepository;
-    private config: BlockWatcherConfig;
+    private config: BalanceWatcherConfig;
     private nodePlatform: NodePlatformAdapter;
     private abortHandle = new AbortHandle();
     private endCallbacks: Array<() => void> = [];
     private waitAfterFailure: WaitTime;
     private chunkQueueMaxSize: number;
-    private contractInfoCache: Cache<string, Promise<ContractInfo>> = new NoopCache();
     private counters = { ...initialCounters };
     private aggregates = {
         blockProcessTime: new AggregateMetric(),
@@ -81,18 +54,15 @@ export class BlockWatcher implements ManagedResource {
         ethClient,
         checkpoint,
         output,
-        abiRepo,
-        contractInfoCache,
         config,
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
         nodePlatform,
     }: {
         ethClient: EthereumClient;
-        checkpoint: Checkpoint;
         output: Output;
-        abiRepo: AbiRepository;
-        config: BlockWatcherConfig;
+        checkpoint: Checkpoint;
+        config: BalanceWatcherConfig;
         waitAfterFailure?: WaitTime;
         chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
@@ -101,18 +71,14 @@ export class BlockWatcher implements ManagedResource {
         this.ethClient = ethClient;
         this.checkpoint = checkpoint;
         this.output = output;
-        this.abiRepo = abiRepo;
         this.config = config;
         this.waitAfterFailure = waitAfterFailure;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
         this.nodePlatform = nodePlatform;
-        if (contractInfoCache) {
-            this.contractInfoCache = contractInfoCache;
-        }
     }
 
     async start(): Promise<void> {
-        debug('Starting block watcher');
+        debug('Starting balances watcher for %s', this.config.contractAddress);
         const { ethClient, checkpoint } = this;
 
         if (checkpoint.isEmpty()) {
@@ -209,7 +175,7 @@ export class BlockWatcher implements ManagedResource {
         if (this.endCallbacks != null) {
             this.endCallbacks.forEach(cb => cb());
         }
-        info('Block watcher stopped');
+        info('Balances watcher stopped');
     }
 
     async processChunk(chunk: BlockRange) {
@@ -245,153 +211,27 @@ export class BlockWatcher implements ManagedResource {
             return;
         }
         const startTime = Date.now();
-        const outputMessages: OutputMessage[] = [];
         const formattedBlock = formatBlock(block);
         if (formattedBlock.number == null) {
             debug('Ignoring block %s without number', block.hash);
             return;
         }
         const blockTime = parseBlockTime(formattedBlock.timestamp);
-        outputMessages.push({
-            type: 'block',
-            time: blockTime,
-            body: formattedBlock,
-        });
-        const txMsgs = await this.abortHandle.race(
-            Promise.all(block.transactions.map(tx => this.processTransaction(tx, blockTime, formattedBlock)))
-        );
+
         if (!this.active) {
             return;
         }
-        outputMessages.forEach(msg => this.output.write(msg));
-        txMsgs.forEach(msgs => msgs.forEach(msg => this.output.write(msg)));
+        const outputMessages = await this.abortHandle.race(
+            Promise.all(block.transactions.map(tx => this.processTransaction(tx, blockTime, formattedBlock)))
+        );
+        outputMessages.forEach(msgs => msgs.forEach(msg => this.output.write(msg)));
         this.checkpoint.markBlockComplete(formattedBlock.number);
         this.counters.blocksProcessed++;
         this.aggregates.blockProcessTime.push(Date.now() - startTime);
     }
 
-    async processTransaction(
-        rawTx: RawTransactionResponse | string,
-        blockTime: number,
-        formattedBlock: FormattedBlock
-    ): Promise<OutputMessage[]> {
-        if (!this.active) {
-            return [];
-        }
-        if (typeof rawTx === 'string') {
-            warn('Received raw transaction as string from block %d', formattedBlock.number);
-            return [];
-        }
-        const startTime = Date.now();
-        trace('Processing transaction %s from block %d', rawTx.hash, formattedBlock.number);
-
-        const [receipt, toInfo, fromInfo] = await Promise.all([
-            this.ethClient.request(getTransactionReceipt(rawTx.hash)),
-            rawTx.to != null ? this.lookupContractInfo(rawTx.to) : undefined,
-            rawTx.from != null ? this.lookupContractInfo(rawTx.from) : undefined,
-        ]);
-
-        let contractAddresInfo: ContractInfo | undefined;
-        if (receipt?.contractAddress != null) {
-            contractAddresInfo = await this.lookupContractInfo(receipt.contractAddress);
-        }
-
-        let privatePayload: PrivateTransactionPayload | undefined;
-        if (this.config.decryptPrivateTransactions) {
-            if (isEnterprisePlatform(this.nodePlatform)) {
-                if (this.nodePlatform.isPrivateTransaction(rawTx)) {
-                    debug('Retrieving decrypted private transaction input %o', {
-                        txHash: rawTx.hash,
-                        input: rawTx.input,
-                    });
-                    try {
-                        const input = await this.nodePlatform.getRawTransactionInput(rawTx.input, this.ethClient);
-                        debug('Successfully retrieved decrypted transaction payload %o', { input });
-                        privatePayload = { input };
-                    } catch (e) {
-                        error(
-                            'Failed to retrieve decrypted transaction payload %o',
-                            {
-                                txHash: rawTx.hash,
-                                input: rawTx.input,
-                            },
-                            e
-                        );
-                    }
-                }
-            } else {
-                warn(
-                    "Decryption of private transactions is enabled, but detected node type (%s) doesn't support it",
-                    this.nodePlatform.name
-                );
-            }
-        }
-
-        let callInfo;
-        if (this.abiRepo && toInfo && toInfo.isContract) {
-            callInfo = this.abiRepo.decodeFunctionCall(privatePayload?.input ?? rawTx.input, {
-                contractAddress: rawTx.to ?? undefined,
-                contractFingerprint: toInfo.fingerprint,
-            });
-        }
-
-        this.counters.transactionsProcessed++;
-        this.aggregates.txProcessTime.push(Date.now() - startTime);
-        trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
-        return [
-            {
-                type: 'transaction',
-                time: blockTime,
-                body: formatTransaction(
-                    rawTx,
-                    receipt!,
-                    toAddressInfo(fromInfo),
-                    toAddressInfo(toInfo),
-                    toAddressInfo(contractAddresInfo),
-                    callInfo,
-                    privatePayload
-                ),
-            },
-            ...(await Promise.all(receipt?.logs?.map(l => this.processTransactionLog(l, blockTime)) ?? [])),
-        ];
-    }
-
-    async processTransactionLog(evt: RawLogResponse, blockTime: number): Promise<LogEventMessage> {
-        const startTime = Date.now();
-        const contractInfo = await this.lookupContractInfo(evt.address);
-        const decodedEventData = this.abiRepo?.decodeLogEvent(evt, {
-            contractAddress: evt.address,
-            contractFingerprint: contractInfo?.fingerprint,
-        });
-        this.aggregates.eventProcessTime.push(Date.now() - startTime);
-        this.counters.transactionLogEventsProcessed++;
-        return {
-            type: 'event',
-            time: blockTime,
-            body: formatLogEvent(evt, toAddressInfo(contractInfo), decodedEventData),
-        };
-    }
-
-    async lookupContractInfo(address: Address): Promise<ContractInfo | undefined> {
-        const abiRepo = this.abiRepo;
-        if (abiRepo == null) {
-            return;
-        }
-        const result = await cachedAsync(address, this.contractInfoCache, (addr: Address) =>
-            getContractInfo(
-                addr,
-                this.ethClient,
-                (sig: string) => abiRepo.getMatchingSignature(sig),
-                (address: string, fingerprint: string) =>
-                    abiRepo.getContractByAddress(address)?.contractName ??
-                    abiRepo.getContractByFingerprint(fingerprint)?.contractName
-            )
-        );
-        return result;
-    }
-
     public async shutdown() {
-        info('Shutting down block watcher');
+        info('Shutting down balances watcher for %s', this.config.contractAddress);
         this.active = false;
         this.abortHandle.abort();
         await new Promise<void>(resolve => {
@@ -409,5 +249,73 @@ export class BlockWatcher implements ManagedResource {
         };
         this.counters = { ...initialCounters };
         return stats;
+    }
+
+    async processTransaction(
+        rawTx: RawTransactionResponse | string,
+        blockTime: number,
+        formattedBlock: FormattedBlock
+    ): Promise<OutputMessage[]> {
+        if (!this.active) {
+            return [];
+        }
+        if (typeof rawTx === 'string') {
+            warn('Received raw transaction as string from block %d', formattedBlock.number);
+            return [];
+        }
+        const startTime = Date.now();
+        trace('Processing transaction %s from block %d', rawTx.hash, formattedBlock.number);
+
+        const receipt = await this.ethClient.request(getTransactionReceipt(rawTx.hash));
+
+        let outputMessages = Array<OutputMessage>();
+        if (receipt != null && receipt.logs != null) {
+            const addresses = receipt.logs
+                ?.map(log => {
+                    if (this.config.contractAddress == log.address) {
+                        if (log.topics[0] == transferEventSignature && log.topics.length == 3) {
+                            const from = '0x' + log.topics[1].substr(26);
+                            const to = '0x' + log.topics[2].substr(26);
+                            return [from, to];
+                        }
+                    }
+                })
+                .flat()
+                .filter(a => a !== undefined);
+            if (addresses.length > 0) {
+                this.counters.transfersProcessed++;
+                outputMessages = await this.abortHandle.race(
+                    Promise.all(addresses.map(addr => this.getBalance(addr, formattedBlock, blockTime)))
+                );
+            }
+        }
+
+        this.aggregates.txProcessTime.push(Date.now() - startTime);
+        trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
+        return outputMessages;
+    }
+
+    async getBalance(address: string, formattedBlock: FormattedBlock, blockTime: number): Promise<BalanceMessage> {
+        const response = await this.ethClient.request(
+            ethCall(
+                this.config.contractAddress,
+                'balanceOf(address)',
+                ['0'.repeat(24) + address.substr(2)],
+                formattedBlock.number!
+            )
+        );
+        const balance = formatHexToFloatingPoint(response, this.config.decimals);
+
+        return {
+            body: {
+                contract: this.config.contractAddress,
+                blockHash: formattedBlock.hash!,
+                blockNumber: formattedBlock.number!,
+                account: address,
+                balance: balance,
+            },
+            time: blockTime,
+            type: 'balance',
+        };
     }
 }

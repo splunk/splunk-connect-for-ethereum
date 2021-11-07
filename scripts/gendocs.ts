@@ -14,8 +14,9 @@ type UnkownType = { type: 'unknown' };
 type LiteralTypeInfo = { type: 'literal'; value: string };
 type PrimitiveTypeInfo = { type: 'primitive'; name: string };
 type ObjectTypeInfo = { type: 'object'; name: string };
+type MapTypeInfo = { type: 'map'; name: string };
 type UnionTypeInfo = Array<TypeInfo>;
-type TypeInfo = LiteralTypeInfo | PrimitiveTypeInfo | ObjectTypeInfo | UnionTypeInfo | UnkownType;
+type TypeInfo = LiteralTypeInfo | PrimitiveTypeInfo | ObjectTypeInfo | UnionTypeInfo | MapTypeInfo | UnkownType;
 
 interface Field {
     name: string;
@@ -29,6 +30,13 @@ interface Field {
 const inlineCode = (s: string) => '`' + s + '`';
 const link = (to: string, label: string) => `[${label}](${to})`;
 
+function formatFieldName(name: string): string {
+    if (name === '__index') {
+        return '-';
+    }
+    return name;
+}
+
 function formatTypeInfo(type: TypeInfo): string {
     if (Array.isArray(type)) {
         return type.map(formatTypeInfo).join(` \\| `);
@@ -40,6 +48,8 @@ function formatTypeInfo(type: TypeInfo): string {
         return inlineCode(type.value);
     } else if (type.type === 'object') {
         return link(`#${type.name}`, inlineCode(type.name));
+    } else if (type.type === 'map') {
+        return 'map<string,' + link(`#${type.name}`, inlineCode(type.name)) + '>';
     }
     throw new Error('INVALID TYPE: ' + JSON.stringify(type));
 }
@@ -175,6 +185,20 @@ function createConfigurationSchemaReference(): string {
                 const memberType = typeChecker.getTypeAtLocation(member.declarations[0]);
                 const resolveType = (type: ts.Type): TypeInfo => {
                     const flags = type.flags;
+                    if (flags & ts.TypeFlags.Any) {
+                        if (member.name == '__index') {
+                            const fieldMapType = member
+                                .getDeclarations()
+                                ?.values()
+                                .next().value.type;
+                            const name = fieldMapType?.typeName.escapedText
+                                ?.replace(/Schema$/, '')
+                                .replace(/Config$/, '');
+                            const mappedType = findType(fieldMapType?.typeName.escapedText, program, typeChecker);
+                            appendSectionForType(mappedType);
+                            return { type: 'map', name };
+                        }
+                    }
                     if (flags & ts.TypeFlags.StringLiteral) {
                         return { type: 'literal', value: JSON.stringify((type as ts.LiteralType).value) };
                     }
@@ -231,7 +255,7 @@ function createConfigurationSchemaReference(): string {
                 const see = member.getJsDocTags().find(t => t.name === 'see')?.text;
                 const defaultValue = member.getJsDocTags().find(t => t.name === 'default')?.text;
                 section.fields.push({
-                    name: member.name,
+                    name: formatFieldName(member.name),
                     type: resolveType(memberType),
                     description: docs.length ? docs.map(d => d.text).join(' ') : undefined,
                     example,
