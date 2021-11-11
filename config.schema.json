@@ -35,6 +35,69 @@
             },
             "type": "object"
         },
+        "BalanceWatcherConfigSchema": {
+            "description": "Balance watcher is a component tracking transfers of a token and reporting balances of its accounts.",
+            "properties": {
+                "blocksMaxChunkSize": {
+                    "description": "Max. number of blocks to fetch at once",
+                    "type": "number"
+                },
+                "contractAddress": {
+                    "description": "The address of the contract to watch.",
+                    "type": "string"
+                },
+                "decimals": {
+                    "description": "The number of decimals to divide balances with.",
+                    "type": "number"
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable the balance watcher",
+                    "type": "boolean"
+                },
+                "maxParallelChunks": {
+                    "description": "Max. number of chunks to process in parallel",
+                    "type": "number"
+                },
+                "pollInterval": {
+                    "description": "Interval in which to look for the latest block number (if not busy processing the backlog)",
+                    "type": ["string", "number"]
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": ["string", "number"]
+                        }
+                    ],
+                    "description": "Wait time before retrying to fetch and process blocks after failure"
+                },
+                "startAt": {
+                    "anyOf": [
+                        {
+                            "enum": ["genesis", "latest"],
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "description": "If no checkpoint exists (yet), this specifies which block should be chosen as the starting point."
+                }
+            },
+            "type": "object"
+        },
+        "BalanceWatchersConfigSchema": {
+            "additionalProperties": {
+                "$ref": "#/definitions/BalanceWatcherConfigSchema"
+            },
+            "description": "Balance watchers is a component tracking transfers of tokens and reporting balances of accounts.",
+            "type": "object"
+        },
         "BlockWatcherConfigSchema": {
             "description": "Block watcher is the component that retrieves blocks, transactions, event logs from the node and sends\nthem to output.",
             "properties": {
@@ -618,6 +681,10 @@
         "SourcetypesSchema": {
             "description": "Configurable set of `sourcetype` field values emitted by ethlogger",
             "properties": {
+                "balance": {
+                    "default": "ethereum:balance",
+                    "type": "string"
+                },
                 "block": {
                     "default": "ethereum:block",
                     "type": "string"
@@ -655,6 +722,10 @@
         "abi": {
             "$ref": "#/definitions/AbiRepositoryConfigSchema",
             "description": "ABI repository configuration"
+        },
+        "balanceWatchers": {
+            "$ref": "#/definitions/BalanceWatchersConfigSchema",
+            "description": "Balance watchers, tracking balance of ERC-20 token holders"
         },
         "blockWatcher": {
             "$ref": "#/definitions/BlockWatcherConfigSchema",

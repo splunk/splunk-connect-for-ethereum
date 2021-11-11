@@ -15,6 +15,7 @@ import {
     RawTransactionResponse,
     SyncStatus,
 } from './responses';
+import { sha3 } from '../abi/wasm';
 
 export interface EthRequest<P extends any[], R> {
     method: string;
@@ -147,6 +148,19 @@ export const quorumRaftCluster = (): EthRequest<[], any> => ({
 export const quorumPrivateTransactionPayload = (id: string): EthRequest<[string], string> => ({
     method: 'eth_getQuorumPayload',
     params: [id],
+});
+
+export const ethCall = (
+    contractAddress: string,
+    methodSignature: string,
+    params: string[],
+    blockNumber: number
+): EthRequest<[{ to: string; data: string }, string], string> => ({
+    method: 'eth_call',
+    params: [
+        { to: contractAddress, data: sha3(methodSignature)?.substr(0, 6) + params.join() },
+        '0x' + blockNumber.toString(16),
+    ],
 });
 
 // Parity specific requests

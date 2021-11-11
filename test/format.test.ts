@@ -1,4 +1,4 @@
-import { formatBlock, formatTransaction } from '../src/format';
+import { formatBlock, formatHexToFloatingPoint, formatTransaction } from '../src/format';
 
 test('formatBlock', () => {
     expect(
@@ -109,4 +109,15 @@ test('formatTransaction', () => {
           "value": 8000000000000000,
         }
     `);
+});
+
+test('formatHexToFloatingPoint', () => {
+    expect(formatHexToFloatingPoint('', 13)).toMatchInlineSnapshot(`"0.0000000000000"`);
+    expect(formatHexToFloatingPoint('0x', 13)).toMatchInlineSnapshot(`"0.0000000000000"`);
+    expect(formatHexToFloatingPoint('0x00', 13)).toMatchInlineSnapshot(`"0.0000000000000"`);
+    expect(formatHexToFloatingPoint('0x01', 13)).toMatchInlineSnapshot(`"0.0000000000001"`);
+    expect(formatHexToFloatingPoint('0xaf', 0)).toMatchInlineSnapshot(`"175"`);
+    expect(formatHexToFloatingPoint('0xaf', 1)).toMatchInlineSnapshot(`"17.5"`);
+    expect(formatHexToFloatingPoint('0xaf', 2)).toMatchInlineSnapshot(`"1.75"`);
+    expect(formatHexToFloatingPoint('0xdeadbeef', 8)).toMatchInlineSnapshot(`"37.35928559"`);
 });

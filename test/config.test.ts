@@ -18,6 +18,7 @@ test('defaults', async () => {
                     "reconcileStructShapeFromTuples": true,
                     "requireContractMatch": true,
                   },
+                  "balanceWatchers": Map {},
                   "blockWatcher": Object {
                     "blocksMaxChunkSize": 25,
                     "decryptPrivateTransactions": false,

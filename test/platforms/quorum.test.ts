@@ -6,7 +6,7 @@ import { join } from 'path';
 import { suppressDebugLogging } from '../../src/utils/debug';
 import { BlockWatcher } from '../../src/blockwatcher';
 import { AbiRepository } from '../../src/abi/repo';
-import { Checkpoint } from '../../src/checkpoint';
+import { State } from '../../src/state';
 import { TestOutput } from '../testoutput';
 
 let logHandle: any;
@@ -56,15 +56,16 @@ test('decrypt private transaction', async () => {
                     },
                 ],
             });
-
+            const state = new State({
+                path: join(__dirname, '../../tmp'),
+                saveInterval: 1,
+            });
+            const checkpoint = state.getCheckpoint('main');
+            checkpoint.setInitialBlockNumber(0);
             const blockWatcher = new BlockWatcher({
                 ethClient: client,
                 abiRepo,
-                checkpoints: new Checkpoint({
-                    initialBlockNumber: 0,
-                    path: join(__dirname, '../../tmp'),
-                    saveInterval: 1,
-                }),
+                checkpoint: checkpoint,
                 config: {
                     enabled: true,
                     decryptPrivateTransactions: true,

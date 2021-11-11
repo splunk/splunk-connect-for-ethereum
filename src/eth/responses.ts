@@ -140,6 +140,14 @@ export interface GethPeer {
     [k: string]: any;
 }
 
+export interface BalanceBody {
+    contract: string;
+    blockHash: string;
+    blockNumber: number;
+    account: string;
+    balance: string;
+}
+
 export type GethPeers = GethPeer[];
 
 export interface ParityNodeKind {

@@ -4,7 +4,7 @@ import { inspect } from 'util';
 import { ContractInfo, getContractInfo } from './abi/contract';
 import { AbiRepository } from './abi/repo';
 import { BlockWatcher } from './blockwatcher';
-import { Checkpoint } from './checkpoint';
+import { State } from './state';
 import { CLI_FLAGS } from './cliflags';
 import { ConfigError, EthloggerConfig, loadEthloggerConfig } from './config';
 import { BatchedEthereumClient, EthereumClient } from './eth/client';
@@ -21,6 +21,7 @@ import LRUCache from './utils/lru';
 import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
+import { BalanceWatcher } from './balancewatcher';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -161,12 +162,11 @@ class Ethlogger extends Command {
         internalStatsCollector.addSource(transport, 'ethTransport');
         internalStatsCollector.addSource(output, 'output');
 
-        const checkpoints = addResource(
-            new Checkpoint({
-                path: config.checkpoint.filename,
-                saveInterval: config.checkpoint.saveInterval,
-            })
-        );
+        const state = new State({
+            path: config.checkpoint.filename,
+            saveInterval: config.checkpoint.saveInterval,
+        });
+        const checkpoints = addResource(state);
         await checkpoints.initialize();
 
         const abiRepo = new AbiRepository(config.abi);
@@ -194,7 +194,7 @@ class Ethlogger extends Command {
 
         if (config.blockWatcher.enabled) {
             blockWatcher = new BlockWatcher({
-                checkpoints,
+                checkpoint: state.getCheckpoint('main'),
                 ethClient: client,
                 output,
                 abiRepo: abiRepo,
@@ -207,11 +207,28 @@ class Ethlogger extends Command {
         } else {
             debug('Block watcher is disabled');
         }
+        const balanceWatcherResources = [];
+
+        for (const [name, balanceWatcherConfig] of config.balanceWatchers) {
+            if (balanceWatcherConfig.enabled) {
+                const balanceWatcher = new BalanceWatcher({
+                    checkpoint: state.getCheckpoint(name),
+                    ethClient: client,
+                    output,
+                    config: balanceWatcherConfig,
+                    contractInfoCache,
+                    nodePlatform: platformAdapter,
+                });
+                addResource(balanceWatcher);
+                internalStatsCollector.addSource(balanceWatcher, 'balanceWatcher-' + name);
+                balanceWatcherResources.push(balanceWatcher);
+            }
+        }
 
         internalStatsCollector.start();
 
         return Promise.all(
-            [blockWatcher?.start(), nodeStatsCollector.start()].map(p =>
+            [blockWatcher?.start(), nodeStatsCollector.start(), ...balanceWatcherResources.map(b => b.start())].map(p =>
                 p?.catch(e => {
                     if (e !== ABORT) {
                         error('Error in ethlogger task:', e);
