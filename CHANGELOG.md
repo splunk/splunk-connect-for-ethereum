@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.1.0...v3.2.0) (2021-11-11)
+
+
+### Features
+
+* 🎸 Watch ERC-20 token transfers ([2acc77f](https://github.com/splunk/splunk-connect-for-ethereum/commit/2acc77f5007eb1593ba7652c968a6bbc51d467f6))
+
 # [3.1.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.0.1...v3.1.0) (2021-09-14)
 
 
