@@ -5,8 +5,7 @@ To generate an example showcasing Splunk Connect for Ethereum with **Quorum** we
 ## Run
 
 ```sh-session
-npm install -g quorum-wizard@next
-quorum-wizard
+npx quorum-wizard
 ```
 
 For the quickest path to a working environment with Quorum, Splunk & ethlogger, select the following:
@@ -22,4 +21,5 @@ Further instructions will be printed out after the wizard creates your environme
 
 ## Note
 
-Run `./stop.sh` to shut down the environment.
+-   Run `./stop.sh` to shut down the environment.
+-   The network created by quorum-wizard may not start correctly if run with Docker Compose V2. If you encounter a similar error, try disabling V2 in Docker preferences.
