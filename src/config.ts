@@ -35,6 +35,8 @@ export interface EthloggerConfigSchema {
     blockWatcher: BlockWatcherConfigSchema;
     /** Balance watchers, tracking balance of ERC-20 token holders */
     balanceWatchers: BalanceWatchersConfigSchema;
+    /** NFT watchers, tracking balance of ERC-721 token holders */
+    nftWatchers: NFTWatchersConfigSchema;
     /** Settings for the node metrics collector */
     nodeMetrics: NodeMetricsConfigSchema;
     /** Settings for the node info collector */
@@ -62,6 +64,7 @@ export interface EthloggerConfig {
     contractInfo: ContractInfoConfig;
     blockWatcher: BlockWatcherConfig;
     balanceWatchers: Map<string, BalanceWatcherConfig>;
+    nftWatchers: Map<string, NFTWatcherConfig>;
     nodeMetrics: NodeMetricsConfig;
     nodeInfo: NodeInfoConfig;
     pendingTx: PendingTxConfig;
@@ -227,6 +230,32 @@ export interface BalanceWatcherConfigSchema {
     decimals: number;
     /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
     startAt: StartBlock;
+    /** This optionally specifies at which block the watcher should stop collecting data. */
+    endAt?: number | undefined;
+    /** Specify `false` to disable the balance watcher */
+    enabled: boolean;
+    /** Interval in which to look for the latest block number (if not busy processing the backlog) */
+    pollInterval: DurationConfig;
+    /** Max. number of blocks to fetch at once */
+    blocksMaxChunkSize: number;
+    /** Max. number of chunks to process in parallel */
+    maxParallelChunks: number;
+    /** Wait time before retrying to fetch and process blocks after failure */
+    retryWaitTime: WaitTimeConfig;
+}
+
+/**
+ * NFT watcher is a component tracking transfers of NFTs and reporting their metadata.
+ */
+export interface NFTWatcherConfigSchema {
+    /**
+     * The address of the contract to watch.
+     */
+    contractAddress: string;
+    /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
+    startAt: StartBlock;
+    /** This optionally specifies at which block the watcher should stop collecting data. */
+    endAt?: number | undefined;
     /** Specify `false` to disable the balance watcher */
     enabled: boolean;
     /** Interval in which to look for the latest block number (if not busy processing the backlog) */
@@ -250,11 +279,26 @@ interface BalanceWatchersConfigSchema {
     [name: string]: BalanceWatcherConfigSchema;
 }
 
+/**
+ * NFT watchers is a component tracking transfers of NFTs and reporting their metadata.
+ */
+interface NFTWatchersConfigSchema {
+    /**
+     * Mapping of name => nft watcher.
+     * @see NFTWatcherConfigSchema
+     */
+    [name: string]: NFTWatcherConfigSchema;
+}
+
 export interface BlockWatcherConfig extends Omit<BlockWatcherConfigSchema, 'retryWaitTime'> {
     pollInterval: Duration;
     retryWaitTime: WaitTime;
 }
 export interface BalanceWatcherConfig extends Omit<BalanceWatcherConfigSchema, 'retryWaitTime'> {
+    pollInterval: Duration;
+    retryWaitTime: WaitTime;
+}
+export interface NFTWatcherConfig extends Omit<NFTWatcherConfigSchema, 'retryWaitTime'> {
     pollInterval: Duration;
     retryWaitTime: WaitTime;
 }
@@ -395,6 +439,8 @@ export interface SourcetypesSchema {
     gethPeer?: string;
     /** @default "ethereum:balance" */
     balance?: string;
+    /** @default "ethereum:nft" */
+    nft?: string;
 }
 
 /** Console output prints all generated events and metrics to STDOUT */
@@ -799,8 +845,26 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             blocksMaxChunkSize: value?.blocksMaxChunkSize ?? 25,
             maxParallelChunks: value?.maxParallelChunks ?? 3,
             startAt: value?.startAt ?? 'genesis',
+            endAt: value?.endAt ?? undefined,
             retryWaitTime: waitTimeFromConfig(value?.retryWaitTime) ?? 10000,
             decimals: value?.decimals ?? 18,
+            contractAddress: configRequired('contractAddress', value?.contractAddress),
+        });
+    }
+
+    const nftWatchers = new Map<string, NFTWatcherConfig>();
+    const defaultNftWatchers = defaults.nftWatchers ?? {};
+    for (const key in defaultNftWatchers) {
+        const value = defaultNftWatchers[key];
+
+        nftWatchers.set(key, {
+            enabled: value?.enabled ?? true,
+            pollInterval: parseDuration(value?.pollInterval) ?? 500,
+            blocksMaxChunkSize: value?.blocksMaxChunkSize ?? 25,
+            maxParallelChunks: value?.maxParallelChunks ?? 3,
+            startAt: value?.startAt ?? 'genesis',
+            endAt: value?.endAt ?? undefined,
+            retryWaitTime: waitTimeFromConfig(value?.retryWaitTime) ?? 10000,
             contractAddress: configRequired('contractAddress', value?.contractAddress),
         });
     }
@@ -883,6 +947,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 false,
         },
         balanceWatchers: balanceWatchers,
+        nftWatchers: nftWatchers,
         checkpoint: {
             filename: defaults.checkpoint?.filename ?? 'checkpoint.json',
             saveInterval: parseDuration(defaults.checkpoint?.saveInterval) ?? 100,

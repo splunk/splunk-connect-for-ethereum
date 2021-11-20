@@ -54,6 +54,10 @@
                     "description": "Specify `false` to disable the balance watcher",
                     "type": "boolean"
                 },
+                "endAt": {
+                    "description": "This optionally specifies at which block the watcher should stop collecting data.",
+                    "type": "number"
+                },
                 "maxParallelChunks": {
                     "description": "Max. number of chunks to process in parallel",
                     "type": "number"
@@ -467,6 +471,69 @@
             },
             "type": "object"
         },
+        "NFTWatcherConfigSchema": {
+            "description": "NFT watcher is a component tracking transfers of NFTs and reporting their metadata.",
+            "properties": {
+                "blocksMaxChunkSize": {
+                    "description": "Max. number of blocks to fetch at once",
+                    "type": "number"
+                },
+                "contractAddress": {
+                    "description": "The address of the contract to watch.",
+                    "type": "string"
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable the balance watcher",
+                    "type": "boolean"
+                },
+                "endAt": {
+                    "description": "This optionally specifies at which block the watcher should stop collecting data.",
+                    "type": "number"
+                },
+                "maxParallelChunks": {
+                    "description": "Max. number of chunks to process in parallel",
+                    "type": "number"
+                },
+                "pollInterval": {
+                    "description": "Interval in which to look for the latest block number (if not busy processing the backlog)",
+                    "type": ["string", "number"]
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": ["string", "number"]
+                        }
+                    ],
+                    "description": "Wait time before retrying to fetch and process blocks after failure"
+                },
+                "startAt": {
+                    "anyOf": [
+                        {
+                            "enum": ["genesis", "latest"],
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "description": "If no checkpoint exists (yet), this specifies which block should be chosen as the starting point."
+                }
+            },
+            "type": "object"
+        },
+        "NFTWatchersConfigSchema": {
+            "additionalProperties": {
+                "$ref": "#/definitions/NFTWatcherConfigSchema"
+            },
+            "description": "NFT watchers is a component tracking transfers of NFTs and reporting their metadata.",
+            "type": "object"
+        },
         "NodeInfoConfigSchema": {
             "description": "Platform specific node information is collection on regular interval",
             "properties": {
@@ -697,6 +764,10 @@
                     "default": "ethereum:geth:peer",
                     "type": "string"
                 },
+                "nft": {
+                    "default": "ethereum:nft",
+                    "type": "string"
+                },
                 "nodeInfo": {
                     "default": "ethereum:node:info",
                     "type": "string"
@@ -750,6 +821,10 @@
         "internalMetrics": {
             "$ref": "#/definitions/InternalMetricsConfigSchema",
             "description": "Settings for internal metrics collection"
+        },
+        "nftWatchers": {
+            "$ref": "#/definitions/NFTWatchersConfigSchema",
+            "description": "NFT watchers, tracking balance of ERC-721 token holders"
         },
         "nodeInfo": {
             "$ref": "#/definitions/NodeInfoConfigSchema",

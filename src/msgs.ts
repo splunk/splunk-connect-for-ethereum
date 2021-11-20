@@ -1,5 +1,5 @@
 import { DecodedStruct } from './abi/decode';
-import { BalanceBody, GethPeer } from './eth/responses';
+import { BalanceBody, GethPeer, NftBody } from './eth/responses';
 
 export type Address = string;
 export type Value = string | number | boolean | Array<string | number | boolean>;
@@ -264,6 +264,12 @@ export interface BalanceMessage {
     type: 'balance';
     time: number;
     body: BalanceBody;
+}
+
+export interface NftMessage {
+    type: 'nft';
+    time: number;
+    body: NftBody;
 }
 
 export interface QuorumProtocolInfo {

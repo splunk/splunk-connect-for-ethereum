@@ -158,7 +158,7 @@ export const ethCall = (
 ): EthRequest<[{ to: string; data: string }, string], string> => ({
     method: 'eth_call',
     params: [
-        { to: contractAddress, data: sha3(methodSignature)?.substr(0, 6) + params.join() },
+        { to: contractAddress, data: sha3(methodSignature)?.substr(0, 10) + params.join() },
         '0x' + blockNumber.toString(16),
     ],
 });

@@ -148,6 +148,19 @@ export interface BalanceBody {
     balance: string;
 }
 
+export interface NftBody {
+    from: string;
+    to: string;
+    index: string;
+    rawTokenURI: string;
+    tokenURI: string;
+    metadata: any;
+    contract: string;
+    blockHash: string;
+    blockNumber: number;
+    retrievalTime: number | string;
+}
+
 export type GethPeers = GethPeer[];
 
 export interface ParityNodeKind {

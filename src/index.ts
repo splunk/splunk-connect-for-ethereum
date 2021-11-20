@@ -22,6 +22,7 @@ import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
 import { BalanceWatcher } from './balancewatcher';
+import { NFTWatcher } from './nftwatcher';
 
 const { debug, error, info } = createModuleDebug('cli');
 
@@ -225,10 +226,33 @@ class Ethlogger extends Command {
             }
         }
 
+        const nftWatcherResources = [];
+
+        for (const [name, nftWatcherConfig] of config.nftWatchers) {
+            if (nftWatcherConfig.enabled) {
+                const nftWatcher = new NFTWatcher({
+                    checkpoint: state.getCheckpoint(name),
+                    ethClient: client,
+                    output,
+                    config: nftWatcherConfig,
+                    contractInfoCache,
+                    nodePlatform: platformAdapter,
+                });
+                addResource(nftWatcher);
+                internalStatsCollector.addSource(nftWatcher, 'nftWatcher-' + name);
+                nftWatcherResources.push(nftWatcher);
+            }
+        }
+
         internalStatsCollector.start();
 
         return Promise.all(
-            [blockWatcher?.start(), nodeStatsCollector.start(), ...balanceWatcherResources.map(b => b.start())].map(p =>
+            [
+                blockWatcher?.start(),
+                nodeStatsCollector.start(),
+                ...balanceWatcherResources.map(b => b.start()),
+                ...nftWatcherResources.map(b => b.start()),
+            ].map(p =>
                 p?.catch(e => {
                     if (e !== ABORT) {
                         error('Error in ethlogger task:', e);

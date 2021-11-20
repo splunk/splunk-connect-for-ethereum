@@ -1,43 +1,56 @@
 import { createModuleDebug } from './utils/debug';
+import { sha3 } from './abi/wasm';
 import { ManagedResource } from './utils/resource';
 import { EthereumClient } from './eth/client';
+import { Checkpoint } from './state';
 import { Output, OutputMessage } from './output';
-import { BalanceWatcherConfig } from './config';
+import { NFTWatcherConfig } from './config';
 import { NodePlatformAdapter } from './platforms';
 import { ABORT, AbortHandle } from './utils/abort';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
+import { AggregateMetric } from './utils/stats';
 import { Cache } from './utils/cache';
 import { ContractInfo } from './abi/contract';
-import { AggregateMetric } from './utils/stats';
 import { blockNumber, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { parallel, sleep } from './utils/async';
 import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
 import { bigIntToNumber } from './utils/bn';
-import { formatBlock, formatHexToFloatingPoint } from './format';
+import { formatBlock } from './format';
 import { parseBlockTime } from './blockwatcher';
-import { BalanceMessage, FormattedBlock } from './msgs';
-import { sha3 } from './abi/wasm';
-import { Checkpoint } from './state';
+import { FormattedBlock, NftMessage } from './msgs';
+import { ethers } from 'ethers';
+import fetch from 'node-fetch';
 
-const { debug, info, warn, error, trace } = createModuleDebug('balancewatcher');
+const abiDecoder = new ethers.utils.AbiCoder();
+const maxResponseSize = 4096;
+
+const { debug, info, warn, error, trace } = createModuleDebug('nftwatcher');
 
 const transferEventSignature = sha3('Transfer(address,address,uint256)')!;
 
 const initialCounters = {
     blocksProcessed: 0,
+    mintsProcessed: 0,
     transfersProcessed: 0,
 };
 
+interface NftTransfer {
+    from: string;
+    to: string;
+    tokenIndex: string;
+}
+
 /**
- * BalanceWatcher will watch the activity of a contract on chain, and keep track of all accounts transferring tokens.
+ * NFTWatcher will watch the activity of a NFT contract on chain, keep track of all accounts transferring tokens and log NFT metadata.
  */
-export class BalanceWatcher implements ManagedResource {
+export class NFTWatcher implements ManagedResource {
     private active: boolean = true;
+    private collectRetrievalTime: boolean;
     private ethClient: EthereumClient;
     private checkpoint: Checkpoint;
     private output: Output;
-    private config: BalanceWatcherConfig;
+    private config: NFTWatcherConfig;
     private nodePlatform: NodePlatformAdapter;
     private abortHandle = new AbortHandle();
     private endCallbacks: Array<() => void> = [];
@@ -58,15 +71,17 @@ export class BalanceWatcher implements ManagedResource {
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
         nodePlatform,
+        collectRetrievalTime = true,
     }: {
         ethClient: EthereumClient;
         output: Output;
         checkpoint: Checkpoint;
-        config: BalanceWatcherConfig;
+        config: NFTWatcherConfig;
         waitAfterFailure?: WaitTime;
         chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
         nodePlatform: NodePlatformAdapter;
+        collectRetrievalTime?: boolean;
     }) {
         this.ethClient = ethClient;
         this.checkpoint = checkpoint;
@@ -75,10 +90,11 @@ export class BalanceWatcher implements ManagedResource {
         this.waitAfterFailure = waitAfterFailure;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
         this.nodePlatform = nodePlatform;
+        this.collectRetrievalTime = collectRetrievalTime;
     }
 
     async start(): Promise<void> {
-        debug('Starting balances watcher for %s', this.config.contractAddress);
+        debug('Starting nft watcher for %s', this.config.contractAddress);
         const { ethClient, checkpoint } = this;
 
         if (checkpoint.isEmpty()) {
@@ -184,7 +200,7 @@ export class BalanceWatcher implements ManagedResource {
         if (this.endCallbacks != null) {
             this.endCallbacks.forEach(cb => cb());
         }
-        info('Balances watcher stopped');
+        info('NFT watcher stopped');
     }
 
     async processChunk(chunk: BlockRange) {
@@ -240,7 +256,7 @@ export class BalanceWatcher implements ManagedResource {
     }
 
     public async shutdown() {
-        info('Shutting down balances watcher for %s', this.config.contractAddress);
+        info('Shutting down NFT watcher for %s', this.config.contractAddress);
         this.active = false;
         this.abortHandle.abort();
         await new Promise<void>(resolve => {
@@ -279,24 +295,24 @@ export class BalanceWatcher implements ManagedResource {
 
         let outputMessages = Array<OutputMessage>();
         if (receipt != null && receipt.logs != null) {
-            const addresses = receipt.logs
+            const transfers = receipt.logs
                 ?.map(log => {
-                    if (this.config.contractAddress == log.address) {
-                        if (log.topics[0] == transferEventSignature && log.topics.length == 3) {
-                            const from = '0x' + log.topics[1].substr(26);
-                            const to = '0x' + log.topics[2].substr(26);
-                            return [from, to];
-                        }
+                    if (log.topics[0] == transferEventSignature && log.topics.length == 4) {
+                        const from = '0x' + log.topics[1].substr(26);
+                        const to = '0x' + log.topics[2].substr(26);
+                        const tokenIndex = log.topics[3];
+                        return { from, to, tokenIndex };
                     }
                 })
-                .flat()
-                .filter(a => a !== undefined);
-            if (addresses.length > 0) {
-                this.counters.transfersProcessed++;
-                outputMessages = await this.abortHandle.race(
-                    Promise.all(addresses.map(addr => this.getBalance(addr, formattedBlock, blockTime)))
-                );
-            }
+                .filter((x): x is NftTransfer => x !== null && x !== undefined);
+            this.counters.transfersProcessed += transfers.length;
+            outputMessages = await this.abortHandle.race(
+                Promise.all(
+                    transfers.map(t =>
+                        this.complementWithTokenInfo(t.from, t.to, t.tokenIndex, formattedBlock, blockTime)
+                    )
+                )
+            );
         }
 
         this.aggregates.txProcessTime.push(Date.now() - startTime);
@@ -304,27 +320,71 @@ export class BalanceWatcher implements ManagedResource {
         return outputMessages;
     }
 
-    async getBalance(address: string, formattedBlock: FormattedBlock, blockTime: number): Promise<BalanceMessage> {
+    async complementWithTokenInfo(
+        from: string,
+        to: string,
+        index: string,
+        formattedBlock: FormattedBlock,
+        blockTime: number
+    ): Promise<NftMessage> {
         const response = await this.ethClient.request(
-            ethCall(
-                this.config.contractAddress,
-                'balanceOf(address)',
-                ['0'.repeat(24) + address.substr(2)],
-                formattedBlock.number!
-            )
+            ethCall(this.config.contractAddress, 'tokenURI(uint256)', [index.substr(2)], formattedBlock.number!)
         );
-        const balance = formatHexToFloatingPoint(response, this.config.decimals);
 
+        let decoded = '';
+        let metadata: any = null;
+        try {
+            const decodeResults = abiDecoder.decode(['string'], response);
+            if (decodeResults.length == 1) {
+                decoded = decodeResults[0];
+                metadata = await this.fetchMetadata(decoded);
+            } else {
+                warn('Expected a string object, received %o', decodeResults);
+            }
+        } catch (e) {
+            warn(e);
+        }
         return {
             body: {
+                from: from,
+                to: to,
                 contract: this.config.contractAddress,
                 blockHash: formattedBlock.hash!,
                 blockNumber: formattedBlock.number!,
-                account: address,
-                balance: balance,
+                index: index,
+                rawTokenURI: response,
+                tokenURI: decoded,
+                metadata: metadata,
+                retrievalTime: this.collectRetrievalTime ? Math.floor(Date.now() / 1000) : 0,
             },
             time: blockTime,
-            type: 'balance',
+            type: 'nft',
         };
+    }
+
+    async fetchMetadata(tokenURI: string): Promise<any> {
+        try {
+            const url = new URL(tokenURI);
+            if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+                debug('%s uses an unsupported protocol', tokenURI);
+                return;
+            }
+        } catch (_) {
+            debug('%s is not a supported url', tokenURI);
+            return;
+        }
+
+        try {
+            const metadataResponse = await fetch(tokenURI, { size: maxResponseSize });
+            const isJson = metadataResponse.headers.get('content-type')?.includes('application/json');
+            if (isJson) {
+                return metadataResponse.json();
+            } else {
+                return metadataResponse.text();
+            }
+        } catch (e) {
+            warn('Error reported while fetching from %s: %o', tokenURI, e);
+        }
+        return;
     }
 }
