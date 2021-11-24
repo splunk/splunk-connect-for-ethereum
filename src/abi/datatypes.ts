@@ -1,5 +1,5 @@
 import { RuntimeError } from '../utils/error';
-import { AbiInput } from './item';
+import { AbiInput, AbiOutput } from './item';
 import { getDataSize as wasmGetDataSize, isArrayType as wasmIsArrayType, isValidDataType } from './wasm';
 
 export type AbiType = string;
@@ -40,4 +40,16 @@ export function encodeInputType(inputDef: AbiInput): string {
         return isTupleArray(inputDef) ? `${serializedType}[]` : serializedType;
     }
     return inputDef.type;
+}
+
+export function encodeOutputType(outputDef: AbiOutput): string {
+    if (isTuple(outputDef)) {
+        if (!outputDef.components?.length) {
+            throw new DataTypeError('Unable to encode tuple datatype without components');
+        }
+        const serializedComponentTypes = outputDef.components.map(c => encodeOutputType(c)).join(',');
+        const serializedType = `(${serializedComponentTypes})`;
+        return isTupleArray(outputDef) ? `${serializedType}[]` : serializedType;
+    }
+    return outputDef.type;
 }

@@ -101,6 +101,7 @@ test('defaults', async () => {
                     "collectInterval": 1000,
                     "enabled": false,
                   },
+                  "nftWatchers": Map {},
                   "nodeInfo": Object {
                     "collectInterval": 60000,
                     "enabled": true,

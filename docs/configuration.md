@@ -82,6 +82,7 @@ Root configuration schema for ethlogger
 | `contractInfo`    | [`ContractInfo`](#ContractInfo)                                                                                                    | Contract info cache settings                                                                                                                                                                                           |
 | `blockWatcher`    | [`BlockWatcher`](#BlockWatcher)                                                                                                    | Block watcher settings, configure how blocks, transactions, event logs are ingested                                                                                                                                    |
 | `balanceWatchers` | [`BalanceWatchers`](#BalanceWatchers)                                                                                              | Balance watchers, tracking balance of ERC-20 token holders                                                                                                                                                             |
+| `nftWatchers`     | [`NFTWatchers`](#NFTWatchers)                                                                                                      | NFT watchers, tracking balance of ERC-721 token holders                                                                                                                                                                |
 | `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                                                                                                                                                                |
 | `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                                                                                                                                                   |
 | `pendingTx`       | [`PendingTx`](#PendingTx)                                                                                                          | Settings for collecting pending transactions from node                                                                                                                                                                 |
@@ -143,6 +144,7 @@ Configurable set of `sourcetype` field values emitted by ethlogger
 | `nodeMetrics` | `string` | `"ethereum:node:metrics"`        |
 | `gethPeer`    | `string` | `"ethereum:geth:peer"`           |
 | `balance`     | `string` | `"ethereum:balance"`             |
+| `nft`         | `string` | `"ethereum:nft"`                 |
 
 ### ConsoleOutput
 
@@ -264,6 +266,30 @@ Balance watcher is a component tracking transfers of a token and reporting balan
 | `contractAddress`    | `string`                    | The address of the contract to watch.                                                             |
 | `decimals`           | `number`                    | The number of decimals to divide balances with.                                                   |
 | `startAt`            | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. |
+| `endAt`              | `number`                    | This optionally specifies at which block the watcher should stop collecting data.                 |
+| `enabled`            | `boolean`                   | Specify `false` to disable the balance watcher                                                    |
+| `pollInterval`       | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)        |
+| `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
+| `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
+| `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
+
+### NFTWatchers
+
+NFT watchers is a component tracking transfers of NFTs and reporting their metadata.
+
+| Name | Type                                    | Description                                                       |
+| ---- | --------------------------------------- | ----------------------------------------------------------------- |
+| `-`  | map<string,[`NFTWatcher`](#NFTWatcher)> | Mapping of name => nft watcher.<br><br>See NFTWatcherConfigSchema |
+
+### NFTWatcher
+
+NFT watcher is a component tracking transfers of NFTs and reporting their metadata.
+
+| Name                 | Type                        | Description                                                                                       |
+| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| `contractAddress`    | `string`                    | The address of the contract to watch.                                                             |
+| `startAt`            | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. |
+| `endAt`              | `number`                    | This optionally specifies at which block the watcher should stop collecting data.                 |
 | `enabled`            | `boolean`                   | Specify `false` to disable the balance watcher                                                    |
 | `pollInterval`       | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)        |
 | `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
