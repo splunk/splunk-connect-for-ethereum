@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.2.0...v3.3.0) (2021-11-24)
+
+
+### Features
+
+* 🎸 NFT watch ([34e7af9](https://github.com/splunk/splunk-connect-for-ethereum/commit/34e7af9d5a4d0ef56eba81789e324cb87087f97e))
+
 # [3.2.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.1.0...v3.2.0) (2021-11-11)
 
 
