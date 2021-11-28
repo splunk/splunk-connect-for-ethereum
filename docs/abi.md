@@ -84,7 +84,7 @@ Truffle build files can have information about which network and contract addres
 }
 ```
 
-## Contract Fingerprinting
+## Contract fingerprinting
 
 One challenge that can occur when decoding ABI information is overlapping signatures. Imagine 2 smart contracts both exposing a function with the signature `transfer(address,uint256)`. For one contract the second argument may refer to an amount of currency being transferred (eg. `transfer(to address, amount uint256)`) and for another contract the second argument refers to the ID of a non-fungible item (eg. `transfer(to address, tokenId uint256)`). Given the nature of ABI encoding, both functions end up having the same signature and it's ambiguous for the ABI decoder which one to choose, unless the smart contract can be associated with the ABI definition (if the ABI definition contains the contract address).
 
