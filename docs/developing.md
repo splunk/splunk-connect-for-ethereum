@@ -1,6 +1,6 @@
 # Developing Splunk Connect for Ethereum
 
-## Set up development environment
+## Set up Development Environment
 
 **Prerequisites**
 
@@ -29,7 +29,7 @@ $ yarn build
 $ ./bin/run --help
 ```
 
-### Build ethlogger docker image
+### Build Ethlogger Docker Image
 
 ```sh-session
 $ docker build -t ethlogger .
@@ -37,7 +37,7 @@ $ docker build -t ethlogger .
 
 ## Debugging
 
-### Enable debug or trace logging
+### Enable Debug or Trace Logging
 
 You can use ethloggers CLI flags `--debug` or `--trace` to
 
@@ -61,7 +61,7 @@ You can also use the `DEBUG` environment variable to just enable debugging for a
 $ DEBUG=ethlogger:hec:* ./bin/run ...
 ```
 
-### Attach a debugger to the node process
+### Attach a Debugger to the Node Process
 
 One easy way to attach an external debugger to ethlogger is to set the `NODE_OPTIONS` environment variable to `--inspect` or `--inspect-brk`.
 
@@ -71,7 +71,7 @@ NODE_OPTIONS=--inspect-brk ./bin/run ...
 
 Then use a compatible tool to connect to the node process. To use Chrome dev-tools, open Chrome and navigate to `chrome://inspect`, then select the node process from the list to attach the debugger.
 
-## Code style
+## Code Style
 
 The ethlogger codebase employs certain rules regarding code style. Rule are defined in config files and enforced by CI:
 
@@ -111,7 +111,7 @@ Eslint can also automatically fix certain errors automatically if you pass the `
 $ yarn lint --fix
 ```
 
-## Run tests
+## Run Tests
 
 There are several unit tests in this repo. In order for CI checks to pass, all tests need to complete successfully.
 
@@ -192,7 +192,7 @@ It provides guidance on how to form commits using the git-cz tool.
 husky > commit-msg hook failed (add --no-verify to bypass)
 ```
 
-### Creating a conventional commit
+### Creating a Conventional Commit
 
 You can write a conventional commit by following the guidelines above.
 
@@ -272,7 +272,7 @@ If no issues are fixed with the commit, you can press enter to bypass the prompt
 
 If you want to change the contents of the commit, you can run `git cz --amend`. [See more about `git commit --amend`.](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History)
 
-## Semantic releases
+## Semantic Releases
 
 Whenever a change is made to the repository, a Github action runs `yarn semantic-release`.
 
