@@ -7,6 +7,7 @@ Array [
       "blockHash": "0x5499be815b61cb4676629c5366af723e55d11a859c563900c0d7b2371fc826b5",
       "blockNumber": 19227319,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa81f",
       "metadata": Object {
@@ -60,6 +61,7 @@ Array [
       "blockHash": "0x5499be815b61cb4676629c5366af723e55d11a859c563900c0d7b2371fc826b5",
       "blockNumber": 19227319,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa820",
       "metadata": Object {
@@ -113,6 +115,7 @@ Array [
       "blockHash": "0x5499be815b61cb4676629c5366af723e55d11a859c563900c0d7b2371fc826b5",
       "blockNumber": 19227319,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa821",
       "metadata": Object {
@@ -166,6 +169,7 @@ Array [
       "blockHash": "0x24d10bb06bf6b351f9046e03127d3b61841abdc35e5bcdaa8ca6f90b701d963d",
       "blockNumber": 19227323,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa822",
       "metadata": Object {
@@ -219,6 +223,7 @@ Array [
       "blockHash": "0x24d10bb06bf6b351f9046e03127d3b61841abdc35e5bcdaa8ca6f90b701d963d",
       "blockNumber": 19227323,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa823",
       "metadata": Object {
@@ -281,6 +286,7 @@ Terms and Conditions: https://confirmed.onelink.me/mzYA/589f9ddf",
       "blockHash": "0x24d10bb06bf6b351f9046e03127d3b61841abdc35e5bcdaa8ca6f90b701d963d",
       "blockNumber": 19227323,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa824",
       "metadata": Object {
@@ -334,6 +340,7 @@ Terms and Conditions: https://confirmed.onelink.me/mzYA/589f9ddf",
       "blockHash": "0x24d10bb06bf6b351f9046e03127d3b61841abdc35e5bcdaa8ca6f90b701d963d",
       "blockNumber": 19227323,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa825",
       "metadata": Object {
@@ -392,6 +399,7 @@ Aquarium gear airdropped to players every 15 minutes! The crypto competition awa
       "blockHash": "0x24d10bb06bf6b351f9046e03127d3b61841abdc35e5bcdaa8ca6f90b701d963d",
       "blockNumber": 19227323,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa826",
       "metadata": Object {
@@ -445,6 +453,7 @@ Aquarium gear airdropped to players every 15 minutes! The crypto competition awa
       "blockHash": "0x69508bf3d7a734215a6f6ea74c4bc0e019e6b8a30594b9a39088bc4bb161a56d",
       "blockNumber": 19227324,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa827",
       "metadata": Object {
@@ -498,6 +507,7 @@ Aquarium gear airdropped to players every 15 minutes! The crypto competition awa
       "blockHash": "0x69508bf3d7a734215a6f6ea74c4bc0e019e6b8a30594b9a39088bc4bb161a56d",
       "blockNumber": 19227324,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa828",
       "metadata": Object {
@@ -551,6 +561,7 @@ Aquarium gear airdropped to players every 15 minutes! The crypto competition awa
       "blockHash": "0x69508bf3d7a734215a6f6ea74c4bc0e019e6b8a30594b9a39088bc4bb161a56d",
       "blockNumber": 19227324,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa829",
       "metadata": Object {
@@ -609,6 +620,7 @@ Aquarium gear airdropped to players every 15 minutes! The crypto competition awa
       "blockHash": "0xd93aaf9039246440482d4cb3d546fae828d70e775d7a2e1dbe2733e093c30193",
       "blockNumber": 19227325,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa82a",
       "metadata": Object {
@@ -668,6 +680,7 @@ POAP distributed directly to artist from SearchLight through secret passcode.",
       "blockHash": "0xd93aaf9039246440482d4cb3d546fae828d70e775d7a2e1dbe2733e093c30193",
       "blockNumber": 19227325,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa82b",
       "metadata": Object {
@@ -721,6 +734,7 @@ POAP distributed directly to artist from SearchLight through secret passcode.",
       "blockHash": "0xbbfff3a829e108e5955c5396d52e64064867bb329a4b85b5b6ed4e8e12276dde",
       "blockNumber": 19227326,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa82c",
       "metadata": Object {
@@ -774,6 +788,7 @@ POAP distributed directly to artist from SearchLight through secret passcode.",
       "blockHash": "0x7cc10cc0d3464c0005512873f98ba4770bd656de0364c01659076bcf61ce306b",
       "blockNumber": 19227327,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa82d",
       "metadata": Object {
@@ -827,6 +842,7 @@ POAP distributed directly to artist from SearchLight through secret passcode.",
       "blockHash": "0x798e23ce6737bd08d38e00c083ca91e5dbf34ae90d7d24e024aac2a44ff24d53",
       "blockNumber": 19227328,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa82e",
       "metadata": Object {
@@ -880,6 +896,7 @@ POAP distributed directly to artist from SearchLight through secret passcode.",
       "blockHash": "0x798e23ce6737bd08d38e00c083ca91e5dbf34ae90d7d24e024aac2a44ff24d53",
       "blockNumber": 19227328,
       "contract": "0x22C1f6050E56d2876009903609a2cC3fEf83B415",
+      "errorTokenURI": undefined,
       "from": "0x0000000000000000000000000000000000000000",
       "index": "0x00000000000000000000000000000000000000000000000000000000002aa82f",
       "metadata": Object {
