@@ -152,8 +152,9 @@ export interface NftBody {
     from: string;
     to: string;
     index: string;
-    rawTokenURI: string;
-    tokenURI: string;
+    rawTokenURI: string | undefined;
+    tokenURI: string | undefined;
+    errorTokenURI: any | undefined;
     metadata: any;
     contract: string;
     blockHash: string;

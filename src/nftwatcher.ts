@@ -21,6 +21,7 @@ import { parseBlockTime } from './blockwatcher';
 import { FormattedBlock, NftMessage } from './msgs';
 import { ethers } from 'ethers';
 import fetch from 'node-fetch';
+import { JsonRpcError } from './eth/jsonrpc';
 
 const abiDecoder = new ethers.utils.AbiCoder();
 const maxResponseSize = 4096;
@@ -327,22 +328,42 @@ export class NFTWatcher implements ManagedResource {
         formattedBlock: FormattedBlock,
         blockTime: number
     ): Promise<NftMessage> {
-        const response = await this.ethClient.request(
-            ethCall(this.config.contractAddress, 'tokenURI(uint256)', [index.substr(2)], formattedBlock.number!)
-        );
+        let rawTokenURI = undefined;
+        let errorTokenURI;
+        try {
+            rawTokenURI = await this.ethClient.request(
+                ethCall(this.config.contractAddress, 'tokenURI(uint256)', [index.substr(2)], formattedBlock.number!)
+            );
+        } catch (e) {
+            if (e instanceof JsonRpcError) {
+                errorTokenURI = { code: e.code, data: e.data, decodedData: '' };
+                try {
+                    // remove the first 10 characters: 0x and 4 bytes.
+                    const decodeResults = abiDecoder.decode(['string'], '0x' + e.data.substr(10));
+                    if (decodeResults.length == 1) {
+                        const decoded = decodeResults[0];
+                        errorTokenURI.decodedData = decoded;
+                    }
+                } catch (abiDecodeError) {
+                    warn(abiDecodeError);
+                }
+            }
+        }
 
         let decoded = '';
         let metadata: any = null;
-        try {
-            const decodeResults = abiDecoder.decode(['string'], response);
-            if (decodeResults.length == 1) {
-                decoded = decodeResults[0];
-                metadata = await this.fetchMetadata(decoded);
-            } else {
-                warn('Expected a string object, received %o', decodeResults);
+        if (rawTokenURI !== undefined) {
+            try {
+                const decodeResults = abiDecoder.decode(['string'], rawTokenURI);
+                if (decodeResults.length == 1) {
+                    decoded = decodeResults[0];
+                    metadata = await this.fetchMetadata(decoded);
+                } else {
+                    warn('Expected a string object, received %o', decodeResults);
+                }
+            } catch (e) {
+                warn(e);
             }
-        } catch (e) {
-            warn(e);
         }
         return {
             body: {
@@ -352,7 +373,8 @@ export class NFTWatcher implements ManagedResource {
                 blockHash: formattedBlock.hash!,
                 blockNumber: formattedBlock.number!,
                 index: index,
-                rawTokenURI: response,
+                rawTokenURI: rawTokenURI,
+                errorTokenURI: errorTokenURI,
                 tokenURI: decoded,
                 metadata: metadata,
                 retrievalTime: this.collectRetrievalTime ? Math.floor(Date.now() / 1000) : 0,
