@@ -1,3 +1,10 @@
+## [3.3.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.3.0...v3.3.1) (2021-12-02)
+
+
+### Bug Fixes
+
+* 🐛 Support contracts throwing when asked for tokenURI ([55aa44b](https://github.com/splunk/splunk-connect-for-ethereum/commit/55aa44bf4c05d2a43242e206854f0ce6e3aa18e0))
+
 # [3.3.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.2.0...v3.3.0) (2021-11-24)
 
 
