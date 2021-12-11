@@ -372,7 +372,7 @@ export class NFTWatcher implements ManagedResource {
                 contract: this.config.contractAddress,
                 blockHash: formattedBlock.hash!,
                 blockNumber: formattedBlock.number!,
-                index: index,
+                tokenIndex: index,
                 rawTokenURI: rawTokenURI,
                 errorTokenURI: errorTokenURI,
                 tokenURI: decoded,

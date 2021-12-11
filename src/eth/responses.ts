@@ -151,7 +151,7 @@ export interface BalanceBody {
 export interface NftBody {
     from: string;
     to: string;
-    index: string;
+    tokenIndex: string;
     rawTokenURI: string | undefined;
     tokenURI: string | undefined;
     errorTokenURI: any | undefined;
