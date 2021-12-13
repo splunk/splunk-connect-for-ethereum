@@ -1,3 +1,15 @@
+# [3.4.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.3.1...v3.4.0) (2021-12-13)
+
+
+### Bug Fixes
+
+* 🐛 Distinguish token index from splunk index ([81b7179](https://github.com/splunk/splunk-connect-for-ethereum/commit/81b7179a230d2e6c6feb94d414c412c65bb65c0d))
+
+
+### Features
+
+* 🎸 Add transactionHash to NFT payload ([1741444](https://github.com/splunk/splunk-connect-for-ethereum/commit/1741444687e971e3d922dd4648a4a4379e0f7866))
+
 ## [3.3.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.3.0...v3.3.1) (2021-12-02)
 
 

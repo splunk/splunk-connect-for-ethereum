@@ -1,7 +1,7 @@
 {
     "name": "@splunkdlt/ethlogger",
     "description": "Agent to gather information from an Ethereum node - part of Splunk Connect for Ethereum",
-    "version": "3.3.1",
+    "version": "3.4.0",
     "author": "Splunk",
     "bin": {
         "ethlogger": "./bin/run"
