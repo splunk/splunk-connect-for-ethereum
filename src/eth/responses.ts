@@ -159,6 +159,7 @@ export interface NftBody {
     contract: string;
     blockHash: string;
     blockNumber: number;
+    transactionHash: string;
     retrievalTime: number | string;
 }
 
