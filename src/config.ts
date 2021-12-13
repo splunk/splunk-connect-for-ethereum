@@ -35,6 +35,8 @@ export interface EthloggerConfigSchema {
     blockWatcher: BlockWatcherConfigSchema;
     /** Balance watchers, tracking balance of ERC-20 token holders */
     balanceWatchers: BalanceWatchersConfigSchema;
+    /** Contract tracer, tracking contract calls */
+    contractTracers: ContractTracersConfigSchema;
     /** NFT watchers, tracking balance of ERC-721 token holders */
     nftWatchers: NFTWatchersConfigSchema;
     /** Settings for the node metrics collector */
@@ -64,6 +66,7 @@ export interface EthloggerConfig {
     contractInfo: ContractInfoConfig;
     blockWatcher: BlockWatcherConfig;
     balanceWatchers: Map<string, BalanceWatcherConfig>;
+    contractTracers: Map<string, ContractTracerConfig>;
     nftWatchers: Map<string, NFTWatcherConfig>;
     nodeMetrics: NodeMetricsConfig;
     nodeInfo: NodeInfoConfig;
@@ -247,6 +250,28 @@ export interface BalanceWatcherConfigSchema {
 }
 
 /**
+ * Contract tracer is a component tracking contract calls (requires the geth debug API).
+ */
+export interface ContractTracerConfigSchema {
+    /** A list of contract addresses to watch. */
+    contractAddresses: string[];
+    /** If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. */
+    startAt: StartBlock;
+    /** This optionally specifies at which block the watcher should stop collecting data. */
+    endAt?: number | undefined;
+    /** Specify `false` to disable the contract tracer watcher */
+    enabled: boolean;
+    /** Interval in which to look for the latest block number (if not busy processing the backlog) */
+    pollInterval: DurationConfig;
+    /** Max. number of blocks to fetch at once */
+    blocksMaxChunkSize: number;
+    /** Max. number of chunks to process in parallel */
+    maxParallelChunks: number;
+    /** Wait time before retrying to fetch and process blocks after failure */
+    retryWaitTime: WaitTimeConfig;
+}
+
+/**
  * NFT watcher is a component tracking transfers of NFTs and reporting their metadata.
  */
 export interface NFTWatcherConfigSchema {
@@ -284,6 +309,18 @@ interface BalanceWatchersConfigSchema {
 }
 
 /**
+ * Contract tracer is a component tracking contract calls (requires the geth debug API).
+
+ */
+interface ContractTracersConfigSchema {
+    /**
+     * Mapping of name => contract tracer.
+     * @see ContractTracerConfigSchema
+     */
+    [name: string]: ContractTracerConfigSchema;
+}
+
+/**
  * NFT watchers is a component tracking transfers of NFTs and reporting their metadata.
  */
 interface NFTWatchersConfigSchema {
@@ -299,6 +336,10 @@ export interface BlockWatcherConfig extends Omit<BlockWatcherConfigSchema, 'retr
     retryWaitTime: WaitTime;
 }
 export interface BalanceWatcherConfig extends Omit<BalanceWatcherConfigSchema, 'retryWaitTime'> {
+    pollInterval: Duration;
+    retryWaitTime: WaitTime;
+}
+export interface ContractTracerConfig extends Omit<ContractTracerConfigSchema, 'retryWaitTime'> {
     pollInterval: Duration;
     retryWaitTime: WaitTime;
 }
@@ -445,6 +486,8 @@ export interface SourcetypesSchema {
     balance?: string;
     /** @default "ethereum:nft" */
     nft?: string;
+    /** @default "ethereum:transaction:trace" */
+    traceTransaction?: string;
 }
 
 /** Console output prints all generated events and metrics to STDOUT */
@@ -779,6 +822,19 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
         }
     };
 
+    const configRequiredArray = <T>(flag: string, configValue: string[] | undefined): string[] => {
+        if (configValue == null) {
+            if (dryRun) {
+                error('Missing required field %s', flag);
+                return [];
+            } else {
+                throw new ConfigError(`Missing required field ${flag}`);
+            }
+        } else {
+            return configValue;
+        }
+    };
+
     const parseSpecificHecConfig = (
         defaults: DeepPartial<HecConfigSchema> | undefined,
         indexFlag: keyof CliFlags,
@@ -854,6 +910,23 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             decimals: value?.decimals ?? 18,
             contractAddress: configRequired('contractAddress', value?.contractAddress),
             logEthBalance: value?.logEthBalance ?? true,
+        });
+    }
+
+    const contractTracers = new Map<string, ContractTracerConfig>();
+    const defaultcontractTracers = defaults.contractTracers ?? {};
+    for (const key in defaultcontractTracers) {
+        const value = defaultcontractTracers[key];
+
+        contractTracers.set(key, {
+            enabled: value?.enabled ?? true,
+            pollInterval: parseDuration(value?.pollInterval) ?? 500,
+            blocksMaxChunkSize: value?.blocksMaxChunkSize ?? 25,
+            maxParallelChunks: value?.maxParallelChunks ?? 3,
+            startAt: value?.startAt ?? 'genesis',
+            endAt: value?.endAt ?? undefined,
+            retryWaitTime: waitTimeFromConfig(value?.retryWaitTime) ?? 10000,
+            contractAddresses: configRequiredArray('contractAddresses', value?.contractAddresses),
         });
     }
 
@@ -953,6 +1026,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
                 false,
         },
         balanceWatchers: balanceWatchers,
+        contractTracers: contractTracers,
         nftWatchers: nftWatchers,
         checkpoint: {
             filename: defaults.checkpoint?.filename ?? 'checkpoint.json',

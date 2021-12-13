@@ -1,57 +1,41 @@
 import { createModuleDebug } from './utils/debug';
-import { sha3 } from './abi/wasm';
 import { ManagedResource } from './utils/resource';
 import { EthereumClient } from './eth/client';
-import { Checkpoint } from './state';
 import { Output, OutputMessage } from './output';
-import { NFTWatcherConfig } from './config';
+import { ContractTracerConfig } from './config';
 import { NodePlatformAdapter } from './platforms';
 import { ABORT, AbortHandle } from './utils/abort';
 import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
-import { AggregateMetric } from './utils/stats';
 import { Cache } from './utils/cache';
 import { ContractInfo } from './abi/contract';
-import { blockNumber, ethBalance, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
+import { AggregateMetric } from './utils/stats';
+import { blockNumber, getBlock, getTransactionReceipt, gethTraceTransaction } from './eth/requests';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { parallel, sleep } from './utils/async';
 import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
 import { bigIntToNumber } from './utils/bn';
-import { formatBlock, formatHexToFloatingPoint } from './format';
+import { formatBlock } from './format';
 import { parseBlockTime } from './blockwatcher';
-import { FormattedBlock, NftMessage } from './msgs';
-import { ethers } from 'ethers';
-import fetch from 'node-fetch';
-import { JsonRpcError } from './eth/jsonrpc';
+import { FormattedBlock, TraceTransactionMessage } from './msgs';
+import { Checkpoint } from './state';
 
-const abiDecoder = new ethers.utils.AbiCoder();
-const maxResponseSize = 4096;
-
-const { debug, info, warn, error, trace } = createModuleDebug('nftwatcher');
-
-const transferEventSignature = sha3('Transfer(address,address,uint256)')!;
+const { debug, info, warn, error, trace } = createModuleDebug('ContractTracer');
 
 const initialCounters = {
     blocksProcessed: 0,
-    mintsProcessed: 0,
-    transfersProcessed: 0,
+    tracesProcessed: 0,
 };
 
-interface NftTransfer {
-    from: string;
-    to: string;
-    tokenIndex: string;
-}
-
 /**
- * NFTWatcher will watch the activity of a NFT contract on chain, keep track of all accounts transferring tokens and log NFT metadata.
+ * ContractTracer will watch the activity of a contract on chain, tracing transactions with events emitted by the contract.
  */
-export class NFTWatcher implements ManagedResource {
+export class ContractTracer implements ManagedResource {
     private active: boolean = true;
-    private collectRetrievalTime: boolean;
     private ethClient: EthereumClient;
     private checkpoint: Checkpoint;
     private output: Output;
-    private config: NFTWatcherConfig;
+    private config: ContractTracerConfig;
+    private addresses: Set<string>;
     private nodePlatform: NodePlatformAdapter;
     private abortHandle = new AbortHandle();
     private endCallbacks: Array<() => void> = [];
@@ -72,17 +56,15 @@ export class NFTWatcher implements ManagedResource {
         waitAfterFailure = linearBackoff({ min: 0, step: 2500, max: 120_000 }),
         chunkQueueMaxSize = 1000,
         nodePlatform,
-        collectRetrievalTime = true,
     }: {
         ethClient: EthereumClient;
         output: Output;
         checkpoint: Checkpoint;
-        config: NFTWatcherConfig;
+        config: ContractTracerConfig;
         waitAfterFailure?: WaitTime;
         chunkQueueMaxSize?: number;
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
         nodePlatform: NodePlatformAdapter;
-        collectRetrievalTime?: boolean;
     }) {
         this.ethClient = ethClient;
         this.checkpoint = checkpoint;
@@ -91,11 +73,11 @@ export class NFTWatcher implements ManagedResource {
         this.waitAfterFailure = waitAfterFailure;
         this.chunkQueueMaxSize = chunkQueueMaxSize;
         this.nodePlatform = nodePlatform;
-        this.collectRetrievalTime = collectRetrievalTime;
+        this.addresses = new Set(this.config.contractAddresses.map(address => address.toLowerCase()));
     }
 
     async start(): Promise<void> {
-        debug('Starting nft watcher for %s', this.config.contractAddress);
+        debug('Starting contract tracer for %s', this.checkpoint.getID());
         const { ethClient, checkpoint } = this;
 
         if (checkpoint.isEmpty()) {
@@ -201,7 +183,7 @@ export class NFTWatcher implements ManagedResource {
         if (this.endCallbacks != null) {
             this.endCallbacks.forEach(cb => cb());
         }
-        info('NFT watcher stopped');
+        info('contract tracer stopped for %s', this.checkpoint.getID());
     }
 
     async processChunk(chunk: BlockRange) {
@@ -257,7 +239,7 @@ export class NFTWatcher implements ManagedResource {
     }
 
     public async shutdown() {
-        info('Shutting down NFT watcher for %s', this.config.contractAddress);
+        info('Shutting down contract tracer for %s', this.checkpoint.getID());
         this.active = false;
         this.abortHandle.abort();
         await new Promise<void>(resolve => {
@@ -293,136 +275,40 @@ export class NFTWatcher implements ManagedResource {
         trace('Processing transaction %s from block %d', rawTx.hash, formattedBlock.number);
 
         const receipt = await this.ethClient.request(getTransactionReceipt(rawTx.hash));
-
-        let outputMessages = Array<OutputMessage>();
+        const outputMessages = Array<OutputMessage>();
         if (receipt != null && receipt.logs != null) {
-            const transfers = receipt.logs
-                ?.map(log => {
-                    if (this.config.contractAddress == log.address) {
-                        if (log.topics[0] == transferEventSignature && log.topics.length == 4) {
-                            const from = '0x' + log.topics[1].substr(26);
-                            const to = '0x' + log.topics[2].substr(26);
-                            const tokenIndex = log.topics[3];
-                            return { from, to, tokenIndex };
-                        }
-                    }
-                })
-                .filter((x): x is NftTransfer => x !== null && x !== undefined);
-            this.counters.transfersProcessed += transfers.length;
-            outputMessages = await this.abortHandle.race(
-                Promise.all(
-                    transfers.map(t =>
-                        this.complementWithTokenInfo(t.from, t.to, rawTx.hash, t.tokenIndex, formattedBlock, blockTime)
-                    )
-                )
-            );
+            const matchedAddrs = [
+                ...new Set(
+                    receipt.logs
+                        .map(log => log.address.toLowerCase())
+                        .filter(addr => this.addresses.has(addr.toLowerCase()))
+                ),
+            ];
+
+            if (matchedAddrs.length > 0) {
+                this.counters.tracesProcessed++;
+                const gethTraceTransactionResponse = await this.abortHandle.race(
+                    this.ethClient.request(gethTraceTransaction(rawTx.hash), { immediate: true })
+                );
+
+                const outputMessage: TraceTransactionMessage = {
+                    type: 'traceTransaction',
+                    time: blockTime,
+                    body: {
+                        watcher: this.checkpoint.getID(),
+                        contracts: matchedAddrs,
+                        transactionHash: rawTx.hash,
+                        blockHash: formattedBlock.hash!,
+                        blockNumber: formattedBlock.number!,
+                        ...gethTraceTransactionResponse,
+                    },
+                };
+                outputMessages.push(outputMessage);
+            }
         }
 
         this.aggregates.txProcessTime.push(Date.now() - startTime);
         trace('Completed processing transaction %s in %d ms', rawTx.hash, Date.now() - startTime);
         return outputMessages;
-    }
-
-    async complementWithTokenInfo(
-        from: string,
-        to: string,
-        transactionHash: string,
-        index: string,
-        formattedBlock: FormattedBlock,
-        blockTime: number
-    ): Promise<NftMessage> {
-        let rawTokenURI = undefined;
-        let errorTokenURI;
-        try {
-            rawTokenURI = await this.ethClient.request(
-                ethCall(this.config.contractAddress, 'tokenURI(uint256)', [index.substr(2)], formattedBlock.number!)
-            );
-        } catch (e) {
-            if (e instanceof JsonRpcError) {
-                errorTokenURI = { code: e.code, data: e.data, decodedData: '' };
-                try {
-                    // remove the first 10 characters: 0x and 4 bytes.
-                    const decodeResults = abiDecoder.decode(['string'], '0x' + e.data.substr(10));
-                    if (decodeResults.length == 1) {
-                        const decoded = decodeResults[0];
-                        errorTokenURI.decodedData = decoded;
-                    }
-                } catch (abiDecodeError) {
-                    warn(abiDecodeError);
-                }
-            }
-        }
-
-        let decoded = '';
-        let metadata: any = null;
-        if (rawTokenURI !== undefined) {
-            try {
-                const decodeResults = abiDecoder.decode(['string'], rawTokenURI);
-                if (decodeResults.length == 1) {
-                    decoded = decodeResults[0];
-                    metadata = await this.fetchMetadata(decoded);
-                } else {
-                    warn('Expected a string object, received %o', decodeResults);
-                }
-            } catch (e) {
-                warn(e);
-            }
-        }
-        let fromBalance = undefined;
-        let toBalance = undefined;
-        if (this.config.logEthBalance) {
-            const fromBalanceHex = await this.ethClient.request(ethBalance(from, formattedBlock.number!));
-            const toBalanceHex = await this.ethClient.request(ethBalance(to, formattedBlock.number!));
-            fromBalance = formatHexToFloatingPoint(fromBalanceHex, 18);
-            toBalance = formatHexToFloatingPoint(toBalanceHex, 18);
-        }
-
-        return {
-            body: {
-                watcher: this.checkpoint.getID(),
-                from: from,
-                to: to,
-                contract: this.config.contractAddress,
-                blockHash: formattedBlock.hash!,
-                blockNumber: formattedBlock.number!,
-                transactionHash: transactionHash,
-                tokenIndex: index,
-                rawTokenURI: rawTokenURI,
-                errorTokenURI: errorTokenURI,
-                tokenURI: decoded,
-                metadata: metadata,
-                retrievalTime: this.collectRetrievalTime ? Math.floor(Date.now() / 1000) : 0,
-                fromEthBalance: fromBalance,
-                toEthBalance: toBalance,
-            },
-            time: blockTime,
-            type: 'nft',
-        };
-    }
-
-    async fetchMetadata(tokenURI: string): Promise<any> {
-        try {
-            const url = new URL(tokenURI);
-            if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-                debug('%s uses an unsupported protocol', tokenURI);
-                return;
-            }
-        } catch (_) {
-            debug('%s is not a supported url', tokenURI);
-            return;
-        }
-
-        try {
-            const metadataResponse = await fetch(tokenURI, { size: maxResponseSize });
-            const isJson = metadataResponse.headers.get('content-type')?.includes('application/json');
-            if (isJson) {
-                return metadataResponse.json();
-            } else {
-                return metadataResponse.text();
-            }
-        } catch (e) {
-            warn('Error reported while fetching from %s: %o', tokenURI, e);
-        }
-        return;
     }
 }

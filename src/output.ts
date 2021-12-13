@@ -6,6 +6,7 @@ import {
     GethPeerMessage,
     LogEventMessage,
     NftMessage,
+    TraceTransactionMessage,
     NodeInfoMessage,
     NodeMetricsMessage,
     PendingTransactionMessage,
@@ -26,6 +27,7 @@ export const defaultSourcetypes = {
     gethPeer: 'ethereum:geth:peer',
     balance: 'ethereum:balance',
     nft: 'ethereum:nft',
+    traceTransaction: 'ethereum:transaction:trace',
 };
 
 export type OutputMessage =
@@ -37,7 +39,8 @@ export type OutputMessage =
     | NodeMetricsMessage
     | GethPeerMessage
     | BalanceMessage
-    | NftMessage;
+    | NftMessage
+    | TraceTransactionMessage;
 
 export interface Output extends ManagedResource {
     write(message: OutputMessage): void;
@@ -58,6 +61,7 @@ export class HecOutput implements Output, ManagedResource {
             case 'gethPeer':
             case 'balance':
             case 'nft':
+            case 'traceTransaction':
                 this.eventsHec.pushEvent({
                     time: msg.time,
                     body: msg.body,

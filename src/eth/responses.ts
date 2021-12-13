@@ -141,6 +141,7 @@ export interface GethPeer {
 }
 
 export interface BalanceBody {
+    watcher: string;
     contract: string;
     blockHash: string;
     blockNumber: number;
@@ -150,6 +151,7 @@ export interface BalanceBody {
 }
 
 export interface NftBody {
+    watcher: string;
     from: string;
     to: string;
     fromEthBalance: string | undefined;
@@ -164,6 +166,27 @@ export interface NftBody {
     blockNumber: number;
     transactionHash: string;
     retrievalTime: number | string;
+}
+
+export interface GethTraceTransactionResponse {
+    type: string;
+    from: string;
+    to: string;
+    value: string;
+    gas: string;
+    gasUsed: string;
+    input: string;
+    output: string;
+    time: string;
+    calls?: GethTraceTransactionResponse[];
+}
+
+export interface TraceTransactionBody extends GethTraceTransactionResponse {
+    watcher: string;
+    contracts: string[];
+    blockHash: string;
+    blockNumber: number;
+    transactionHash: string;
 }
 
 export type GethPeers = GethPeer[];

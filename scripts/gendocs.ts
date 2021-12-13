@@ -15,8 +15,16 @@ type LiteralTypeInfo = { type: 'literal'; value: string };
 type PrimitiveTypeInfo = { type: 'primitive'; name: string };
 type ObjectTypeInfo = { type: 'object'; name: string };
 type MapTypeInfo = { type: 'map'; name: string };
+type ArrayTypeInfo = { type: 'array'; element: TypeInfo };
 type UnionTypeInfo = Array<TypeInfo>;
-type TypeInfo = LiteralTypeInfo | PrimitiveTypeInfo | ObjectTypeInfo | UnionTypeInfo | MapTypeInfo | UnkownType;
+type TypeInfo =
+    | LiteralTypeInfo
+    | PrimitiveTypeInfo
+    | ObjectTypeInfo
+    | UnionTypeInfo
+    | MapTypeInfo
+    | ArrayTypeInfo
+    | UnkownType;
 
 interface Field {
     name: string;
@@ -50,6 +58,8 @@ function formatTypeInfo(type: TypeInfo): string {
         return link(`#${type.name}`, inlineCode(type.name));
     } else if (type.type === 'map') {
         return 'map<string,' + link(`#${type.name}`, inlineCode(type.name)) + '>';
+    } else if (type.type === 'array') {
+        return `Array<${formatTypeInfo(type.element)}>`;
     }
     throw new Error('INVALID TYPE: ' + JSON.stringify(type));
 }
@@ -230,8 +240,15 @@ function createConfigurationSchemaReference(): string {
                     if (flags & ts.TypeFlags.Object) {
                         const name = type.symbol?.name?.replace(/Schema$/, '').replace(/Config$/, '');
                         if (name && name !== '__type') {
-                            appendSectionForType(type);
-                            return { type: 'object', name };
+                            if (name === 'Array') {
+                                const typeArgs = typeChecker.getTypeArguments(type as ts.TypeReference);
+                                const elementType = typeArgs[0];
+                                const resolvedElementType = resolveType(elementType);
+                                return { type: 'array', element: resolvedElementType };
+                            } else {
+                                appendSectionForType(type);
+                                return { type: 'object', name };
+                            }
                         }
                         const objectType = type as ts.ObjectType;
                         if (objectType.objectFlags & ts.ObjectFlags.Anonymous) {

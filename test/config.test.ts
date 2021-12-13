@@ -35,6 +35,7 @@ test('defaults', async () => {
                   "contractInfo": Object {
                     "maxCacheEntries": 25000,
                   },
+                  "contractTracers": Map {},
                   "eth": Object {
                     "chain": undefined,
                     "client": Object {

@@ -22,6 +22,7 @@ import { ManagedResource, shutdownAll } from './utils/resource';
 import { waitForSignal } from './utils/signal';
 import { InternalStatsCollector } from './utils/stats';
 import { BalanceWatcher } from './balancewatcher';
+import { ContractTracer } from './contractTracer';
 import { NFTWatcher } from './nftwatcher';
 
 const { debug, error, info } = createModuleDebug('cli');
@@ -226,6 +227,24 @@ class Ethlogger extends Command {
             }
         }
 
+        const contractTracerResources = [];
+
+        for (const [name, contractTracerConfig] of config.contractTracers) {
+            if (contractTracerConfig.enabled) {
+                const contractTracer = new ContractTracer({
+                    checkpoint: state.getCheckpoint('contractTracer-' + name),
+                    ethClient: client,
+                    output,
+                    config: contractTracerConfig,
+                    contractInfoCache,
+                    nodePlatform: platformAdapter,
+                });
+                addResource(contractTracer);
+                internalStatsCollector.addSource(contractTracer, 'contractTracer-' + name);
+                contractTracerResources.push(contractTracer);
+            }
+        }
+
         const nftWatcherResources = [];
 
         for (const [name, nftWatcherConfig] of config.nftWatchers) {
@@ -252,6 +271,7 @@ class Ethlogger extends Command {
                 nodeStatsCollector.start(),
                 ...balanceWatcherResources.map(b => b.start()),
                 ...nftWatcherResources.map(b => b.start()),
+                ...contractTracerResources.map(b => b.start()),
             ].map(p =>
                 p?.catch(e => {
                     if (e !== ABORT) {

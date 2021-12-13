@@ -14,6 +14,7 @@ import {
     RawTransactionReceipt,
     RawTransactionResponse,
     SyncStatus,
+    GethTraceTransactionResponse,
 } from './responses';
 import { sha3 } from '../abi/wasm';
 
@@ -108,6 +109,14 @@ export const gethNodeInfo = (): EthRequest<[], GethNodeInfoResponse> => ({
 
 export const gethPeers = (): EthRequest<[], GethPeers> => ({
     method: 'admin_peers',
+});
+
+export const gethTraceTransaction = (
+    txHash: string,
+    tracer: string = 'callTracer'
+): EthRequest<[string, any], GethTraceTransactionResponse> => ({
+    method: 'debug_traceTransaction',
+    params: [txHash, { tracer: tracer }],
 });
 
 export const gethMetrics = (param: boolean): EthRequest<[boolean], GethMetrics> => ({

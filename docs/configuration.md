@@ -82,6 +82,7 @@ Root configuration schema for ethlogger
 | `contractInfo`    | [`ContractInfo`](#ContractInfo)                                                                                                    | Contract info cache settings                                                                                                                                                                                           |
 | `blockWatcher`    | [`BlockWatcher`](#BlockWatcher)                                                                                                    | Block watcher settings, configure how blocks, transactions, event logs are ingested                                                                                                                                    |
 | `balanceWatchers` | [`BalanceWatchers`](#BalanceWatchers)                                                                                              | Balance watchers, tracking balance of ERC-20 token holders                                                                                                                                                             |
+| `contractTracers` | [`ContractTracers`](#ContractTracers)                                                                                              | Contract tracer, tracking contract calls                                                                                                                                                                               |
 | `nftWatchers`     | [`NFTWatchers`](#NFTWatchers)                                                                                                      | NFT watchers, tracking balance of ERC-721 token holders                                                                                                                                                                |
 | `nodeMetrics`     | [`NodeMetrics`](#NodeMetrics)                                                                                                      | Settings for the node metrics collector                                                                                                                                                                                |
 | `nodeInfo`        | [`NodeInfo`](#NodeInfo)                                                                                                            | Settings for the node info collector                                                                                                                                                                                   |
@@ -134,17 +135,18 @@ Ethereum client settings - configure batching multiple JSON RPC method calls int
 
 Configurable set of `sourcetype` field values emitted by ethlogger
 
-| Name          | Type     | Default                          |
-| ------------- | -------- | -------------------------------- |
-| `block`       | `string` | `"ethereum:block"`               |
-| `transaction` | `string` | `"ethereum:transaction"`         |
-| `event`       | `string` | `"ethereum:transaction:event"`   |
-| `pendingtx`   | `string` | `"ethereum:transaction:pending"` |
-| `nodeInfo`    | `string` | `"ethereum:node:info"`           |
-| `nodeMetrics` | `string` | `"ethereum:node:metrics"`        |
-| `gethPeer`    | `string` | `"ethereum:geth:peer"`           |
-| `balance`     | `string` | `"ethereum:balance"`             |
-| `nft`         | `string` | `"ethereum:nft"`                 |
+| Name               | Type     | Default                          |
+| ------------------ | -------- | -------------------------------- |
+| `block`            | `string` | `"ethereum:block"`               |
+| `transaction`      | `string` | `"ethereum:transaction"`         |
+| `event`            | `string` | `"ethereum:transaction:event"`   |
+| `pendingtx`        | `string` | `"ethereum:transaction:pending"` |
+| `nodeInfo`         | `string` | `"ethereum:node:info"`           |
+| `nodeMetrics`      | `string` | `"ethereum:node:metrics"`        |
+| `gethPeer`         | `string` | `"ethereum:geth:peer"`           |
+| `balance`          | `string` | `"ethereum:balance"`             |
+| `nft`              | `string` | `"ethereum:nft"`                 |
+| `traceTransaction` | `string` | `"ethereum:transaction:trace"`   |
 
 ### ConsoleOutput
 
@@ -273,6 +275,29 @@ Balance watcher is a component tracking transfers of a token and reporting balan
 | `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
 | `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
 | `logEthBalance`      | `boolean`                   | Log the account ethereum balance                                                                  |
+
+### ContractTracers
+
+Contract tracer is a component tracking contract calls (requires the geth debug API).
+
+| Name | Type                                            | Description                                                               |
+| ---- | ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `-`  | map<string,[`ContractTracer`](#ContractTracer)> | Mapping of name => contract tracer.<br><br>See ContractTracerConfigSchema |
+
+### ContractTracer
+
+Contract tracer is a component tracking contract calls (requires the geth debug API).
+
+| Name                 | Type                        | Description                                                                                       |
+| -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| `contractAddresses`  | Array<`string`>             | A list of contract addresses to watch.                                                            |
+| `startAt`            | [`StartBlock`](#StartBlock) | If no checkpoint exists (yet), this specifies which block should be chosen as the starting point. |
+| `endAt`              | `number`                    | This optionally specifies at which block the watcher should stop collecting data.                 |
+| `enabled`            | `boolean`                   | Specify `false` to disable the contract tracer watcher                                            |
+| `pollInterval`       | [`Duration`](#Duration)     | Interval in which to look for the latest block number (if not busy processing the backlog)        |
+| `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
+| `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
+| `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
 
 ### NFTWatchers
 

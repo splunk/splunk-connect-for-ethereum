@@ -323,6 +323,7 @@ export class BalanceWatcher implements ManagedResource {
 
         return {
             body: {
+                watcher: this.checkpoint.getID(),
                 contract: this.config.contractAddress,
                 blockHash: formattedBlock.hash!,
                 blockNumber: formattedBlock.number!,

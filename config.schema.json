@@ -193,6 +193,72 @@
             },
             "type": "object"
         },
+        "ContractTracerConfigSchema": {
+            "description": "Contract tracer is a component tracking contract calls (requires the geth debug API).",
+            "properties": {
+                "blocksMaxChunkSize": {
+                    "description": "Max. number of blocks to fetch at once",
+                    "type": "number"
+                },
+                "contractAddresses": {
+                    "description": "A list of contract addresses to watch.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "enabled": {
+                    "description": "Specify `false` to disable the contract tracer watcher",
+                    "type": "boolean"
+                },
+                "endAt": {
+                    "description": "This optionally specifies at which block the watcher should stop collecting data.",
+                    "type": "number"
+                },
+                "maxParallelChunks": {
+                    "description": "Max. number of chunks to process in parallel",
+                    "type": "number"
+                },
+                "pollInterval": {
+                    "description": "Interval in which to look for the latest block number (if not busy processing the backlog)",
+                    "type": ["string", "number"]
+                },
+                "retryWaitTime": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/ExponentialBackoffConfig"
+                        },
+                        {
+                            "$ref": "#/definitions/LinearBackoffConfig"
+                        },
+                        {
+                            "type": ["string", "number"]
+                        }
+                    ],
+                    "description": "Wait time before retrying to fetch and process blocks after failure"
+                },
+                "startAt": {
+                    "anyOf": [
+                        {
+                            "enum": ["genesis", "latest"],
+                            "type": "string"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "description": "If no checkpoint exists (yet), this specifies which block should be chosen as the starting point."
+                }
+            },
+            "type": "object"
+        },
+        "ContractTracersConfigSchema": {
+            "additionalProperties": {
+                "$ref": "#/definitions/ContractTracerConfigSchema"
+            },
+            "description": "Contract tracer is a component tracking contract calls (requires the geth debug API).",
+            "type": "object"
+        },
         "DevNullOutputConfig": {
             "description": "Null output will just drop all generated events and metrics",
             "properties": {
@@ -788,6 +854,10 @@
                     "default": "ethereum:transaction:pending",
                     "type": "string"
                 },
+                "traceTransaction": {
+                    "default": "ethereum:transaction:trace",
+                    "type": "string"
+                },
                 "transaction": {
                     "default": "ethereum:transaction",
                     "type": "string"
@@ -817,6 +887,10 @@
         "contractInfo": {
             "$ref": "#/definitions/ContractInfoConfigSchema",
             "description": "Contract info cache settings"
+        },
+        "contractTracers": {
+            "$ref": "#/definitions/ContractTracersConfigSchema",
+            "description": "Contract tracer, tracking contract calls"
         },
         "eth": {
             "$ref": "#/definitions/EthereumConfigSchema",
