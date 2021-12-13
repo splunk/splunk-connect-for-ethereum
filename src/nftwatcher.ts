@@ -298,11 +298,13 @@ export class NFTWatcher implements ManagedResource {
         if (receipt != null && receipt.logs != null) {
             const transfers = receipt.logs
                 ?.map(log => {
-                    if (log.topics[0] == transferEventSignature && log.topics.length == 4) {
-                        const from = '0x' + log.topics[1].substr(26);
-                        const to = '0x' + log.topics[2].substr(26);
-                        const tokenIndex = log.topics[3];
-                        return { from, to, tokenIndex };
+                    if (this.config.contractAddress == log.address) {
+                        if (log.topics[0] == transferEventSignature && log.topics.length == 4) {
+                            const from = '0x' + log.topics[1].substr(26);
+                            const to = '0x' + log.topics[2].substr(26);
+                            const tokenIndex = log.topics[3];
+                            return { from, to, tokenIndex };
+                        }
                     }
                 })
                 .filter((x): x is NftTransfer => x !== null && x !== undefined);
