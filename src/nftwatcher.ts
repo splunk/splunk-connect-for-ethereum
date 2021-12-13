@@ -310,7 +310,7 @@ export class NFTWatcher implements ManagedResource {
             outputMessages = await this.abortHandle.race(
                 Promise.all(
                     transfers.map(t =>
-                        this.complementWithTokenInfo(t.from, t.to, t.tokenIndex, formattedBlock, blockTime)
+                        this.complementWithTokenInfo(t.from, t.to, rawTx.hash, t.tokenIndex, formattedBlock, blockTime)
                     )
                 )
             );
@@ -324,6 +324,7 @@ export class NFTWatcher implements ManagedResource {
     async complementWithTokenInfo(
         from: string,
         to: string,
+        transactionHash: string,
         index: string,
         formattedBlock: FormattedBlock,
         blockTime: number
@@ -372,7 +373,8 @@ export class NFTWatcher implements ManagedResource {
                 contract: this.config.contractAddress,
                 blockHash: formattedBlock.hash!,
                 blockNumber: formattedBlock.number!,
-                index: index,
+                transactionHash: transactionHash,
+                tokenIndex: index,
                 rawTokenURI: rawTokenURI,
                 errorTokenURI: errorTokenURI,
                 tokenURI: decoded,
