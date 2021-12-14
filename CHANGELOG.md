@@ -1,3 +1,10 @@
+## [3.4.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.4.0...v3.4.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* 🐛 NFT watcher: Filter events by contract address ([ce6b339](https://github.com/splunk/splunk-connect-for-ethereum/commit/ce6b339ef2a4ac54f65b3e4f2b6c40b28e8c070b))
+
 # [3.4.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.3.1...v3.4.0) (2021-12-13)
 
 
