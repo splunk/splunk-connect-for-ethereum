@@ -58,6 +58,10 @@
                     "description": "This optionally specifies at which block the watcher should stop collecting data.",
                     "type": "number"
                 },
+                "logEthBalance": {
+                    "description": "Log the account ethereum balance",
+                    "type": "boolean"
+                },
                 "maxParallelChunks": {
                     "description": "Max. number of chunks to process in parallel",
                     "type": "number"
@@ -489,6 +493,10 @@
                 "endAt": {
                     "description": "This optionally specifies at which block the watcher should stop collecting data.",
                     "type": "number"
+                },
+                "logEthBalance": {
+                    "description": "Log the account ethereum balance",
+                    "type": "boolean"
                 },
                 "maxParallelChunks": {
                     "description": "Max. number of chunks to process in parallel",

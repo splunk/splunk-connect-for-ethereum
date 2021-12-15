@@ -242,6 +242,8 @@ export interface BalanceWatcherConfigSchema {
     maxParallelChunks: number;
     /** Wait time before retrying to fetch and process blocks after failure */
     retryWaitTime: WaitTimeConfig;
+    /** Log the account ethereum balance */
+    logEthBalance: boolean;
 }
 
 /**
@@ -266,6 +268,8 @@ export interface NFTWatcherConfigSchema {
     maxParallelChunks: number;
     /** Wait time before retrying to fetch and process blocks after failure */
     retryWaitTime: WaitTimeConfig;
+    /** Log the account ethereum balance */
+    logEthBalance: boolean;
 }
 
 /**
@@ -849,6 +853,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             retryWaitTime: waitTimeFromConfig(value?.retryWaitTime) ?? 10000,
             decimals: value?.decimals ?? 18,
             contractAddress: configRequired('contractAddress', value?.contractAddress),
+            logEthBalance: value?.logEthBalance ?? true,
         });
     }
 
@@ -866,6 +871,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             endAt: value?.endAt ?? undefined,
             retryWaitTime: waitTimeFromConfig(value?.retryWaitTime) ?? 10000,
             contractAddress: configRequired('contractAddress', value?.contractAddress),
+            logEthBalance: value?.logEthBalance ?? true,
         });
     }
 

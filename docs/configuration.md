@@ -272,6 +272,7 @@ Balance watcher is a component tracking transfers of a token and reporting balan
 | `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
 | `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
 | `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
+| `logEthBalance`      | `boolean`                   | Log the account ethereum balance                                                                  |
 
 ### NFTWatchers
 
@@ -295,6 +296,7 @@ NFT watcher is a component tracking transfers of NFTs and reporting their metada
 | `blocksMaxChunkSize` | `number`                    | Max. number of blocks to fetch at once                                                            |
 | `maxParallelChunks`  | `number`                    | Max. number of chunks to process in parallel                                                      |
 | `retryWaitTime`      | [`WaitTime`](#WaitTime)     | Wait time before retrying to fetch and process blocks after failure                               |
+| `logEthBalance`      | `boolean`                   | Log the account ethereum balance                                                                  |
 
 ### NodeMetrics
 
