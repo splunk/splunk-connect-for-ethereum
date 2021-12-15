@@ -1,3 +1,489 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`nftwatcher 1`] = `Array []`;
+exports[`nftwatcher 1`] = `
+Array [
+  Object {
+    "body": Object {
+      "blockHash": "0x5986758215563cf2873d5e43d7ba700bb80df4244a8a86b10e12a2a5f5de3716",
+      "blockNumber": 19595071,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "https://www.nba.com/warriors/news/curry-nba-3point-leader-20211214",
+          },
+        ],
+        "description": "Golden State Warriors guard Stephen Curry became the NBA’s all-time 3-point leader with 2,974 career 3-pointers, hitting his second three of the night with 7:33 remaining in the first quarter of tonight’s (12.14.2021) contest at the New York Knicks to surpass Ray Allen’s career mark (2,973 threes). ",
+        "external_url": "https://api.poap.xyz/metadata/18202/3122679",
+        "home_url": "https://app.poap.xyz/token/3122679",
+        "image_url": "https://assets.poap.xyz/stephen-curry-becomes-nbas-all-time-3-point-leader-2021-logo-1639544399986.png",
+        "name": "Stephen Curry Becomes NBA’s All-Time 3-Point Leader",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31383230322f33313232363739000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0xe83aee0a19700705726d8cfb39dc6032f151a6c4",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5f7",
+      "tokenURI": "https://api.poap.xyz/metadata/18202/3122679",
+      "transactionHash": "0xb025c4d21b7857f4a33a9e36073b0459a1b05c1e3096a04cf3a7c4a46180c46c",
+    },
+    "time": 1639586690000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0x5986758215563cf2873d5e43d7ba700bb80df4244a8a86b10e12a2a5f5de3716",
+      "blockNumber": 19595071,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "13-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "20-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "https://sandbox.poap.art/",
+          },
+        ],
+        "description": "You were at the intersection of art and tech on the Sandbox weekly canvas week 50 of POAP.art ",
+        "external_url": "https://api.poap.xyz/metadata/17998/3122680",
+        "home_url": "https://app.poap.xyz/token/3122680",
+        "image_url": "https://assets.poap.xyz/poapart-sandbox-weekly-canvas-week-50-2021-2021-logo-1639449332633.png",
+        "name": "POAP.art Sandbox Weekly Canvas - Week 50 2021",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31373939382f33313232363830000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0x9c7d47cdb2d3ecc31f5d778c591f8846aad0a83d",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5f8",
+      "tokenURI": "https://api.poap.xyz/metadata/17998/3122680",
+      "transactionHash": "0xe7e54156cb6ed90c825756d00e5bf8f8298fec35c76aae373adfb1d4dbaa71a3",
+    },
+    "time": 1639586690000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0x759479e48c81163e15d4466a6851de12f763d84587f4f6e21796970df887e565",
+      "blockNumber": 19595077,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "15-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "15-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "HYVE Islands",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "",
+          },
+        ],
+        "description": "This is a digital token for all individuals that participated in the HYVE Digital Christmas Event 2021 as a member of the Strategy & Empowerment Team.",
+        "external_url": "https://api.poap.xyz/metadata/17351/3122681",
+        "home_url": "https://app.poap.xyz/token/3122681",
+        "image_url": "https://assets.poap.xyz/hyve-digital-christmas-event-2021-2021-logo-1639068367114.png",
+        "name": "HYVE Digital Christmas Event 2021",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31373335312f33313232363831000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0xcdc8fbc1cd62335902664e31295c87e47f7453da",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5f9",
+      "tokenURI": "https://api.poap.xyz/metadata/17351/3122681",
+      "transactionHash": "0xdfc458bdec9b85959a6a93173e156acfa739147517ffa60f5340cc528a378d28",
+    },
+    "time": 1639586720000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0x980533e8b922aabe37fc9277586713e5c333688efe9e06982a50873c97c3e87a",
+      "blockNumber": 19595078,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "https://potos.io",
+          },
+        ],
+        "description": "Work like a Captain, play like a pirate! This be POAP #14 of POTOS 25 days of POAPS t' celebrate the Holidays. AAArrrghh",
+        "external_url": "https://api.poap.xyz/metadata/16277/3122682",
+        "home_url": "https://app.poap.xyz/token/3122682",
+        "image_url": "https://assets.poap.xyz/potos-25-days-of-poaps-14-2021-logo-1638464481588.png",
+        "name": "POTOS 25 Days of POAPS (#14)",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31363237372f33313232363832000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0xa086c3bbf195aa18bee2805d568072b8af58fbd6",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5fa",
+      "tokenURI": "https://api.poap.xyz/metadata/16277/3122682",
+      "transactionHash": "0x5801d99eeb69bd5f652d4ce5b913d6849b2756f02b2691185325ab07108a1201",
+    },
+    "time": 1639586725000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0xf7567389680a3d08f1ebb67156b14082570709e5efd2505efee955c9e7c3a8b9",
+      "blockNumber": 19595079,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "",
+          },
+        ],
+        "description": "This POAP commemorates attendance of the Dec. 14, 2021 Bullish Radio (hosted by @hunterleroyy) space, in which collectors @boredethguy and @newethguy discussed topics related to collecting, NFTs, art, and life.",
+        "external_url": "https://api.poap.xyz/metadata/18199/3122683",
+        "home_url": "https://app.poap.xyz/token/3122683",
+        "image_url": "https://assets.poap.xyz/2021-12-14-bullish-radio-the-collectors-eye-w-newethguy-boredethguy-2021-logo-1639543419574.png",
+        "name": "2021-12-14 - Bullish Radio- The Collector's Eye w/ @newethguy @boredethguy ",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31383139392f33313232363833000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0xd1811c74361e20280013f3b80c1bc8b9dfe65240",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5fb",
+      "tokenURI": "https://api.poap.xyz/metadata/18199/3122683",
+      "transactionHash": "0x1c366fda478b01c54a3e590fb07590568b3db2b7c4e8fb3d772d6d34be44d4b8",
+    },
+    "time": 1639586730000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0xd14fd6dc5d938c5aaf7cea8b6a1990ddc5014ee126caa8aacc332602d01b6803",
+      "blockNumber": 19595084,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "12-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "12-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "https://app.pwn.finance/",
+          },
+        ],
+        "description": "This POAP gives you access to the PWN lending platform during the closed beta period. 
+
+To access the app: 
+1. go to https://app.pwn.finance/
+2. connect a wallet which holds this POAP
+
+Happy lending & borrowing!",
+        "external_url": "https://api.poap.xyz/metadata/17152/3122684",
+        "home_url": "https://app.poap.xyz/token/3122684",
+        "image_url": "https://assets.poap.xyz/pwn-app-access-code-2021-logo-1638977620335.png",
+        "name": "PWN app access code",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31373135322f33313232363834000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0xd3ed2b8756b942c98c851722f3bd507a17b4745f",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5fc",
+      "tokenURI": "https://api.poap.xyz/metadata/17152/3122684",
+      "transactionHash": "0x973844233339a3d7e3d4812983c0e6b12275f119083b37e53fee38b889c49f99",
+    },
+    "time": 1639586755000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0x6dd832a0b553e70f7f06c8c1b15fd2d7121b2f3147227d9c19188559890ad666",
+      "blockNumber": 19595088,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "14-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "https://www.vjdeliria.com/nftribu",
+          },
+        ],
+        "description": "Vj Deliria presents: 
+
+NFTribu, Latin American Art
+
+* 12-DIC-21 *   /    5pm CDT 
+
+-Closing reception - Twitter Spaces & @ Decentraland
+
+-Vj Deliria Events --> https://www.vjdeliria.com/nftribu
+
+-Live Twitter Spaces, Art Gallery Opening --> https://twitter.com/VjDeliria/status/1463904532619014152?s=20
+
+NFTribu is a metaverse exhibition representing Pre-Columbian, Indigenous and Native communities from Latin America through NFT art.
+",
+        "external_url": "https://api.poap.xyz/metadata/18204/3122685",
+        "home_url": "https://app.poap.xyz/token/3122685",
+        "image_url": "https://assets.poap.xyz/nftribu-25-latin-american-art-decentraland-12-dic-21-2021-logo-1639545661025.png",
+        "name": "NFTribu 2.5,  Latin American Art @ Decentraland  * 12-DIC-21 * ",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31383230342f33313232363835000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0x9309453b990c46c2e8f3f9c53fc53d530e76059a",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5fd",
+      "tokenURI": "https://api.poap.xyz/metadata/18204/3122685",
+      "transactionHash": "0xc723131907d9da3b9ff5ef7e82ee9f34e08a9eabc8b5f30d5556d7b9cb59e0fe",
+    },
+    "time": 1639586775000,
+    "type": "nft",
+  },
+  Object {
+    "body": Object {
+      "blockHash": "0x0933c78a34167f6f3f1cd6412d2bab5d0e0eece7e43ebd039f88ea74887b67bd",
+      "blockNumber": 19595091,
+      "contract": "0x22c1f6050e56d2876009903609a2cc3fef83b415",
+      "errorTokenURI": undefined,
+      "from": "0x0000000000000000000000000000000000000000",
+      "fromEthBalance": "105987609.019647827235641897",
+      "metadata": Object {
+        "attributes": Array [
+          Object {
+            "trait_type": "startDate",
+            "value": "02-Dec-2021",
+          },
+          Object {
+            "trait_type": "endDate",
+            "value": "02-Dec-2021",
+          },
+          Object {
+            "trait_type": "virtualEvent",
+            "value": "true",
+          },
+          Object {
+            "trait_type": "city",
+            "value": "",
+          },
+          Object {
+            "trait_type": "country",
+            "value": "",
+          },
+          Object {
+            "trait_type": "eventURL",
+            "value": "https://thalesmarket.io/",
+          },
+        ],
+        "description": "This POAP commemorates the first edition of Thales Royale.
+
+On December 2nd, 2021, 2007 players registered in the first edition of Thales Royale. The competition was hosted on Kovan Optimism throughout the following week, and after 6 rounds of intense up or down... only 8 players survived. 
+
+This POAP has been issued to commemorate all players who have participated in the first round, alive or not. 
+
+Will you take the next invitation? Good luck anon. May the luckiest player win.
+
+https://thalesmarket.io/royale?page=scoreboard",
+        "external_url": "https://api.poap.xyz/metadata/14512/3122686",
+        "home_url": "https://app.poap.xyz/token/3122686",
+        "image_url": "https://assets.poap.xyz/thales-royale-poap-2021-logo-1639510478849.png",
+        "name": "Thales Royale  POAP",
+        "tags": Array [
+          "poap",
+          "event",
+        ],
+        "year": 2021,
+      },
+      "rawTokenURI": "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000002b68747470733a2f2f6170692e706f61702e78797a2f6d657461646174612f31343531322f33313232363836000000000000000000000000000000000000000000",
+      "retrievalTime": 0,
+      "to": "0x85447824d5dc10b9fb75928f8104890eb54e7ce1",
+      "toEthBalance": "0.000000000000000000",
+      "tokenIndex": "0x00000000000000000000000000000000000000000000000000000000002fa5fe",
+      "tokenURI": "https://api.poap.xyz/metadata/14512/3122686",
+      "transactionHash": "0x7822e51312f9d1e57def7c535ca03e9ed8d602d7eac31988d3f39f56d92fa627",
+    },
+    "time": 1639586790000,
+    "type": "nft",
+  },
+]
+`;

@@ -47,6 +47,7 @@ test('balancewatcher', async () => {
                     maxParallelChunks: 1,
                     startAt: 'latest',
                     retryWaitTime: 10,
+                    logEthBalance: true,
                 },
                 ethClient,
                 output,
@@ -55,7 +56,7 @@ test('balancewatcher', async () => {
                 nodePlatform: MOCK_NODE_ADAPTER,
             });
 
-            await balanceWatcher.processChunk({ from: 19227319, to: 19227329 });
+            await balanceWatcher.processChunk({ from: 19588262, to: 19588292 });
 
             expect(output.messages).toMatchSnapshot();
         }

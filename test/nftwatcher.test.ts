@@ -39,13 +39,14 @@ test('nftwatcher', async () => {
             const nftWatcher = new NFTWatcher({
                 checkpoint,
                 config: {
-                    contractAddress: '0x22C1f6050E56d2876009903609a2cC3fEf83B415',
+                    contractAddress: '0x22c1f6050e56d2876009903609a2cc3fef83b415',
                     enabled: true,
                     blocksMaxChunkSize: 1,
                     pollInterval: 1,
                     maxParallelChunks: 1,
                     startAt: 'latest',
                     retryWaitTime: 10,
+                    logEthBalance: true,
                 },
                 ethClient,
                 output,
@@ -55,7 +56,7 @@ test('nftwatcher', async () => {
                 collectRetrievalTime: false,
             });
 
-            await nftWatcher.processChunk({ from: 19227319, to: 19227329 });
+            await nftWatcher.processChunk({ from: 19595071, to: 19595091 });
 
             expect(output.messages).toMatchSnapshot();
         }

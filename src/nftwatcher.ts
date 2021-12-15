@@ -11,12 +11,12 @@ import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
 import { Cache } from './utils/cache';
 import { ContractInfo } from './abi/contract';
-import { blockNumber, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
+import { blockNumber, ethBalance, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { parallel, sleep } from './utils/async';
 import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
 import { bigIntToNumber } from './utils/bn';
-import { formatBlock } from './format';
+import { formatBlock, formatHexToFloatingPoint } from './format';
 import { parseBlockTime } from './blockwatcher';
 import { FormattedBlock, NftMessage } from './msgs';
 import { ethers } from 'ethers';
@@ -368,6 +368,15 @@ export class NFTWatcher implements ManagedResource {
                 warn(e);
             }
         }
+        let fromBalance = undefined;
+        let toBalance = undefined;
+        if (this.config.logEthBalance) {
+            const fromBalanceHex = await this.ethClient.request(ethBalance(from, formattedBlock.number!));
+            const toBalanceHex = await this.ethClient.request(ethBalance(to, formattedBlock.number!));
+            fromBalance = formatHexToFloatingPoint(fromBalanceHex, 18);
+            toBalance = formatHexToFloatingPoint(toBalanceHex, 18);
+        }
+
         return {
             body: {
                 from: from,
@@ -382,6 +391,8 @@ export class NFTWatcher implements ManagedResource {
                 tokenURI: decoded,
                 metadata: metadata,
                 retrievalTime: this.collectRetrievalTime ? Math.floor(Date.now() / 1000) : 0,
+                fromEthBalance: fromBalance,
+                toEthBalance: toBalance,
             },
             time: blockTime,
             type: 'nft',

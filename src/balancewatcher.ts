@@ -9,7 +9,7 @@ import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { Cache } from './utils/cache';
 import { ContractInfo } from './abi/contract';
 import { AggregateMetric } from './utils/stats';
-import { blockNumber, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
+import { blockNumber, ethBalance, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { parallel, sleep } from './utils/async';
 import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
@@ -315,6 +315,12 @@ export class BalanceWatcher implements ManagedResource {
         );
         const balance = formatHexToFloatingPoint(response, this.config.decimals);
 
+        let ethereumBalance = undefined;
+        if (this.config.logEthBalance) {
+            const ethereumBalanceHex = await this.ethClient.request(ethBalance(address, formattedBlock.number!));
+            ethereumBalance = formatHexToFloatingPoint(ethereumBalanceHex, 18);
+        }
+
         return {
             body: {
                 contract: this.config.contractAddress,
@@ -322,6 +328,7 @@ export class BalanceWatcher implements ManagedResource {
                 blockNumber: formattedBlock.number!,
                 account: address,
                 balance: balance,
+                ethBalance: ethereumBalance,
             },
             time: blockTime,
             type: 'balance',
