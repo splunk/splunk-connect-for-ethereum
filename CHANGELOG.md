@@ -1,3 +1,10 @@
+# [3.5.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.4.1...v3.5.0) (2021-12-15)
+
+
+### Features
+
+* 🎸 Log Ethereum balance of token transfers and NFTs ([4b018c0](https://github.com/splunk/splunk-connect-for-ethereum/commit/4b018c0848cae19828f8d8b3edd2ec4ebe6003f2))
+
 ## [3.4.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.4.0...v3.4.1) (2021-12-14)
 
 
