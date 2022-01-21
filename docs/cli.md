@@ -36,6 +36,7 @@ TEST!
 TEST!
 TEST!
 TEST!
+TEST2!
 
 The ethlogger CLI tool is used to start and configure connections to the blockchain node and outputs. Command line flags or environment variables can be used to configure the CLI. Fine grained configuration options are available using the [config file](configuration.md). Note that CLI flags will take precedence over environment variables which, in turn, take precedence over configuration files.
 
