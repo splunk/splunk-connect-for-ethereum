@@ -163,6 +163,11 @@ export const ethCall = (
     ],
 });
 
+export const ethBalance = (account: string, blockNumber: number): EthRequest<[string, string], string> => ({
+    method: 'eth_getBalance',
+    params: [account, '0x' + blockNumber.toString(16)],
+});
+
 // Parity specific requests
 
 /** Returns the node enode URI */

@@ -36,7 +36,7 @@ test('balancewatcher', async () => {
             checkpoint.setInitialBlockNumber(123);
             const output = new TestOutput();
             const contractInfoCache = new LRUCache<string, Promise<ContractInfo>>({ maxSize: 100 });
-            const nftWatcher = new BalanceWatcher({
+            const balanceWatcher = new BalanceWatcher({
                 checkpoint,
                 config: {
                     contractAddress: '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d',
@@ -47,6 +47,7 @@ test('balancewatcher', async () => {
                     maxParallelChunks: 1,
                     startAt: 'latest',
                     retryWaitTime: 10,
+                    logEthBalance: true,
                 },
                 ethClient,
                 output,
@@ -55,7 +56,7 @@ test('balancewatcher', async () => {
                 nodePlatform: MOCK_NODE_ADAPTER,
             });
 
-            await nftWatcher.processChunk({ from: 19227319, to: 19227329 });
+            await balanceWatcher.processChunk({ from: 19588262, to: 19588292 });
 
             expect(output.messages).toMatchSnapshot();
         }

@@ -1,3 +1,36 @@
+# [3.5.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.4.1...v3.5.0) (2021-12-15)
+
+
+### Features
+
+* 🎸 Log Ethereum balance of token transfers and NFTs ([4b018c0](https://github.com/splunk/splunk-connect-for-ethereum/commit/4b018c0848cae19828f8d8b3edd2ec4ebe6003f2))
+
+## [3.4.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.4.0...v3.4.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* 🐛 NFT watcher: Filter events by contract address ([ce6b339](https://github.com/splunk/splunk-connect-for-ethereum/commit/ce6b339ef2a4ac54f65b3e4f2b6c40b28e8c070b))
+
+# [3.4.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.3.1...v3.4.0) (2021-12-13)
+
+
+### Bug Fixes
+
+* 🐛 Distinguish token index from splunk index ([81b7179](https://github.com/splunk/splunk-connect-for-ethereum/commit/81b7179a230d2e6c6feb94d414c412c65bb65c0d))
+
+
+### Features
+
+* 🎸 Add transactionHash to NFT payload ([1741444](https://github.com/splunk/splunk-connect-for-ethereum/commit/1741444687e971e3d922dd4648a4a4379e0f7866))
+
+## [3.3.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.3.0...v3.3.1) (2021-12-02)
+
+
+### Bug Fixes
+
+* 🐛 Support contracts throwing when asked for tokenURI ([55aa44b](https://github.com/splunk/splunk-connect-for-ethereum/commit/55aa44bf4c05d2a43242e206854f0ce6e3aa18e0))
+
 # [3.3.0](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.2.0...v3.3.0) (2021-11-24)
 
 

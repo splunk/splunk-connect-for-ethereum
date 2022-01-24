@@ -11,16 +11,17 @@ import { linearBackoff, resolveWaitTime, retry, WaitTime } from './utils/retry';
 import { AggregateMetric } from './utils/stats';
 import { Cache } from './utils/cache';
 import { ContractInfo } from './abi/contract';
-import { blockNumber, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
+import { blockNumber, ethBalance, ethCall, getBlock, getTransactionReceipt } from './eth/requests';
 import { BlockRange, blockRangeSize, blockRangeToArray, chunkedBlockRanges, serializeBlockRange } from './blockrange';
 import { parallel, sleep } from './utils/async';
 import { RawBlockResponse, RawTransactionResponse } from './eth/responses';
 import { bigIntToNumber } from './utils/bn';
-import { formatBlock } from './format';
+import { formatBlock, formatHexToFloatingPoint } from './format';
 import { parseBlockTime } from './blockwatcher';
 import { FormattedBlock, NftMessage } from './msgs';
 import { ethers } from 'ethers';
 import fetch from 'node-fetch';
+import { JsonRpcError } from './eth/jsonrpc';
 
 const abiDecoder = new ethers.utils.AbiCoder();
 const maxResponseSize = 4096;
@@ -297,11 +298,13 @@ export class NFTWatcher implements ManagedResource {
         if (receipt != null && receipt.logs != null) {
             const transfers = receipt.logs
                 ?.map(log => {
-                    if (log.topics[0] == transferEventSignature && log.topics.length == 4) {
-                        const from = '0x' + log.topics[1].substr(26);
-                        const to = '0x' + log.topics[2].substr(26);
-                        const tokenIndex = log.topics[3];
-                        return { from, to, tokenIndex };
+                    if (this.config.contractAddress == log.address) {
+                        if (log.topics[0] == transferEventSignature && log.topics.length == 4) {
+                            const from = '0x' + log.topics[1].substr(26);
+                            const to = '0x' + log.topics[2].substr(26);
+                            const tokenIndex = log.topics[3];
+                            return { from, to, tokenIndex };
+                        }
                     }
                 })
                 .filter((x): x is NftTransfer => x !== null && x !== undefined);
@@ -309,7 +312,7 @@ export class NFTWatcher implements ManagedResource {
             outputMessages = await this.abortHandle.race(
                 Promise.all(
                     transfers.map(t =>
-                        this.complementWithTokenInfo(t.from, t.to, t.tokenIndex, formattedBlock, blockTime)
+                        this.complementWithTokenInfo(t.from, t.to, rawTx.hash, t.tokenIndex, formattedBlock, blockTime)
                     )
                 )
             );
@@ -323,27 +326,57 @@ export class NFTWatcher implements ManagedResource {
     async complementWithTokenInfo(
         from: string,
         to: string,
+        transactionHash: string,
         index: string,
         formattedBlock: FormattedBlock,
         blockTime: number
     ): Promise<NftMessage> {
-        const response = await this.ethClient.request(
-            ethCall(this.config.contractAddress, 'tokenURI(uint256)', [index.substr(2)], formattedBlock.number!)
-        );
+        let rawTokenURI = undefined;
+        let errorTokenURI;
+        try {
+            rawTokenURI = await this.ethClient.request(
+                ethCall(this.config.contractAddress, 'tokenURI(uint256)', [index.substr(2)], formattedBlock.number!)
+            );
+        } catch (e) {
+            if (e instanceof JsonRpcError) {
+                errorTokenURI = { code: e.code, data: e.data, decodedData: '' };
+                try {
+                    // remove the first 10 characters: 0x and 4 bytes.
+                    const decodeResults = abiDecoder.decode(['string'], '0x' + e.data.substr(10));
+                    if (decodeResults.length == 1) {
+                        const decoded = decodeResults[0];
+                        errorTokenURI.decodedData = decoded;
+                    }
+                } catch (abiDecodeError) {
+                    warn(abiDecodeError);
+                }
+            }
+        }
 
         let decoded = '';
         let metadata: any = null;
-        try {
-            const decodeResults = abiDecoder.decode(['string'], response);
-            if (decodeResults.length == 1) {
-                decoded = decodeResults[0];
-                metadata = await this.fetchMetadata(decoded);
-            } else {
-                warn('Expected a string object, received %o', decodeResults);
+        if (rawTokenURI !== undefined) {
+            try {
+                const decodeResults = abiDecoder.decode(['string'], rawTokenURI);
+                if (decodeResults.length == 1) {
+                    decoded = decodeResults[0];
+                    metadata = await this.fetchMetadata(decoded);
+                } else {
+                    warn('Expected a string object, received %o', decodeResults);
+                }
+            } catch (e) {
+                warn(e);
             }
-        } catch (e) {
-            warn(e);
         }
+        let fromBalance = undefined;
+        let toBalance = undefined;
+        if (this.config.logEthBalance) {
+            const fromBalanceHex = await this.ethClient.request(ethBalance(from, formattedBlock.number!));
+            const toBalanceHex = await this.ethClient.request(ethBalance(to, formattedBlock.number!));
+            fromBalance = formatHexToFloatingPoint(fromBalanceHex, 18);
+            toBalance = formatHexToFloatingPoint(toBalanceHex, 18);
+        }
+
         return {
             body: {
                 from: from,
@@ -351,11 +384,15 @@ export class NFTWatcher implements ManagedResource {
                 contract: this.config.contractAddress,
                 blockHash: formattedBlock.hash!,
                 blockNumber: formattedBlock.number!,
-                index: index,
-                rawTokenURI: response,
+                transactionHash: transactionHash,
+                tokenIndex: index,
+                rawTokenURI: rawTokenURI,
+                errorTokenURI: errorTokenURI,
                 tokenURI: decoded,
                 metadata: metadata,
                 retrievalTime: this.collectRetrievalTime ? Math.floor(Date.now() / 1000) : 0,
+                fromEthBalance: fromBalance,
+                toEthBalance: toBalance,
             },
             time: blockTime,
             type: 'nft',

@@ -146,18 +146,23 @@ export interface BalanceBody {
     blockNumber: number;
     account: string;
     balance: string;
+    ethBalance: string | undefined;
 }
 
 export interface NftBody {
     from: string;
     to: string;
-    index: string;
-    rawTokenURI: string;
-    tokenURI: string;
+    fromEthBalance: string | undefined;
+    toEthBalance: string | undefined;
+    tokenIndex: string;
+    rawTokenURI: string | undefined;
+    tokenURI: string | undefined;
+    errorTokenURI: any | undefined;
     metadata: any;
     contract: string;
     blockHash: string;
     blockNumber: number;
+    transactionHash: string;
     retrievalTime: number | string;
 }
 
