@@ -15,6 +15,8 @@ Splunk Connect for Ethereum (aka `ethlogger`) makes it easy to ingest data about
 If you want to learn more about [Splunk's](https://www.splunk.com) efforts to make blockchains stable, secure, and scalable raise an issue here or email us at [blockchain@splunk.com](mailto:blockchain@splunk.com).
 
 <!-- toc -->
+## Prerequisites
+Prior to running Splunk Connect for Ethereum you will need to ensure your Splunk server has been configured with an HTTP Event Collector (HEC) endpoint and token and that the token specified has the ability to write data to the indexes provided in your configuration settings.  You will need 2 separate indexes; 1 for events and 1 for metrics.
 
 ## Usage
 
