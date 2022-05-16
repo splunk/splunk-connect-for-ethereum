@@ -20,8 +20,18 @@ import { formatBlock, formatHexToFloatingPoint } from './format';
 import { parseBlockTime } from './blockwatcher';
 import { FormattedBlock, NftMessage } from './msgs';
 import { ethers } from 'ethers';
-import fetch from 'node-fetch';
+import fetch, { RequestInfo, RequestInit, Response } from 'node-fetch';
 import { JsonRpcError } from './eth/jsonrpc';
+
+export interface FetchTransport {
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
+}
+
+export class DefaultFetchTransport implements FetchTransport {
+    fetch(url: RequestInfo, init?: RequestInit): Promise<Response> {
+        return fetch(url, init);
+    }
+}
 
 const abiDecoder = new ethers.utils.AbiCoder();
 const maxResponseSize = 4096;
@@ -63,6 +73,7 @@ export class NFTWatcher implements ManagedResource {
         txProcessTime: new AggregateMetric(),
         eventProcessTime: new AggregateMetric(),
     };
+    private fetchTransport: FetchTransport;
 
     constructor({
         ethClient,
@@ -73,6 +84,7 @@ export class NFTWatcher implements ManagedResource {
         chunkQueueMaxSize = 1000,
         nodePlatform,
         collectRetrievalTime = true,
+        fetchTransport = new DefaultFetchTransport(),
     }: {
         ethClient: EthereumClient;
         output: Output;
@@ -83,6 +95,7 @@ export class NFTWatcher implements ManagedResource {
         contractInfoCache?: Cache<string, Promise<ContractInfo>>;
         nodePlatform: NodePlatformAdapter;
         collectRetrievalTime?: boolean;
+        fetchTransport?: FetchTransport;
     }) {
         this.ethClient = ethClient;
         this.checkpoint = checkpoint;
@@ -92,6 +105,7 @@ export class NFTWatcher implements ManagedResource {
         this.chunkQueueMaxSize = chunkQueueMaxSize;
         this.nodePlatform = nodePlatform;
         this.collectRetrievalTime = collectRetrievalTime;
+        this.fetchTransport = fetchTransport;
     }
 
     async start(): Promise<void> {
@@ -412,7 +426,7 @@ export class NFTWatcher implements ManagedResource {
         }
 
         try {
-            const metadataResponse = await fetch(tokenURI, { size: maxResponseSize });
+            const metadataResponse = await this.fetchTransport.fetch(tokenURI, { size: maxResponseSize });
             const isJson = metadataResponse.headers.get('content-type')?.includes('application/json');
             if (isJson) {
                 return metadataResponse.json();
