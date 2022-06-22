@@ -1,5 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-    name: abis
-data: {{- (.Files.Glob "abis/**.json").AsConfig | nindent 2 }}
