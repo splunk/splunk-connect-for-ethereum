@@ -1,3 +1,10 @@
+## [3.5.2](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.1...v3.5.2) (2022-08-04)
+
+
+### Bug Fixes
+
+* 🐛 geth adapter should only call supported generic rpcs ([d0fa3b8](https://github.com/splunk/splunk-connect-for-ethereum/commit/d0fa3b80991fd557077aac6f9250077e31e616cb))
+
 ## [3.5.1](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.0...v3.5.1) (2022-05-16)
 
 
