@@ -186,7 +186,7 @@ export class GethAdapter extends GenericNodeAdapter {
 
     public async captureNodeMetrics(ethClient: EthereumClient, captureTime: number): Promise<NodeMetricsMessage[]> {
         const [defaultMetrics, gethMetrics] = await Promise.all([
-            captureDefaultMetrics(ethClient, captureTime),
+            captureDefaultMetrics(ethClient, captureTime, this.supports),
             captureGethMetrics(ethClient, captureTime, this.gethSupports!),
         ]);
         return [defaultMetrics, gethMetrics].filter(m => m != null) as NodeMetricsMessage[];
