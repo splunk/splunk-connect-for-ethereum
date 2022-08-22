@@ -13,9 +13,9 @@ afterEach(() => {
     logHandle.restore();
 });
 
-test('dai.poa.network', async () => {
+test('rpc.gnosischain.com', async () => {
     await withRecorder(
-        new HttpTransport('https://dai.poa.network', {}),
+        new HttpTransport('https://rpc.gnosischain.com', {}),
         {
             name: 'xdai-introspect',
             storageDir: join(__dirname, '../fixtures/recorded'),
@@ -45,7 +45,7 @@ test('dai.poa.network', async () => {
                           },
                           "platform": "parity",
                           "protocolVersion": 63,
-                          "transport": "jsonprc+https://dai.poa.network",
+                          "transport": "jsonprc+https://rpc.gnosischain.com",
                         }
                     `);
 

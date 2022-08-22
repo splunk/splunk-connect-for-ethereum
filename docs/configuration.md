@@ -20,7 +20,7 @@ The configuration file content will be layered on top of the [defaults](../ethlo
 
 ```yaml
 eth:
-    url: https://dai.poa.network
+    url: https://rpc.gnosischain.com
     network: xdai
 hec:
     default:

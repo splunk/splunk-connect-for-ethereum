@@ -27,7 +27,7 @@
             "symbol": "xDAI",
             "decimals": 18
         },
-        "rpc": ["https://dai.poa.network"],
+        "rpc": ["https://rpc.gnosischain.com"],
         "faucets": [],
         "infoURL": "https://forum.poa.network/c/xdai-chain"
     },
