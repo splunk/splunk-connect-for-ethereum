@@ -98,6 +98,8 @@ export class HttpTransport implements EthereumTransport {
         this.counters.requests++;
         this.aggregates.batchSize.push(Array.isArray(request) ? request.length : 1);
         try {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), this.config.timeout);
             const response = await fetch(this.url, {
                 method: 'POST',
                 headers: {
@@ -106,8 +108,9 @@ export class HttpTransport implements EthereumTransport {
                 },
                 body,
                 agent: this.httpAgent,
-                timeout: this.config.timeout,
+                signal: controller.signal,
             });
+            clearTimeout(id);
             if (!response.ok) {
                 let responseBody: any = null;
                 try {

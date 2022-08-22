@@ -1,7 +1,7 @@
 import { flags } from '@oclif/command';
 import { StartBlock } from './blockwatcher';
 
-export const CLI_FLAGS = {
+export const CLI_FLAGS: flags.Input<any> = {
     version: flags.version({ char: 'v' }),
     help: flags.help({ char: 'h' }),
     debug: flags.boolean({

@@ -279,6 +279,9 @@ export class BalanceWatcher implements ManagedResource {
 
         let outputMessages = Array<OutputMessage>();
         if (receipt != null && receipt.logs != null) {
+            const isDefined = (addr: string | undefined): addr is string => {
+                return !!addr;
+            };
             const addresses = receipt.logs
                 ?.map(log => {
                     if (this.config.contractAddress == log.address) {
@@ -290,7 +293,7 @@ export class BalanceWatcher implements ManagedResource {
                     }
                 })
                 .flat()
-                .filter(a => a !== undefined);
+                .filter(isDefined);
             if (addresses.length > 0) {
                 this.counters.transfersProcessed++;
                 outputMessages = await this.abortHandle.race(

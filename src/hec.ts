@@ -2,7 +2,6 @@ import AbortController from 'abort-controller';
 import { default as HttpAgent, HttpOptions, HttpsAgent } from 'agentkeepalive';
 import BufferList from 'bl';
 import fetch from 'node-fetch';
-import { AbortSignal } from 'node-fetch/externals';
 import { createGzip } from 'zlib';
 import { HecConfig } from './config';
 import { sleep } from './utils/async';
@@ -324,14 +323,17 @@ export class HecClient {
 
         debug('Checking if HEC is available at %s', url.href);
         try {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), this.config.timeout);
             const res = await fetch(url.href, {
                 method: 'GET',
                 headers: {
                     'User-Agent': this.config.userAgent,
                 },
                 agent: this.httpAgent,
-                timeout: this.config.timeout,
+                signal: controller.signal,
             });
+            clearTimeout(id);
             debug('HEC responded to availability check with HTTP status %d', res.status);
             if (!isSuccessfulStatus(res.status)) {
                 throw new Error(`HTTP Status ${res.status}`);
@@ -390,7 +392,7 @@ export class HecClient {
 
         const abortController = new AbortController();
         const flushHandle = new FlushHandle(abortController);
-        const flushCompletePromise = this.sendToHec(queue, abortController.signal);
+        const flushCompletePromise = this.sendToHec(queue, abortController);
         flushHandle.promise = flushCompletePromise;
         this.activeFlushing.add(flushHandle);
 
@@ -400,7 +402,7 @@ export class HecClient {
         return flushCompletePromise;
     };
 
-    private async sendToHec(msgs: SerializedHecMsg[], abortSignal: AbortSignal): Promise<void> {
+    private async sendToHec(msgs: SerializedHecMsg[], abortController: AbortController): Promise<void> {
         const startTime = Date.now();
         debug('Flushing HEC queue with %s messages', msgs.length);
         const rawBody = new BufferList(msgs);
@@ -428,14 +430,15 @@ export class HecClient {
             attempt++;
             try {
                 const requestStart = Date.now();
+                const id = setTimeout(() => abortController.abort(), this.config.timeout);
                 const response = await fetch(this.config.url, {
                     method: 'POST',
                     headers,
                     body: body.duplicate(),
                     agent: this.httpAgent,
-                    signal: abortSignal,
-                    timeout: this.config.timeout,
+                    signal: abortController.signal,
                 });
+                clearTimeout(id);
                 this.aggregates.requestDuration.push(Date.now() - requestStart);
 
                 if (!isSuccessfulStatus(response.status)) {
@@ -465,14 +468,14 @@ export class HecClient {
                 this.counters.errorCount++;
                 debug('Failed to send batch to HEC (attempt %s)', attempt, e);
                 error('Failed to send batch to HEC (attempt %s): %s', attempt, e.toString());
-                if (abortSignal.aborted) {
+                if (abortController.signal.aborted) {
                     throw new Error('Aborted');
                 }
                 if (attempt <= this.config.maxRetries) {
                     const retryDelay = resolveWaitTime(this.config.retryWaitTime, attempt);
                     debug(`Retrying to send batch to HEC in %d ms`, retryDelay);
                     await sleep(retryDelay);
-                    if (abortSignal.aborted) {
+                    if (abortController.signal.aborted) {
                         throw new Error('Aborted');
                     }
                     this.counters.retryCount++;

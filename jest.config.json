@@ -2,7 +2,9 @@
     "roots": ["<rootDir>/"],
     "collectCoverageFrom": ["src/*.ts", "src/**/*.ts"],
     "transform": {
-        "^.+\\.ts?$": "ts-jest"
+        "^.+\\.(ts|tsx)$": "ts-jest",
+        "^.+\\.(js)$": "babel-jest"
     },
+    "transformIgnorePatterns": [],
     "testMatch": ["<rootDir>/**/?(*.)(spec|test).(ts|js)?(x)"]
 }

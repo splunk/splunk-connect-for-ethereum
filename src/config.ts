@@ -6,7 +6,7 @@ import { CLI_FLAGS } from './cliflags';
 import { createModuleDebug } from './utils/debug';
 import { durationStringToMs } from './utils/parse';
 import { exponentialBackoff, linearBackoff, WaitTime } from './utils/retry';
-import { safeLoad } from 'js-yaml';
+import { load } from 'js-yaml';
 import { removeEmtpyValues, deepMerge, isEmpty } from './utils/obj';
 
 const { debug, warn, error } = createModuleDebug('config');
@@ -652,7 +652,7 @@ export async function loadConfigFile(
     if (detectedType === 'json') {
         return JSON.parse(fileContents);
     } else if (detectedType === 'yaml') {
-        return safeLoad(fileContents, { filename: fileName });
+        return load(fileContents, { filename: fileName });
     }
 
     return {};
@@ -751,13 +751,13 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
     }
 
     const required = <T>(flag: keyof CliFlags, configValue: T | undefined): T => {
-        const val: T = flags[flag];
+        const val: T = flags[flag.toString()];
         if (val == null) {
             if (configValue == null) {
                 if (dryRun) {
                     error('Missing required option --%s', flag);
                 } else {
-                    throw new ConfigError(`Missing required option --${flag}`);
+                    throw new ConfigError(`Missing required option --${flag.toString()}`);
                 }
             } else {
                 return configValue;
@@ -786,8 +786,8 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
     ): HecConfig | undefined => {
         const result = removeEmtpyValues({
             defaultFields: defaults?.defaultFields,
-            defaultMetadata: flags[indexFlag]
-                ? Object.assign({}, defaults?.defaultMetadata, { index: flags[indexFlag] })
+            defaultMetadata: flags[indexFlag.toString()]
+                ? Object.assign({}, defaults?.defaultMetadata, { index: flags[indexFlag.toString()] })
                 : defaults?.defaultMetadata,
             flushTime: parseDuration(defaults?.flushTime),
             gzip: defaults?.gzip,
@@ -799,7 +799,7 @@ export async function loadEthloggerConfig(flags: CliFlags, dryRun: boolean = fal
             requestKeepAlive: defaults?.requestKeepAlive,
             retryWaitTime: waitTimeFromConfig(defaults?.retryWaitTime as WaitTimeConfig),
             timeout: parseDuration(defaults?.timeout),
-            token: flags[tokenFlag] ?? defaults?.token,
+            token: flags[tokenFlag.toString()] ?? defaults?.token,
             url: defaults?.url,
             userAgent: defaults?.userAgent,
             validateCertificate: defaults?.validateCertificate,
