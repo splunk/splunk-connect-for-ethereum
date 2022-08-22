@@ -9,7 +9,7 @@ COPY . ./
 RUN yarn build
 
 # MAIN IMAGE
-FROM node:14.16-alpine
+FROM node:14.20-alpine
 
 LABEL org.opencontainers.image.source https://github.com/splunk/splunk-connect-for-ethereum
 
