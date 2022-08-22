@@ -1,3 +1,10 @@
+## [3.5.3](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.2...v3.5.3) (2022-08-22)
+
+
+### Bug Fixes
+
+* 🐛 Update Alpine base image to 14.20 ([28c996a](https://github.com/splunk/splunk-connect-for-ethereum/commit/28c996a36a4419cdce104306e84562a7d092d57e))
+
 ## [3.5.2](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.1...v3.5.2) (2022-08-04)
 
 
