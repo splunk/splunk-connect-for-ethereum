@@ -1,6 +1,6 @@
 {
     "eth": {
-        "url": "https://dai.poa.network",
+        "url": "https://rpc.gnosischain.com",
         "network": "xdai"
     },
     "hec": {

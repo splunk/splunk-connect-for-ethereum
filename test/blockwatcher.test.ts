@@ -21,7 +21,7 @@ afterEach(() => {
 
 test('blockwatcher', async () => {
     await withRecorder(
-        new HttpTransport('https://dai.poa.network', {}),
+        new HttpTransport('https://rpc.gnosischain.com', {}),
         {
             name: 'xdai-blockwatcher',
             storageDir: join(__dirname, './fixtures/recorded'),

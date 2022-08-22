@@ -26,7 +26,7 @@ services:
         container_name: ethlogger
         command: -c /app/ethlogger.yaml
         environment:
-            - ETH_RPC_URL=https://dai.poa.network
+            - ETH_RPC_URL=https://rpc.gnosischain.com
             # Use these environment variables to connect to infura
             # - ETH_RPC_URL=https://mainnet.infura.io/v3/<your infura project id>
             - START_AT_BLOCK=latest

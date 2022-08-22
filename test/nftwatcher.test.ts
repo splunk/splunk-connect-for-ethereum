@@ -90,7 +90,7 @@ test('nftwatcher', async () => {
     }
 
     await withRecorder(
-        new HttpTransport('https://dai.poa.network', {}),
+        new HttpTransport('https://rpc.gnosischain.com', {}),
         {
             name: name,
             storageDir: storageDir,
