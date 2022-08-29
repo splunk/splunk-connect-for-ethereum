@@ -57,6 +57,7 @@ class RecorderFetchTransport implements FetchTransport {
 export class ReplayFetchTransport implements FetchTransport {
     constructor(private records: Record[]) {}
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public async fetch(url: RequestInfo, init?: RequestInit | undefined): Promise<Response> {
         const requestJson = JSON.stringify({ url: url });
         const reqMatches = (r: Record) => JSON.stringify({ url: r.request }) === requestJson;
