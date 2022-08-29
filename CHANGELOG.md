@@ -1,3 +1,10 @@
+## [3.5.4](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.3...v3.5.4) (2022-08-29)
+
+
+### Bug Fixes
+
+* 🐛 Upgrade dependencies of ethlogger ([93c0f94](https://github.com/splunk/splunk-connect-for-ethereum/commit/93c0f94f07b99da336d7440a3fa55e79adb4d529))
+
 ## [3.5.3](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.2...v3.5.3) (2022-08-22)
 
 
