@@ -1,3 +1,10 @@
+## [3.5.6](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.5...v3.5.6) (2022-09-01)
+
+
+### Bug Fixes
+
+* 🐛 Update @types/debug ([3b707dd](https://github.com/splunk/splunk-connect-for-ethereum/commit/3b707dd8096d65d7ae0811fe5154ffd86084d9c5))
+
 ## [3.5.5](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.4...v3.5.5) (2022-09-01)
 
 
