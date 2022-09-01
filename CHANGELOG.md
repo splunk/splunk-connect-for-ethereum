@@ -1,3 +1,10 @@
+## [3.5.5](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.4...v3.5.5) (2022-09-01)
+
+
+### Bug Fixes
+
+* 🐛 Remove the yarn cache from the Docker image ([3d1caa7](https://github.com/splunk/splunk-connect-for-ethereum/commit/3d1caa78121da3fbe0fd869f01d70b83ccbb1f9a))
+
 ## [3.5.4](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.3...v3.5.4) (2022-08-29)
 
 
