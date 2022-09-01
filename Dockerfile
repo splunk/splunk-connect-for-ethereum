@@ -17,7 +17,7 @@ WORKDIR /ethlogger
 
 COPY --from=builder /ethlogger/package.json /ethlogger/yarn.lock /ethlogger/
 COPY --from=builder /ethlogger/defaults.ethlogger.yaml /ethlogger/
-RUN yarn install --production --frozen-lockfile && yarn link
+RUN yarn install --production --frozen-lockfile && yarn link && yarn cache clean
 
 COPY --from=builder /ethlogger/bin /ethlogger/bin
 COPY --from=builder /ethlogger/lib /ethlogger/lib
