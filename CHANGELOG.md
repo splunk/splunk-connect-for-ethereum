@@ -1,3 +1,10 @@
+## [3.5.8](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.7...v3.5.8) (2022-09-23)
+
+
+### Bug Fixes
+
+* 🐛 Upgrade to Node 16 ([373e406](https://github.com/splunk/splunk-connect-for-ethereum/commit/373e406467a44e7faa08533e343e13db114287d3))
+
 ## [3.5.7](https://github.com/splunk/splunk-connect-for-ethereum/compare/v3.5.6...v3.5.7) (2022-09-08)
 
 
