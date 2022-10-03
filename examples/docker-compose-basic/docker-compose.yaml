@@ -8,7 +8,7 @@ services:
             - SPLUNK_START_ARGS=--accept-license
             - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113
             - SPLUNK_PASSWORD=changeme
-            - SPLUNK_APPS_URL=https://github.com/splunk/ethereum-basics/releases/download/latest/ethereum-basics.tgz
+            - SPLUNK_APPS_URL=https://github.com/splunk/splunk-app-for-ethereum/releases/download/1.1.9/splunk-app-for-ethereum_1.1.9.tgz,https://github.com/splunk/splunk-app-for-ethereum/raw/master/viz_apps/splunk-sankey-diagram-custom-visualization_160.tgz,https://github.com/splunk/splunk-app-for-ethereum/raw/master/viz_apps/force-directed-app-for-splunk_310.tgz
         ports:
             - 8000:8000
             - 8088:8088
@@ -18,16 +18,17 @@ services:
             timeout: 5s
             retries: 20
         volumes:
-            - ./splunk.yml:/tmp/defaults/default.yml
             - /opt/splunk/var
             - /opt/splunk/etc
     ethlogger:
         image: ghcr.io/splunkdlt/ethlogger:latest
         container_name: ethlogger
         environment:
-            - ETH_RPC_URL=https://rpc.gnosischain.com
-            # Use these environment variables to connect to infura
+            # Be sure you have created the indexes specified below (i.e. 'main' & 'metrics')
+            # Set the environment variables to connect to your preferred chain/provider  (default is Ethereum from https://www.ankr.com/)
+            - ETH_RPC_URL=https://eth.public-rpc.com
             # - ETH_RPC_URL=https://mainnet.infura.io/v3/<your infura project id>
+            # - ETH_RPC_URL=https://rpc.gnosischain.com
             - START_AT_BLOCK=latest
             - SPLUNK_HEC_URL=https://splunk:8088
             - SPLUNK_HEC_TOKEN=11111111-1111-1111-1111-1111111111113

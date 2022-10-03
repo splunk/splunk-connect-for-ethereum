@@ -10,7 +10,7 @@ Splunk Connect for Ethereum (aka `ethlogger`) makes it easy to ingest data about
 -   Extracts a rich set of node information and metrics in order to gain deep insight into your node 🙉.
 -   Introspects your node platform (i.e. geth, parity, besu or quorum) in order to ensure maximum data extraction 🎂.
 -   [Contract fingerprinting](./docs/abi.md#contract-fingerprinting) in order to match ABIs with function signatures (i.e. we can decode the parameter names too!) 🔎.
--   Enables awesome dashboards (keepin' it 200) 💯💯.
+-   Enables awesome dashboards (keepin' it 200) 💯💯. Check out the companion [Splunk App for Ethereum](https://github.com/splunk/splunk-app-for-ethereum) for some starter searches and dashboards too! [Download the latest release[(https://github.com/splunk/splunk-app-for-ethereum/releases/latest)] and install it into your own Splunk instance to visulaize the data.
 
 If you want to learn more about [Splunk's](https://www.splunk.com) efforts to make blockchains stable, secure, and scalable raise an issue here or email us at [blockchain@splunk.com](mailto:blockchain@splunk.com).
 
@@ -18,7 +18,9 @@ If you want to learn more about [Splunk's](https://www.splunk.com) efforts to ma
 
 ## Prerequisites
 
-Prior to running Splunk Connect for Ethereum you will need to ensure your Splunk server has been configured with an HTTP Event Collector (HEC) endpoint and token and that the token specified has the ability to write data to the indexes provided in your configuration settings. You will need 2 separate indexes; 1 for events and 1 for metrics.
+Prior to running Splunk Connect for Ethereum you will need to ensure your Splunk server has been configured with an HTTP Event Collector (HEC) endpoint and token and that the token specified has the ability to write data to the indexes provided in your configuration settings.
+
+You will need 2 separate indexes; 1 for events and 1 for metrics.
 
 ## Usage
 
@@ -40,7 +42,7 @@ Example:
 
 ```sh-session
 $ docker run -it ghcr.io/splunkdlt/ethlogger:latest \
-    --eth-rpc-url=https://rpc.gnosischain.com \
+    --eth-rpc-url=https://eth.public-rpc.com \
     --start-at-block=latest \
     --hec-url=https://mysplunkserver.com:8088 \
     --hec-token=123-123-123-123 \
@@ -48,7 +50,35 @@ $ docker run -it ghcr.io/splunkdlt/ethlogger:latest \
     --hec-metrics-index=metrics
 ```
 
-There is also an example on how to run [ethlogger in docker-compose](./examples/docker-compose-basic).
+There is also an example on how to run [ethlogger in docker-compose](./examples/docker-compose-basic). This example will spin up a container for Splunk, install the Splunk App for Ethereum, and start a container for Splunk Connect for Ethereum. Ethereum data will start flowing into Splunk within a few minutes starting from the latest block. To get started follow these steps:
+
+1. Download the [docker-compose.yaml](./examples/docker-compose-basic/docker-compose.yaml) file.
+
+```sh-session
+$ curl -O https://raw.githubusercontent.com/splunk/splunk-connect-for-ethereum/main/examples/docker-compose-basic/docker-compose.yaml
+```
+
+2. Start the docker containers using docker-compose.
+
+```sh-session
+$ docker-compose up
+```
+
+3. Wait for all containers to start (typically just a few minutes).
+   You can rely on the output of `docker ps` to see the state of services. To see the logs use `docker logs ethlogger` and `docker logs splunk`.
+
+4. Login to Splunk and check out the [Splunk App for Ethereum](http://localhost:8000/app/splunk-app-for-ethereum/ethereum_starter_searches) to explore teh data ingested by ethlogger. Login using user `admin` and password `changeme` and start exploring! The Splunk App for Ethereum has a number of dashboards to help get you started quickly.
+   Note: if you change the index name please update the `ethereum_index` macro so the dashboards will populate.
+5. Create a new index named `metrics` that is a `metric` type of index. This will be used to gather monitoring metrics for ethlogger itself.
+   You can create the index by choosing Settings and then Indexes from the menu in Splunk. Once created, check out the [Node Health - SC4Ethereum](http://localhost:8000/app/splunk-app-for-ethereum/node_health__sc4ethereum) dashboard under the `Node Monitoring` menu.
+
+6. Shut it down and clean up for next time.
+
+```sh-session
+$ docker-compose down
+$ rm checkpoints.json
+$ docker volume prune
+```
 
 ## Troubleshooting
 
