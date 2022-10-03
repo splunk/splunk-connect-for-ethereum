@@ -67,7 +67,7 @@ $ docker-compose up
 3. Wait for all containers to start (typically just a few minutes).
    You can rely on the output of `docker ps` to see the state of services. To see the logs use `docker logs ethlogger` and `docker logs splunk`.
 
-4. Login to Splunk and check out the [Splunk App for Ethereum](http://localhost:8000/app/splunk-app-for-ethereum/ethereum_starter_searches) to explore teh data ingested by ethlogger. Login using user `admin` and password `changeme` and start exploring! The Splunk App for Ethereum has a number of dashboards to help get you started quickly.
+4. Login to Splunk and check out the [Splunk App for Ethereum](http://localhost:8000/app/splunk-app-for-ethereum/ethereum_starter_searches) to explore the data ingested by ethlogger. Login using user `admin` and password `changeme` and start exploring! The Splunk App for Ethereum has a number of dashboards to help get you started quickly.
    Note: if you change the index name please update the `ethereum_index` macro so the dashboards will populate.
 5. Create a new index named `metrics` that is a `metric` type of index. This will be used to gather monitoring metrics for ethlogger itself.
    You can create the index by choosing Settings and then Indexes from the menu in Splunk. Once created, check out the [Node Health - SC4Ethereum](http://localhost:8000/app/splunk-app-for-ethereum/node_health__sc4ethereum) dashboard under the `Node Monitoring` menu.
