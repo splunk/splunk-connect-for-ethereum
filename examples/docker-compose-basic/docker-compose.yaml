@@ -25,7 +25,7 @@ services:
         container_name: ethlogger
         environment:
             # Be sure you have created the indexes specified below (i.e. 'main' & 'metrics')
-            # Set the environment variables to connect to your preferred chain/provider  (default is Ethereum from https://www.ankr.com/) 
+            # Set the environment variables to connect to your preferred chain/provider  (default is Ethereum from https://www.ankr.com/)
             - ETH_RPC_URL=https://eth.public-rpc.com
             # - ETH_RPC_URL=https://mainnet.infura.io/v3/<your infura project id>
             # - ETH_RPC_URL=https://rpc.gnosischain.com
