@@ -42,7 +42,7 @@ Example:
 
 ```sh-session
 $ docker run -it ghcr.io/splunkdlt/ethlogger:latest \
-    --eth-rpc-url=https://eth.public-rpc.com \
+    --eth-rpc-url=https://rpc.gnosischain.com\
     --start-at-block=latest \
     --hec-url=https://mysplunkserver.com:8088 \
     --hec-token=123-123-123-123 \
