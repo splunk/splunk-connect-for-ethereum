@@ -1,7 +1,8 @@
 # Splunk Connect for Ethereum
 
 ## :warning: Disclaimer : Post September 15, 2022 Merge Support :warning:
-Splunk Connect for Ethereum has not been fully tested with changes resulting from the move from Proof-of-Work (POW) to Proof-of-Stake (POS), more commonly known as the Merge, that occurred on September 15, 2022.   There should be no impact to permissioned ethereum-based networks, but POS-based Ethereum mainnet has not been fully tested.
+
+Splunk Connect for Ethereum has not been fully tested with changes resulting from the move from Proof-of-Work (POW) to Proof-of-Stake (POS), more commonly known as the Merge, that occurred on September 15, 2022. There should be no impact to permissioned ethereum-based networks, but POS-based Ethereum mainnet has not been fully tested.
 
 [![](https://github.com/splunk/splunk-connect-for-ethereum/workflows/CI/badge.svg)](https://github.com/splunk/splunk-connect-for-ethereum/actions?query=workflow%3ACI+branch%3Amain)
 
